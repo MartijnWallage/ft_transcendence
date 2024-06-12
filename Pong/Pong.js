@@ -2,13 +2,16 @@ const canvas = document.getElementById("pongCanvas");
 const ctx = canvas.getContext("2d");
 
 // Paddle properties
-const paddleWidth = 10, paddleHeight = 100, paddleSpeed = 5;
-const player = { x: 0, y: canvas.height / 2 - paddleHeight / 2, width: paddleWidth, height: paddleHeight, dy: 0 };
-const computer = { x: canvas.width - paddleWidth, y: canvas.height / 2 - paddleHeight / 2, width: paddleWidth, height: paddleHeight, dy: 0 };
+const paddleWidth = 14, paddleHeight = 80, paddleSpeed = 6;
+const player = { x: 10, y: canvas.height / 2 - paddleHeight / 2, width: paddleWidth, height: paddleHeight, dy: 0 };
+const computer = { x: canvas.width - paddleWidth - 10, y: canvas.height / 2 - paddleHeight / 2, width: paddleWidth, height: paddleHeight, dy: 0 };
 
 // Ball properties
-const ballSize = 10;
-const ball = { x: canvas.width / 2, y: canvas.height / 2, width: ballSize, height: ballSize, dx: 4, dy: 4 };
+const ballSize = 14;
+const ball = { x: canvas.width / 2, y: canvas.height / 2, width: ballSize, height: ballSize, dx: -7, dy: 6 };
+
+// score
+let playerScore = 0, computerScore = 0;
 
 // Key controls
 let keys = {};
@@ -36,6 +39,13 @@ function drawNet() {
 	}
 }
 
+function displayScore() {
+	ctx.font = "20px Arial";
+	ctx.fillStyle = "white";
+	ctx.fillText("Player Score: " + playerScore, 20, 30);
+	ctx.fillText("Computer Score: " + computerScore, canvas.width - 180, 30);
+}
+
 // update functions
 
 function updatePaddle(paddle) {
@@ -54,17 +64,31 @@ function updateBall() {
 
 	let paddle = (ball.dx < 0) ? player : computer;
 
-	if (ball.x < player.x + player.width && ball.y > player.y && ball.y < player.y + player.height ||
-			ball.x + ball.width > computer.x && ball.y > computer.y && ball.y < computer.y + computer.height) {
+	if (ball.x < player.x + player.width && ball.y > player.y && ball.y < player.y + player.height + ball.height / 2||
+			ball.x + ball.width > computer.x && ball.y > computer.y && ball.y < computer.y + computer.height + ball.height / 2) {
+			ball.dy = (ball.y - (paddle.y + paddle.height / 2)) * 0.25;
 			ball.dx *= -1; // bounce off paddles
 	}
+}
 
+function updateScore() {
 	if (ball.x < 0) {
-			// Computer scores
-			resetBall();
+		computerScore += 1;
+		resetBall();
 	} else if (ball.x + ball.width > canvas.width) {
-			// Player scores
-			resetBall();
+		playerScore += 1;
+		resetBall();
+	}
+
+
+	if (playerScore == 10 || computerScore == 10) {
+			if (playerScore == 10) {
+				alert("You win!");
+			} else {
+				alert("You lose!");
+			}
+			playerScore = 0;
+			computerScore = 0;
 	}
 }
 
@@ -72,6 +96,7 @@ function resetBall() {
 	ball.x = canvas.width / 2;
 	ball.y = canvas.height / 2;
 	ball.dx *= -1; // change ball direction
+	ball.dy = ball.dx / 2;
 }
 
 // control paddles
@@ -103,10 +128,12 @@ function gameLoop() {
 	drawPaddle(player);
 	drawPaddle(computer);
 	drawBall(ball);
+	displayScore();
 
 	// Update game state
 	movePaddles();
 	updateBall();
+	updateScore();
 
 	requestAnimationFrame(gameLoop);
 }
