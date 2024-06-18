@@ -17,11 +17,12 @@ ft_transcendence in development
     django-admin startproject pong .
 
 ## Run your Django Server
+    python manage.py startapp playpong
     python manage.py runserver
     ("Deciding a port number is optional by default 8000")
 
 ## Setting in the files to make Pong.js and Pong.html work
-- python manage.py startapp playpong
+
 - in settings.py append playpong
 - ![image](https://github.com/MartijnWallage/ft_transcendence/assets/123320243/9a16d89b-ba4e-4177-a807-e4be73c75971)
 
