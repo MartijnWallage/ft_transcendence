@@ -12,8 +12,8 @@ DJANGO_DIR := django-data
 all: $(NAME)
 
 $(NAME):	
-	# mkdir mariadb-data
-	mkdir $(DJANGO_DIR)
+	# mkdir -p mariadb-data
+	mkdir -p $(DJANGO_DIR)
 	cd srcs
 	docker compose -f ./srcs/docker-compose.yml up --build
 	@echo "transcendance is runing."

@@ -9,9 +9,10 @@
             background: #000;
         }
     </style>
+    {% load static %}
 </head>
 <body>
     <canvas id="pongCanvas" width="600" height="400"></canvas>
-    <script src="pong.js"></script>
+    <script src="{% static 'Pong.js' %}"></script>
 </body>
 </html>
