@@ -42,10 +42,10 @@ ft_transcendence in development
   ![image](https://github.com/MartijnWallage/ft_transcendence/assets/123320243/bdff81ff-c288-45c0-bd10-364ae9d2a50d)
 
 
-  ### in views.py define a function like this
+  ### in playpong/views.py define a function like this
   ![image](https://github.com/MartijnWallage/ft_transcendence/assets/123320243/beac7562-77ca-44bf-95a6-eb9e529572e8)
 
-  ### finally we need to have urls.py to call our function make it like this
+  ### finally we need to have playpong/urls.py to call our function make it like this
   ![image](https://github.com/MartijnWallage/ft_transcendence/assets/123320243/314b5369-645f-4f1e-bbd7-c946d0831ca8)
 
   ### Also inside the pong/urls.py make these changes
