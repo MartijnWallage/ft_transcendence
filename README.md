@@ -48,7 +48,14 @@ ft_transcendence in development
   ### finally we need to have urls.py to call our function make it like this
   ![image](https://github.com/MartijnWallage/ft_transcendence/assets/123320243/314b5369-645f-4f1e-bbd7-c946d0831ca8)
 
+  ### Also inside the pong/urls.py make these changes
+  ![image](https://github.com/MartijnWallage/ft_transcendence/assets/123320243/fc9d085b-8001-4a83-8870-be40e56bd9f3)
+
+
 ## IF the server is already running from before it will update itself after saving all files.
 ## To start again
   python manage.py runserver
+
+  ## Path to the pong game as described above
+  http://127.0.0.1:8000/playpong/hello/
 
