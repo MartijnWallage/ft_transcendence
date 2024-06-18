@@ -11,7 +11,8 @@ ft_transcendence in development
       b) sudo apt install pipenv(for me only this worked)
 ### 4. Go to the project folder and
      a) pipenv install django
-     b) code .
+     b) pipenv shell
+     c) code .
 ### 5. Create a project Pong
     django-admin startproject pong .
 
@@ -36,6 +37,7 @@ ft_transcendence in development
   ![image](https://github.com/MartijnWallage/ft_transcendence/assets/123320243/d14c4532-99b0-42c6-a761-5eec510227a1)
 
   make these changes in pong.html
+  
   ![image](https://github.com/MartijnWallage/ft_transcendence/assets/123320243/bdff81ff-c288-45c0-bd10-364ae9d2a50d)
 
 
