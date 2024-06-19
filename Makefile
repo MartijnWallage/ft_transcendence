@@ -1,25 +1,34 @@
 # -----------\ Name \--------------------------------------------------------- #
 
-NAME	:= inception
+NAME	:= transcendance
 
+# -----------\ Files \-------------------------------------------------------- #
+
+ENV_FILE = --env-file srcs/.env
+COMPOSE = ./srcs/docker-compose.yml
+COMPOSE_CMD = docker-compose -f ${COMPOSE} ${ENV_FILE}
 # -----------\ Directories \-------------------------------------------------- #
 
-MARIADB_DIR := mariadb-data
-DJANGO_DIR := django-data
+DATABASE_DIR := M_database
+DJANGO_DIR := M_django-data
 
 # -----------\ Rules \-------------------------------------------------------- #
 
 all: $(NAME)
 
 $(NAME):	
-	# mkdir -p mariadb-data
+	mkdir -p $(DATABASE_DIR)
 	mkdir -p $(DJANGO_DIR)
-	cd srcs
-	docker compose -f ./srcs/docker-compose.yml up --build
-	@echo "transcendance is runing."
+	@${COMPOSE_CMD} up
+	
+build:
+	@${COMPOSE_CMD} up --build
+
+down:
+	@${COMPOSE_CMD} down
 
 clean:
-	@echo "fclean"
+	@echo "clean"
 	-docker ps -qa | xargs docker stop
 	-docker ps -qa | xargs docker rm
 	-docker image ls -qa | xargs docker rmi -f
@@ -28,13 +37,15 @@ clean:
 	-docker network ls -q | xargs docker network rm 2>/dev/null
 
 fclean: clean
-	chmod 777 $(DJANGO_DIR)
-	rm -rf $(DJANGO_DIR)
-	# chmod 777 mariadb-data
-	# rm -rf mariadb-data
+	-chmod 777 $(DJANGO_DIR)
+	-rm -rf $(DJANGO_DIR)
+	docker run -it --rm -v ./M_database:/delete debian:latest bash -c "rm -rf /delete/*"
+	@$(MAKE) clean
+	-chmod 777 $(DATABASE_DIR)
+	-rm -rf $(DATABASE_DIR)
 	docker system prune
 
 re: fclean all
 
-.PHONY: all, clean, fclean, re
+.PHONY: all build down re clean fclean
 

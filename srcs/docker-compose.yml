@@ -1,53 +1,39 @@
-version: '3'
+version: '3.9'
 
 services:
 
   django:
     container_name: django
-    networks:
-      - ts-network
-    volumes:
-      - django:/django-files
     build:
       context: requirements/django
       dockerfile: Dockerfile
     env_file: 
     - .env
-    restart: on-failure
-      # depends_on:
-      #   - "mariadb"
+    networks:
+      - ts-network
+    expose:
+      - "8000"
     ports:
       - "8000:8000"
+    depends_on:
+      - "postgresSQL"
+    volumes:
+      - django:/django-files
+    restart: on-failure # always # Restart containers on system boot and in case of failures
+    pull_policy: never # Do not pull images from Docker hub, etc
 
-  # mariadb:
-  #   container_name: mariadb
-  #   networks:
-  #     - ts-network
-  #   volumes:
-  #     - mariadb:/var/lib/mysql
-  #   build:
-  #     context: requirements/mariadb
-  #     dockerfile: Dockerfile
-  #   env_file: 
-  #   - .env
-  #   restart: on-failure
-  #   expose:
-  #     - "3306"
-
-  # nginx:
-  #   container_name: nginx
-  #   networks:
-  #     - ts-network
-  #   volumes:
-  #     - django:/var/www/wordpress
-  #   build:
-  #     context: requirements/nginx
-  #     dockerfile: Dockerfile
-  #   env_file: 
-  #   - .env
-  #   restart: on-failure
-  #   ports:
-  #     - "443:443"
+  postgresSQL:
+    container_name : postgresSQL
+    image: postgres:17beta1-bullseye
+    env_file:
+      - .env
+    networks:
+     - ts-network
+    expose:
+      - "5432"
+    restart: on-failure #always
+    volumes:
+      - database:/var/lib/postgresql/data/
 
 networks:
   ts-network:
@@ -59,6 +45,12 @@ volumes:
     driver_opts:
       type: 'none'
       o: 'bind'
-      device: '../django-data'
+      device: '../M_django-data'
+  database:
+    driver: local
+    driver_opts:
+      type: 'none'
+      o: 'bind'
+      device: '../M_database'
 
 
