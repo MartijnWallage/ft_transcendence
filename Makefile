@@ -43,7 +43,7 @@ fclean: clean
 	@$(MAKE) clean
 	-chmod 777 $(DATABASE_DIR)
 	-rm -rf $(DATABASE_DIR)
-	docker system prune
+	docker system prune -f
 
 re: fclean all
 
