@@ -1,4 +1,5 @@
 # ft_transcendence
+
 ft_transcendence in development
 
 # Hope this will help a little bit
@@ -58,4 +59,3 @@ ft_transcendence in development
 
   ## Path to the pong game as described above
   http://127.0.0.1:8000/playpong/hello/
-
