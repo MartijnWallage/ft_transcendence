@@ -20,7 +20,6 @@ services:
     volumes:
       - django:/django-files
     # restart: on-failure # always # Restart containers on system boot and in case of failures
-    pull_policy: never # Do not pull images from Docker hub, etc
 
   postgresSQL:
     container_name : postgresSQL
@@ -29,8 +28,6 @@ services:
       - .env
     networks:
      - ts-network
-    ports:
-      - "5432:5432"
     expose:
       - "5432"
     restart: on-failure #always
@@ -47,7 +44,7 @@ services:
     networks:
        - ts-network
     ports:
-      - "8443:443"
+      - "8443:443"   # For HTTPS
     restart: on-failure #always
     depends_on:
       - django

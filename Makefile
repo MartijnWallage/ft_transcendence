@@ -6,7 +6,7 @@ NAME	:= transcendance
 
 ENV_FILE = --env-file srcs/.env
 COMPOSE = ./srcs/docker-compose.yml
-COMPOSE_CMD = docker-compose -f ${COMPOSE} ${ENV_FILE}
+COMPOSE_CMD = docker compose -f ${COMPOSE} ${ENV_FILE}
 # -----------\ Directories \-------------------------------------------------- #
 
 DATABASE_DIR := M_database

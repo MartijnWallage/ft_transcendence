@@ -1,8 +1,6 @@
 #!/bin/bash
 set -e
 
-pip show django_postgres_extensions
-
 # Generate openssl certificate
 if [ ! -f "/etc/daphne/ssl/daphne.crt" ] || [ ! -f "/etc/daphne/ssl/daphne.key" ]; then
     echo "Generating openssl certificate..."
