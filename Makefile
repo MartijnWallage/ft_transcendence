@@ -30,7 +30,7 @@ build:
 	@${COMPOSE_CMD} up --build -d
 
 down:
-	@${COMPOSE_CMD} down 
+	@${COMPOSE_CMD} down -d
 
 clean:
 	@echo "clean"
