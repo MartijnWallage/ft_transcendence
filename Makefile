@@ -11,6 +11,9 @@ COMPOSE_CMD = docker compose -f ${COMPOSE} ${ENV_FILE}
 
 DATABASE_DIR := M_database
 DJANGO_DIR := M_django-data
+FRONTEND_DIR := M_frontend
+#DIST_DIR := M_dist
+
 
 # -----------\ Rules \-------------------------------------------------------- #
 
@@ -19,13 +22,15 @@ all: $(NAME)
 $(NAME):	
 	mkdir -p $(DATABASE_DIR)
 	mkdir -p $(DJANGO_DIR)
-	@${COMPOSE_CMD} up
+	mkdir -p $(FRONTEND_DIR)
+#	mkdir -p $(DIST_DIR)
+	@${COMPOSE_CMD} up -d
 	
 build:
-	@${COMPOSE_CMD} up --build
+	@${COMPOSE_CMD} up --build -d
 
 down:
-	@${COMPOSE_CMD} down
+	@${COMPOSE_CMD} down 
 
 clean:
 	@echo "clean"
