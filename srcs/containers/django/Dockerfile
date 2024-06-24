@@ -4,7 +4,8 @@ FROM python:3.9.19-slim-bullseye
 # ENV PYTHONDONTWRITEBYTECODE 1
 # ENV PYTHONUNBUFFERED 1
 
-# RUN usermod -aG sudo myuser
+RUN groupadd -g 1000 mygroup && useradd -u 1000 -g mygroup -m myuser
+RUN usermod -aG sudo myuser
 
 # for postgresql
 RUN apt-get update && apt-get install -y libpq-dev postgresql-client gcc openssl netcat sudo
