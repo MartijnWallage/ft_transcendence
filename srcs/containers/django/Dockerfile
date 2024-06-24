@@ -4,8 +4,6 @@ FROM python:3.9.19-slim-bullseye
 # ENV PYTHONDONTWRITEBYTECODE 1
 # ENV PYTHONUNBUFFERED 1
 
-# Create a group and user
-RUN groupadd -g 1000 mygroup && useradd -u 1000 -g mygroup -m myuser
 RUN usermod -aG sudo myuser
 
 # for postgresql
