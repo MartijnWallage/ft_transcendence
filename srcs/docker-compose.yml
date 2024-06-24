@@ -46,7 +46,7 @@ services:
     networks:
        - ts-network
     ports:
-      - "8080:80"   # For HTTPS
+      - "8443:443"   # For HTTPS
     restart: on-failure #always
     depends_on:
       - django
