@@ -12,13 +12,13 @@ services:
     networks:
       - ts-network
     expose:
-      - "8000"
-    ports:
-      - "8000:8000"
+      - "8000" #only exposed internally
+    # ports:
+    #   - "8000:8000"
     depends_on:
       - "postgresSQL"
     volumes:
-      - django:/django-files
+      - static_volume:/home/app/web/staticfiles
     # restart: on-failure # always # Restart containers on system boot and in case of failures
 
   postgresSQL:
@@ -44,12 +44,13 @@ services:
     networks:
        - ts-network
     ports:
-      - "8443:443"   # For HTTPS
+      - "8080:80"   # For HTTPS
     restart: on-failure #always
     depends_on:
       - django
     volumes:
-      - dist:/var/www/html/dist/
+      - static_volume:/home/app/web/staticfiles
+      #- dist:/var/www/html
 
     # frontend:
   #   build:
@@ -66,18 +67,18 @@ networks:
     driver: bridge
 
 volumes:
-  django:
-    driver: local
-    driver_opts:
-      type: 'none'
-      o: 'bind'
-      device: '../M_django-data'
+  static_volume:
+    # driver: local
+    # driver_opts:
+    #   type: 'none'
+    #   o: 'bind'
+    #   device: '../M_django-data'
   database:
-    driver: local
-    driver_opts:
-      type: 'none'
-      o: 'bind'
-      device: '../M_database'
-  dist:
+    # driver: local
+    # driver_opts:
+    #   type: 'none'
+    #   o: 'bind'
+    #   device: '../M_database'
+  # dist:
 
 

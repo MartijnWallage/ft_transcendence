@@ -9,16 +9,16 @@ COMPOSE = ./srcs/docker-compose.yml
 COMPOSE_CMD = docker compose -f ${COMPOSE} ${ENV_FILE}
 # -----------\ Directories \-------------------------------------------------- #
 
-DATABASE_DIR := M_database
-DJANGO_DIR := M_django-data
+#DATABASE_DIR := M_database
+#DJANGO_DIR := M_django-data
 
 # -----------\ Rules \-------------------------------------------------------- #
 
 all: $(NAME)
 
 $(NAME):	
-	mkdir -p $(DATABASE_DIR)
-	mkdir -p $(DJANGO_DIR)
+#	mkdir -p $(DATABASE_DIR)
+#	mkdir -p $(DJANGO_DIR)
 	@${COMPOSE_CMD} up
 	
 build:
@@ -37,12 +37,12 @@ clean:
 	-docker network ls -q | xargs docker network rm 2>/dev/null
 
 fclean: clean
-	-chmod 777 $(DJANGO_DIR)
-	-rm -rf $(DJANGO_DIR)
-	docker run -it --rm -v ./M_database:/delete debian:latest bash -c "rm -rf /delete/*"
+#	-chmod 777 $(DJANGO_DIR)
+#	-rm -rf $(DJANGO_DIR)
+#	docker run -it --rm -v ./M_database:/delete debian:latest bash -c "rm -rf /delete/*"
 	@$(MAKE) clean
-	-chmod 777 $(DATABASE_DIR)
-	-rm -rf $(DATABASE_DIR)
+#	-chmod 777 $(DATABASE_DIR)
+#	-rm -rf $(DATABASE_DIR)
 	docker system prune -f
 
 re: fclean all

@@ -14,7 +14,7 @@ if [ ! -f "/etc/daphne/ssl/daphne.crt" ] || [ ! -f "/etc/daphne/ssl/daphne.key" 
 fi
 
 # Set the working directory
-cd /django-files/
+cd /home/app/web/
 
     echo "Waiting for database to be ready..."
     retries=5
@@ -33,8 +33,21 @@ cd /django-files/
     echo "Database is ready!"
 
 # python3 manage.py migrate
-python3 manage.py migrate
-python3 manage.py runserver 0.0.0.0:8000
+# python3 manage.py migrate
+# python3 manage.py collectstatic --noinput
+
+# Always run collectstatic
+echo "Collecting static files..."
+python3 manage.py collectstatic --noinput
+
+if [ "$DJANGO_INITIAL_SETUP" = "true" ]; then
+    python3 manage.py makemigrations
+    python3 manage.py migrate
+    python3 manage.py createsuperuser
+fi
+
+gunicorn pong.wsgi:application --bind 0.0.0.0:8000
+# python3 manage.py runserver 0.0.0.0:8000
 
 
 # # Generate openssl certificate
