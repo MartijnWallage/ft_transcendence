@@ -4,21 +4,27 @@ FROM python:3.9.19-slim-bullseye
 # ENV PYTHONDONTWRITEBYTECODE 1
 # ENV PYTHONUNBUFFERED 1
 
-# for postgresql
-RUN apt-get update && apt-get install -y libpq-dev postgresql-client gcc openssl netcat
+RUN usermod -aG sudo myuser
 
+# for postgresql
+RUN apt-get update && apt-get install -y libpq-dev postgresql-client gcc openssl netcat sudo
+
+# usermod -aG sudo "name of user"
 # Set the working directory in the container
 WORKDIR /django-files/
 
 # Copy the entire Django project directory into the Docker image workdir
 COPY src/ .
 
-COPY requirements.txt ../
+COPY tools/requirements.txt ../
 RUN pip install --upgrade pip
 RUN pip install -r ../requirements.txt;
 
 COPY tools/docker-entrypoint.sh /docker-entrypoint.sh
 RUN chmod +x /docker-entrypoint.sh
-CMD ["/docker-entrypoint.sh"]
 
-#CMD ["python3", "manage.py", "runserver", "0.0.0.0:8000"]
+RUN echo 'myuser ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
+# Set the user for subsequent instructions
+USER myuser
+
+CMD ["/docker-entrypoint.sh"]
