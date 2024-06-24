@@ -12,7 +12,7 @@ services:
     networks:
       - ts-network
     expose:
-      - "8443"
+      - "8000"
     ports:
       - "8000:8000"
     depends_on:
@@ -50,14 +50,16 @@ services:
       - django
     volumes:
       - dist:/var/www/html/dist/
-      
-  frontend:
-    build: requirements/frontend
-    container_name: frontend
-    restart: always
-    volumes:
-      - dist:/usr/src/app/dist
-      - frontend:/app
+
+    # frontend:
+  #   build:
+  #     context: requirements/frontend
+  #     dockerfile: Dockerfile
+  #   container_name: frontend
+  #   restart: always
+  #   volumes:
+  #     - dist:/app/dist
+  #     - ./frontend:/app
 
 networks:
   ts-network:
@@ -76,18 +78,6 @@ volumes:
       type: 'none'
       o: 'bind'
       device: '../M_database'
-  frontend:
-    driver: local
-    driver_opts:
-      type: 'none'
-      o: 'bind'
-      device: '../M_frontend'
   dist:
-    # driver: local
-    # driver_opts:
-    #   type: 'none'
-    #   o: 'bind'
-    #   device: '../M_dist'
-
 
 
