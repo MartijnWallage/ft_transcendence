@@ -19,6 +19,8 @@ services:
       - "postgresSQL"
     volumes:
       - static:/static/
+      #- media:/media/
+
     # restart: on-failure # always # Restart containers on system boot and in case of failures
 
   postgresSQL:
@@ -50,6 +52,7 @@ services:
       - django
     volumes:
       - static:/static/
+      #- media:/media/
       #- dist:/var/www/html
 
     # frontend:
@@ -68,6 +71,12 @@ networks:
 
 volumes:
   static:
+    # driver: local
+    # driver_opts:
+    #   type: 'none'
+    #   o: 'bind'
+    #   device: '../M_django-data'
+  #media:
     # driver: local
     # driver_opts:
     #   type: 'none'

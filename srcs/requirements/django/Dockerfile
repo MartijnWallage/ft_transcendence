@@ -7,7 +7,7 @@ ENV HOME=/home/app
 ENV APP_HOME=/home/app/web
 
 # for postgresql
-RUN apt-get update && apt-get install -y libpq-dev postgresql-client gcc openssl netcat python3-pip python3-dev libpq-dev postgresql postgresql-contrib nginx
+RUN apt-get update && apt-get install -y libpq-dev postgresql-client gcc openssl netcat python3-pip python3-dev postgresql postgresql-contrib nginx
 
 RUN mkdir -p $APP_HOME
 RUN mkdir $APP_HOME/staticfiles
