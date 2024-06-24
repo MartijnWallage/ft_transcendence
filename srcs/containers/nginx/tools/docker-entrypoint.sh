@@ -41,4 +41,4 @@ ln -sf /dev/stderr /var/log/nginx/error.log
 
 # # Execute nginx
 # #This is necessary to start the Nginx server and keep the container running
-exec nginx -g "daemon off;"
+exec sudo nginx -g "daemon off;"

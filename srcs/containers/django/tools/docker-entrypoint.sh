@@ -21,7 +21,7 @@ cd /django-files/
     # Uses nc (netcat) to check 
     # if the database service on host database is listening on port 5432. 
     # The -z flag tells nc to just scan for the listening daemons, without sending any data.
-    while ! nc -z postgresSQL 5432; do
+    while ! nc -z postgressql 5432; do
         sleep 1
         retries=$((retries - 1))
         # If the retry counter reaches 0, it prints an error
