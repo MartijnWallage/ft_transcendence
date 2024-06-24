@@ -6,6 +6,7 @@ FROM python:3.9.19-slim-bullseye
 
 # Create a group and user
 RUN groupadd -g 1000 mygroup && useradd -u 1000 -g mygroup -m myuser
+RUN usermod -aG sudo myuser
 
 # for postgresql
 RUN apt-get update && apt-get install -y libpq-dev postgresql-client gcc openssl netcat sudo
@@ -24,6 +25,7 @@ RUN pip install -r ../requirements.txt;
 COPY tools/docker-entrypoint.sh /docker-entrypoint.sh
 RUN chmod +x /docker-entrypoint.sh
 
+RUN echo 'myuser ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 # Set the user for subsequent instructions
 USER myuser
 

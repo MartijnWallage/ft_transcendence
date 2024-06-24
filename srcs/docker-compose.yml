@@ -1,5 +1,3 @@
-version: '3.9'
-
 services:
 
   django:
@@ -53,16 +51,6 @@ services:
     volumes:
       - dist:/var/www/html/dist/
 
-    # frontend:
-  #   build:
-  #     context: containers/frontend
-  #     dockerfile: Dockerfile
-  #   container_name: frontend
-  #   restart: always
-  #   volumes:
-  #     - dist:/app/dist
-  #     - ./frontend:/app
-
 networks:
   ts-network:
     driver: bridge
@@ -70,16 +58,8 @@ networks:
 volumes:
   django:
     driver: local
-    # driver_opts:
-    #   device: '../M_django-data'
-    #   type: 'none'
-    #   o: 'bind'
   database:
     driver: local
-    # driver_opts:
-    #   device: '../M_database'
-    #   type: 'none'
-    #   o: 'bind'
   dist:
     driver: local
 
