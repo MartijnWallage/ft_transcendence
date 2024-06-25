@@ -1,8 +1,15 @@
 FROM python:3.9.19-slim-bullseye
 
-# Set environment variables
+# set to optimize Python's performance in Docker 
+
+# Prevents Python from writing .pyc files (bytecode files) to disk. 
+# This is useful in containerized environments to reduce filesystem writes and avoid potential conflicts.
 ENV PYTHONDONTWRITEBYTECODE 1
+# Ensures that Python's standard output and error streams are unbuffered. 
+# outputs are immediately printed rather than being buffered, which can be helpful for logging and debugging in Docker containers.
 ENV PYTHONUNBUFFERED 1
+
+# Set environment variables
 ENV HOME=/home/app
 ENV APP_HOME=/home/app/web
 
@@ -11,10 +18,8 @@ RUN apt-get update && apt-get install -y libpq-dev postgresql-client gcc openssl
 
 RUN mkdir -p $APP_HOME
 RUN mkdir $APP_HOME/staticfiles
-WORKDIR $APP_HOME
-
 # Set the working directory in the container
-# WORKDIR /django-files/
+WORKDIR $APP_HOME
 
 # Copy the entire Django project directory into the Docker image workdir
 COPY src/ .

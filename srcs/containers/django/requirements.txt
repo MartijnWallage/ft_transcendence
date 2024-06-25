@@ -11,6 +11,7 @@ whitenoise # for serving static files
 
 # djangorestframework==3.14.0 # Django REST framework 
 # djangorestframework-simplejwt # which provides JSON Web Token (JWT) authentication support for Django REST framework.
+# requests # making HTTP requests
 requests # making HTTP requests
 # daphne==4.0.0 #This allows you to use WebSockets, long-lived HTTP connections, and other asynchronous protocols in Django.
 # channels==4.0.0 #Django Channels allows you to add real-time functionality to your Django applications, such as live notifications, chat applications, and other features that require asynchronous communication.

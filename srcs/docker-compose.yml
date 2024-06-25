@@ -1,11 +1,9 @@
-version: '3.9'
-
 services:
 
   django:
     container_name: django
     build:
-      context: requirements/django
+      context: containers/django
       dockerfile: Dockerfile
     env_file: 
     - .env
@@ -16,16 +14,18 @@ services:
     ports:
       - "8000:8000"
     depends_on:
-      - "postgresSQL"
+      - "postgressql"
     volumes:
       - static:/static/
       #- media:/media/
 
     # restart: on-failure # always # Restart containers on system boot and in case of failures
 
-  postgresSQL:
-    container_name : postgresSQL
-    image: postgres:17beta1-bullseye
+  postgressql:
+    container_name : postgressql
+    build:
+      context: containers/postgressql
+      dockerfile: Dockerfile
     env_file:
       - .env
     networks:
@@ -39,7 +39,7 @@ services:
   nginx:
     container_name: nginx
     build:
-     context: requirements/nginx
+     context: containers/nginx
      dockerfile: Dockerfile
     env_file: 
       - .env 
@@ -56,28 +56,12 @@ services:
       #- media:/media/
       #- dist:/var/www/html
 
-    # frontend:
-  #   build:
-  #     context: requirements/frontend
-  #     dockerfile: Dockerfile
-  #   container_name: frontend
-  #   restart: always
-  #   volumes:
-  #     - dist:/app/dist
-  #     - ./frontend:/app
-
 networks:
   ts-network:
     driver: bridge
 
 volumes:
-  static:
-    # driver: local
-    # driver_opts:
-    #   type: 'none'
-    #   o: 'bind'
-    #   device: '../M_django-data'
-  #media:
+  django:
     # driver: local
     # driver_opts:
     #   type: 'none'
@@ -89,6 +73,6 @@ volumes:
     #   type: 'none'
     #   o: 'bind'
     #   device: '../M_database'
-  # dist:
+  static:
 
 

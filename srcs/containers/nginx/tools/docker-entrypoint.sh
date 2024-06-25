@@ -2,14 +2,14 @@
 
 # #Ensures the script exits immediately 
 # #if any command returns a non-zero status.
-set -e
+# set -e
 
 #Redirects Nginx logs to standard output and standard error. 
 #This is useful for Docker containers since it allows logs 
 #to be captured by the Docker logging system and viewed 
 #with 'docker logs'.
-ln -sf /dev/stdout /var/log/nginx/access.log && \
-ln -sf /dev/stderr /var/log/nginx/error.log
+# ln -sf /dev/stdout /var/log/nginx/access.log && \
+# ln -sf /dev/stderr /var/log/nginx/error.log
 
 # # Function to generate a self-signed SSL certificate if not already present
 # generate_ssl_cert() {
@@ -41,4 +41,4 @@ ln -sf /dev/stderr /var/log/nginx/error.log
 
 # # Execute nginx
 # #This is necessary to start the Nginx server and keep the container running
-exec nginx -g "daemon off;"
+# exec nginx -g "daemon off;"
