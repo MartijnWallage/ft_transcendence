@@ -1,0 +1,87 @@
+{% extends 'main/base.html' %}
+{% load static %}
+
+{% block title %}Pong Game{% endblock %}
+
+{% block content %}
+<style>
+    canvas {
+        display: block;
+        margin: auto;
+        background: #000;
+    }
+
+    body {
+        background: url("{% static 'images/pong.png' %}") no-repeat center center fixed;
+        background-size: cover;
+    }
+    .content {
+        background-color: rgba(255, 255, 255, 0.8);
+        padding: 20px;
+        border-radius: 10px;
+        margin-top: 50px;
+    }
+</style>
+
+<div id="gameModeSelection" style="text-align:center; margin-bottom:20px;">
+    {% if is_logged_in %}
+        <button type="button" class="btn btn-info" onclick="selectGameMode('user-vs-computer')">User vs Computer</button>
+        <button type="button" class="btn btn-warning" onclick="selectGameMode('user-vs-user')">User vs User</button>
+    {% else %}
+        <button type="button" class="btn btn-warning" onclick="selectGameMode('user-vs-computer')">Play Game</button>
+    {% endif %}
+</div>
+
+<div id="nameInputs" style="display:none;">
+    {% if is_logged_in %}
+        <p>Player 1: {{ user.username }}</p>
+    {% else %}
+        <p>Player 1: Guest</p>
+    {% endif %}
+    <input type="text" id="player2Name" class="name-input" placeholder="Player 2 Name">
+    <button type="button" class="btn btn-primary" onclick="startGameWithPlayer2()">Start Game</button>
+</div>
+
+<div id="gameButtons" style="display:none;">
+    <button type="button" class="btn btn-danger" onclick="endGame()">End Game</button>
+</div>
+
+<canvas id="pongCanvas" width="600" height="400" style="display:none;"></canvas>
+
+<script src="{% static 'pong.js' %}"></script>
+
+<script>
+    function selectGameMode(mode) {
+        if (mode === 'user-vs-user') {
+            document.getElementById('gameModeSelection').style.display = 'none';
+            document.getElementById('nameInputs').style.display = 'block';
+        } else {
+            document.getElementById('gameModeSelection').style.display = 'none';
+            startGame('Guest', 'Computer');
+        }
+    }
+
+    function startGameWithPlayer2() {
+        const player2Name = document.getElementById('player2Name').value;
+        if (player2Name.trim() === '') {
+            alert('Please enter a valid name for Player 2');
+        } else {
+            const player1Name = '{{ user.username|default:"Guest" }}';
+            startGame(player1Name, player2Name);
+        }
+    }
+
+    function startGame(player1Name, player2Name) {
+        document.getElementById('nameInputs').style.display = 'none';
+        document.getElementById('gameButtons').style.display = 'block';
+        document.getElementById('pongCanvas').style.display = 'block';
+        initializeGame(player1Name, player2Name);
+    }
+
+    function endGame() {
+        var redirecturi = "/";
+        window.location.href = redirecturi;
+    }
+</script>
+
+{% endblock %}
