@@ -9,14 +9,16 @@ COMPOSE = ./srcs/docker-compose.yml
 COMPOSE_CMD = docker compose -f ${COMPOSE} ${ENV_FILE}
 # -----------\ Directories \-------------------------------------------------- #
 
-DATABASE_DIR := M_database
-DJANGO_DIR := M_django-data
+#DATABASE_DIR := M_database
+#DJANGO_DIR := M_django-data
 
 # -----------\ Rules \-------------------------------------------------------- #
 
 all: $(NAME)
 
 $(NAME):	
+#	mkdir -p $(DATABASE_DIR)
+#	mkdir -p $(DJANGO_DIR)
 	@${COMPOSE_CMD} up
 	
 build:

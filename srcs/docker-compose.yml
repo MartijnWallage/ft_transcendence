@@ -10,13 +10,14 @@ services:
     networks:
       - ts-network
     expose:
-      - "8000"
+      - "8000" #only exposed internally
     ports:
       - "8000:8000"
     depends_on:
       - "postgressql"
     volumes:
-      - django:/django-files
+      - static:/static/
+      #- media:/media/
     # restart: on-failure # always # Restart containers on system boot and in case of failures
 
   postgressql:
@@ -45,11 +46,13 @@ services:
        - ts-network
     ports:
       - "8443:443"   # For HTTPS
+      - "8080:80"   # For HTTP redirection
     restart: on-failure #always
     depends_on:
       - django
     volumes:
-      - dist:/var/www/html/dist/
+      - static:/static/
+      #- media:/media/
 
 networks:
   ts-network:
@@ -57,10 +60,7 @@ networks:
 
 volumes:
   django:
-    driver: local
   database:
-    driver: local
-  dist:
-    driver: local
+  static:
 
 
