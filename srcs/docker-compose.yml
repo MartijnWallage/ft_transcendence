@@ -50,8 +50,8 @@ services:
     restart: on-failure #always
     depends_on:
       - django
-    volumes:
-      - static:/static/
+    # volumes:
+    #   - static:/static/
       #- media:/media/
 
 networks:
