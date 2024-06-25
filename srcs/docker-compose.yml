@@ -15,8 +15,6 @@ services:
       - "8000:8000"
     depends_on:
       - "postgressql"
-    volumes:
-      - static:/static/
       #- media:/media/
     # restart: on-failure # always # Restart containers on system boot and in case of failures
 
@@ -59,8 +57,6 @@ networks:
     driver: bridge
 
 volumes:
-  django:
   database:
-  static:
 
 
