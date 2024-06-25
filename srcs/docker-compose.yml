@@ -18,7 +18,6 @@ services:
     volumes:
       - static:/static/
       #- media:/media/
-
     # restart: on-failure # always # Restart containers on system boot and in case of failures
 
   postgressql:
@@ -54,7 +53,6 @@ services:
     volumes:
       - static:/static/
       #- media:/media/
-      #- dist:/var/www/html
 
 networks:
   ts-network:
@@ -62,17 +60,7 @@ networks:
 
 volumes:
   django:
-    # driver: local
-    # driver_opts:
-    #   type: 'none'
-    #   o: 'bind'
-    #   device: '../M_django-data'
   database:
-    # driver: local
-    # driver_opts:
-    #   type: 'none'
-    #   o: 'bind'
-    #   device: '../M_database'
   static:
 
 

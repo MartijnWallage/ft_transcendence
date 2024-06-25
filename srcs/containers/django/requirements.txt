@@ -1,6 +1,6 @@
 Django== 4.1 #Django framework
 psycopg2== 2.9.9 #PostgreSQL adapter for Python
-psycopg2-binary==2.9.6
+# psycopg2-binary==2.9.9
 gunicorn==21.2.0
 django_postgres_extensions== 0.9.3
 whitenoise # for serving static files
