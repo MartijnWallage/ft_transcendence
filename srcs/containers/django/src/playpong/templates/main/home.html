@@ -1,0 +1,33 @@
+{% extends 'main/base.html' %}
+{% load static %}
+
+{% block title %}Home Page{% endblock %}
+{% block content %}
+<style>
+    body {
+        background: url("{% static 'images/pong.png' %}") no-repeat center center fixed;
+        background-size: cover;
+    }
+    .content {
+        background-color: rgba(255, 255, 255, 0.8);
+        padding: 20px;
+        border-radius: 10px;
+        margin-top: 50px;
+    }
+</style>
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8 text-center content">
+            <h1 class="display-4">Welcome to the Pong Game!</h1>
+            <p class="lead">
+                {% if user.is_authenticated %}
+                    <a href="/pong" class="btn btn-primary btn-lg">Play Pong as {{ user.username }}</a>
+                {% else %}
+                    <a href="/pong" class="btn btn-primary btn-lg">Play Pong as Guest</a>
+                {% endif %}
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -21,7 +21,7 @@ RUN groupadd -g 1000 mygroup && useradd -u 1000 -g mygroup -m myuser
 RUN usermod -aG sudo myuser
 
 RUN mkdir -p $APP_HOME
-RUN mkdir $APP_HOME/staticfiles
+RUN mkdir $APP_HOME/static
 # Set the working directory in the container
 WORKDIR $APP_HOME
 
