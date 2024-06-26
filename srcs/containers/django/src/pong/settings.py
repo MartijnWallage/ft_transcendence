@@ -28,10 +28,13 @@ SECRET_KEY = os.environ.get("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
+#DEBUG = True
 
 #ALLOWED_HOSTS = ['*']  # For development, allow all hosts
-ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS").split(" ")
+ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS", "").split(" ")
+#ALLOWED_HOSTS = []
 
+print("ALLOWED_HOSTS:", ALLOWED_HOSTS)
 
 # Application definition
 
@@ -42,8 +45,15 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'playpong'
+    'playpong.apps.PlaypongConfig',
+    'crispy_bootstrap5',
+    'crispy_forms'
 ]
+
+
+CRISPY_ALLOWED_TEMPLATE_PACKS = 'bootstrap5'
+CRISPY_TEMPLATE_PACK = 'bootstrap5'
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -126,13 +136,24 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
+# STATIC_URL = '/static/'
+# STATIC_ROOT = '/static/'
 STATIC_URL = '/static/'
-STATIC_ROOT = '/static/'
+STATICFILES_DIRS = [BASE_DIR / "static"]
+# STATIC_ROOT = BASE_DIR / "staticfiles"
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+
+
+#STATICFILES_DIRS = [BASE_DIR / 'static']
 # STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
+# STATICFILES_DIRS = []
+#STATICFILES_DIRS = [BASE_DIR / 'static']
+
+
 
 # MEDIA_URL = '/media/'
 # MEDIA_ROOT = '/media/'
-
 
 # WhiteNoise configuration
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
@@ -143,3 +164,6 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+
+LOGIN_REDIRECT_URL = '/pong'
+LOGOUT_REDIRECT_URL = '/login'

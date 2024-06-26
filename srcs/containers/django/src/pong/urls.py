@@ -17,7 +17,13 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 
+# urlpatterns = [
+#     path('admin/', admin.site.urls),
+#     path('playpong/', include('playpong.urls'))
+# ]
+
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('playpong/', include('playpong.urls'))
+    path('', include('playpong.urls')),
+    path('', include('django.contrib.auth.urls'))
 ]
