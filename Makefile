@@ -7,20 +7,19 @@ NAME	:= transcendance
 ENV_FILE = --env-file srcs/.env
 COMPOSE = ./srcs/docker-compose.yml
 COMPOSE_CMD = docker compose -f ${COMPOSE} ${ENV_FILE}
-# -----------\ Directories \-------------------------------------------------- #
-
-#DATABASE_DIR := M_database
-#DJANGO_DIR := M_django-data
 
 # -----------\ Rules \-------------------------------------------------------- #
 
 all: $(NAME)
 
-$(NAME):	
-#	mkdir -p $(DATABASE_DIR)
-#	mkdir -p $(DJANGO_DIR)
+$(NAME):
 	@${COMPOSE_CMD} up
-	
+
+run:
+	@${COMPOSE_CMD} build
+	gnome-terminal -- bash -c 'sleep 4 && google-chrome --ignore-certificate-errors https://127.0.0.1:8443/playpong/hello/ && exit'
+	@${COMPOSE_CMD} up
+
 build:
 	@${COMPOSE_CMD} up --build
 
