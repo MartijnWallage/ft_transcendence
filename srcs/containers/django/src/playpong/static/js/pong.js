@@ -150,5 +150,97 @@ function gameLoop() {
 function initializeGame(player1Name, player2Name, mode) {
     gameMode = mode;
     console.log(`Starting game: ${player1Name} vs ${player2Name}`);
+    // Optionally, update frontend with player names or any initial setup
+    // Here, we directly start the game loop assuming initial state is fetched elsewhere
     gameLoop();
 }
+
+// function startRemoteGame(player1Name, player2Name, mode) {
+//     fetch('/api/game/start-remote/', {
+//         method: 'POST',
+//         headers: {
+//             'Content-Type': 'application/json'
+//         },
+//         body: JSON.stringify({ player1Name, player2Name })
+//     })
+//     .then(response => response.json())
+//     .then(data => {
+//         console.log('Remote game started', data);
+//         initializeGame(player1Name, player2Name, mode);
+//     })
+//     .catch(error => console.error('Error starting remote game:', error));
+// }
+
+// Assume 'token' is obtained from the server response
+localStorage.setItem('sessionToken', token.access);
+
+
+function joinRemoteGame(gameId, sessionToken) {
+    fetch('/api/game/join-remote/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+            'Authorization': `Bearer ${sessionToken}` // Example of using Authorization header with Bearer token
+        },
+        body: JSON.stringify({
+            gameId: gameId,
+            sessionToken: sessionToken
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Update game state on frontend
+            initializeGame(data.gameState.player1Name, data.gameState.player2Name, data.gameState.gameMode);
+            // Example: Display remote player name or handle other updates
+        } else {
+            alert(data.message); // Show error message if joining failed
+        }
+    })
+    .catch(error => console.error('Error joining remote game:', error));
+}
+
+
+function startGame() {
+    fetch('/api/game/start/', { method: 'POST' })
+        .then(response => response.json())
+        .then(data => {
+            console.log('Game started', data);
+            // Optionally, update frontend based on initial game state
+            // For example, update player names, scores, etc.
+            initializeGame(data.player1Name, data.player2Name, data.gameMode);
+        })
+        .catch(error => console.error('Error starting game:', error));
+}
+
+// function movePaddle(player, direction) {
+//     fetch(`/api/game/${player}/move/`, {
+//         method: 'POST',
+//         headers: { 'Content-Type': 'application/json' },
+//         body: JSON.stringify({ move_direction: direction })
+//     })
+//     .then(response => response.json())
+//     .then(data => {
+//         console.log(`Paddle for player ${player} moved`, data);
+//         // Optionally update frontend based on server response
+//         // For example, update paddle position or handle validation/errors
+//     })
+//     .catch(error => console.error(`Error moving paddle for player ${player}:`, error));
+// }
+
+// function getGameState() {
+//     fetch(`/api/game/1/state/`)
+//         .then(response => response.json())
+//         .then(data => {
+//             console.log('Game state', data);
+//             // Update frontend based on the received game state
+//             updateGameFromState(data);
+//         })
+//         .catch(error => console.error('Error fetching game state:', error));
+// }
+
+
+// function endGame() {
+//     var redirecturi = "/";
+//     window.location.href = redirecturi;
+// }

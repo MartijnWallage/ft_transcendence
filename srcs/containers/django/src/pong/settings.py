@@ -27,14 +27,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-#DEBUG = False
-DEBUG = True
+DEBUG = False
+#DEBUG = True
 
 #ALLOWED_HOSTS = ['*']  # For development, allow all hosts
 ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS", "").split(" ")
 #ALLOWED_HOSTS = []
 
-print("ALLOWED_HOSTS:", ALLOWED_HOSTS)
+#print("ALLOWED_HOSTS:", ALLOWED_HOSTS)
 
 # Application definition
 
@@ -47,7 +47,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'playpong.apps.PlaypongConfig',
     'crispy_bootstrap5',
-    'crispy_forms'
+    'crispy_forms',
+    'rest_framework'
 ]
 
 

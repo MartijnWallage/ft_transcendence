@@ -25,11 +25,14 @@
 
 <div id="gameModeSelection" style="text-align:center; margin-bottom:20px;">
     {% if is_logged_in %}
-        <button type="button" class="btn btn-info" onclick="selectGameMode('user-vs-computer')">User vs Computer</button>
+        <button type="button" class="btn btn-warning" onclick="selectGameMode('user-vs-computer')">User vs Computer</button>
         <button type="button" class="btn btn-warning" onclick="selectGameMode('user-vs-user')">User vs User</button>
+        <button type="button" class="btn btn-warning" onclick="selectGameMode('remoteuser-vs-remoteuser')">remoteuser vs remoteuser</button>
+
     {% else %}
         <button type="button" class="btn btn-warning" onclick="selectGameMode('user-vs-computer')">Play against computer</button>
         <button type="button" class="btn btn-warning" onclick="selectGameMode('user-vs-user')">Play against friend</button>
+        <button type="button" class="btn btn-warning" onclick="selectGameMode('remoteuser-vs-remoteuser')">Play against remote friend </button>
     {% endif %}
 </div>
 
@@ -50,15 +53,63 @@
 <canvas id="pongCanvas" width="600" height="400" style="display:none;"></canvas>
 
 <script>
+    // function selectGameMode(mode) {
+    //     if (mode === 'user-vs-user') {
+    //         document.getElementById('gameModeSelection').style.display = 'none';
+    //         document.getElementById('nameInputs').style.display = 'block';
+    //     } else if (mode === 'remoteuser-vs-remoteuser') {
+    //         // document.getElementById('gameModeSelection').style.display = 'none';
+    //         // Assuming you have gameId and sessionToken available to join a remote game
+    //         const gameId = prompt('Enter Game ID:');
+    //         const sessionToken = prompt('Enter Session Token:');
+    //         joinRemoteGame(gameId, sessionToken);
+    //         // startRemoteGame('Player 1', 'Player 2', mode); // Adjust player names as needed
+    //         // document.getElementById('nameInputs').style.display = 'block'; // Display name input for Player 1
+    //     } else {
+    //         document.getElementById('gameModeSelection').style.display = 'none';
+    //         startGame('Guest', 'Computer', 'user-vs-computer');
+    //     }
+    // }
+
     function selectGameMode(mode) {
         if (mode === 'user-vs-user') {
             document.getElementById('gameModeSelection').style.display = 'none';
             document.getElementById('nameInputs').style.display = 'block';
+        } else if (mode === 'remoteuser-vs-remoteuser') {
+            document.getElementById('gameModeSelection').style.display = 'none';
+
+            // Fetch gameId and sessionToken automatically
+            fetch('/api/game/start-remote/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ player1Name: 'Player 1', player2Name: 'Player 2' })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const gameId = data.gameId; // Assuming your API returns gameId and sessionToken
+                    const sessionToken = data.sessionToken;
+                    joinRemoteGame(gameId, sessionToken);
+                } else {
+                    alert('Failed to start remote game');
+                    document.getElementById('gameModeSelection').style.display = 'block'; // Show game mode selection again
+                }
+            })
+            .catch(error => {
+                console.error('Error starting remote game:', error);
+                document.getElementById('gameModeSelection').style.display = 'block'; // Show game mode selection again
+            });
+
+            // Optionally, you can show name input for Player 1 here
+            // document.getElementById('nameInputs').style.display = 'block';
         } else {
             document.getElementById('gameModeSelection').style.display = 'none';
             startGame('Guest', 'Computer', 'user-vs-computer');
         }
     }
+
 
     function startGameWithPlayer2() {
         const player2Name = document.getElementById('player2Name').value;
@@ -82,5 +133,6 @@
         window.location.href = redirecturi;
     }
 </script>
+
 <script src="{% static 'js/pong.js' %}"></script>
 {% endblock %}

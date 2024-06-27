@@ -19,7 +19,8 @@ echo "Database is ready!"
 
 # Always run collectstatic
 echo "Collecting static files..."
-sudo -E python3 manage.py collectstatic --noinput
+python3 manage.py collectstatic --noinput
+#sudo -E python3 manage.py collectstatic --noinput
 
 if [ "$DJANGO_INITIAL_SETUP" = "true" ]; then
 	python3 manage.py makemigrations
@@ -27,5 +28,5 @@ if [ "$DJANGO_INITIAL_SETUP" = "true" ]; then
 	python3 manage.py createsuperuser --noinput --username $DJANGO_SUPERUSER_USERNAME --email $DJANGO_SUPERUSER_EMAIL
 fi
 
-gunicorn pong.wsgi:application --bind 0.0.0.0:8000
-# python3 manage.py runserver 0.0.0.0:8000
+# Start Gunicorn server
+exec gunicorn pong.wsgi:application --bind 0.0.0.0:8000
