@@ -16,6 +16,9 @@ import django
 from django.utils.encoding import force_str
 django.utils.encoding.force_text = force_str
 
+# Set the DJANGO_SETTINGS_MODULE environment variable
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'pong.settings')
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -34,8 +37,6 @@ DEBUG = True
 ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS", "").split(" ")
 #ALLOWED_HOSTS = []
 
-print("ALLOWED_HOSTS:", ALLOWED_HOSTS)
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -45,9 +46,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'playpong.apps.PlaypongConfig',
     'crispy_bootstrap5',
-    'crispy_forms'
+    'crispy_forms',
+    'playpong',
+    'channels'
 ]
 
 
@@ -86,6 +88,17 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'pong.wsgi.application'
 ASGI_APPLICATION = 'pong.asgi.application'
+
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [('10.15.204.3', 8443)],
+        },
+    },
+}
+
+
 
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
@@ -175,3 +188,6 @@ CSRF_TRUSTED_ORIGINS = [
     'https://127.0.0.1:8443',
     'https://10.15.204.3:8443'
 ]
+
+
+

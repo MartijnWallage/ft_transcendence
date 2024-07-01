@@ -14,16 +14,28 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-from django.contrib import admin
-from django.urls import path, include
+# from django.contrib import admin
+# from django.urls import path, include
+# from playpong import routing
+
+# # urlpatterns = [
+# #     path('admin/', admin.site.urls),
+# #     path('playpong/', include('playpong.urls'))
+# # ]
 
 # urlpatterns = [
 #     path('admin/', admin.site.urls),
-#     path('playpong/', include('playpong.urls'))
+#     path('', include('playpong.urls')),
+#     path('', include('django.contrib.auth.urls'))
 # ]
+
+from django.contrib import admin
+from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('playpong.urls')),
-    path('', include('django.contrib.auth.urls'))
+    path('', include('playpong.urls')),  # Include URLs from playpong app
+    # Add more URL patterns as needed
 ]
+
+

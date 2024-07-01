@@ -6,7 +6,8 @@
 {% block content %}
 
 
-<script src="https://cdn.jsdelivr.net/npm/socket.io-client/dist/socket.io.js"></script>
+<!-- <script src="https://cdn.jsdelivr.net/npm/socket.io-client/dist/socket.io.js"></script> -->
+<script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
 <script src="{% static 'js/manager.js' %}"></script>
 <script src="{% static 'js/pong.js' %}"></script>
 <script src="{% static 'js/pongremote.js' %}"></script>
@@ -74,6 +75,33 @@
 <canvas id="pongCanvas" width="600" height="400" style="display:none;"></canvas>
 
 <script>
+    const loc = window.location;
+    const wsStart = loc.protocol === 'https:' ? 'wss://' : 'ws://';
+    const endpoint = wsStart + loc.host + '/ws/game/';
+
+    const chatSocket = new WebSocket(endpoint);
+
+    chatSocket.onmessage = function(e) {
+        const data = JSON.parse(e.data);
+        console.log(data.message);
+        // Update game state based on received message
+    };
+
+    chatSocket.onclose = function(e) {
+        console.error('Chat socket closed unexpectedly');
+    };
+
+    // Send data
+    function sendData(message) {
+        chatSocket.send(JSON.stringify({
+            'message': message
+        }));
+    }
+
+</script>
+
+
+<script>
     function selectGameMode(mode) {
         if (mode === 'user-vs-user') {
             document.getElementById('gameModeSelection').style.display = 'none';
@@ -124,6 +152,8 @@
     //         }
     //     };
     // }
+
+
 
     function startGameremote() {
         document.getElementById("waitingMessage").style.display = "block";

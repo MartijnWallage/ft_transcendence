@@ -7,8 +7,8 @@ const socketIO = require('socket.io');
 const app = express();
 
 // Load SSL certificate and key
-const privateKey = fs.readFileSync('/path/to/private.key', 'utf8');
-const certificate = fs.readFileSync('/path/to/server.crt', 'utf8');
+const privateKey = fs.readFileSync('/home/hongbaki/Desktop/private.key', 'utf8');
+const certificate = fs.readFileSync('/home/hongbaki/Desktop/server.crt', 'utf8');
 const credentials = { key: privateKey, cert: certificate };
 
 // Create an HTTPS server
@@ -19,7 +19,6 @@ const io = socketIO(httpsServer, {
     cors: {
         origin: "https://10.15.204.3:8443", // Replace with your actual frontend URL
         methods: ["GET", "POST"],
-        // transports: ['websocket', 'polling'],
         credentials: true
     },
     allowEIO3: true
