@@ -4,6 +4,16 @@
 {% block title %}Pong Game{% endblock %}
 
 {% block content %}
+
+
+<script src="https://cdn.jsdelivr.net/npm/socket.io-client/dist/socket.io.js"></script>
+<script src="{% static 'js/manager.js' %}"></script>
+<script src="{% static 'js/pong.js' %}"></script>
+<script src="{% static 'js/pongremote.js' %}"></script>
+
+
+
+
 <style>
     canvas {
         display: block;
@@ -27,9 +37,13 @@
     {% if is_logged_in %}
         <button type="button" class="btn btn-info" onclick="selectGameMode('user-vs-computer')">User vs Computer</button>
         <button type="button" class="btn btn-warning" onclick="selectGameMode('user-vs-user')">User vs User</button>
+        <button type="button" class="btn btn-warning" onclick="selectGameMode('remoteuser-vs-remoteuser')">remoteuser vs remoteuser</button>
+
     {% else %}
         <button type="button" class="btn btn-warning" onclick="selectGameMode('user-vs-computer')">Play against computer</button>
         <button type="button" class="btn btn-warning" onclick="selectGameMode('user-vs-user')">Play against friend</button>
+        <button type="button" class="btn btn-warning" onclick="selectGameMode('remoteuser-vs-remoteuser')">remoteuser vs remoteuser</button>
+
     {% endif %}
 </div>
 
@@ -43,6 +57,16 @@
     <button type="button" class="btn btn-primary" onclick="startGameWithPlayer2()">Start Game</button>
 </div>
 
+<div id="nameInputs_remote" style="display:none;">
+    {% if is_logged_in %}
+    <p>Player 1: {{ user.username }}</p>
+    {% else %}
+    <p>Player 1: Guest</p>
+    {% endif %}
+    <button type="button" class="btn btn-primary" onclick="startGameremote()">Start Game</button>
+    <p id="waitingMessage" style="display:none;">Waiting for Player 2...</p>
+</div>
+
 <div id="gameButtons" style="display:none;">
     <button type="button" class="btn btn-danger" onclick="endGame()">End Game</button>
 </div>
@@ -54,7 +78,12 @@
         if (mode === 'user-vs-user') {
             document.getElementById('gameModeSelection').style.display = 'none';
             document.getElementById('nameInputs').style.display = 'block';
-        } else {
+        } 
+        else if (mode === 'remoteuser-vs-remoteuser'){  
+            document.getElementById('gameModeSelection').style.display = 'none';
+            document.getElementById('nameInputs_remote').style.display = 'block';
+        }
+        else {
             document.getElementById('gameModeSelection').style.display = 'none';
             startGame('Guest', 'Computer', 'user-vs-computer');
         }
@@ -70,17 +99,82 @@
         }
     }
 
-    function startGame(player1Name, player2Name, mode) {
+    // function startGameremote() {
+    //     const player2Name = document.getElementById('player2Name').value;
+    //     if (player2Name.trim() === '') {
+    //         alert('Please enter a valid name for Player 2');
+    //     } else {
+    //         const player1Name = '{{ user.username|default:"Guest" }}';
+    //         startGame(player1Name, player2Name, 'remoteuser-vs-remoteuser');
+    //     }
+    // }
+
+    // function startGameremote() {
+    //     document.getElementById("waitingMessage").style.display = "block";
+    //     const player1Name = '{{ user.username|default:"Guest" }}';
+    //     ws = new WebSocket("ws://your_local_ip:your_port");
+    //     ws.onopen = function() {
+    //         ws.send(JSON.stringify({ type: "join", player: player1Name }));
+    //     };
+    //     ws.onmessage = function(event) {
+    //         const message = JSON.parse(event.data);
+    //         if (message.type === "start") {
+    //             document.getElementById("waitingMessage").style.display = "none";
+    //             startGameremote(player1Name, message.player2Name, 'remoteuser-vs-remoteuser');
+    //         }
+    //     };
+    // }
+
+    function startGameremote() {
+        document.getElementById("waitingMessage").style.display = "block";
+        const player1Name = '{{ user.username|default:"Guest" }}';
+
+        // Connect to Socket.IO server
+        const socket = io('https://10.15.204.3:8443');  // Replace with your actual domain
+
+        socket.on('connect', () => {
+            socket.emit('join', player1Name);  // Send join message to the server
+        });
+
+        socket.on('start', (message) => {
+            document.getElementById("waitingMessage").style.display = "none";
+            startGame(player1Name, message.player2Name, 'remoteuser-vs-remoteuser');
+        });
+
+        socket.on('disconnect', () => {
+            console.log('Disconnected from server');
+        });
+    }
+
+
+
+    function startGame(player1Name, player2Name, mode, websocket) {
         document.getElementById('nameInputs').style.display = 'none';
+        document.getElementById('nameInputs_remote').style.display = 'none';
         document.getElementById('gameButtons').style.display = 'block';
         document.getElementById('pongCanvas').style.display = 'block';
-        initializeGame(player1Name, player2Name, mode);
+        if (mode === 'remoteuser-vs-remoteuser') {
+            initializeGameremote(player1Name, player2Name, mode, websocket);
+        } else {
+            initializeGame(player1Name, player2Name, mode);
+        }
     }
+
+    // function startGameremote(player1Name, player2Name, mode) {
+    //     document.getElementById('nameInputs').style.display = 'none';
+    //     document.getElementById('nameInputs_remote').style.display = 'none';
+    //     document.getElementById('gameButtons').style.display = 'block';
+    //     document.getElementById('pongCanvas').style.display = 'block';
+    //     initializeGameremote(player1Name, player2Name, mode, ws);
+    // }
 
     function endGame() {
         var redirecturi = "/";
         window.location.href = redirecturi;
     }
 </script>
-<script src="{% static 'js/pong.js' %}"></script>
+
+
+<!-- <script src="{% static 'js/Node.js' %}"></script> -->
+
 {% endblock %}

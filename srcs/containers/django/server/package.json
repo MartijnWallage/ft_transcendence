@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "socket.io": "^4.7.5",
+    "ws": "^8.17.1"
+  }
+}
