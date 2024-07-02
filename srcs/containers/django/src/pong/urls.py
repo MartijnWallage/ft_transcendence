@@ -16,7 +16,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from . import views
+# from . import views
 from . import routing
 
 # urlpatterns = [
@@ -27,7 +27,7 @@ from . import routing
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('playpong.urls')),
-    path('', views.index, name='index'),
+    # path('', views.index, name='index'),
     path('', include('django.contrib.auth.urls'))
 ]
 

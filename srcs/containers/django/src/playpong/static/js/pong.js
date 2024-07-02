@@ -156,11 +156,13 @@ function initializeGame(player1Name, player2Name, mode) {
 
 
 // Replace 'localhost:8000' with your actual Django Channels server address and port
-const socket = new WebSocket('ws://10.15.109.3:8443/ws/monitor/');
+const socket = new WebSocket('wss://10.15.109.3:8443/ws/monitor/');
 
 // Event handler when the WebSocket connection is opened
 socket.onopen = function(event) {
     console.log('WebSocket connection opened');
+    // Now you can send initial messages if needed
+    socket.send(JSON.stringify({ type: 'hello' }));
 };
 
 // Event handler when a message is received from the WebSocket server
@@ -179,12 +181,21 @@ socket.onclose = function(event) {
     console.log('WebSocket connection closed');
 };
 
-// Example of sending a message to the WebSocket server
-const messageToSend = {
-    action: 'player_connected',
-    player_name: 'Player 2'
-};
+// Example of sending a message after the connection is open
+function sendMessage(message) {
+    if (socket.readyState === WebSocket.OPEN) {
+        socket.send(JSON.stringify(message));
+    } else {
+        console.error('WebSocket is not open to send messages.');
+    }
+}
 
-socket.send(JSON.stringify(messageToSend));
+// Example of sending a message to the WebSocket server
+// const messageToSend = {
+//     action: 'player_connected',
+//     player_name: 'Player 2'
+// };
+
+// socket.send(JSON.stringify(messageToSend));
 
 
