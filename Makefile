@@ -43,5 +43,7 @@ fclean: clean
 
 re: fclean all
 
+rere: rm_volume fclean all
+
 .PHONY: all build down re clean fclean
 

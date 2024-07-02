@@ -5,13 +5,14 @@ gunicorn==21.2.0
 django_postgres_extensions== 0.9.3
 whitenoise # for serving static files
 crispy-bootstrap5 # To integrate Bootstrap 5 with Django forms
+requests # making HTTP requests
+daphne==4.0.0 #This allows you to use WebSockets, long-lived HTTP connections, and other asynchronous protocols in Django.
+channels==4.0.0 #Django Channels allows you to add real-time functionality to your Django applications, such as live notifications, chat applications, and other features that require asynchronous communication.
+
+
+
 # djangorestframework-filters
 # django-utils-six
 # six
-
-
 # djangorestframework==3.14.0 # Django REST framework 
 # djangorestframework-simplejwt # which provides JSON Web Token (JWT) authentication support for Django REST framework.
-requests # making HTTP requests
-# daphne==4.0.0 #This allows you to use WebSockets, long-lived HTTP connections, and other asynchronous protocols in Django.
-# channels==4.0.0 #Django Channels allows you to add real-time functionality to your Django applications, such as live notifications, chat applications, and other features that require asynchronous communication.
