@@ -67,9 +67,8 @@
         } else if (mode === 'remote') {
             document.getElementById('gameModeSelection').style.display = 'none';
             document.getElementById('remotePlay').style.display = 'block';
-            // Simulate waiting for another player to join
-            // For demonstration purposes, you might implement this with a timer or socket.io for real-time updates
-            simulateWaitingForPlayer();
+            initializeWebSocket(); // Initialize WebSocket connection here
+            // waitForSecondPlayer(); // Start waiting for the second player;
         }
     }
 
@@ -117,10 +116,8 @@
         if (remoteUrl.trim() === '') {
             alert('Please enter a valid remote game URL');
         } else {
-            // You can implement logic to connect to the remote URL here
-            alert(`Starting remote game with URL: ${remoteUrl}`);
-            // Example: window.open(remoteUrl, '_blank'); // Opens in a new tab
             remoteGameUrl = remoteUrl; // Store remote URL for future use if needed
+            startGame('Guest', 'Remote Player', 'remote');
         }
     }
 

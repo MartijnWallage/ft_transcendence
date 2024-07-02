@@ -8,6 +8,7 @@ crispy-bootstrap5 # To integrate Bootstrap 5 with Django forms
 requests # making HTTP requests
 daphne==4.0.0 #This allows you to use WebSockets, long-lived HTTP connections, and other asynchronous protocols in Django.
 channels==4.0.0 #Django Channels allows you to add real-time functionality to your Django applications, such as live notifications, chat applications, and other features that require asynchronous communication.
+channels-redis==4.2.0
 
 
 

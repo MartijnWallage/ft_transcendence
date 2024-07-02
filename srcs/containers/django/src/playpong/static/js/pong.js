@@ -1,3 +1,89 @@
+let websocket;
+let isHost = false; // Flag to determine if this client is the host
+
+function initializeWebSocket() {
+    websocket = new WebSocket('wss://10.15.109.3:8443/ws/monitor/');
+
+    websocket.onopen = function(event) {
+        console.log('WebSocket connection opened');
+        websocket.send(JSON.stringify({ type: 'hello' }));
+    };
+
+    websocket.onmessage = function(event) {
+        const data = JSON.parse(event.data);
+        console.log('Message from server:', data);
+
+        if (data.type === 'status' && data.message === 'Remote play initiated!') {
+            isHost = true; // Assume the initiator is the host
+        }
+
+        if (data.type === 'game_state') {
+            updateGameState(data.payload);
+        }
+
+        if (data.type === 'player_connected' && !isHost) {
+            document.getElementById('remotePlay').innerHTML = `
+                <p>Another player has joined!</p>
+                <input type="text" id="remoteUrlInput" placeholder="Remote Game URL">
+                <button type="button" class="btn btn-primary" onclick="startRemoteGame()">Start Remote Game</button>
+            `;
+        }
+    };
+
+    websocket.onclose = function(event) {
+        console.log('WebSocket connection closed');
+    };
+}
+
+
+function sendGameState() {
+    if (websocket.readyState === WebSocket.OPEN && isHost) {
+        const gameState = {
+            player1: player1,
+            player2: player2,
+            ball: ball,
+            player1Score: player1Score,
+            player2Score: player2Score
+        };
+        websocket.send(JSON.stringify({ type: 'game_state', payload: gameState }));
+    }
+}
+
+function updateGameState(state) {
+    player1 = state.player1;
+    player2 = state.player2;
+    ball = state.ball;
+    player1Score = state.player1Score;
+    player2Score = state.player2Score;
+}
+
+
+function initiateRemotePlay() {
+    const message = {
+        action: 'initiate_remote_play',
+    };
+    if (websocket.readyState === WebSocket.OPEN) {
+        websocket.send(JSON.stringify(message));
+        console.log('Initiated remote play');
+    } else {
+        console.error('WebSocket is not open to send messages.');
+    }
+}
+
+
+document.addEventListener('DOMContentLoaded', function() {
+    const remotePlayButton = document.getElementById('remotePlay');
+    if (remotePlayButton) {
+        remotePlayButton.addEventListener('click', initiateRemotePlay);
+    } else {
+        console.error('Remote play button not found in the DOM.');
+    }
+});
+
+
+
+
+
 const canvas = document.getElementById("pongCanvas");
 const ctx = canvas.getContext("2d");
 
@@ -144,6 +230,10 @@ function gameLoop() {
     updateBall();
     updateScore();
 
+    if (isHost) {
+        sendGameState(); // Send game state only if this client is the host
+    }
+
     requestAnimationFrame(gameLoop);
 }
 
@@ -156,82 +246,82 @@ function initializeGame(player1Name, player2Name, mode) {
 
 
 
-const socket = new WebSocket('wss://10.15.109.3:8443/ws/monitor/');
+// const socket = new WebSocket('wss://10.15.109.3:8443/ws/monitor/');
 
-// Event handler when the WebSocket connection is opened
-socket.onopen = function(event) {
-    console.log('WebSocket connection opened');
-    // Now you can send initial messages if needed
-    socket.send(JSON.stringify({ type: 'hello' }));
-};
+// // Event handler when the WebSocket connection is opened
+// socket.onopen = function(event) {
+//     console.log('WebSocket connection opened');
+//     // Now you can send initial messages if needed
+//     socket.send(JSON.stringify({ type: 'hello' }));
+// };
 
-// Event handler when a message is received from the WebSocket server
-socket.onmessage = function(event) {
-    const data = JSON.parse(event.data);
-    console.log('Message from server:', data);
+// // Event handler when a message is received from the WebSocket server
+// socket.onmessage = function(event) {
+//     const data = JSON.parse(event.data);
+//     console.log('Message from server:', data);
     
-    // Example: Display the message on the webpage
-    const messageElement = document.createElement('p');
-    messageElement.textContent = data.message;
-    document.body.appendChild(messageElement);
-};
+//     // Example: Display the message on the webpage
+//     const messageElement = document.createElement('p');
+//     messageElement.textContent = data.message;
+//     document.body.appendChild(messageElement);
+// };
 
-// Event handler when the WebSocket connection is closed
-socket.onclose = function(event) {
-    console.log('WebSocket connection closed');
-};
+// // Event handler when the WebSocket connection is closed
+// socket.onclose = function(event) {
+//     console.log('WebSocket connection closed');
+// };
 
-// Example of sending a message after the connection is open
-function sendMessage(message) {
-    if (socket.readyState === WebSocket.OPEN) {
-        socket.send(JSON.stringify(message));
-    } else {
-        console.error('WebSocket is not open to send messages.');
-    }
-}
+// // Example of sending a message after the connection is open
+// function sendMessage(message) {
+//     if (socket.readyState === WebSocket.OPEN) {
+//         socket.send(JSON.stringify(message));
+//     } else {
+//         console.error('WebSocket is not open to send messages.');
+//     }
+// }
 
-document.addEventListener('DOMContentLoaded', function() {
-    // Your JavaScript code here
-    const remotePlay = document.getElementById('remotePlay');
-    if (remotePlay) {
-        remotePlay.addEventListener('click', initiateRemotePlay);
-    } else {
-        console.error('Remote play button not found in the DOM.');
-    }
+// document.addEventListener('DOMContentLoaded', function() {
+//     // Your JavaScript code here
+//     const remotePlay = document.getElementById('remotePlay');
+//     if (remotePlay) {
+//         remotePlay.addEventListener('click', initiateRemotePlay);
+//     } else {
+//         console.error('Remote play button not found in the DOM.');
+//     }
 
-    function initiateRemotePlay() {
-        const message = {
-            action: 'initiate_remote_play',
-        };
-        websocket.send(JSON.stringify(message));
-        console.log('Initiated remote play');
-    }
-});
+//     function initiateRemotePlay() {
+//         const message = {
+//             action: 'initiate_remote_play',
+//         };
+//         websocket.send(JSON.stringify(message));
+//         console.log('Initiated remote play');
+//     }
+// });
 
 
 // Assuming remotePlay is defined somewhere accessible in your code
 // const remotePlay = document.getElementById('remotePlay');
 
 // Function to initiate remote play
-function initiateRemotePlay() {
-    // Assuming 'websocket' is your WebSocket connection object
+// function initiateRemotePlay() {
+//     // Assuming 'websocket' is your WebSocket connection object
 
-    // Construct the message payload
-    const message = {
-        action: 'initiate_remote_play',
-        // You can include additional data if needed
-        // Example: player_id: playerId,
-    };
+//     // Construct the message payload
+//     const message = {
+//         action: 'initiate_remote_play',
+//         // You can include additional data if needed
+//         // Example: player_id: playerId,
+//     };
 
-    // Send the message as JSON string
-    websocket.send(JSON.stringify(message));
+//     // Send the message as JSON string
+//     websocket.send(JSON.stringify(message));
 
-    // Optionally, you can handle success or notify the user
-    console.log('Initiated remote play');
-}
+//     // Optionally, you can handle success or notify the user
+//     console.log('Initiated remote play');
+// }
 
-// Example usage: Assuming 'remotePlay' is your button triggering remote play
-remotePlay.addEventListener('click', initiateRemotePlay);
+// // Example usage: Assuming 'remotePlay' is your button triggering remote play
+// remotePlay.addEventListener('click', initiateRemotePlay);
 
 
 // Example of sending a message to the WebSocket server

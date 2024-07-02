@@ -1,41 +1,34 @@
-# pong/consumers.py
+
 
 import json
 from channels.generic.websocket import AsyncWebsocketConsumer
 
-class GameConsumer(AsyncWebsocketConsumer):
+class PongConsumer(AsyncWebsocketConsumer):
+    connected_players = []
+
     async def connect(self):
+        self.connected_players.append(self)
         await self.accept()
-        # Check client's IP address
-        # client_ip = self.scope['client'][0]
-        
-        # if client_ip.startswith('10.15.') and client_ip.endswith('.3'):
-        #     await self.send(text_data=json.dumps({
-        #         'message': 'Second player connected from IP 10.15.*.3'
-        #     }))
-        # # Log connection or handle initial connection setup here
+        if len(self.connected_players) > 1:
+            for player in self.connected_players:
+                await player.send(text_data=json.dumps({
+                    'type': 'player_connected'
+                }))
 
     async def disconnect(self, close_code):
-        # Handle disconnection
-        pass
+        self.connected_players.remove(self)
 
     async def receive(self, text_data):
-        try:
-            data = json.loads(text_data)
-            action = data.get('action')
-            if action == 'initiate_remote_play':
-                # Logic to initiate remote play
-                # Example: Notify other players, start game, etc.
-                await self.send(text_data=json.dumps({
-                    'type': 'status',
-                    'message': 'Remote play initiated!'
-                }))
-            else:
-                # Handle other actions or unexpected messages
-                pass
-        except json.JSONDecodeError as e:
-            print(f"JSON decode error: {e}")
-        except KeyError as e:
-            print(f"KeyError: {e}")
-
-        # Handle any other processing here
+        data = json.loads(text_data)
+        if data['type'] == 'hello':
+            await self.send(text_data=json.dumps({
+                'type': 'status',
+                'message': 'Remote play initiated!'
+            }))
+        elif data['type'] == 'game_state':
+            for player in self.connected_players:
+                if player != self:
+                    await player.send(text_data=json.dumps({
+                        'type': 'game_state',
+                        'payload': data['payload']
+                    }))

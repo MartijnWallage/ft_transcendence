@@ -53,6 +53,14 @@ INSTALLED_APPS = [
     'crispy_forms'
 ]
 
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("10.15.109.3", 8443)],
+        },
+    },
+}
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = 'bootstrap5'
 CRISPY_TEMPLATE_PACK = 'bootstrap5'
