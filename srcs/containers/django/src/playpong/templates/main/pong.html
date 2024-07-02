@@ -45,9 +45,8 @@
 </div>
 
 <div id="remotePlay" style="display:none;">
-    <p>Enter remote game URL:</p>
-    <input type="text" id="remoteUrlInput" placeholder="Remote Game URL">
-    <button type="button" class="btn btn-primary" onclick="startRemoteGame()">Start Remote Game</button>
+    <p>Waiting for another player to join...</p>
+    <button type="button" class="btn btn-danger" onclick="cancelRemotePlay()">Cancel</button>
 </div>
 
 <div id="gameButtons" style="display:none;">
@@ -65,8 +64,11 @@
             document.getElementById('gameModeSelection').style.display = 'none';
             startGame('Guest', 'Computer', 'user-vs-computer');
         } else if (mode === 'remote') {
-        document.getElementById('gameModeSelection').style.display = 'none';
-        document.getElementById('remotePlay').style.display = 'block';
+            document.getElementById('gameModeSelection').style.display = 'none';
+            document.getElementById('remotePlay').style.display = 'block';
+            // Simulate waiting for another player to join
+            // For demonstration purposes, you might implement this with a timer or socket.io for real-time updates
+            simulateWaitingForPlayer();
         }
     }
 
@@ -87,12 +89,37 @@
         initializeGame(player1Name, player2Name, mode);
     }
 
+    
+
+
+    function simulateWaitingForPlayer() {
+        // Simulate waiting for another player to join
+        setTimeout(() => {
+            // For demo purposes, consider how you'd handle the second player joining
+            // Here, we'll just assume the second player joins after a delay
+            document.getElementById('remotePlay').innerHTML = `
+                <p>Another player has joined!</p>
+                <input type="text" id="remoteUrlInput" placeholder="Remote Game URL">
+                <button type="button" class="btn btn-primary" onclick="startRemoteGame()">Start Remote Game</button>
+            `;
+        }, 60000); // Simulate 60 seconds delay, adjust as needed
+    }
+    
+    function cancelRemotePlay() {
+        // Handle canceling remote play
+        document.getElementById('remotePlay').style.display = 'none';
+        document.getElementById('gameModeSelection').style.display = 'block';
+    }
+
     function startRemoteGame() {
-        const remoteUrl = prompt('Enter the URL for remote game:');
-        if (remoteUrl) {
+        const remoteUrl = document.getElementById('remoteUrlInput').value;
+        if (remoteUrl.trim() === '') {
+            alert('Please enter a valid remote game URL');
+        } else {
             // You can implement logic to connect to the remote URL here
             alert(`Starting remote game with URL: ${remoteUrl}`);
             // Example: window.open(remoteUrl, '_blank'); // Opens in a new tab
+            remoteGameUrl = remoteUrl; // Store remote URL for future use if needed
         }
     }
 
