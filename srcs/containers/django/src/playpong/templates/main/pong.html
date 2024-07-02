@@ -31,6 +31,7 @@
         <button type="button" class="btn btn-warning" onclick="selectGameMode('user-vs-computer')">Play against computer</button>
         <button type="button" class="btn btn-warning" onclick="selectGameMode('user-vs-user')">Play against friend</button>
     {% endif %}
+    <button type="button" class="btn btn-success" onclick="selectGameMode('remote')">Remote Play</button>
 </div>
 
 <div id="nameInputs" style="display:none;">
@@ -41,6 +42,12 @@
     {% endif %}
     <input type="text" id="player2Name" class="name-input" placeholder="Player 2 Name">
     <button type="button" class="btn btn-primary" onclick="startGameWithPlayer2()">Start Game</button>
+</div>
+
+<div id="remotePlay" style="display:none;">
+    <p>Enter remote game URL:</p>
+    <input type="text" id="remoteUrlInput" placeholder="Remote Game URL">
+    <button type="button" class="btn btn-primary" onclick="startRemoteGame()">Start Remote Game</button>
 </div>
 
 <div id="gameButtons" style="display:none;">
@@ -54,9 +61,12 @@
         if (mode === 'user-vs-user') {
             document.getElementById('gameModeSelection').style.display = 'none';
             document.getElementById('nameInputs').style.display = 'block';
-        } else {
+        } else if (mode === 'user-vs-computer') {
             document.getElementById('gameModeSelection').style.display = 'none';
             startGame('Guest', 'Computer', 'user-vs-computer');
+        } else if (mode === 'remote') {
+        document.getElementById('gameModeSelection').style.display = 'none';
+        document.getElementById('remotePlay').style.display = 'block';
         }
     }
 
@@ -75,6 +85,15 @@
         document.getElementById('gameButtons').style.display = 'block';
         document.getElementById('pongCanvas').style.display = 'block';
         initializeGame(player1Name, player2Name, mode);
+    }
+
+    function startRemoteGame() {
+        const remoteUrl = prompt('Enter the URL for remote game:');
+        if (remoteUrl) {
+            // You can implement logic to connect to the remote URL here
+            alert(`Starting remote game with URL: ${remoteUrl}`);
+            // Example: window.open(remoteUrl, '_blank'); // Opens in a new tab
+        }
     }
 
     function endGame() {
