@@ -152,3 +152,39 @@ function initializeGame(player1Name, player2Name, mode) {
     console.log(`Starting game: ${player1Name} vs ${player2Name}`);
     gameLoop();
 }
+
+
+
+// Replace 'localhost:8000' with your actual Django Channels server address and port
+const socket = new WebSocket('ws://10.15.109.3:8443/ws/monitor/');
+
+// Event handler when the WebSocket connection is opened
+socket.onopen = function(event) {
+    console.log('WebSocket connection opened');
+};
+
+// Event handler when a message is received from the WebSocket server
+socket.onmessage = function(event) {
+    const data = JSON.parse(event.data);
+    console.log('Message from server:', data);
+    
+    // Example: Display the message on the webpage
+    const messageElement = document.createElement('p');
+    messageElement.textContent = data.message;
+    document.body.appendChild(messageElement);
+};
+
+// Event handler when the WebSocket connection is closed
+socket.onclose = function(event) {
+    console.log('WebSocket connection closed');
+};
+
+// Example of sending a message to the WebSocket server
+const messageToSend = {
+    action: 'player_connected',
+    player_name: 'Player 2'
+};
+
+socket.send(JSON.stringify(messageToSend));
+
+
