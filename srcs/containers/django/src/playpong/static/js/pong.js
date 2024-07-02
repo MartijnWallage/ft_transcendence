@@ -1,5 +1,6 @@
 let websocket;
 let isHost = false; // Flag to determine if this client is the host
+let reconnectTimeout = null; // Timeout variable for reconnecting
 
 function initializeWebSocket() {
     websocket = new WebSocket('wss://10.15.109.3:8443/ws/monitor/');
@@ -7,6 +8,11 @@ function initializeWebSocket() {
     websocket.onopen = function(event) {
         console.log('WebSocket connection opened');
         websocket.send(JSON.stringify({ type: 'hello' }));
+        // Clear any existing reconnect timeout once connection is established
+        clearReconnectTimeout();
+
+        // Start waiting for the second player to join
+        waitForSecondPlayer();
     };
 
     websocket.onmessage = function(event) {
@@ -24,17 +30,83 @@ function initializeWebSocket() {
         if (data.type === 'player_connected' && !isHost) {
             document.getElementById('remotePlay').innerHTML = `
                 <p>Another player has joined!</p>
-                <input type="text" id="remoteUrlInput" placeholder="Remote Game URL">
                 <button type="button" class="btn btn-primary" onclick="startRemoteGame()">Start Remote Game</button>
             `;
         }
+        
+        if (data.type === 'player_disconnected' && !isHost) {
+            alert('The other player has disconnected.');
+            // Handle disconnection logic, e.g., show a message or return to game mode selection
+        }
+
+        if (data.type === 'players_ready') {
+            console.log('Both players are ready to start the game.');
+            // Handle game start or other logic when both players are ready
+        }
+
+        // Handle other message types as needed
     };
 
     websocket.onclose = function(event) {
         console.log('WebSocket connection closed');
+        // Set a timeout to attempt reconnecting after 15 seconds
+        setReconnectTimeout();
     };
 }
 
+function setReconnectTimeout() {
+    // Clear any existing timeout before setting a new one
+    clearReconnectTimeout();
+    reconnectTimeout = setTimeout(() => {
+        console.log('Attempting to reconnect...');
+        initializeWebSocket(); // Attempt to reconnect
+    }, 5000); // 5 seconds timeout
+}
+
+function clearReconnectTimeout() {
+    if (reconnectTimeout) {
+        clearTimeout(reconnectTimeout);
+        reconnectTimeout = null;
+    }
+}
+
+function initiateRemotePlay() {
+    const message = {
+        action: 'initiate_remote_play',
+    };
+    if (websocket.readyState === WebSocket.OPEN) {
+        websocket.send(JSON.stringify(message));
+        console.log('Initiated remote play');
+    } else {
+        console.error('WebSocket is not open to send messages.');
+    }
+}
+
+function waitForSecondPlayer() {
+    setTimeout(() => {
+        if (!isHost && websocket.readyState === WebSocket.OPEN) {
+            websocket.close();
+            console.log('No second player joined in time. Closing WebSocket.');
+        }
+    }, 10000); // 10 seconds wait time
+}
+
+function startRemoteGame() {
+
+    const remoteUrl = document.getElementById('remoteUrlInput').value;
+    if (remoteUrl.trim() === '') {
+        alert('Please enter a valid remote game URL');
+    } else {
+        remoteGameUrl = remoteUrl; // Store remote URL for future use if needed
+        startGame('Guest', 'Remote Player', 'remote');
+    }
+}
+
+function cancelRemotePlay() {
+    // Handle canceling remote play
+    document.getElementById('remotePlay').style.display = 'none';
+    document.getElementById('gameModeSelection').style.display = 'block';
+}
 
 function sendGameState() {
     if (websocket.readyState === WebSocket.OPEN && isHost) {
@@ -58,17 +130,7 @@ function updateGameState(state) {
 }
 
 
-function initiateRemotePlay() {
-    const message = {
-        action: 'initiate_remote_play',
-    };
-    if (websocket.readyState === WebSocket.OPEN) {
-        websocket.send(JSON.stringify(message));
-        console.log('Initiated remote play');
-    } else {
-        console.error('WebSocket is not open to send messages.');
-    }
-}
+
 
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -78,6 +140,8 @@ document.addEventListener('DOMContentLoaded', function() {
     } else {
         console.error('Remote play button not found in the DOM.');
     }
+
+    initializeWebSocket();
 });
 
 

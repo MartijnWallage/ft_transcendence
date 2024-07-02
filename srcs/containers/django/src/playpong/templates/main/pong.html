@@ -68,7 +68,6 @@
             document.getElementById('gameModeSelection').style.display = 'none';
             document.getElementById('remotePlay').style.display = 'block';
             initializeWebSocket(); // Initialize WebSocket connection here
-            // waitForSecondPlayer(); // Start waiting for the second player;
         }
     }
 
@@ -90,37 +89,6 @@
     }
 
     
-
-
-    function simulateWaitingForPlayer() {
-        // Simulate waiting for another player to join
-        setTimeout(() => {
-            // For demo purposes, consider how you'd handle the second player joining
-            // Here, we'll just assume the second player joins after a delay
-            document.getElementById('remotePlay').innerHTML = `
-                <p>Another player has joined!</p>
-                <input type="text" id="remoteUrlInput" placeholder="Remote Game URL">
-                <button type="button" class="btn btn-primary" onclick="startRemoteGame()">Start Remote Game</button>
-            `;
-        }, 10000); // Simulate 10 seconds delay, adjust as needed
-    }
-    
-    function cancelRemotePlay() {
-        // Handle canceling remote play
-        document.getElementById('remotePlay').style.display = 'none';
-        document.getElementById('gameModeSelection').style.display = 'block';
-    }
-
-    function startRemoteGame() {
-        const remoteUrl = document.getElementById('remoteUrlInput').value;
-        if (remoteUrl.trim() === '') {
-            alert('Please enter a valid remote game URL');
-        } else {
-            remoteGameUrl = remoteUrl; // Store remote URL for future use if needed
-            startGame('Guest', 'Remote Player', 'remote');
-        }
-    }
-
     function endGame() {
         var redirecturi = "/";
         window.location.href = redirecturi;
