@@ -155,7 +155,7 @@ function initializeGame(player1Name, player2Name, mode) {
 
 
 
-// Replace 'localhost:8000' with your actual Django Channels server address and port
+
 const socket = new WebSocket('wss://10.15.109.3:8443/ws/monitor/');
 
 // Event handler when the WebSocket connection is opened
@@ -189,6 +189,50 @@ function sendMessage(message) {
         console.error('WebSocket is not open to send messages.');
     }
 }
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Your JavaScript code here
+    const remotePlay = document.getElementById('remotePlay');
+    if (remotePlay) {
+        remotePlay.addEventListener('click', initiateRemotePlay);
+    } else {
+        console.error('Remote play button not found in the DOM.');
+    }
+
+    function initiateRemotePlay() {
+        const message = {
+            action: 'initiate_remote_play',
+        };
+        websocket.send(JSON.stringify(message));
+        console.log('Initiated remote play');
+    }
+});
+
+
+// Assuming remotePlay is defined somewhere accessible in your code
+// const remotePlay = document.getElementById('remotePlay');
+
+// Function to initiate remote play
+function initiateRemotePlay() {
+    // Assuming 'websocket' is your WebSocket connection object
+
+    // Construct the message payload
+    const message = {
+        action: 'initiate_remote_play',
+        // You can include additional data if needed
+        // Example: player_id: playerId,
+    };
+
+    // Send the message as JSON string
+    websocket.send(JSON.stringify(message));
+
+    // Optionally, you can handle success or notify the user
+    console.log('Initiated remote play');
+}
+
+// Example usage: Assuming 'remotePlay' is your button triggering remote play
+remotePlay.addEventListener('click', initiateRemotePlay);
+
 
 // Example of sending a message to the WebSocket server
 // const messageToSend = {
