@@ -1,9 +1,17 @@
 {% load static %}
 {% block content %}
 <div>
-    <h1>Welcome to the Home Page</h1>
-    <p>Content for the home page goes here.</p>
-    <a class="nav-link" href="#" onclick="loadPage('pong')">Home</a></li>
-            
+    <p>welcome to</p>
+    <h1>Transcendence.</h1>
+
+    <div class="container px-4 text-center">
+        <div class="row gx-5 justify-content-center">
+            <div class="col gx-5 text-end">
+              <button type="button" class="btn btn-outline-light" onclick="loadPage('login')">Login</button>
+            </div>
+            <div class="col gx-5 text-start">
+                <button type="button" class="btn btn-outline-light" onclick="loadPage('game_mode')">Guest</button>
+            </div>
+      </div>
 </div>
 {% endblock %}

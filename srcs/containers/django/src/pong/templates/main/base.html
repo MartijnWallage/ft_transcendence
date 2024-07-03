@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 	<head>
@@ -25,19 +26,42 @@
 	</head>
 
 	<style>
+		.background {
+			position: fixed;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+			z-index: -1; /* Place behind other content */
+			/* Adjust background properties */
+			/* background-image: url('path/to/your/background-image.jpg'); */
+			background-color: #33ff55;
+			background-size: cover; /* Adjust to cover the entire screen */
+			background-position: center;
+		}
 		#main-content {
 			background-color: #ff5733;
+			text-align: center;
+		}
+		h1 {
+			font-family: 'MyCustomFont', sans-serif;
+			color: aliceblue;
+		}
+		@font-face {
+			font-family: 'MyCustomFont';
+			src: url("{% static 'fonts/YapariTrial-ExtraBold.ttf' %}") format('Yapari');
+			/* Add additional font styles (font-weight, font-style) as needed */
+			font-weight: normal;
+			font-style: normal;
 		}
 	</style>
 
 	<body>
-		<div>
-			<p>i'm the main content div</p>
-			<a href="#" onclick="loadPage('end_game')">end_game</a></li>
+		<div class="background">
+			<p>i'm in the base content background div</p>
 		</div>
-		<div id="main-content" class="container-fuild"></div>
-
-			<!--  Script to load htlm content in the base page using AJAX -->
+		<div id="main-content" class="container mx-auto m-5 p-2"></div>
+		<!--  Script to load htlm content in the base page using AJAX -->
 		<script>
 			function loadPage(page) {
 				$.ajax({

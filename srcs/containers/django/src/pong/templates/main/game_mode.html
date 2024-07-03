@@ -1,0 +1,26 @@
+{% block content %}
+<div>
+    <div class="col gx-5 text-end">
+        <button type="button" class="btn btn-outline-light" onclick="loadPage('login')">Leader board</button>
+      </div>
+    <p>welcome to</p>
+    <h1>Transcendence.</h1>
+    <div class="container px-4 text-center">
+        <div class="row gx-5 justify-content-center">
+            <div class="col gx-5">
+              <button type="button" class="btn btn-outline-light" onclick="loadPage('play_against'); selectGameMode('user-vs-computer')">Solo</button>
+            </div>
+            <div class="col gx-5">
+                <button type="button" class="btn btn-outline-light" onclick="loadPage('play_against'); selectGameMode('user-vs-user')">1 VS 1 - local</button>
+            </div>
+      </div>
+      <div class="row gx-5 justify-content-center">
+        <div class="col gx-5">
+          <button type="button" class="btn btn-outline-light" onclick="loadPage('tournament')">Tournament</button>
+        </div>
+        <div class="col gx-5">
+            <button type="button" class="btn btn-outline-light" onclick="loadPage('play_against'); selectGameMode('user-vs-user')">1 VS 1 - Online</button>
+        </div>
+  </div>
+</div>
+{% endblock %}

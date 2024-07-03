@@ -1,6 +1,19 @@
 {% block content %}
 <div>
-    <h1>TEMP</h1>
-    <p>Content for the home page goes here.</p>
+    <h1>Transcendence</h1>
+
+    <div class="container px-4 text-center">
+        <div class="row gx-5">
+            <div class="col"></div>
+                Player 1 Guest
+            </div>
+            <div class="col"></div>
+                <input type="text" id="player2Name" class="name-input" placeholder="Player 2 Name">
+            </div>
+        </div>
+    </div>
+    <div class="d-grid gap-2 col-6 mx-auto">
+        <button type="button" class="btn btn-outline-light" onclick="loadPage('pong'); startGameWithPlayer2()">Continue</button>
+    </div>
 </div>
 {% endblock %}
