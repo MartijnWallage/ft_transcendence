@@ -1,56 +1,22 @@
 const canvas = document.getElementById("pongCanvas");
 const ctx = canvas.getContext("2d");
-let gameRunning = true;
 
 // Paddle properties
-const  paddleWidth = 14;
-const  paddleHeight = 80;
-const  paddleSpeed = 6;
-
-const player1 = {
-                x: 10,
-                y: canvas.height / 2 - paddleHeight / 2, 
-                width: paddleWidth, 
-                height: paddleHeight,
-                dy: 0 
-};
-
-const player2 = {
-                x: canvas.width - paddleWidth - 10,
-                y: canvas.height / 2 - paddleHeight / 2,
-                width: paddleWidth,
-                height: paddleHeight,
-                dy: 0 
-};
+const paddleWidth = 14, paddleHeight = 80, paddleSpeed = 6;
+const player1 = { x: 10, y: canvas.height / 2 - paddleHeight / 2, width: paddleWidth, height: paddleHeight, dy: 0 };
+const player2 = { x: canvas.width - paddleWidth - 10, y: canvas.height / 2 - paddleHeight / 2, width: paddleWidth, height: paddleHeight, dy: 0 };
 
 // Ball properties
 const ballSize = 14;
-
-const ball = {
-            x: canvas.width / 2,
-            y: canvas.height / 2,
-            width: ballSize,
-            height: ballSize,
-            dx: -7,
-            dy: 6
-};
+const ball = { x: canvas.width / 2, y: canvas.height / 2, width: ballSize, height: ballSize, dx: -7, dy: 6 };
 
 // Score
-let player1Score = 0;
-let player2Score = 0;
-
-let scoreToWin = 3;
+let player1Score = 0, player2Score = 0;
 
 // Key controls
 let keys = {};
-
-document.addEventListener("keydown", (event) => { 
-    keys[event.key] = true; 
-});
-
-document.addEventListener("keyup", (event) => {
-    keys[event.key] = false; 
-});
+document.addEventListener("keydown", (event) => { keys[event.key] = true; });
+document.addEventListener("keyup", (event) => { keys[event.key] = false; });
 
 // Game mode
 let gameMode = '';
@@ -79,13 +45,8 @@ function drawNet() {
 function displayScore() {
     ctx.font = "20px Arial";
     ctx.fillStyle = "white";
-    if (gameMode === 'user-vs-user' || gameMode === 'user-vs-computer') {
-        ctx.fillText("Player 1 Score: " + player1Score, 20, 30);
-        ctx.fillText("Player 2 Score: " + player2Score, canvas.width - 180, 30);
-    } else {
-        ctx.fillText( `${players[matchOrder[currentGameIndex - 1][0]]} Score: ` + player1Score, 20, 30);
-        ctx.fillText( `${players[matchOrder[currentGameIndex - 1][1]]} Score: ` + player2Score, canvas.width - 180, 30);
-    }
+    ctx.fillText("Player 1 Score: " + player1Score, 20, 30);
+    ctx.fillText("Player 2 Score: " + player2Score, canvas.width - 180, 30);
 }
 
 // Update functions
@@ -122,34 +83,14 @@ function updateScore() {
         resetBall();
     }
 
-    if (player1Score == scoreToWin || player2Score == scoreToWin) {
-        if (gameMode === 'user-vs-user' || gameMode === 'user-vs-computer') {
-            if (player1Score == scoreToWin) {
-                alert('Player 1 wins!');
-            }
-            else {
-                alert('Player 2 wins!');
-            }
-            gameRunning = false;
+    if (player1Score == 10 || player2Score == 10) {
+        if (player1Score == 10) {
+            alert("Player 1 wins!");
+        } else {
+            alert("Player 2 wins!");
         }
-        else if (gameMode === 'tournament') {
-            if (player1Score == scoreToWin) {
-                alert(`${players[matchOrder[currentGameIndex - 1][0]]} wins!`);
-            }
-            else {
-                alert(`${players[matchOrder[currentGameIndex - 1][1]]} wins!`);
-            }
-            player1Score = 0;
-            player2Score = 0;
-            if (player1Score == scoreToWin) {
-                scoreBoard[matchOrder[currentGameIndex - 1][0]] += 1;
-                console.log('number of victory player ' + matchOrder[currentGameIndex - 1][0] + ' :' + scoreBoard[matchOrder[currentGameIndex - 1][0]]);
-            } else {
-                scoreBoard[matchOrder[currentGameIndex - 1][1]] += 1;
-                console.log('number of victory player ' + matchOrder[currentGameIndex - 1][1] + ' :' + scoreBoard[matchOrder[currentGameIndex - 1][1]]);
-            }
-            nextGame();
-        }
+        player1Score = 0;
+        player2Score = 0;
     }
 }
 
@@ -160,7 +101,6 @@ function resetBall() {
     ball.dy = ball.dx / 2;
 }
 
-
 // Control paddles
 function movePaddles() {
     // Player 1 controls
@@ -169,12 +109,17 @@ function movePaddles() {
     else player1.dy = 0;
 
     // Player 2 controls
-    if (gameMode === 'user-vs-user' || gameMode === 'tournament') {
+    if (gameMode === 'user-vs-user') {
         if (keys["ArrowUp"]) player2.dy = -paddleSpeed;
         else if (keys["ArrowDown"]) player2.dy = paddleSpeed;
         else player2.dy = 0;
     } else if (gameMode === 'user-vs-computer') {
-        aiOppeonent();
+        // Simple AI for computer
+        if (player2.y + player2.height / 2 < ball.y) {
+            player2.dy = paddleSpeed;
+        } else {
+            player2.dy = -paddleSpeed;
+        }
     }
 
     updatePaddle(player1);
@@ -184,7 +129,6 @@ function movePaddles() {
 // Main loop
 
 function gameLoop() {
-    if (!gameRunning) return;
     // Clear the canvas
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -203,9 +147,41 @@ function gameLoop() {
     requestAnimationFrame(gameLoop);
 }
 
-
 function initializeGame(player1Name, player2Name, mode) {
     gameMode = mode;
     console.log(`Starting game: ${player1Name} vs ${player2Name}`);
     gameLoop();
+}
+
+function selectGameMode(mode) {
+    if (mode === 'user-vs-user') {
+        // document.getElementById('gameModeSelection').style.display = 'none';
+        document.getElementById('pongCanvas').style.display = 'block';
+    } else {
+        // document.getElementById('gameModeSelection').style.display = 'none';
+        startGame('Guest', 'Computer', 'user-vs-computer');
+    }
+}
+
+function startGameWithPlayer2() {
+    console.log('Starting game with Player 2');
+    const player2Name = document.getElementById('player2Name').value;
+    if (player2Name.trim() === '') {
+        alert('Please enter a valid name for Player 2');
+    } else {
+        const player1Name = '{{ user.username|default:"Guest" }}';
+        startGame(player1Name, player2Name, 'user-vs-user');
+    }
+}
+
+function startGame(player1Name, player2Name, mode) {
+    // document.getElementById('nameInputs').style.display = 'none';
+    // document.getElementById('gameButtons').style.display = 'block';
+    // document.getElementById('pongCanvas').style.display = 'block';
+    initializeGame(player1Name, player2Name, mode);
+}
+
+function endGame() {
+    var redirecturi = "/";
+    window.location.href = redirecturi;
 }
