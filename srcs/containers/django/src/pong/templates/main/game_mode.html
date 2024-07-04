@@ -9,11 +9,11 @@
       <div class="row gx-5">
         <div class="col gx-5">
           <button type="button" class="btn btn-outline-light btn-lg w-100"
-                  onclick="selectGameMode('user-vs-computer'); loadPage('play_against')">Solo</button>
+                  onclick="startGame('Guest', 'Computer', 'user-vs-computer'); loadPage('pong')">Solo</button>
         </div>
         <div class="col gx-5">
           <button type="button" class="btn btn-outline-light btn-lg w-100"
-                  onclick="selectGameMode('user-vs-user'); loadPage('play_against')">1 VS 1 - local</button>
+                  onclick="loadPage('play_against')">1 VS 1 - local</button>
         </div>
       </div>
       <div class="row gx-5">
@@ -23,7 +23,7 @@
         </div>
         <div class="col gx-5">
             <button type="button" class="btn btn-outline-light btn-lg w-100"
-                    onclick="selectGameMode('user-vs-user'); loadPage('play_against')">1 VS 1 - Online</button>
+                    onclick="loadPage('play_against')">1 VS 1 - Online</button>
         </div>
     </div>
 </div>

@@ -81,11 +81,12 @@ function nextGame() {
     console.log('Next match:', player1, 'vs', player2);
     
     document.getElementById('announcement').innerText = `Next match: ${player1} vs ${player2}`;
-    setTimeout(() => startGame(player1, player2, 'tournament'), 1000);
+    setTimeout(() => startGame(player1, player2, 'tournament'), 500);
 }
 
 function endTournament() {
     alert("Tournament Ended!");
+    gameRunning = false;
 
     
     // Step 1: Combine the player names and their victories into an array of objects
