@@ -90,23 +90,35 @@
 		<div id="main-content" class="container mx-auto m-5 p-5"></div>
 		<canvas id="pongCanvas" width="600" height="400"></canvas>
 		<!--  Script to load htlm content in the base page using AJAX -->
+
 		<script>
 			function loadPage(page) {
-				$.ajax({
-					url: '/api/' + page + '/',
-					method: 'GET',
-					success: function(data) {
-						$('#main-content').html(data.content);
-					},
-					error: function() {
-						alert('An error occurred while loading the page.');
-					}
+				fetch('/api/' + page + '/')
+				.then(response => response.json())
+				.then(data => {
+					document.getElementById('main-content').innerHTML = data.content;
+					history.pushState({page: page}, "", "#" + page);
+				})
+				.catch(error => {
+					console.error('Error loading page:', error);
 				});
 			}
-			$(document).ready(function() {
-			loadPage('home');
-		});
+
+			window.onpopstate = function(event) {
+				if (event.state) {
+					loadPage(event.state.page);
+				} else {
+					loadPage('home'); // Default page
+				}
+			};
+
+			// Example of loading the home page on document ready
+			document.addEventListener('DOMContentLoaded', function() {
+				const page = location.hash.replace('#', '') || 'home';
+				loadPage(page);
+			});
+	</script>
 		</script>
-		<script src="{% static 'js/pong.js' %}"></script>
+		<script src="{% static 'js/pong.js' %}" defer></script>
 	</body>
 </html>
