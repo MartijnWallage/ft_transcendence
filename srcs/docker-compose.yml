@@ -10,15 +10,14 @@ services:
     networks:
       - ts-network
     expose:
-      #- "8000" #only exposed internally
-      - "8443" #only exposed internally
-
+      - "8000" #only exposed internally
+      - "8443" 
     # ports:
-    #   - "8000:8000"
+    #   - "8444:8443"
     depends_on:
       - "postgressql"
-      #- media:/media/
-    restart: on-failure # always # Restart containers on system boot and in case of failures
+      - "redis"
+    restart: always 
 
   postgressql:
     container_name : postgressql
@@ -31,7 +30,7 @@ services:
      - ts-network
     expose:
       - "5432"
-    restart: on-failure #always
+    restart: always
     volumes:
       - database:/var/lib/postgresql/data/
 
@@ -47,12 +46,20 @@ services:
     ports:
       - "8443:443"   # For HTTPS
       # - "8080:80"   # For HTTP redirection
-    restart: on-failure #always
+    restart: always
     depends_on:
       - django
-    # volumes:
-    #   - static:/static/
-      #- media:/media/
+
+  redis:
+    build:
+      context: containers/redis 
+      dockerfile: Dockerfile
+    ports:
+      - "6380:6379"
+    networks:
+      - ts-network
+    environment:
+      - REDIS_BIND=0.0.0.0
 
 networks:
   ts-network:

@@ -16,8 +16,10 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+# from . import routing
+
 # from . import views
-from . import routing
+
 
 # urlpatterns = [
 #     path('admin/', admin.site.urls),
@@ -31,5 +33,5 @@ urlpatterns = [
     path('', include('django.contrib.auth.urls'))
 ]
 
-websocket_urlpatterns = routing.websocket_urlpatterns
+# websocket_urlpatterns = routing.websocket_urlpatterns
 

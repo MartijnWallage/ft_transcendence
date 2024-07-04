@@ -30,11 +30,11 @@ echo "Collecting static files..."
 sudo -E python3 manage.py collectstatic --noinput
 
 if [ "$DJANGO_INITIAL_SETUP" = "true" ]; then
-	python3 manage.py makemigrations
+	#python3 manage.py makemigrations
 	python3 manage.py migrate
-	python3 manage.py createsuperuser --noinput --username $DJANGO_SUPERUSER_USERNAME --email $DJANGO_SUPERUSER_EMAIL
+	#python3 manage.py createsuperuser --noinput --username $DJANGO_SUPERUSER_USERNAME --email $DJANGO_SUPERUSER_EMAIL
 fi
 
 #gunicorn pong.wsgi:application --bind 0.0.0.0:8000
 # python3 manage.py runserver 0.0.0.0:8000
-exec daphne -b 0.0.0.0 -e ssl:8443:privateKey=/tmp/daphne/ssl/daphne.key:certKey=/tmp/daphne/ssl/daphne.crt pong.asgi:application
+exec daphne -b 0.0.0.0 -e ssl:8443:privateKey=/tmp/daphne/ssl/daphne.key:certKey=/tmp/daphne/ssl/daphne.crt mywebsite.asgi:application

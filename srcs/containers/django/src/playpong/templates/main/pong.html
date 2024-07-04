@@ -67,7 +67,7 @@
         } else if (mode === 'remote') {
             document.getElementById('gameModeSelection').style.display = 'none';
             document.getElementById('remotePlay').style.display = 'block';
-            initializeWebSocket(); // Initialize WebSocket connection here
+            // initializeWebSocket(); // Initialize WebSocket connection here
         }
     }
 
@@ -94,5 +94,36 @@
         window.location.href = redirecturi;
     }
 </script>
-<script src="{% static 'js/pong.js' %}"></script>
+
+
+<form id="form">
+    <input type="text" name="message"/>
+</form>
+
+<script type="text/javascript">
+    
+    // const chatSocket = new WebSocket('ws://127.0.0.1:8000/ws/socket-server/')
+    
+
+
+    let chatSocket = new WebSocket('wss://10.15.109.3:8443/ws/socket-server/');
+
+    chatSocket.onmessage = function(e){
+        let data = JSON.parse(e.data);
+        console.log('Data:', data);
+    }
+
+    let form = document.getElementById('form');
+    form.addEventListener('submit', (e)=> {
+        e.preventDefault();
+        let message = e.target.message.value;
+        chatSocket.send(JSON.stringify({
+            'message':message
+        }));
+        form.reset();
+    });
+
+</script>
+
+<!-- <script src="{% static 'js/pong.js' %}"></script> -->
 {% endblock %}

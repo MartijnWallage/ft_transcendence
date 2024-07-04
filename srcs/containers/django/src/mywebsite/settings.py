@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 
 from pathlib import Path
 import os
+import json
 import django
 from django.utils.encoding import force_str
 django.utils.encoding.force_text = force_str
@@ -34,7 +35,7 @@ DEBUG = True
 ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS", "").split(" ")
 #ALLOWED_HOSTS = []
 
-print("ALLOWED_HOSTS:", ALLOWED_HOSTS)
+# print("ALLOWED_HOSTS:", ALLOWED_HOSTS)
 
 # Application definition
 
@@ -47,20 +48,21 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'pong',
-    'playpong.apps.PlaypongConfig',
+    'playpong',
     'crispy_bootstrap5',
     'crispy_forms'
 ]
 
 CHANNEL_LAYERS = {
-    "default": {
-        "BACKEND": "channels_redis.core.RedisChannelLayer",
-        "CONFIG": {
-            "hosts": [("10.15.109.3", 8443)],
+    'default': {
+        'BACKEND': os.getenv('CHANNEL_LAYERS_BACKEND', 'channels_redis.core.RedisChannelLayer'),
+        'CONFIG': {
+            "hosts": json.loads(os.getenv('CHANNEL_LAYERS_CONFIG_HOSTS', '[["redis", 6379]]')),
         },
     },
 }
+
+        # 'BACKEND':'channels.layers.InMemoryChannelLayer'
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = 'bootstrap5'
 CRISPY_TEMPLATE_PACK = 'bootstrap5'
@@ -77,7 +79,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'pong.urls'
+ROOT_URLCONF = 'mywebsite.urls'
 
 TEMPLATES = [
     {
@@ -95,9 +97,9 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'pong.wsgi.application'
+WSGI_APPLICATION = 'mywebsite.wsgi.application'
 # Add Channels ASGI routing
-ASGI_APPLICATION = 'pong.asgi.application'
+ASGI_APPLICATION = 'mywebsite.asgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases

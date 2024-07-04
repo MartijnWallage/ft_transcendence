@@ -11,22 +11,25 @@ from .forms import RegisterForm
 from django.contrib.auth import login, logout, authenticate
 
 def play_pong(request):
-    context = {
-        'is_logged_in': request.user.is_authenticated
-    }
-    return render(request, 'main/pong.html', context)
+    return render(request, 'main/pong.html')
 
-def home(request):
-    return render(request, "main/home.html")
+# def play_pong(request):
+#     context = {
+#         'is_logged_in': request.user.is_authenticated
+#     }
+#     return render(request, 'main/pong.html', context)
 
-def sign_up(request):
-    if request.method == 'POST':
-        form = RegisterForm(request.POST)
-        if form.is_valid():
-            user = form.save()
-            login(request, user)
-            return redirect('/pong')
-    else:
-        form = RegisterForm()
+# def home(request):
+#     return render(request, "main/home.html")
+
+# def sign_up(request):
+#     if request.method == 'POST':
+#         form = RegisterForm(request.POST)
+#         if form.is_valid():
+#             user = form.save()
+#             login(request, user)
+#             return redirect('/pong')
+#     else:
+#         form = RegisterForm()
     
-    return render(request, 'registration/sign_up.html', {"form": form})
+#     return render(request, 'registration/sign_up.html', {"form": form})
