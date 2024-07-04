@@ -152,3 +152,4 @@ function initializeGame(player1Name, player2Name, mode) {
     console.log(`Starting game: ${player1Name} vs ${player2Name}`);
     gameLoop();
 }
+

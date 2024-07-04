@@ -1,16 +1,14 @@
 {% load static %}
 {% block content %}
 <div>
-    <p>welcome to</p>
-    <h1>Transcendence.</h1>
-
-    <div class="container px-4 text-center">
+    <h1 class="my-4">Transcendence.</h1>
+    <div class="container my-5 px-4">
         <div class="row gx-5 justify-content-center">
-            <div class="col gx-5 text-end">
-              <button type="button" class="btn btn-outline-light" onclick="loadPage('login')">Login</button>
+            <div class="col d-flex justify-content-end">
+              <button type="button" class="btn btn-outline-light btn-lg" onclick="loadPage('login')">Login</button>
             </div>
-            <div class="col gx-5 text-start">
-                <button type="button" class="btn btn-outline-light" onclick="loadPage('game_mode')">Guest</button>
+            <div class="col d-flex justify-content-start">
+                <button type="button" class="btn btn-outline-light btn-lg" onclick="loadPage('game_mode')">Guest</button>
             </div>
       </div>
 </div>

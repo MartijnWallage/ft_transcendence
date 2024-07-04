@@ -34,8 +34,8 @@
 			height: 100%;
 			z-index: -1; /* Place behind other content */
 			/* Adjust background properties */
-			/* background-image: url('path/to/your/background-image.jpg'); */
-			background-color: #33ff55;
+			background-image: url("{% static 'images/getty.jpg' %}");
+			/* background-color: #33ff55; */
 			background-size: cover; /* Adjust to cover the entire screen */
 			background-position: center;
 		}
@@ -43,24 +43,52 @@
 			background-color: #ff5733;
 			text-align: center;
 		}
+		body {
+			font-family: 'BaiJamjuree', sans-serif;
+		}
+		h2, h3, h4, h5, h6 {
+			font-family: 'BaiJamjuree', sans-serif;
+			font-weight: bold;
+		}
+		p {
+			font-family: 'BaiJamjuree', sans-serif;
+			font-weight: normal;
+		}
 		h1 {
-			font-family: 'MyCustomFont', sans-serif;
+			font-family: 'Yapari', sans-serif;
 			color: aliceblue;
 		}
 		@font-face {
-			font-family: 'MyCustomFont';
-			src: url("{% static 'fonts/YapariTrial-ExtraBold.ttf' %}") format('Yapari');
+			font-family: 'Yapari';
+			src: url("{% static 'fonts/YapariTrial-ExtraBold.ttf' %}") format('truetype');
 			/* Add additional font styles (font-weight, font-style) as needed */
 			font-weight: normal;
+			font-style: normal;
+		}
+		@font-face {
+			font-family: 'BaiJamjuree';
+			src: url("{% static 'fonts/BaiJamjuree-Regular.ttf' %}") format('truetype');
+			font-weight: normal;
+			font-style: normal;
+		}
+		@font-face {
+			font-family: 'BaiJamjuree';
+			src: url("{% static 'fonts/BaiJamjuree-Bold.ttf' %}") format('truetype');
+			font-weight: bold;
+			font-style: normal;
+		}
+		@font-face {
+			font-family: 'BaiJamjuree';
+			src: url("{% static 'fonts/BaiJamjuree-SemiBold.ttf' %}") format('truetype');
+			font-weight: 600;
 			font-style: normal;
 		}
 	</style>
 
 	<body>
-		<div class="background">
-			<p>i'm in the base content background div</p>
-		</div>
-		<div id="main-content" class="container mx-auto m-5 p-2"></div>
+		<div class="background"></div>
+		<div id="main-content" class="container mx-auto m-5 p-5"></div>
+		<canvas id="pongCanvas" width="600" height="400"></canvas>
 		<!--  Script to load htlm content in the base page using AJAX -->
 		<script>
 			function loadPage(page) {
@@ -79,5 +107,6 @@
 			loadPage('home');
 		});
 		</script>
+		<script src="{% static 'js/pong.js' %}"></script>
 	</body>
 </html>
