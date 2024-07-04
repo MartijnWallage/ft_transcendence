@@ -35,6 +35,6 @@ if [ "$DJANGO_INITIAL_SETUP" = "true" ]; then
 	#python3 manage.py createsuperuser --noinput --username $DJANGO_SUPERUSER_USERNAME --email $DJANGO_SUPERUSER_EMAIL
 fi
 
-#gunicorn pong.wsgi:application --bind 0.0.0.0:8000
-# python3 manage.py runserver 0.0.0.0:8000
+# Daphne is a WebSocket server
+# used with Django Channels to handle WebSocket connections in Django applications.
 exec daphne -b 0.0.0.0 -e ssl:8443:privateKey=/tmp/daphne/ssl/daphne.key:certKey=/tmp/daphne/ssl/daphne.crt mywebsite.asgi:application

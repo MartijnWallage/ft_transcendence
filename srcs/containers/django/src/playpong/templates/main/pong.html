@@ -26,7 +26,7 @@
     .chat-container {
         position: absolute;
         right: 20px;
-        top: 20px;
+        top: 60px;
         width: 300px;
         max-height: 400px;
         overflow-y: auto;
@@ -52,13 +52,10 @@
 
 <div id="gameModeSelection" style="text-align:center; margin-bottom:20px;">
     {% if is_logged_in %}
-        <button type="button" class="btn btn-info" onclick="selectGameMode('user-vs-computer')">User vs Computer</button>
-        <button type="button" class="btn btn-warning" onclick="selectGameMode('user-vs-user')">User vs User</button>
+        <button type="button" class="btn btn-success" onclick="selectGameMode('remote')">Remote Play</button>
     {% else %}
-        <button type="button" class="btn btn-warning" onclick="selectGameMode('user-vs-computer')">Play against computer</button>
-        <button type="button" class="btn btn-warning" onclick="selectGameMode('user-vs-user')">Play against friend</button>
+        <button type="button" class="btn btn-success" onclick="selectGameMode('remote')">Remote Play</button>
     {% endif %}
-    <button type="button" class="btn btn-success" onclick="selectGameMode('remote')">Remote Play</button>
 </div>
 
 <div id="nameInputs" style="display:none;">
@@ -83,8 +80,12 @@
 <canvas id="pongCanvas" width="600" height="400" style="display:none;"></canvas>
 
 <!-- Chat Room -->
+<!-- main container for the entire chat room -->
 <div id="chatContainer" class="chat-container">
+    <!-- Inside chatContainer, there is another div with ID chatMessages and class chat-messages. 
+        This div will hold all the chat messages exchanged between users. -->
     <div id="chatMessages" class="chat-messages"></div>
+    <!-- This div with class chat-input contains the input field and the send button for users to send messages. -->
     <div class="chat-input">
         <input type="text" id="chatMessageInput" placeholder="Type a message...">
         <button onclick="sendMessage()">Send</button>
@@ -93,13 +94,7 @@
 
 <script>
     function selectGameMode(mode) {
-        if (mode === 'user-vs-user') {
-            document.getElementById('gameModeSelection').style.display = 'none';
-            document.getElementById('nameInputs').style.display = 'block';
-        } else if (mode === 'user-vs-computer') {
-            document.getElementById('gameModeSelection').style.display = 'none';
-            startGame('Guest', 'Computer', 'user-vs-computer');
-        } else if (mode === 'remote') {
+        if (mode === 'remote') {
             document.getElementById('gameModeSelection').style.display = 'none';
             document.getElementById('remotePlay').style.display = 'block';
             document.getElementById('chatContainer').style.display = 'block'; // Show chat room
@@ -130,149 +125,46 @@
     }
 
     function initializeWebSocket() {
-        let chatSocket = new WebSocket('wss://10.15.109.3:8443/ws/socket-server/');
+        // WebSocket allows for efficient, bidirectional communication, 
+        // making it suitable for applications like chat rooms, live updates, and multiplayer games
 
+        let chatSocket = new WebSocket('wss://10.15.109.3:8443/ws/chatsocket/');
+
+        // When a message is received from the chatSocket server
+        // the onmessage event handler is triggered.
+        // The event object e contains the message data.
         chatSocket.onmessage = function(e){
+            // This data is parsed from JSON format 
+            // into a JavaScript object and logged to the console(debug)
             let data = JSON.parse(e.data);
             console.log('Data:', data);
+            
+            // A container for chat messages
             let chatMessages = document.getElementById('chatMessages');
+            // Create a new 'div' element
             let newMessage = document.createElement('div');
+            // Assigned classname and textcontect
             newMessage.className = 'chat-message';
             newMessage.textContent = data.message;
+            // Appends the new message div to the chatMessages container
             chatMessages.appendChild(newMessage);
-            chatMessages.scrollTop = chatMessages.scrollHeight; // Scroll to the bottom
+            // Scroll to the bottom
+            chatMessages.scrollTop = chatMessages.scrollHeight; 
         }
 
         window.sendMessage = function() {
+            // Selects the DOM element where the user types their message.
             let messageInput = document.getElementById('chatMessageInput');
+            // Gets the value (i.e., the message text) from the input field.
             let message = messageInput.value;
+            // Sends the message to the WebSocket server, first converting it to a JSON string.
             chatSocket.send(JSON.stringify({
                 'message': message
             }));
+            // Clears the input field after sending the message.
             messageInput.value = '';
         }
     }
 </script>
 
 {% endblock %}
-
-<!-- <style>
-    canvas {
-        display: block;
-        margin: auto;
-        background: #000;
-    }
-
-    body {
-        background: url("{% static 'images/pong.png' %}") no-repeat center center fixed;
-        background-size: cover;
-    }
-    .content {
-        background-color: rgba(255, 255, 255, 0.8);
-        padding: 20px;
-        border-radius: 10px;
-        margin-top: 50px;
-    }
-</style>
-
-<div id="gameModeSelection" style="text-align:center; margin-bottom:20px;">
-    {% if is_logged_in %}
-        <button type="button" class="btn btn-info" onclick="selectGameMode('user-vs-computer')">User vs Computer</button>
-        <button type="button" class="btn btn-warning" onclick="selectGameMode('user-vs-user')">User vs User</button>
-    {% else %}
-        <button type="button" class="btn btn-warning" onclick="selectGameMode('user-vs-computer')">Play against computer</button>
-        <button type="button" class="btn btn-warning" onclick="selectGameMode('user-vs-user')">Play against friend</button>
-    {% endif %}
-    <button type="button" class="btn btn-success" onclick="selectGameMode('remote')">Remote Play</button>
-</div>
-
-<div id="nameInputs" style="display:none;">
-    {% if is_logged_in %}
-        <p>Player 1: {{ user.username }}</p>
-    {% else %}
-        <p>Player 1: Guest</p>
-    {% endif %}
-    <input type="text" id="player2Name" class="name-input" placeholder="Player 2 Name">
-    <button type="button" class="btn btn-primary" onclick="startGameWithPlayer2()">Start Game</button>
-</div>
-
-<div id="remotePlay" style="display:none;">
-    <p>Waiting for another player to join...</p>
-    <button type="button" class="btn btn-danger" onclick="cancelRemotePlay()">Cancel</button>
-</div>
-
-<div id="gameButtons" style="display:none;">
-    <button type="button" class="btn btn-danger" onclick="endGame()">End Game</button>
-</div>
-
-<canvas id="pongCanvas" width="600" height="400" style="display:none;"></canvas>
-
-
-<script>
-    function selectGameMode(mode) {
-        if (mode === 'user-vs-user') {
-            document.getElementById('gameModeSelection').style.display = 'none';
-            document.getElementById('nameInputs').style.display = 'block';
-        } else if (mode === 'user-vs-computer') {
-            document.getElementById('gameModeSelection').style.display = 'none';
-            startGame('Guest', 'Computer', 'user-vs-computer');
-        } else if (mode === 'remote') {
-            document.getElementById('gameModeSelection').style.display = 'none';
-            document.getElementById('remotePlay').style.display = 'block';
-            // initializeWebSocket(); // Initialize WebSocket connection here
-        }
-    }
-
-    function startGameWithPlayer2() {
-        const player2Name = document.getElementById('player2Name').value;
-        if (player2Name.trim() === '') {
-            alert('Please enter a valid name for Player 2');
-        } else {
-            const player1Name = '{{ user.username|default:"Guest" }}';
-            startGame(player1Name, player2Name, 'user-vs-user');
-        }
-    }
-
-    function startGame(player1Name, player2Name, mode) {
-        document.getElementById('nameInputs').style.display = 'none';
-        document.getElementById('gameButtons').style.display = 'block';
-        document.getElementById('pongCanvas').style.display = 'block';
-        initializeGame(player1Name, player2Name, mode);
-    }
-
-    
-    function endGame() {
-        var redirecturi = "/";
-        window.location.href = redirecturi;
-    }
-</script>
-
-
-<form id="form">
-    <input type="text" name="message"/>
-</form>
-
-<script type="text/javascript">
-    
-
-    let chatSocket = new WebSocket('wss://10.15.109.3:8443/ws/socket-server/');
-
-    chatSocket.onmessage = function(e){
-        let data = JSON.parse(e.data);
-        console.log('Data:', data);
-    }
-
-    let form = document.getElementById('form');
-    form.addEventListener('submit', (e)=> {
-        e.preventDefault();
-        let message = e.target.message.value;
-        chatSocket.send(JSON.stringify({
-            'message':message
-        }));
-        form.reset();
-    });
-
-</script>
-
-<script src="{% static 'js/pong.js' %}"></script> -->
-

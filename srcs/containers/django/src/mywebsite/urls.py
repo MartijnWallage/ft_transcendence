@@ -14,24 +14,14 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+
 from django.contrib import admin
 from django.urls import path, include
-# from . import routing
-
-# from . import views
-
-
-# urlpatterns = [
-#     path('admin/', admin.site.urls),
-#     path('playpong/', include('playpong.urls'))
-# ]
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('playpong.urls')),
-    # path('', views.index, name='index'),
     path('', include('django.contrib.auth.urls'))
 ]
 
-# websocket_urlpatterns = routing.websocket_urlpatterns
 
