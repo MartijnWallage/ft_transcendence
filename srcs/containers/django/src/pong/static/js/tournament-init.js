@@ -54,9 +54,8 @@ function scoreBoardInit() {
 
 function initializeTournament() {
     console.log('Players:', players); 
-    document.getElementById('nameInputsTournament').style.display = 'none';
-    document.getElementById('announcement').innerText = `Next match: ${player1} vs ${player2}`;
-    document.getElementById('announcement').style.display = 'block';
+    // document.getElementById('announcement').innerText = `Next match: ${player1} vs ${player2}`;
+    // document.getElementById('announcement').style.display = 'block';
     matchOrderInit();    
     nextGame();
     scoreBoardInit();
@@ -83,7 +82,7 @@ function nextGame() {
         console.log('Next match:', player1, 'vs', player2);
         alert(`Next match: ${player1} vs ${player2}`);
     }, 500);
-    document.getElementById('announcement').innerText = `Current match: ${player1} vs ${player2}`;
+    // document.getElementById('announcement').innerText = `Current match: ${player1} vs ${player2}`;
     setTimeout(() => startGame(player1, player2, 'tournament'), 1000);
 }
 
@@ -93,39 +92,39 @@ function endTournament() {
 
     
     // Step 1: Combine the player names and their victories into an array of objects
-    const leaderboard = [];
+    const scoreBoard = [];
     for (let i = 0; i < players.length; i++) {
-        leaderboard.push({ name: players[i], victories: scoreBoard[i] });
+        scoreBoard.push({ name: players[i], victories: scoreBoard[i] });
     }
 
 
-    // const leaderboard = players.map((name, index) => ({
+    // const scoreBoard = players.map((name, index) => ({
     //     name: name,
     //     victories: scoreBoard[index]
     // }));
     
     // Step 2: Sort the array of objects based on the number of victories in descending order
-    leaderboard.sort((a, b) => b.victories - a.victories);
+    scoreBoard.sort((a, b) => b.victories - a.victories);
     
     // Step 3: Extract the sorted player names and their victories (optional, for display)
-    const sortedPlayerNames = leaderboard.map(player => player.name);
-    const sortedVictories = leaderboard.map(player => player.victories);
+    const sortedPlayerNames = scoreBoard.map(player => player.name);
+    const sortedVictories = scoreBoard.map(player => player.victories);
     
-    console.log("Leaderboard:", leaderboard);
+    console.log("scoreBoard:", scoreBoard);
     console.log("Sorted Player Names:", sortedPlayerNames);
     console.log("Sorted Victories:", sortedVictories);
 
-    // alert("Leaderboard: " + leaderboard.map(player => `Name: ${player.name}, Victories: ${player.victories}`).join(" | "));
+    // alert("scoreBoard: " + scoreBoard.map(player => `Name: ${player.name}, Victories: ${player.victories}`).join(" | "));
 
-    // alert("Leaderboard: " + JSON.stringify(leaderboard, null, 2));
+    // alert("scoreBoard: " + JSON.stringify(scoreBoard, null, 2));
 
-    // Display leaderboard in the HTML as a table
-    const leaderboardDiv = document.getElementById('leaderboard');
-    leaderboardDiv.innerHTML = "<h2>Leaderboard</h2>";
-    const leaderboardTable = document.createElement('table');
-    leaderboardTable.style.width = '100%';
-    leaderboardTable.style.borderCollapse = 'collapse';
-    leaderboardTable.style.color = 'yellow'; // Set the text color to yellow
+    // Display scoreBoard in the HTML as a table
+    const scoreBoardDiv = document.getElementById('scoreBoard');
+    scoreBoardDiv.innerHTML = "<h2>scoreBoard</h2>";
+    const scoreBoardTable = document.createElement('table');
+    scoreBoardTable.style.width = '100%';
+    scoreBoardTable.style.borderCollapse = 'collapse';
+    scoreBoardTable.style.color = 'yellow'; // Set the text color to yellow
     
     // Create the header row
     const headerRow = document.createElement('tr');
@@ -139,10 +138,10 @@ function endTournament() {
     victoriesHeader.style.padding = '8px';
     headerRow.appendChild(playerHeader);
     headerRow.appendChild(victoriesHeader);
-    leaderboardTable.appendChild(headerRow);
+    scoreBoardTable.appendChild(headerRow);
     
     // Create rows for each player
-    leaderboard.forEach(player => {
+    scoreBoard.forEach(player => {
         const row = document.createElement('tr');
         const playerCell = document.createElement('td');
         playerCell.textContent = player.name;
@@ -154,10 +153,10 @@ function endTournament() {
         victoriesCell.style.padding = '8px';
         row.appendChild(playerCell);
         row.appendChild(victoriesCell);
-        leaderboardTable.appendChild(row);
+        scoreBoardTable.appendChild(row);
     });
 
-    leaderboardDiv.appendChild(leaderboardTable);
+    scoreBoardDiv.appendChild(scoreBoardTable);
 
     players = [];
     matchOrder = [];

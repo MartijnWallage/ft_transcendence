@@ -1,6 +1,13 @@
 {% block content %}
 <div>
-  <h1>PONG PAGE</h1>
-
+    <h1>FIGHT!</h1>
+    <div id="announcement" display="none">
+      <h2 id="announcementText"></h2>
+    </div>
+    <div id="scoreBoard" display="none"></div>
+    <div id="gameButtons" style="display:inline-block;">
+        <button type="button" class="btn btn-outline-light btn-lg" 
+                onclick="endGame()">End Game</button>
+    </div>
 </div>
 {% endblock %}

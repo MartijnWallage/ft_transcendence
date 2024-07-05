@@ -4,21 +4,21 @@
 <div>
 	<p>welcome to</p>
 	<h1 class="my-4" class="display-4">Transcendence. login</h1>
-
-	<form method="post">
-		{% csrf_token %}{{form|crispy}}
-		<p>Have an account? Login <a href="/login">here</a></p>
-		<button type="submit" class="btn btn-success">Register</button>
-	</form>
-</div>
-<div>
-	<p>welcome to</p>
-	<h1 class="my-4" class="display-4">Transcendence. singup</h1>
-
 	<form method="post">
 		{% csrf_token %}{{form|crispy}}
 		<p>Don't have an account? Create one <a href="/sign-up">here</a></p>
 		<button type="submit" class="btn btn-success">Login</button>
+	</form>
+
+</div>
+<div>
+	<p>welcome to</p>
+	<h1 class="my-4" class="display-4">Transcendence. singup</h1>
+	
+	<form method="post">
+		{% csrf_token %}{{form|crispy}}
+		<p>Have an account? Login <a href="/login">here</a></p>
+		<button type="submit" class="btn btn-success">Register</button>
 	</form>
 </div>
 {% endblock %}
