@@ -1,6 +1,6 @@
 {% block content %}
 <div>
-    <h1>Transcendence</h1>
+    <h1 class="my-4" class="display-4">Transcendence.</h1>
     <h2>Tournament</h2>
 
     <!-- <div class="d-grid gap-2 col-6 mx-auto">
@@ -11,18 +11,21 @@
     </div>
 
     <div id="announcement" display="none">
-        <h2 id="announcementText"></h2>
+      <h2 id="announcementText"></h2>
     </div>
 
     <div id="gameButtons" style="display:inline-block;">
-        <button type="button" class="btn btn-danger" onclick="endGame()">End Game</button>
+      <button type="button" class="btn btn-danger"
+              onclick="endGame()">End Game</button>
     </div>
 
     <div id="nameInputsTournament" style="display:block;">
-        <div id="playerList"></div> <!-- Container for displaying added players -->
-        <input type="text" id="playerNameInput" class="name-input" placeholder="Player Name">
-        <button type="button" class="btn btn-primary" id="addPlayerBtn" onclick="addPlayer()">Add Player</button>
-        <button type="button" class="btn btn-success" id="startTournamentBtn" onclick="startTournament()">Start Tournament</button>
+      <div id="playerList"></div> <!-- Container for displaying added players -->
+      <input type="text" id="playerNameInput" class="name-input" placeholder="Player Name">
+      <button type="button" class="btn btn-primary" id="addPlayerBtn"
+              onclick="addPlayer()">Add Player</button>
+      <button type="button" class="btn btn-success" id="startTournamentBtn"
+              onclick="startTournament()">Start Tournament</button>
     </div>
 </div>
 {% endblock %}

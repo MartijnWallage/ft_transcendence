@@ -36,6 +36,10 @@ h1 {
 	color: aliceblue;
 }
 
+.font-weight-semi-bold {
+	font-weight: 600;
+  }
+
 @font-face {
 	font-family: 'Yapari';
 	src: url( ../fonts/YapariTrial-ExtraBold.ttf ) format('truetype');
