@@ -1,403 +1,213 @@
-// let websocket;
+// let pingpongsocket;
 // let isHost = false; // Flag to determine if this client is the host
 // let reconnectTimeout = null; // Timeout variable for reconnecting
 
-// function initializeWebSocket() {
-//     let url = 'wws://${window.location.host}/ws/socket-server/'
-    
-//     // websocket = new WebSocket('wss://10.15.109.3:8443/ws/monitor/');
-//     websocket = new WebSocket(url);
+function initiateRemotePlay() {
+    const message = { type: 'initiate_remote_play', data: {} };
+    if (pingpongsocket && pingpongsocket.readyState === WebSocket.OPEN) {
+        pingpongsocket.send(JSON.stringify(message));
+        console.log('Initiated remote play');
+    } else {
+        console.error('WebSocket is not open to send messages.');
+    }
+}
+
+function sendGameState(gameState) {
+    const message = { type: 'game_state_update', data: gameState };
+    if (pingpongsocket.readyState === WebSocket.OPEN) {
+        pingpongsocket.send(JSON.stringify(message));
+    } else {
+        console.error('WebSocket is not open to send messages.');
+    }
+}
+
+// Example of sending player ready message
+function players_ready() {
+    const message = { type: 'player_ready', data: {} };
+    if (pingpongsocket.readyState === WebSocket.OPEN) {
+        pingpongsocket.send(JSON.stringify(message));
+        console.log('Player is ready.');
+    } else {
+        console.error('WebSocket is not open to send messages.');
+    }
+}
 
 
-//     websocket.onopen = function(event) {
-//         console.log('WebSocket connection opened');
-//         websocket.send(JSON.stringify({ type: 'hello' }));
-//         // Clear any existing reconnect timeout once connection is established
-//         clearReconnectTimeout();
+document.addEventListener('DOMContentLoaded', function() {
+    const remotePlayButton = document.getElementById('remotePlay');
+    if (remotePlayButton) {
+        remotePlayButton.style.display = 'none'; // Ensure the remotePlay div is visible
+    } else {
+        console.error('Remote play button container not found in the DOM.');
+    }
+});
 
-//         // Start waiting for the second player to join
-//         waitForSecondPlayer();
-//     };
+function updateGameState(state) {
+    player1.x = state.player1.x;
+    player1.y = state.player1.y;
+    player2.x = state.player2.x;
+    player2.y = state.player2.y;
+    ball.x = state.ball.x;
+    ball.y = state.ball.y;
+    player1Score = state.player1Score;
+    player2Score = state.player2Score;
+}
 
-//     websocket.onmessage = function(event) {
-//         const data = JSON.parse(event.data);
-//         console.log('Message from server:', data);
+const canvas = document.getElementById("pongCanvas");
+const ctx = canvas.getContext("2d");
 
-//         if (data.type === 'status' && data.message === 'Remote play initiated!') {
-//             isHost = true; // Assume the initiator is the host
-//         }
+// Paddle properties
+const paddleWidth = 14, paddleHeight = 80, paddleSpeed = 6;
+const player1 = { x: 10, y: canvas.height / 2 - paddleHeight / 2, width: paddleWidth, height: paddleHeight, dy: 0 };
+const player2 = { x: canvas.width - paddleWidth - 10, y: canvas.height / 2 - paddleHeight / 2, width: paddleWidth, height: paddleHeight, dy: 0 };
 
-//         if (data.type === 'game_state') {
-//             updateGameState(data.payload);
-//         }
+// Ball properties
+const ballSize = 14;
+const ball = { x: canvas.width / 2, y: canvas.height / 2, width: ballSize, height: ballSize, dx: -7, dy: 6 };
 
-//         if (data.type === 'player_connected' && !isHost) {
-//             document.getElementById('remotePlay').innerHTML = `
-//                 <p>Another player has joined!</p>
-//                 <button type="button" class="btn btn-primary" onclick="startRemoteGame()">Start Remote Game</button>
-//             `;
-//         }
-        
-//         if (data.type === 'player_disconnected' && !isHost) {
-//             alert('The other player has disconnected.');
-//             // Handle disconnection logic, e.g., show a message or return to game mode selection
-//         }
+// Score
+let player1Score = 0, player2Score = 0;
 
-//         if (data.type === 'players_ready') {
-//             console.log('Both players are ready to start the game.');
-//             // Handle game start or other logic when both players are ready
-//         }
+// Key controls
+let keys = {};
+document.addEventListener("keydown", (event) => { keys[event.key] = true; });
+document.addEventListener("keyup", (event) => { keys[event.key] = false; });
 
-//         // Handle other message types as needed
-//     };
+// Game mode
+let gameMode = '';
 
-//     websocket.onclose = function(event) {
-//         console.log('WebSocket connection closed');
-//         // Set a timeout to attempt reconnecting after 15 seconds
-//         setReconnectTimeout();
-//     };
-// }
+// Draw functions
 
-// function setReconnectTimeout() {
-//     // Clear any existing timeout before setting a new one
-//     clearReconnectTimeout();
-//     reconnectTimeout = setTimeout(() => {
-//         console.log('Attempting to reconnect...');
-//         initializeWebSocket(); // Attempt to reconnect
-//     }, 5000); // 5 seconds timeout
-// }
+function drawRect(x, y, width, height, color) {
+    ctx.fillStyle = color;
+    ctx.fillRect(x, y, width, height);
+}
 
-// function clearReconnectTimeout() {
-//     if (reconnectTimeout) {
-//         clearTimeout(reconnectTimeout);
-//         reconnectTimeout = null;
-//     }
-// }
+function drawPaddle(paddle) {
+    drawRect(paddle.x, paddle.y, paddle.width, paddle.height, "white");
+}
 
-// function initiateRemotePlay() {
-//     const message = {
-//         action: 'initiate_remote_play',
-//     };
-//     if (websocket.readyState === WebSocket.OPEN) {
-//         websocket.send(JSON.stringify(message));
-//         console.log('Initiated remote play');
-//     } else {
-//         console.error('WebSocket is not open to send messages.');
-//     }
-// }
+function drawBall(ball) {
+    drawRect(ball.x, ball.y, ball.width, ball.height, "white");
+}
 
-// function waitForSecondPlayer() {
-//     setTimeout(() => {
-//         if (!isHost && websocket.readyState === WebSocket.OPEN) {
-//             websocket.close();
-//             console.log('No second player joined in time. Closing WebSocket.');
-//         }
-//     }, 10000); // 10 seconds wait time
-// }
+function drawNet() {
+    for (let i = 0; i < canvas.height; i += 20) {
+        drawRect(canvas.width / 2 - 1, i, 2, 10, "white");
+    }
+}
 
-// function startRemoteGame() {
+function displayScore() {
+    ctx.font = "20px Arial";
+    ctx.fillStyle = "white";
+    ctx.fillText("Player 1 Score: " + player1Score, 20, 30);
+    ctx.fillText("Player 2 Score: " + player2Score, canvas.width - 180, 30);
+}
 
-//     const remoteUrl = document.getElementById('remoteUrlInput').value;
-//     if (remoteUrl.trim() === '') {
-//         alert('Please enter a valid remote game URL');
-//     } else {
-//         remoteGameUrl = remoteUrl; // Store remote URL for future use if needed
-//         startGame('Guest', 'Remote Player', 'remote');
-//     }
-// }
+// Update functions
 
-// function cancelRemotePlay() {
-//     // Handle canceling remote play
-//     document.getElementById('remotePlay').style.display = 'none';
-//     document.getElementById('gameModeSelection').style.display = 'block';
-// }
+function updatePaddle(paddle) {
+    paddle.y += paddle.dy;
+    if (paddle.y < 0) paddle.y = 0;
+    if (paddle.y + paddle.height > canvas.height) paddle.y = canvas.height - paddle.height;
+}
 
-// function sendGameState() {
-//     if (websocket.readyState === WebSocket.OPEN && isHost) {
-//         const gameState = {
-//             player1: player1,
-//             player2: player2,
-//             ball: ball,
-//             player1Score: player1Score,
-//             player2Score: player2Score
-//         };
-//         websocket.send(JSON.stringify({ type: 'game_state', payload: gameState }));
-//     }
-// }
+function updateBall() {
+    ball.x += ball.dx;
+    ball.y += ball.dy;
 
-// function updateGameState(state) {
-//     player1 = state.player1;
-//     player2 = state.player2;
-//     ball = state.ball;
-//     player1Score = state.player1Score;
-//     player2Score = state.player2Score;
-// }
+    if (ball.y < 0 || ball.y + ball.height > canvas.height) {
+        ball.dy *= -1; // Bounce off top and bottom
+    }
 
+    let paddle = (ball.dx < 0) ? player1 : player2;
 
+    if (ball.x < player1.x + player1.width && ball.y > player1.y && ball.y < player1.y + player1.height + ball.height / 2 ||
+        ball.x + ball.width > player2.x && ball.y > player2.y && ball.y < player2.y + player2.height + ball.height / 2) {
+        ball.dy = (ball.y - (paddle.y + paddle.height / 2)) * 0.25;
+        ball.dx *= -1; // Bounce off paddles
+    }
+}
 
+function updateScore() {
+    if (ball.x < 0) {
+        player2Score += 1;
+        resetBall();
+    } else if (ball.x + ball.width > canvas.width) {
+        player1Score += 1;
+        resetBall();
+    }
 
+    if (player1Score == 10 || player2Score == 10) {
+        if (player1Score == 10) {
+            alert("Player 1 wins!");
+        } else {
+            alert("Player 2 wins!");
+        }
+        player1Score = 0;
+        player2Score = 0;
+    }
+}
 
-// document.addEventListener('DOMContentLoaded', function() {
-//     const remotePlayButton = document.getElementById('remotePlay');
-//     if (remotePlayButton) {
-//         remotePlayButton.addEventListener('click', initiateRemotePlay);
-//     } else {
-//         console.error('Remote play button not found in the DOM.');
-//     }
+function resetBall() {
+    ball.x = canvas.width / 2;
+    ball.y = canvas.height / 2;
+    ball.dx *= -1; // Change ball direction
+    ball.dy = ball.dx / 2;
+}
 
-//     initializeWebSocket();
-// });
+// Control paddles
+function movePaddles() {
+    // Player 1 controls
+    if (keys["w"]) player1.dy = -paddleSpeed;
+    else if (keys["s"]) player1.dy = paddleSpeed;
+    else player1.dy = 0;
 
+    // Player 2 controls
+    if (gameMode === 'user-vs-user') {
+        if (keys["ArrowUp"]) player2.dy = -paddleSpeed;
+        else if (keys["ArrowDown"]) player2.dy = paddleSpeed;
+        else player2.dy = 0;
+    } else if (gameMode === 'user-vs-computer') {
+        // Simple AI for computer
+        if (player2.y + player2.height / 2 < ball.y) {
+            player2.dy = paddleSpeed;
+        } else {
+            player2.dy = -paddleSpeed;
+        }
+    }
 
+    updatePaddle(player1);
+    updatePaddle(player2);
+}
 
+// Main loop
 
+function gameLoop() {
+    // Clear the canvas
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-// const canvas = document.getElementById("pongCanvas");
-// const ctx = canvas.getContext("2d");
+    // Draw net, paddles, and ball
+    drawNet();
+    drawPaddle(player1);
+    drawPaddle(player2);
+    drawBall(ball);
+    displayScore();
 
-// // Paddle properties
-// const paddleWidth = 14, paddleHeight = 80, paddleSpeed = 6;
-// const player1 = { x: 10, y: canvas.height / 2 - paddleHeight / 2, width: paddleWidth, height: paddleHeight, dy: 0 };
-// const player2 = { x: canvas.width - paddleWidth - 10, y: canvas.height / 2 - paddleHeight / 2, width: paddleWidth, height: paddleHeight, dy: 0 };
+    // Update game state
+    movePaddles();
+    updateBall();
+    updateScore();
 
-// // Ball properties
-// const ballSize = 14;
-// const ball = { x: canvas.width / 2, y: canvas.height / 2, width: ballSize, height: ballSize, dx: -7, dy: 6 };
+    if (isHost) {
+        sendGameState(); // Send game state only if this client is the host
+    }
 
-// // Score
-// let player1Score = 0, player2Score = 0;
+    requestAnimationFrame(gameLoop);
+}
 
-// // Key controls
-// let keys = {};
-// document.addEventListener("keydown", (event) => { keys[event.key] = true; });
-// document.addEventListener("keyup", (event) => { keys[event.key] = false; });
-
-// // Game mode
-// let gameMode = '';
-
-// // Draw functions
-
-// function drawRect(x, y, width, height, color) {
-//     ctx.fillStyle = color;
-//     ctx.fillRect(x, y, width, height);
-// }
-
-// function drawPaddle(paddle) {
-//     drawRect(paddle.x, paddle.y, paddle.width, paddle.height, "white");
-// }
-
-// function drawBall(ball) {
-//     drawRect(ball.x, ball.y, ball.width, ball.height, "white");
-// }
-
-// function drawNet() {
-//     for (let i = 0; i < canvas.height; i += 20) {
-//         drawRect(canvas.width / 2 - 1, i, 2, 10, "white");
-//     }
-// }
-
-// function displayScore() {
-//     ctx.font = "20px Arial";
-//     ctx.fillStyle = "white";
-//     ctx.fillText("Player 1 Score: " + player1Score, 20, 30);
-//     ctx.fillText("Player 2 Score: " + player2Score, canvas.width - 180, 30);
-// }
-
-// // Update functions
-
-// function updatePaddle(paddle) {
-//     paddle.y += paddle.dy;
-//     if (paddle.y < 0) paddle.y = 0;
-//     if (paddle.y + paddle.height > canvas.height) paddle.y = canvas.height - paddle.height;
-// }
-
-// function updateBall() {
-//     ball.x += ball.dx;
-//     ball.y += ball.dy;
-
-//     if (ball.y < 0 || ball.y + ball.height > canvas.height) {
-//         ball.dy *= -1; // Bounce off top and bottom
-//     }
-
-//     let paddle = (ball.dx < 0) ? player1 : player2;
-
-//     if (ball.x < player1.x + player1.width && ball.y > player1.y && ball.y < player1.y + player1.height + ball.height / 2 ||
-//         ball.x + ball.width > player2.x && ball.y > player2.y && ball.y < player2.y + player2.height + ball.height / 2) {
-//         ball.dy = (ball.y - (paddle.y + paddle.height / 2)) * 0.25;
-//         ball.dx *= -1; // Bounce off paddles
-//     }
-// }
-
-// function updateScore() {
-//     if (ball.x < 0) {
-//         player2Score += 1;
-//         resetBall();
-//     } else if (ball.x + ball.width > canvas.width) {
-//         player1Score += 1;
-//         resetBall();
-//     }
-
-//     if (player1Score == 10 || player2Score == 10) {
-//         if (player1Score == 10) {
-//             alert("Player 1 wins!");
-//         } else {
-//             alert("Player 2 wins!");
-//         }
-//         player1Score = 0;
-//         player2Score = 0;
-//     }
-// }
-
-// function resetBall() {
-//     ball.x = canvas.width / 2;
-//     ball.y = canvas.height / 2;
-//     ball.dx *= -1; // Change ball direction
-//     ball.dy = ball.dx / 2;
-// }
-
-// // Control paddles
-// function movePaddles() {
-//     // Player 1 controls
-//     if (keys["w"]) player1.dy = -paddleSpeed;
-//     else if (keys["s"]) player1.dy = paddleSpeed;
-//     else player1.dy = 0;
-
-//     // Player 2 controls
-//     if (gameMode === 'user-vs-user') {
-//         if (keys["ArrowUp"]) player2.dy = -paddleSpeed;
-//         else if (keys["ArrowDown"]) player2.dy = paddleSpeed;
-//         else player2.dy = 0;
-//     } else if (gameMode === 'user-vs-computer') {
-//         // Simple AI for computer
-//         if (player2.y + player2.height / 2 < ball.y) {
-//             player2.dy = paddleSpeed;
-//         } else {
-//             player2.dy = -paddleSpeed;
-//         }
-//     }
-
-//     updatePaddle(player1);
-//     updatePaddle(player2);
-// }
-
-// // Main loop
-
-// function gameLoop() {
-//     // Clear the canvas
-//     ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-//     // Draw net, paddles, and ball
-//     drawNet();
-//     drawPaddle(player1);
-//     drawPaddle(player2);
-//     drawBall(ball);
-//     displayScore();
-
-//     // Update game state
-//     movePaddles();
-//     updateBall();
-//     updateScore();
-
-//     if (isHost) {
-//         sendGameState(); // Send game state only if this client is the host
-//     }
-
-//     requestAnimationFrame(gameLoop);
-// }
-
-// function initializeGame(player1Name, player2Name, mode) {
+// function initializeGame(player1Name, player2Name, mode, isFirstPlayer) {
 //     gameMode = mode;
 //     console.log(`Starting game: ${player1Name} vs ${player2Name}`);
 //     gameLoop();
 // }
-
-
-
-
-// // const socket = new WebSocket('wss://10.15.109.3:8443/ws/monitor/');
-
-// // // Event handler when the WebSocket connection is opened
-// // socket.onopen = function(event) {
-// //     console.log('WebSocket connection opened');
-// //     // Now you can send initial messages if needed
-// //     socket.send(JSON.stringify({ type: 'hello' }));
-// // };
-
-// // // Event handler when a message is received from the WebSocket server
-// // socket.onmessage = function(event) {
-// //     const data = JSON.parse(event.data);
-// //     console.log('Message from server:', data);
-    
-// //     // Example: Display the message on the webpage
-// //     const messageElement = document.createElement('p');
-// //     messageElement.textContent = data.message;
-// //     document.body.appendChild(messageElement);
-// // };
-
-// // // Event handler when the WebSocket connection is closed
-// // socket.onclose = function(event) {
-// //     console.log('WebSocket connection closed');
-// // };
-
-// // // Example of sending a message after the connection is open
-// // function sendMessage(message) {
-// //     if (socket.readyState === WebSocket.OPEN) {
-// //         socket.send(JSON.stringify(message));
-// //     } else {
-// //         console.error('WebSocket is not open to send messages.');
-// //     }
-// // }
-
-// // document.addEventListener('DOMContentLoaded', function() {
-// //     // Your JavaScript code here
-// //     const remotePlay = document.getElementById('remotePlay');
-// //     if (remotePlay) {
-// //         remotePlay.addEventListener('click', initiateRemotePlay);
-// //     } else {
-// //         console.error('Remote play button not found in the DOM.');
-// //     }
-
-// //     function initiateRemotePlay() {
-// //         const message = {
-// //             action: 'initiate_remote_play',
-// //         };
-// //         websocket.send(JSON.stringify(message));
-// //         console.log('Initiated remote play');
-// //     }
-// // });
-
-
-// // Assuming remotePlay is defined somewhere accessible in your code
-// // const remotePlay = document.getElementById('remotePlay');
-
-// // Function to initiate remote play
-// // function initiateRemotePlay() {
-// //     // Assuming 'websocket' is your WebSocket connection object
-
-// //     // Construct the message payload
-// //     const message = {
-// //         action: 'initiate_remote_play',
-// //         // You can include additional data if needed
-// //         // Example: player_id: playerId,
-// //     };
-
-// //     // Send the message as JSON string
-// //     websocket.send(JSON.stringify(message));
-
-// //     // Optionally, you can handle success or notify the user
-// //     console.log('Initiated remote play');
-// // }
-
-// // // Example usage: Assuming 'remotePlay' is your button triggering remote play
-// // remotePlay.addEventListener('click', initiateRemotePlay);
-
-
-// // Example of sending a message to the WebSocket server
-// // const messageToSend = {
-// //     action: 'player_connected',
-// //     player_name: 'Player 2'
-// // };
-
-// // socket.send(JSON.stringify(messageToSend));
-
-

@@ -26,19 +26,30 @@ class ChatConsumer(AsyncWebsocketConsumer):
     # and chat_message check client who triggered the chat_message event?
 
     async def receive(self, text_data):
-        # Parses the incoming message from JSON format.
-        text_data_json = json.loads(text_data)
-        # Get the msg from the parsed JSON data
-        message = text_data_json['message']
+        try:
+            # Parses the incoming message from JSON format.
+            text_data_json = json.loads(text_data)
+            # Get the message from the parsed JSON data
+            message = text_data_json['message']
 
-        # Send the received message to all cunsumers (clients) in the room group
-        await self.channel_layer.group_send(
-            self.room_group_name,
-            {
-                'type': 'chat_message',
-                'message': message
-            }
-        )
+            # Send the received message to all consumers (clients) in the room group
+            await self.channel_layer.group_send(
+                self.room_group_name,
+                {
+                    'type': 'chat_message',
+                    'message': message
+                }
+            )
+        except KeyError:
+            # Handle the case where 'message' key is missing
+            await self.send(text_data=json.dumps({
+                'error': 'No message key in WebSocket data'
+            }))
+        except json.JSONDecodeError:
+            # Handle invalid JSON
+            await self.send(text_data=json.dumps({
+                'error': 'Invalid JSON data received'
+            }))
     
     # Why chat_message is Necessary
     # it handles that the message is sent to multiple clients (or users) who are part of that group
@@ -53,61 +64,132 @@ class ChatConsumer(AsyncWebsocketConsumer):
         }))
 
 
-        # print('Message:', message)
+
+
+class PingpongConsumer(AsyncWebsocketConsumer):
+    connected_players = 0
+
+    async def connect(self):
+        self.room_group_name = 'pingpong'
+        await self.channel_layer.group_add(
+            self.room_group_name,
+            self.channel_name
+        )
+        await self.accept()
+        self.__class__.connected_players += 1
+        self.is_first_player = self.__class__.connected_players == 1
+
+    async def disconnect(self, close_code):
+        await self.channel_layer.group_discard(
+            self.room_group_name,
+            self.channel_name
+        )
+        self.__class__.connected_players -= 1
+
+    async def receive(self, text_data):
+        try:
+            data = json.loads(text_data)
+            message_type = data.get('type', '')
+            payload = data.get('data', {})
+
+            if message_type == 'initiate_remote_play':
+                role = 'first' if self.is_first_player else 'second'
+                
+                await self.channel_layer.group_send(
+                    self.room_group_name,
+                    {
+                        'type': 'players_ready',
+                        'role': role
+                    }
+                )
+            else:
+                await self.send(text_data=json.dumps({
+                    'error': f'Unsupported message type: {message_type}'
+                }))
+        except json.JSONDecodeError:
+            await self.send(text_data=json.dumps({
+                'error': 'Invalid JSON data received'
+            }))
+
+    async def players_ready(self, event):
+        await self.send(text_data=json.dumps({
+            'type': 'players_ready',
+            'role': event['role']
+        }))
+
+
+
+
+    # async def send_game_state(self, event):
+    #     await self.send(text_data=json.dumps({
+    #         'type': 'game_state',
+    #         'data': event['payload']
+    #     }))
+
+    # async def game_start(self, event):
+    #     await self.send(text_data=json.dumps({
+    #         'type': 'start_game',
+    #         'data': event['data']
+    #     }))
+
     
 
-# import json
-# from channels.generic.websocket import AsyncWebsocketConsumer
-# from asgiref.sync import async_to_sync
+    # async def receive(self, text_data):
+    #     try:
+    #         text_data_json = json.loads(text_data)
+    #         message_type = text_data_json.get('type', '')
+    #         data = text_data_json.get('data', {})
 
-# class PongConsumer(AsyncWebsocketConsumer):
-#     connected_players = []
+    #         if message_type == 'initiate_remote_play':
+    #             await self.channel_layer.group_send(
+    #                 self.room_group_name,
+    #                 {
+    #                     'type': 'game_message',
+    #                     'message_type': 'status',
+    #                     'data': {'message': 'Remote play initiated!'}
+    #                 }
+    #             )
+    #         elif message_type == 'game_state':
+    #             await self.channel_layer.group_send(
+    #                 self.room_group_name,
+    #                 {
+    #                     'type': 'game_message',
+    #                     'message_type': 'game_state',
+    #                     'data': data
+    #                 }
+    #             )
+    #         elif message_type == 'player_ready':
+    #             await self.channel_layer.group_send(
+    #                 self.room_group_name,
+    #                 {
+    #                     'type': 'game_message',
+    #                     'message_type': 'player_ready',
+    #                     'data': {}
+    #                 }
+    #             )
+    #         else:
+    #             await self.send(text_data=json.dumps({
+    #                 'error': f'Unsupported message type: {message_type}'
+    #             }))
+    #     except KeyError as e:
+    #         await self.send(text_data=json.dumps({
+    #             'error': f'Missing key: {str(e)} in WebSocket data'
+    #         }))
+    #     except json.JSONDecodeError:
+    #         await self.send(text_data=json.dumps({
+    #             'error': 'Invalid JSON data received'
+    #         }))
 
-#     async def connect(self):
-#         self.room_group_name = 'test'
+    # async def game_message(self, event):
+    #     message_type = event['message_type']
+    #     data = event['data']
+    #     await self.send(text_data=json.dumps({
+    #         'type': message_type,
+    #         'data': data
+    #     }))
 
-#         async_to_sync(self.channel_layer.group_add)(
-#             self.room_group_name,
-#             self.channel_name
-#         )
 
-#         await self.accept()
-#         self.connected_players.append(self)
-#         await self.check_player_connection()
-#         self.send(text_data=json.dumps){
-#             'type':'connection_established',
-#             'message':'you are now connected!'
-#         }
 
-#     async def disconnect(self, close_code):
-#         self.connected_players.remove(self)
-#         await self.check_player_connection()
-
-#     async def receive(self, text_data):
-       
-#         data = json.loads(text_data)
-        
-#         if data['action'] == 'initiate_remote_play':
-#             await self.initiate_remote_play()
-
-#         elif data['type'] == 'game_state':
-#             await self.send_game_state(data['payload'])
-
-#         async_to_sync(self.channel_layer.group_send)(
-#             self.room_group_name,
-#             {
-#                 'type':'chat_message',
-#                 'message':message
-#             }
-#         )
-
-#     async def chat_message(self, event):
-#         message = event['message']
-
-#         self.send(text_data=json.dumps){
-#             'type':'chat',
-#             'message':message
-#         }
 
     # async def notify_player_connected(self):
     #     if len(self.connected_players) > 1:
