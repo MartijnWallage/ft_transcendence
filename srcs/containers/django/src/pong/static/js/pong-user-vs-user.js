@@ -22,13 +22,16 @@ function updateScoreUserVsUser() {
 		setTimeout(function() {
 			alert('Player 1 wins!');
 		} , 100);
+		return false;
 	}
 	else if (player2Score === scoreToWin){
 		gameRunning = false;
 		setTimeout(function() {
 			alert('Player 2 wins!');
 		} , 100);
+		return false;
 	}
+	return true;
 }
 
 function resetBall() {
@@ -51,15 +54,13 @@ function gameLoopUserVsUser() {
 	drawBall(ball);
 	displayScoreUserVsUser();
 
-	if (gameRunning) {
-		// Update game state
-		movePaddlesPlayer1();
-		movePaddlesPlayer2();
-		updatePaddle(player1);
-		updatePaddle(player2);
-		updateBall();
-		updateScoreUserVsUser();
-	}
-
+	if (!gameRunning) { return; }
+	// Update game state
+	movePaddlesPlayer1();
+	movePaddlesPlayer2();
+	updatePaddle(player1);
+	updatePaddle(player2);
+	updateBall();
+	gameRunning = updateScoreUserVsUser();
 	requestAnimationFrame(gameLoopUserVsUser);
 }
