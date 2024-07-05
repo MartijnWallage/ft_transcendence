@@ -69,6 +69,7 @@ function stopGame() {
 
 
 function nextGame() {
+    gameRunning = true;
     currentGameIndex += 1;
     console.log('Game index:', currentGameIndex);
     console.log('Match order length:', matchOrder.length);
@@ -78,10 +79,12 @@ function nextGame() {
     }
     const player1 = players[matchOrder[currentGameIndex - 1][0]];
     const player2 = players[matchOrder[currentGameIndex - 1][1]];
-    console.log('Next match:', player1, 'vs', player2);
-    
-    document.getElementById('announcement').innerText = `Next match: ${player1} vs ${player2}`;
-    setTimeout(() => startGame(player1, player2, 'tournament'), 500);
+    setTimeout(function() {
+        console.log('Next match:', player1, 'vs', player2);
+        alert(`Next match: ${player1} vs ${player2}`);
+    }, 500);
+    document.getElementById('announcement').innerText = `Current match: ${player1} vs ${player2}`;
+    setTimeout(() => startGame(player1, player2, 'tournament'), 1000);
 }
 
 function endTournament() {

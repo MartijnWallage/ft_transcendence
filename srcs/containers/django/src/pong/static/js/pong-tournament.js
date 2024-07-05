@@ -16,16 +16,25 @@ function updateScoreTournament() {
         resetBall();
     }
 
-    if (player1Score == scoreToWin || player2Score == scoreToWin) {
+    if (player1Score === scoreToWin || player2Score === scoreToWin) {
+		gameRunning = false;
 		if (player1Score == scoreToWin) {
-			alert(`${players[matchOrder[currentGameIndex - 1][0]]} wins!`);
+			displayScoreTournament();
+			setTimeout(function() {
+				alert(`${players[matchOrder[currentGameIndex - 1][0]]} wins!`);
+			}
+			, 100);
 		}
 		else {
-			alert(`${players[matchOrder[currentGameIndex - 1][1]]} wins!`);
+			displayScoreTournament();
+			setTimeout(function() {
+				alert(`${players[matchOrder[currentGameIndex - 1][1]]} wins!`);
+			}
+			, 100);
 		}
 		player1Score = 0;
 		player2Score = 0;
-		if (player1Score == scoreToWin) {
+		if (player1Score === scoreToWin) {
 			scoreBoard[matchOrder[currentGameIndex - 1][0]] += 1;
 			console.log('number of victory player ' + matchOrder[currentGameIndex - 1][0] + ' :' + scoreBoard[matchOrder[currentGameIndex - 1][0]]);
 		} else {
@@ -57,13 +66,15 @@ function gameLoopTournament() {
 	drawBall(ball);
 	displayScoreTournament();
 
-	// Update game state
-	movePaddlesPlayer1();
-	movePaddlesPlayer2();
-    updatePaddle(player1);
-    updatePaddle(player2);
-	updateBall();
-	updateScoreTournament();
+    if (gameRunning){
+		// Update game state
+		movePaddlesPlayer1();
+		movePaddlesPlayer2();
+		updatePaddle(player1);
+		updatePaddle(player2);
+		updateBall();
+		updateScoreTournament();
+	}
 
 	requestAnimationFrame(gameLoopTournament);
 }

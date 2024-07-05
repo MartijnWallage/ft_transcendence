@@ -17,10 +17,18 @@ function updateScoreUserVsUser() {
         resetBall();
     }
 
-    if (player1Score == scoreToWin)
-		alert('Player 1 wins!');
-	else if (player2Score == scoreToWin)
-		alert('Player 2 wins!');
+    if (player1Score === scoreToWin){
+		gameRunning = false;
+		setTimeout(function() {
+			alert('Player 1 wins!');
+		} , 100);
+	}
+	else if (player2Score === scoreToWin){
+		gameRunning = false;
+		setTimeout(function() {
+			alert('Player 2 wins!');
+		} , 100);
+	}
 }
 
 function resetBall() {
@@ -33,6 +41,7 @@ function resetBall() {
 
 function gameLoopUserVsUser() {
 	// Clear the canvas
+
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
 
 	// Draw net, paddles, and ball
@@ -42,13 +51,15 @@ function gameLoopUserVsUser() {
 	drawBall(ball);
 	displayScoreUserVsUser();
 
-	// Update game state
-	movePaddlesPlayer1();
-	movePaddlesPlayer2();
-    updatePaddle(player1);
-    updatePaddle(player2);
-	updateBall();
-	updateScoreUserVsUser();
+	if (gameRunning) {
+		// Update game state
+		movePaddlesPlayer1();
+		movePaddlesPlayer2();
+		updatePaddle(player1);
+		updatePaddle(player2);
+		updateBall();
+		updateScoreUserVsUser();
+	}
 
 	requestAnimationFrame(gameLoopUserVsUser);
 }
