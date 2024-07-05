@@ -1,21 +1,22 @@
 {% block content %}
 <div>
-    <h1>Transcendence</h1>
-
-    <div class="container px-4 text-center">
-      <div class="row gx-5">
-        <div class="col">
-          <P>Player 1 Guest</P>
-        </div>
-        <div class="col">
-          <input type="text" id="player2Name" class="name-input" placeholder="Player 2 Name">
+  <h1 class="my-4" class="display-4">Transcendence.</h1>
+  <div class="container px-4 text-center">
+    <div class="row gx-5">
+      <div class="col d-flex align-items-center justify-content-center">
+        <h5 class="text-white font-weight-semi-bold">Player 1 Guest</h5>
+      </div>
+      <div class="col d-flex align-items-center justify-content-center">
+        <div class="input-group w-50">
+          <input type="text" id="player2Name" class="form-control" placeholder="Player 2 Name">
         </div>
       </div>
     </div>
-    <div class="d-grid gap-2 col-6 mx-auto">
-        <button type="button" class="btn btn-outline-light"
-                href="#pong" onclick="loadPage('pong')">Continue</button>
-        <!-- <button type="button" class="btn btn-outline-light" onclick="loadPage('pong'); startGameWithPlayer2()">Continue</button> -->
-    </div>
+  </div>
+  <div class="d-grid gap-2 col-6 mx-auto">
+      <button type="button" class="btn btn-outline-light"
+              href="#pong" onclick="startGameWithPlayer2(); loadPage('pong')">Continue</button>
+      <!-- <button type="button" class="btn btn-outline-light" onclick="loadPage('pong'); startGameWithPlayer2()">Continue</button> -->
+  </div>
 </div>
 {% endblock %}

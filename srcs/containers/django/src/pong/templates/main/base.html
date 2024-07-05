@@ -1,124 +1,38 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
-	<head>
-		<!-- Required meta tags -->
-		<meta charset="utf-8" />
-		<title>transcendence</title>
-		<meta
-			name="viewport"
-			content="width=device-width, initial-scale=1, shrink-to-fit=no"
-		/>
-		<!-- Bootstrap CSS -->
-		<link
-			rel="stylesheet"
-			href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css"
-			integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N"
-			crossorigin="anonymous"
-		/>
-		<!--  Linked CDN links to support bootstrap functionality -->
-		<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-		<script
-			src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"
-			integrity="sha384-Fy6S3B9q64WdZWQUiU+q4/2Lc9npb8tCaSX9FK7E8HnRr0Jz8D6OP9dO5Vg3Q9ct"
-			crossorigin="anonymous"
-		></script>
-	</head>
+  <head>
+    <meta charset="utf-8" />
+    <title>transcendence</title>
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+    <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
+    <!-- Bootstrap CSS -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css"
+      integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N"
+      crossorigin="anonymous"
+    />
+    <!--  Linked CDN links to support bootstrap functionality -->
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-Fy6S3B9q64WdZWQUiU+q4/2Lc9npb8tCaSX9FK7E8HnRr0Jz8D6OP9dO5Vg3Q9ct"
+      crossorigin="anonymous"
+    ></script>
+  </head>
 
-	<style>
-		.background {
-			position: fixed;
-			top: 0;
-			left: 0;
-			width: 100%;
-			height: 100%;
-			z-index: -1; /* Place behind other content */
-			/* Adjust background properties */
-			background-image: url("{% static 'images/getty.jpg' %}");
-			/* background-color: #33ff55; */
-			background-size: cover; /* Adjust to cover the entire screen */
-			background-position: center;
-		}
-		#main-content {
-			background-color: #ff5733;
-			text-align: center;
-		}
-		body {
-			font-family: 'BaiJamjuree', sans-serif;
-		}
-		h2, h3, h4, h5, h6 {
-			font-family: 'BaiJamjuree', sans-serif;
-			font-weight: bold;
-		}
-		p {
-			font-family: 'BaiJamjuree', sans-serif;
-			font-weight: normal;
-		}
-		h1 {
-			font-family: 'Yapari', sans-serif;
-			color: aliceblue;
-		}
-		@font-face {
-			font-family: 'Yapari';
-			src: url("{% static 'fonts/YapariTrial-ExtraBold.ttf' %}") format('truetype');
-			/* Add additional font styles (font-weight, font-style) as needed */
-			font-weight: normal;
-			font-style: normal;
-		}
-		@font-face {
-			font-family: 'BaiJamjuree';
-			src: url("{% static 'fonts/BaiJamjuree-Regular.ttf' %}") format('truetype');
-			font-weight: normal;
-			font-style: normal;
-		}
-		@font-face {
-			font-family: 'BaiJamjuree';
-			src: url("{% static 'fonts/BaiJamjuree-Bold.ttf' %}") format('truetype');
-			font-weight: bold;
-			font-style: normal;
-		}
-		@font-face {
-			font-family: 'BaiJamjuree';
-			src: url("{% static 'fonts/BaiJamjuree-SemiBold.ttf' %}") format('truetype');
-			font-weight: 600;
-			font-style: normal;
-		}
-	</style>
-
-	<body>
-		<div class="background"></div>
-		<div id="main-content" class="container mx-auto m-5 p-5"></div>
-		<canvas id="pongCanvas" width="600" height="400"></canvas>
-		<!--  Script to load htlm content in the base page using AJAX -->
-
-		<script>
-			function loadPage(page) {
-				fetch('/api/' + page + '/')
-				.then(response => response.json())
-				.then(data => {
-					document.getElementById('main-content').innerHTML = data.content;
-					history.pushState({page: page}, "", "#" + page);
-				})
-				.catch(error => {
-					console.error('Error loading page:', error);
-				});
-			}
-
-			window.onpopstate = function(event) {
-				if (event.state) {
-					loadPage(event.state.page);
-				} else {
-					loadPage('home'); // Default page
-				}
-			};
-
-			// Example of loading the home page on document ready
-			document.addEventListener('DOMContentLoaded', function() {
-				const page = location.hash.replace('#', '') || 'home';
-				loadPage(page);
-			});
-	</script>
-		</script>
-		<script src="{% static 'js/pong.js' %}" defer></script>
-	</body>
+  <body>
+    <div class="background"></div>  
+    <div id="main-content" class="container mx-auto m-5 p-5"></div>
+    <canvas id="pongCanvas" width="600" height="400" display="none"></canvas>
+    <script src="{% static 'js/page_loading.js' %}" defer ></script>
+    <script src="{% static 'js/pong.js' %}" defer ></script>
+    <script src="{% static 'js/ai.js' %}" defer ></script>
+    <script src="{% static 'js/main.js' %}" defer ></script>
+    <script src="{% static 'js/tournament.js' %}" defer ></script>
+  </body>
 </html>
