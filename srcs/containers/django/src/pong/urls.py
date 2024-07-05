@@ -1,29 +1,14 @@
-"""
-URL configuration for pong project.
-
-The `urlpatterns` list routes URLs to views. For more information please see:
-    https://docs.djangoproject.com/en/5.0/topics/http/urls/
-Examples:
-Function views
-    1. Add an import:  from my_app import views
-    2. Add a URL to urlpatterns:  path('', views.home, name='home')
-Class-based views
-    1. Add an import:  from other_app.views import Home
-    2. Add a URL to urlpatterns:  path('', Home.as_view(), name='home')
-Including another URLconf
-    1. Import the include() function: from django.urls import include, path
-    2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
-"""
-from django.contrib import admin
-from django.urls import path, include
-
-# urlpatterns = [
-#     path('admin/', admin.site.urls),
-#     path('playpong/', include('playpong.urls'))
-# ]
+from django.urls import path
+from . import views
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('', include('playpong.urls')),
-    path('', include('django.contrib.auth.urls'))
+    path('', views.index, name='index'),
+	path('api/home/', views.home_view, name='api_home'),
+	path('api/pong/', views.pong_view, name='api_pong'),
+	path('api/login/', views.login_view, name='api_login'),
+	path('api/sign_up/', views.sign_up_view, name='api_sign_up'),
+	path('api/end_game/', views.end_game_view, name='api_end_game'),
+	path('api/game_mode/', views.game_mode_view, name='api_game_mode'),
+	path('api/tournament/', views.tournament_view, name='api_tournament'),
+	path('api/play_against/', views.play_against_view, name='api_play_against'),
 ]

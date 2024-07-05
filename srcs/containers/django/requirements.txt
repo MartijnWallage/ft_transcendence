@@ -5,6 +5,9 @@ gunicorn==21.2.0
 django_postgres_extensions== 0.9.3
 whitenoise # for serving static files
 crispy-bootstrap5 # To integrate Bootstrap 5 with Django forms
+djangorestframework
+markdown       # Markdown support for the browsable API.
+django-filter  # Filtering support
 # djangorestframework-filters
 # django-utils-six
 # six
