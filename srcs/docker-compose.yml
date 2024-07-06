@@ -6,32 +6,15 @@ services:
       context: containers/django
       dockerfile: Dockerfile
     env_file: 
-    - .env
+      - .env
     networks:
       - ts-network
     expose:
       - "8000" #only exposed internally
     ports:
       - "8000:8000"
-    depends_on:
-      - "postgressql"
-      #- media:/media/
-    # restart: on-failure # always # Restart containers on system boot and in case of failures
+    restart: on-failure # always # Restart containers on system boot and in case of failures
 
-  postgressql:
-    container_name : postgressql
-    build:
-      context: containers/postgressql
-      dockerfile: Dockerfile
-    env_file:
-      - .env
-    networks:
-     - ts-network
-    expose:
-      - "5432"
-    restart: on-failure #always
-    volumes:
-      - database:/var/lib/postgresql/data/
 
   nginx:
     container_name: nginx

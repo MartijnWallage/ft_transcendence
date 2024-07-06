@@ -92,13 +92,9 @@ ASGI_APPLICATION = 'transcendence.asgi.application'
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django_postgres_extensions.backends.postgresql',
-        'NAME': 'demo',
-        'USER': 'demo',
-        'HOST': 'postgressql',
-        'PORT': 5432,
-        'PASSWORD':'demo'
+    "default": {
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": "mydatabase",
     }
 }
 
