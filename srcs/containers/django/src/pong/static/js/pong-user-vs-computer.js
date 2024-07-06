@@ -13,23 +13,21 @@ function updateScoreUserVsComputer() {
         player1Score += 1;
         resetBall();
     }
-
     if (player1Score === scoreToWin){
-		gameRunning = false;
-        displayScoreUserVsComputer();
         setTimeout(function() {
             alert('Player 1 wins!');
             console.log('Player 1 wins!');
         }, 100);
+        return false;
 	}
 	else if (player2Score === scoreToWin){
-		gameRunning = false;
-        displayScoreUserVsComputer();
         setTimeout(function() {
             alert('Player 2 wins!');
             console.log('Player 2 wins!');
         }, 100);
+        return false;
 	}
+    return true;
 }
 
 function resetBall() {
@@ -55,23 +53,23 @@ function movePaddlesComputer() {
 function gameLoopUserVsComputer() {
     // Clear the canvas
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-
+    
     // Draw net, paddles, and ball
     drawNet();
     drawPaddle(player1);
     drawPaddle(player2);
     drawBall(ball);
     displayScoreUserVsComputer();
+    
+    if (!gameRunning) return;
+    
+    // Update game state
+    movePaddlesPlayer1();
+    movePaddlesComputer();
+    updatePaddle(player1);
+    updatePaddle(player2);
+    updateBall();
+    gameRunning = updateScoreUserVsComputer();
+    requestAnimationFrame(gameLoopUserVsComputer);  
 
-    if (gameRunning) {
-        // Update game state
-        movePaddlesPlayer1();
-        movePaddlesComputer();
-        updatePaddle(player1);
-        updatePaddle(player2);
-        updateBall();
-        updateScoreUserVsComputer();
-    }
-
-    requestAnimationFrame(gameLoopUserVsComputer);
 }

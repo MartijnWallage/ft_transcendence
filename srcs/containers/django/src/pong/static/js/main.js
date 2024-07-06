@@ -12,6 +12,9 @@ function startGameUserVsUser() {
 function startGame(player1Name, player2Name, mode) {
 	document.getElementById('pongCanvas').style.display = 'block';
     console.log(`Starting game: ${player1Name} vs ${player2Name}`);
+	player1Score = 0;
+	player2Score = 0;
+	gameRunning = true;
 	console.log(`Game mode: ${mode}`);
 	if (mode === 'tournament') {
 		gameLoopTournament();
