@@ -98,6 +98,17 @@ DATABASES = {
     }
 }
 
+#DATABASES = {
+#    'default': {
+#        'ENGINE': 'django_postgres_extensions.backends.postgresql',
+#        'NAME': 'demo',
+#        'USER': 'demo',
+#        'HOST': 'postgressql',
+#        'PORT': 5432,
+#        'PASSWORD':'demo'
+#   }
+#}
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
