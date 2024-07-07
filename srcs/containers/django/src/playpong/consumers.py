@@ -79,6 +79,15 @@ class PingpongConsumer(AsyncWebsocketConsumer):
         self.__class__.connected_players += 1
         self.is_first_player = self.__class__.connected_players == 1
 
+        if self.__class__.connected_players == 2:
+            await self.channel_layer.group_send(
+                self.room_group_name,
+                {
+                    'type': 'players_ready',
+                    'role': 'first' if self.is_first_player else 'second'
+                }
+            )
+
     async def disconnect(self, close_code):
         await self.channel_layer.group_discard(
             self.room_group_name,
@@ -102,6 +111,18 @@ class PingpongConsumer(AsyncWebsocketConsumer):
                         'role': role
                     }
                 )
+
+            elif message_type == 'player_action':
+                await self.channel_layer.group_send(
+                    self.room_group_name,
+                    {
+                        'type': 'player_action',
+                        'data': payload
+                    }
+                )
+
+
+
             else:
                 await self.send(text_data=json.dumps({
                     'error': f'Unsupported message type: {message_type}'
@@ -111,13 +132,49 @@ class PingpongConsumer(AsyncWebsocketConsumer):
                 'error': 'Invalid JSON data received'
             }))
 
+    # async def players_ready(self, event):
+    #     role = event.get('role')  # Use get() to safely retrieve 'role' from event data
+    #     if role:
+    #         await self.send(text_data=json.dumps({
+    #             'type': 'players_ready',
+    #             'role': role
+    #         }))
+    #     else:
+    #         print("No role found in event data.")
+
+    # async def players_ready(self, event):
+    #     role = event.get('role')  # Use .get() to safely retrieve 'role' from event data
+    #     if role == 'first':
+    #         # Handle logic for the first player
+    #         await self.send(text_data=json.dumps({
+    #             'type': 'players_ready',
+    #             'role': 'first'
+    #         }))
+    #     elif role == 'second':
+    #         # Handle logic for the second player
+    #         await self.send(text_data=json.dumps({
+    #             'type': 'players_ready',
+    #             'role': 'second'
+    #         }))
+    #     else:
+    #         print("Unknown or missing 'role' in event data:", event)
+
     async def players_ready(self, event):
+        role = event.get('role', '')
+        if role in ['first', 'second']:
+            await self.send(text_data=json.dumps({
+                'type': 'players_ready',
+                'role': role
+            }))
+        else:
+            print("Unknown or missing 'role' in event data:", event)
+
+    async def player_action(self, event):
+        data = event['data']
         await self.send(text_data=json.dumps({
-            'type': 'players_ready',
-            'role': event['role']
+            'type': 'player_action',
+            'data': data
         }))
-
-
 
 
     # async def send_game_state(self, event):

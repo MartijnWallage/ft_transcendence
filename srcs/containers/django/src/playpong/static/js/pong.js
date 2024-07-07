@@ -2,45 +2,11 @@
 // let isHost = false; // Flag to determine if this client is the host
 // let reconnectTimeout = null; // Timeout variable for reconnecting
 
-function initiateRemotePlay() {
-    const message = { type: 'initiate_remote_play', data: {} };
-    if (pingpongsocket && pingpongsocket.readyState === WebSocket.OPEN) {
-        pingpongsocket.send(JSON.stringify(message));
-        console.log('Initiated remote play');
-    } else {
-        console.error('WebSocket is not open to send messages.');
-    }
-}
 
-function sendGameState(gameState) {
-    const message = { type: 'game_state_update', data: gameState };
-    if (pingpongsocket.readyState === WebSocket.OPEN) {
-        pingpongsocket.send(JSON.stringify(message));
-    } else {
-        console.error('WebSocket is not open to send messages.');
-    }
-}
 
 // Example of sending player ready message
-function players_ready() {
-    const message = { type: 'player_ready', data: {} };
-    if (pingpongsocket.readyState === WebSocket.OPEN) {
-        pingpongsocket.send(JSON.stringify(message));
-        console.log('Player is ready.');
-    } else {
-        console.error('WebSocket is not open to send messages.');
-    }
-}
 
 
-document.addEventListener('DOMContentLoaded', function() {
-    const remotePlayButton = document.getElementById('remotePlay');
-    if (remotePlayButton) {
-        remotePlayButton.style.display = 'none'; // Ensure the remotePlay div is visible
-    } else {
-        console.error('Remote play button container not found in the DOM.');
-    }
-});
 
 function updateGameState(state) {
     player1.x = state.player1.x;
@@ -199,8 +165,11 @@ function gameLoop() {
     updateBall();
     updateScore();
 
-    if (isHost) {
-        sendGameState(); // Send game state only if this client is the host
+    // if (isHost) {
+    //     sendGameState(); // Send game state only if this client is the host
+    // }
+    if (is_first_player) {
+        sendGameState(); // Send game state only if this client is the first player
     }
 
     requestAnimationFrame(gameLoop);
