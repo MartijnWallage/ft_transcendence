@@ -4,17 +4,6 @@
 {% block title %}Pong Game{% endblock %}
 
 {% block content %}
-
-
-<!-- <script src="https://cdn.jsdelivr.net/npm/socket.io-client/dist/socket.io.js"></script> -->
-<script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
-<script src="{% static 'js/manager.js' %}"></script>
-<script src="{% static 'js/pong.js' %}"></script>
-<script src="{% static 'js/pongremote.js' %}"></script>
-
-
-
-
 <style>
     canvas {
         display: block;
@@ -32,179 +21,446 @@
         border-radius: 10px;
         margin-top: 50px;
     }
+    .chat-container {
+        position: absolute;
+        right: 20px;
+        top: 60px;
+        width: 300px;
+        max-height: 400px;
+        overflow-y: auto;
+        background-color: white;
+        border: 1px solid #ccc;
+        padding: 10px;
+        display: none;
+    }
+    .chat-message {
+        margin-bottom: 10px;
+    }
+    .chat-input {
+        display: flex;
+    }
+    .chat-input input {
+        flex: 1;
+        padding: 5px;
+    }
+    .chat-input button {
+        padding: 5px;
+    }
 </style>
 
 <div id="gameModeSelection" style="text-align:center; margin-bottom:20px;">
     {% if is_logged_in %}
-        <button type="button" class="btn btn-info" onclick="selectGameMode('user-vs-computer')">User vs Computer</button>
-        <button type="button" class="btn btn-warning" onclick="selectGameMode('user-vs-user')">User vs User</button>
-        <button type="button" class="btn btn-warning" onclick="selectGameMode('remoteuser-vs-remoteuser')">remoteuser vs remoteuser</button>
-
+        <button type="button" class="btn btn-success" onclick="selectGameMode('remote')">Remote Play</button>
     {% else %}
-        <button type="button" class="btn btn-warning" onclick="selectGameMode('user-vs-computer')">Play against computer</button>
-        <button type="button" class="btn btn-warning" onclick="selectGameMode('user-vs-user')">Play against friend</button>
-        <button type="button" class="btn btn-warning" onclick="selectGameMode('remoteuser-vs-remoteuser')">remoteuser vs remoteuser</button>
-
+        <button type="button" class="btn btn-success" onclick="selectGameMode('remote')">Remote Play</button>
     {% endif %}
 </div>
 
-<div id="nameInputs" style="display:none;">
-    {% if is_logged_in %}
-        <p>Player 1: {{ user.username }}</p>
-    {% else %}
-        <p>Player 1: Guest</p>
-    {% endif %}
-    <input type="text" id="player2Name" class="name-input" placeholder="Player 2 Name">
-    <button type="button" class="btn btn-primary" onclick="startGameWithPlayer2()">Start Game</button>
+<div>
+    <p>Player 1 Score: <span id="player1-score">0</span></p>
+    <p>Player 2 Score: <span id="player2-score">0</span></p>
 </div>
 
-<div id="nameInputs_remote" style="display:none;">
-    {% if is_logged_in %}
-    <p>Player 1: {{ user.username }}</p>
-    {% else %}
-    <p>Player 1: Guest</p>
-    {% endif %}
-    <button type="button" class="btn btn-primary" onclick="startGameremote()">Start Game</button>
-    <p id="waitingMessage" style="display:none;">Waiting for Player 2...</p>
-</div>
-
-<div id="gameButtons" style="display:none;">
-    <button type="button" class="btn btn-danger" onclick="endGame()">End Game</button>
+<div id="remotePlay" style="display:none;">
+    <p>Waiting for another player to join...</p>
+    <button type="button" class="btn btn-danger" onclick="cancelRemotePlay()">Cancel</button>
+    <button type="button" class="btn btn-primary" onclick="initiateRemotePlay()" id="startGameButton">Start Game</button>
 </div>
 
 <canvas id="pongCanvas" width="600" height="400" style="display:none;"></canvas>
 
-<script>
-    const loc = window.location;
-    const wsStart = loc.protocol === 'https:' ? 'wss://' : 'ws://';
-    const endpoint = wsStart + loc.host + '/ws/game/';
-
-    const chatSocket = new WebSocket(endpoint);
-
-    chatSocket.onmessage = function(e) {
-        const data = JSON.parse(e.data);
-        console.log(data.message);
-        // Update game state based on received message
-    };
-
-    chatSocket.onclose = function(e) {
-        console.error('Chat socket closed unexpectedly');
-    };
-
-    // Send data
-    function sendData(message) {
-        chatSocket.send(JSON.stringify({
-            'message': message
-        }));
-    }
-
-</script>
-
+<!-- Chat Room -->
+<!-- main container for the entire chat room -->
+<div id="chatContainer" class="chat-container">
+    <!-- Inside chatContainer, there is another div with ID chatMessages and class chat-messages. 
+        This div will hold all the chat messages exchanged between users. -->
+    <div id="chatMessages" class="chat-messages"></div>
+    <!-- This div with class chat-input contains the input field and the send button for users to send messages. -->
+    <div class="chat-input">
+        <input type="text" id="chatMessageInput" placeholder="Type a message...">
+        <button onclick="sendMessage()">Send</button>
+    </div>
+</div>
 
 <script>
     function selectGameMode(mode) {
-        if (mode === 'user-vs-user') {
+        if (mode === 'remote') {
             document.getElementById('gameModeSelection').style.display = 'none';
-            document.getElementById('nameInputs').style.display = 'block';
-        } 
-        else if (mode === 'remoteuser-vs-remoteuser'){  
-            document.getElementById('gameModeSelection').style.display = 'none';
-            document.getElementById('nameInputs_remote').style.display = 'block';
-        }
-        else {
-            document.getElementById('gameModeSelection').style.display = 'none';
-            startGame('Guest', 'Computer', 'user-vs-computer');
+            document.getElementById('remotePlay').style.display = 'block';
+            document.getElementById('chatContainer').style.display = 'block'; // Show chat room
+            initializechatWebSocket();
+            initializepingpongWebSocket();
+
+            is_first_player = true; // This player is the first player
+
         }
     }
 
-    function startGameWithPlayer2() {
-        const player2Name = document.getElementById('player2Name').value;
-        if (player2Name.trim() === '') {
-            alert('Please enter a valid name for Player 2');
+    function cancelRemotePlay() {
+        document.getElementById('remotePlay').style.display = 'none';
+        document.getElementById('gameModeSelection').style.display = 'block';
+        if (pingpongsocket) {
+            pingpongsocket.close(); // Close the WebSocket connection when canceling remote play
+        }  
+    }
+
+    function initiateRemotePlay() {
+        const message = { type: 'initiate_remote_play', data: {} };
+        if (pingpongsocket && pingpongsocket.readyState === WebSocket.OPEN) {
+            pingpongsocket.send(JSON.stringify(message));
+            console.log('Initiated remote play');
         } else {
-            const player1Name = '{{ user.username|default:"Guest" }}';
-            startGame(player1Name, player2Name, 'user-vs-user');
+            console.error('WebSocket is not open to send messages.');
         }
     }
 
-    // function startGameremote() {
-    //     const player2Name = document.getElementById('player2Name').value;
-    //     if (player2Name.trim() === '') {
-    //         alert('Please enter a valid name for Player 2');
-    //     } else {
-    //         const player1Name = '{{ user.username|default:"Guest" }}';
-    //         startGame(player1Name, player2Name, 'remoteuser-vs-remoteuser');
-    //     }
-    // }
-
-    // function startGameremote() {
-    //     document.getElementById("waitingMessage").style.display = "block";
-    //     const player1Name = '{{ user.username|default:"Guest" }}';
-    //     ws = new WebSocket("ws://your_local_ip:your_port");
-    //     ws.onopen = function() {
-    //         ws.send(JSON.stringify({ type: "join", player: player1Name }));
-    //     };
-    //     ws.onmessage = function(event) {
-    //         const message = JSON.parse(event.data);
-    //         if (message.type === "start") {
-    //             document.getElementById("waitingMessage").style.display = "none";
-    //             startGameremote(player1Name, message.player2Name, 'remoteuser-vs-remoteuser');
-    //         }
-    //     };
-    // }
-
-
-
-    function startGameremote() {
-        document.getElementById("waitingMessage").style.display = "block";
-        const player1Name = '{{ user.username|default:"Guest" }}';
-
-        // Connect to Socket.IO server
-        const socket = io('https://10.15.204.3:8443');  // Replace with your actual domain
-
-        socket.on('connect', () => {
-            socket.emit('join', player1Name);  // Send join message to the server
-        });
-
-        socket.on('start', (message) => {
-            document.getElementById("waitingMessage").style.display = "none";
-            startGame(player1Name, message.player2Name, 'remoteuser-vs-remoteuser');
-        });
-
-        socket.on('disconnect', () => {
-            console.log('Disconnected from server');
-        });
+    // Function to handle player actions received from WebSocket
+    function handlePlayerAction(actionData) {
+        // actionData should contain information about which paddle to move (player1 or player2)
+        // and in which direction (up or down)
+        if (actionData.player === 'player1') {
+            player1.dy = actionData.dy; // Set paddle movement direction for player 1
+        } else if (actionData.player === 'player2') {
+            player2.dy = actionData.dy; // Set paddle movement direction for player 2
+        } else {
+            console.error('Unknown player action received:', actionData);
+        }
     }
 
 
+    // Function to update paddle positions based on their current velocities
+    function updatePaddles() {
+        updatePaddle(player1);
+        if (isPlayerA) {
+            // Simulate remote paddle movement for Player A
+            updateComputerPaddle();
+        } else {
+            updatePaddle(player2);
+        }
+    }
 
-    function startGame(player1Name, player2Name, mode, websocket) {
-        document.getElementById('nameInputs').style.display = 'none';
-        document.getElementById('nameInputs_remote').style.display = 'none';
-        document.getElementById('gameButtons').style.display = 'block';
+    // Send player action to WebSocket
+    function sendPlayerAction(player, dy) {
+        const currentPlayer = isPlayerA ? 'player1' : 'player2';
+        const actionData = {
+            player: currentPlayer,
+            dy: dy
+        };
+        const message = {
+            type: 'player_action',
+            data: actionData
+        };
+        if (pingpongsocket.readyState === WebSocket.OPEN) {
+            pingpongsocket.send(JSON.stringify(message));
+        } else {
+            console.error('WebSocket is not open to send messages.');
+        }
+    }
+
+    document.addEventListener('keydown', (event) => {
+        if (event.key === 'ArrowUp') {
+            sendPlayerAction(-5);
+        } else if (event.key === 'ArrowDown') {
+            sendPlayerAction(5);
+        }
+    });
+
+    document.addEventListener('keyup', (event) => {
+        if (event.key === 'ArrowUp' || event.key === 'ArrowDown') {
+            sendPlayerAction(0);
+        }
+    });
+
+    function sendPlayerAction(dy) {
+        pingpongsocket.send(JSON.stringify({
+            type: 'player_action',
+            data: { player: isPlayerFirst ? 'player1' : 'player2', dy: dy }
+        }));
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const remotePlayButton = document.getElementById('remotePlay');
+        if (remotePlayButton) {
+            remotePlayButton.style.display = 'none'; // Ensure the remotePlay div is visible
+        } else {
+            console.error('Remote play button container not found in the DOM.');
+        }
+    });
+
+    let pingpongsocket = null; // Define pingpongsocket globally
+    let is_first_player = false;
+
+
+    function initializepingpongWebSocket() {
+        
+        pingpongsocket = new WebSocket('wss://10.15.109.3:8443/ws/pingpongsocket/');
+        
+        pingpongsocket.onopen = function(event) {
+            console.log('WebSocket connection opened');
+        };
+
+        pingpongsocket.onmessage = function(event) {
+            const data = JSON.parse(event.data);
+            console.log('Message from server:', data);
+
+            if (data.type === 'game_start') {
+                console.log('Both players are ready to start the game.');
+                isPlayerFirst = data.role === 'A';
+                document.getElementById('pongCanvas').style.display = 'block';
+                draw();
+            } else if (data.type === 'game_state_update') {
+                updateGameState(data.payload);
+            } else if (data.type === 'player_action') {
+                handlePlayerAction(data.data);
+            } else if (data.type === 'score_update') {
+                updateScores(data.payload);
+            } else if (data.type === 'game_end') {
+                // Handle game end
+                handleGameEnd(data.payload);
+            } else {
+                console.error('Unsupported message type:', data.type);
+            }
+        };
+
+        pingpongsocket.onclose = function(event) {
+            console.log('WebSocket connection closed');
+            // Set a timeout to attempt reconnecting after 15 seconds
+            // setReconnectTimeout();
+        };
+    }
+
+
+    let canvas = document.getElementById("pongCanvas");
+    let context = canvas.getContext("2d");
+
+    // Paddle properties
+    const paddleWidth = 14, paddleHeight = 80, paddleSpeed = 6;
+    let player1 = { x: 10, y: canvas.height / 2 - paddleHeight / 2, width: paddleWidth, height: paddleHeight, dy: 0 };
+    let player2 = { x: canvas.width - paddleWidth - 10, y: canvas.height / 2 - paddleHeight / 2, width: paddleWidth, height: paddleHeight, dy: 0 };
+
+    // Identify if this client is player A or player B
+    const isPlayerA = window.location.pathname.endsWith('/playerA/');
+    const isPlayerB = window.location.pathname.endsWith('/playerB/');
+
+    // Ball properties
+    const ballSize = 14;
+    let ball = { x: canvas.width / 2, y: canvas.height / 2, width: ballSize, height: ballSize, dx: -7, dy: 6 };
+
+    // Score
+    let player1Score = 0, player2Score = 0;
+
+    // Key controls
+    let keys = {};
+    document.addEventListener("keydown", (event) => { keys[event.key] = true; });
+    document.addEventListener("keyup", (event) => { keys[event.key] = false; });
+
+    
+    function draw() {
+        context.clearRect(0, 0, canvas.width, canvas.height);
+
+        // Draw player 1 paddle
+        context.fillStyle = 'blue'; // Change color here
+        context.fillRect(player1.x, player1.y, player1.width, player1.height);
+
+        // Draw player 2 paddle
+        context.fillStyle = 'red'; // Change color here
+        context.fillRect(player2.x, player2.y, player2.width, player2.height);
+
+        // Draw ball
+        context.fillStyle = 'green'; // Change color here
+        context.beginPath();
+        context.arc(ball.x, ball.y, ball.width / 2, 0, Math.PI * 2);
+        context.fill();
+    }
+
+
+    // Main loop
+    function gameLoop() {
+        // Move paddles
+        updatePaddles();
+
+        // Move ball and detect collisions
+        if (isPlayerFirst) {
+            ball.x += ball.dx;
+            ball.y += ball.dy;
+
+            if (ball.y <= 0 || ball.y >= canvas.height) {
+                ball.dy *= -1;
+            }
+
+            if (ball.x <= 0 || ball.x >= canvas.width) {
+                ball.dx *= -1;
+            }
+
+            const gameState = {
+                player1: { y: player1.y, dy: player1.dy },
+                player2: { y: player2.y, dy: player2.dy },
+                ball: { x: ball.x, y: ball.y, dx: ball.dx, dy: ball.dy }
+            };
+            pingpongsocket.send(JSON.stringify({ type: 'game_state_update', data: gameState }));
+        }
+
+        draw();
+        requestAnimationFrame(gameLoop);
+    }
+
+
+    function startRemoteGame(player1Name, player2Name, mode, isFirstPlayer) {
+        console.log(`Starting remote game with ${player1Name} and ${player2Name} in ${mode} mode. First player: ${isFirstPlayer}`);
+        isPlayerFirst = isFirstPlayer;
+        // document.getElementById('gameButtons').style.display = 'block';
         document.getElementById('pongCanvas').style.display = 'block';
-        if (mode === 'remoteuser-vs-remoteuser') {
-            initializeGameremote(player1Name, player2Name, mode, websocket);
-        } else {
-            initializeGame(player1Name, player2Name, mode);
+    
+        draw(); // Assuming gameLoop is defined somewhere else
+        
+    }
+
+    // Function to update game state based on received data
+    function updateGameState(gameState) {
+        player1.y = gameState.player1.y;
+        player2.y = gameState.player2.y;
+        ball.x = gameState.ball.x;
+        ball.y = gameState.ball.y;
+        draw();
+    }
+
+///////////not  yet
+
+    function updateScores(payload) {
+        // Example assuming payload contains updated scores for both players
+        const player1Score = payload.player1.score;
+        const player2Score = payload.player2.score;
+
+        // Update your UI or perform any necessary actions based on the scores
+        console.log(`Player 1 score: ${player1Score}`);
+        console.log(`Player 2 score: ${player2Score}`);
+
+        // Example: Update HTML elements
+        document.getElementById('player1-score').textContent = player1Score;
+        document.getElementById('player2-score').textContent = player2Score;
+    }
+
+    function updateScore() {
+        if (ball.x < 0) {
+            player2Score += 1;
+            resetBall();
+        } else if (ball.x + ball.width > canvas.width) {
+            player1Score += 1;
+            resetBall();
+        }
+
+        if (player1Score == 10 || player2Score == 10) {
+            if (player1Score == 10) {
+                alert("Player 1 wins!");
+            } else {
+                alert("Player 2 wins!");
+            }
+            player1Score = 0;
+            player2Score = 0;
         }
     }
 
-    // function startGameremote(player1Name, player2Name, mode) {
-    //     document.getElementById('nameInputs').style.display = 'none';
-    //     document.getElementById('nameInputs_remote').style.display = 'none';
-    //     document.getElementById('gameButtons').style.display = 'block';
-    //     document.getElementById('pongCanvas').style.display = 'block';
-    //     initializeGameremote(player1Name, player2Name, mode, ws);
-    // }
-
-    function endGame() {
-        var redirecturi = "/";
-        window.location.href = redirecturi;
+    function resetBall() {
+        ball.x = canvas.width / 2;
+        ball.y = canvas.height / 2;
+        ball.dx *= -1; // Change ball direction
+        ball.dy = ball.dx / 2;
     }
+
+
+    function handleGameEnd(payload) {
+        const winner = payload.winner;
+
+        // Display game end message
+        if (winner === 'player1') {
+            alert('Player 1 wins!');
+        } else if (winner === 'player2') {
+            alert('Player 2 wins!');
+        } else {
+            alert('Game ended.');
+        }
+
+        // Optionally, reset any game-related UI elements or prepare for a new game
+    }
+
+
+
+
+
+
+
+    // Function to update computer-controlled paddle for Player A
+    function updateComputerPaddle() {
+        // Implement logic to move the computer-controlled paddle for Player A
+        // Example: Follow the ball's y position
+        if (ball.y < player1.y + player1.height / 2) {
+            player1.dy = -paddleSpeed;
+        } else if (ball.y > player1.y + player1.height / 2) {
+            player1.dy = paddleSpeed;
+        } else {
+            player1.dy = 0;
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    function initializechatWebSocket() {
+        // WebSocket allows for efficient, bidirectional communication, 
+        // making it suitable for applications like chat rooms, live updates, and multiplayer games
+
+        let chatSocket = new WebSocket('wss://10.15.109.3:8443/ws/chatsocket/');
+
+        // When a message is received from the chatSocket server
+        // the onmessage event handler is triggered.
+        // The event object e contains the message data.
+        chatSocket.onmessage = function(e){
+            // This data is parsed from JSON format 
+            // into a JavaScript object and logged to the console(debug)
+            let data = JSON.parse(e.data);
+            console.log('Data:', data);
+            
+            // A container for chat messages
+            let chatMessages = document.getElementById('chatMessages');
+            // Create a new 'div' element
+            let newMessage = document.createElement('div');
+            // Assigned classname and textcontect
+            newMessage.className = 'chat-message';
+            newMessage.textContent = data.message;
+            // Appends the new message div to the chatMessages container
+            chatMessages.appendChild(newMessage);
+            // Scroll to the bottom
+            chatMessages.scrollTop = chatMessages.scrollHeight; 
+        }
+
+        window.sendMessage = function() {
+            // Selects the DOM element where the user types their message.
+            let messageInput = document.getElementById('chatMessageInput');
+            // Gets the value (i.e., the message text) from the input field.
+            let message = messageInput.value;
+            // Sends the message to the WebSocket server, first converting it to a JSON string.
+            chatSocket.send(JSON.stringify({
+                'message': message
+            }));
+            // Clears the input field after sending the message.
+            messageInput.value = '';
+        }
+    }
+
+
 </script>
 
-
-<!-- <script src="{% static 'js/Node.js' %}"></script> -->
+<script src="{% static 'js/pong.js' %}"></script>
 
 {% endblock %}

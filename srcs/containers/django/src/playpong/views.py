@@ -10,6 +10,9 @@ from django.shortcuts import render, redirect
 from .forms import RegisterForm
 from django.contrib.auth import login, logout, authenticate
 
+# def play_pong(request):
+#     return render(request, 'main/pong.html')
+
 def play_pong(request):
     context = {
         'is_logged_in': request.user.is_authenticated
