@@ -100,8 +100,8 @@ function movePaddlesPlayer2() {
 // Display score
 
 function displayScore() {
-	ctx.font = "20px Arial";
-	ctx.fillStyle = "white";
-	ctx.fillText("Player 1 Score: " + player1Score, 20, 30);
-	ctx.fillText("Player 2 Score: " + player2Score, canvas.width - 180, 30);
+	ctx.font = "40px Bitfont";
+	ctx.fillStyle = monoColor;
+	ctx.fillText(player1Score, canvas.width / 2 - 80, 30);
+	ctx.fillText(player2Score, canvas.width / 2 + 50, 30);
 }

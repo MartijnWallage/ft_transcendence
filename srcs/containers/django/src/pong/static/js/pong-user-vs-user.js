@@ -42,7 +42,7 @@ function gameLoopUserVsUser() {
 	drawPaddle(player1);
 	drawPaddle(player2);
 	drawBall(ball);
-	displayScoreUserVsUser();
+	displayScore();
 
 	if (!gameRunning) { return; }
 	// Update game state

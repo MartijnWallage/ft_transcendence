@@ -51,7 +51,7 @@ function gameLoopUserVsComputer() {
     drawPaddle(player1);
     drawPaddle(player2);
     drawBall(ball);
-    displayScoreUserVsComputer();
+    displayScore();
     
     if (!gameRunning) return;
     
