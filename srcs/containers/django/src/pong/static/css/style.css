@@ -12,8 +12,11 @@
 	background-position: center;
 }
 
-#main-content {
+#web-app {
 	background-color: #ff5733;
+}
+
+#main-content {
 	text-align: center;
 }
 

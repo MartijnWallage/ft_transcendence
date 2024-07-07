@@ -1,30 +1,35 @@
 {% block content %}
 <div>
+  <div id="leaderboardDiv" style="display: none;">
+    <div class="col d-flex justify-content-end">
+      <button type="button" class="btn btn-outline-light btn-lg"
+              id="leaderboardClose">X</button>
+    </div>
+    <h2>I'm leader board stuff</h2>
+    <h2>----------------------</h2>
+    <h2>----------0-0---------</h2>
+    <h2>----------___---------</h2>
+    <h2>----------------------</h2>
+  </div>
   <div class="col d-flex justify-content-end">
     <button type="button" class="btn btn-outline-light btn-lg"
-                onclick="loadPage('login')">Leader board</button>
+            id="leaderboardButton">Leaderboard</button>
   </div>
   <h1 class="my-4" class="display-4">Transcendence.</h1>
     <div class="container px-4">
       <div class="row gx-5">
         <div class="col gx-5">
           <button type="button" class="btn btn-outline-light btn-lg w-100"
-                  href="#pong"onclick="startGame('Guest', 'Computer', 'user-vs-computer'); loadPage('pong')">Solo</button>
+                  href="#pong_solo" onclick="startGame('Guest', 'Computer', 'user-vs-computer'); loadPage('pong_solo')">Solo</button>
         </div>
         <div class="col gx-5">
           <button type="button" class="btn btn-outline-light btn-lg w-100"
-                  href="#play_against"onclick="loadPage('play_against')">1 VS 1 - local</button>
+                  href="#two_player" onclick="loadPage('two_player')">1 VS 1</button>
         </div>
-      </div>
-      <div class="row gx-5">
         <div class="col gx-5">
           <button type="button" class="btn btn-outline-light btn-lg w-100"
                   href="#tournament" onclick="loadPage('tournament')">Tournament</button>
-        </div>
-        <div class="col gx-5">
-            <button type="button" class="btn btn-outline-light btn-lg w-100"
-                    href="#play_against" onclick="loadPage('play_against')">1 VS 1 - Online</button>
-        </div>
+          </div>
     </div>
 </div>
 {% endblock %}

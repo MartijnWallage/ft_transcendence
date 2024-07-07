@@ -3,12 +3,12 @@
 {% block content %}
 <div>
 	<p>welcome to</p>
-	<h1 class="my-4 class="display-4"">Transcendence.</h1>
-
+	<h1 class="my-4" class="display-4">Transcendence. login</h1>
 	<form method="post">
 		{% csrf_token %}{{form|crispy}}
 		<p>Don't have an account? Create one <a href="/sign-up">here</a></p>
 		<button type="submit" class="btn btn-success">Login</button>
 	</form>
+
 </div>
 {% endblock %}
