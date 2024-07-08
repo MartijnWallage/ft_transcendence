@@ -13,34 +13,34 @@ function loadPage(page) {
 }
 
 function bindEventListeners() {
-	var scoreBoardButton = document.getElementById('scoreBoardButton');
-	if (scoreBoardButton) {
-		scoreBoardButton.addEventListener('click', showscoreBoard);
+	var leaderBoardButton = document.getElementById('leaderboardButton');
+	if (leaderBoardButton) {
+		leaderBoardButton.addEventListener('click', showLeaderBoard);
 	}
-	var scoreBoardClose = document.getElementById('scoreBoardClose');
-	if (scoreBoardClose) {
-		scoreBoardClose.addEventListener('click', hidescoreBoard);
+	var leaderBoardClose = document.getElementById('leaderboardClose');
+	if (leaderBoardClose) {
+		leaderBoardClose.addEventListener('click', hideLeaderBoard);
 	}
 }
 
-function showscoreBoard() {
-	var scoreBoardDiv = document.getElementById('scoreBoardDiv');
-	if (scoreBoardDiv) {
-		scoreBoardDiv.style.display = 'block';
+function showLeaderBoard() {
+	var leaderBoardDiv = document.getElementById('leaderboardDiv');
+	if (leaderBoardDiv) {
+		leaderBoardDiv.style.display = 'block';
 	}
-	var scoreBoardButton = document.getElementById('scoreBoardButton');
-	if (scoreBoardButton) {
-		scoreBoardButton.style.display = 'none';
+	var leaderBoardButton = document.getElementById('leaderboardButton');
+	if (leaderBoardButton) {
+		leaderBoardButton.style.display = 'none';
 	}
 }
-function hidescoreBoard() {
-	var scoreBoardDiv = document.getElementById('scoreBoardDiv');
-	if (scoreBoardDiv) {
-		scoreBoardDiv.style.display = 'none';
+function hideLeaderBoard() {
+	var leaderBoardDiv = document.getElementById('leaderboardDiv');
+	if (leaderBoardDiv) {
+		leaderBoardDiv.style.display = 'none';
 	}
-	var scoreBoardButton = document.getElementById('scoreBoardButton');
-	if (scoreBoardButton) {
-		scoreBoardButton.style.display = 'block';
+	var leaderBoardButton = document.getElementById('leaderboardButton');
+	if (leaderBoardButton) {
+		leaderBoardButton.style.display = 'block';
 	}
 }
 
