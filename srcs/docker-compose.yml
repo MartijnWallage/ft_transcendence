@@ -12,8 +12,6 @@ services:
     expose:
       - "8000" #only exposed internally
       - "8443" 
-    # ports:
-    #   - "8444:8443"
     depends_on:
       - "postgressql"
       - "redis"
@@ -45,7 +43,6 @@ services:
        - ts-network
     ports:
       - "8443:443"   # For HTTPS
-      # - "8080:80"   # For HTTP redirection
     restart: always
     depends_on:
       - django
