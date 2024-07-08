@@ -30,14 +30,6 @@ function updateScoreUserVsComputer() {
     return true;
 }
 
-function resetBall() {
-    ball.x = canvas.width / 2;
-    ball.y = canvas.height / 2;
-    ball.dx *= -1; // Change ball direction
-    ball.dy = ball.dx / 2;
-}
-
-
 // Control paddles
 function movePaddlesComputer() {
 	if (player2.y + player2.height / 2 < ball.y) {
@@ -59,7 +51,7 @@ function gameLoopUserVsComputer() {
     drawPaddle(player1);
     drawPaddle(player2);
     drawBall(ball);
-    displayScoreUserVsComputer();
+    displayScore();
     
     if (!gameRunning) return;
     

@@ -95,7 +95,7 @@ def pong_tournament_view(request):
 @api_view(['GET'])
 def pong_two_player_local_view(request):
 	data = {
-		'content': render_to_string("main/pong_two_palyer_local.html", request=request)
+		'content': render_to_string("main/pong_two_player_local.html", request=request)
 	}
 	return JsonResponse(data)
 

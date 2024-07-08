@@ -6,8 +6,6 @@ function displayScoreUserVsUser() {
 	ctx.fillText("Player 2 Score: " + player2Score, canvas.width - 180, 30);
 }
 
-
-
 function updateScoreUserVsUser() {
     if (ball.x < 0) {
         player2Score += 1;
@@ -34,14 +32,6 @@ function updateScoreUserVsUser() {
 	return true;
 }
 
-function resetBall() {
-    ball.x = canvas.width / 2;
-    ball.y = canvas.height / 2;
-    ball.dx *= -1; // Change ball direction
-    ball.dy = ball.dx / 2;
-}
-
-
 function gameLoopUserVsUser() {
 	// Clear the canvas
 
@@ -52,7 +42,7 @@ function gameLoopUserVsUser() {
 	drawPaddle(player1);
 	drawPaddle(player2);
 	drawBall(ball);
-	displayScoreUserVsUser();
+	displayScore();
 
 	if (!gameRunning) { return; }
 	// Update game state

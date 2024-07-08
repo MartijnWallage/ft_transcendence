@@ -35,15 +35,6 @@ function updateScoreTournament() {
 	return true;
 }
 
-function resetBall() {
-    ball.x = canvas.width / 2;
-    ball.y = canvas.height / 2;
-    ball.dx *= -1; // Change ball direction
-    ball.dy = ball.dx / 2;
-}
-
-
-
 function gameLoopTournament() {
 	// Clear the canvas
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
