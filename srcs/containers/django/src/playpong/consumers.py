@@ -92,9 +92,9 @@ class PingpongConsumer(AsyncWebsocketConsumer):
         await self.accept()
 
         # Assign player roles
-        if len(self.connected_players) == 0:
+        if len(self.connected_players) % 2 == 0:
             self.player_roles[self.channel_name] = 'player1'
-        elif len(self.connected_players) == 1:
+        elif len(self.connected_players) % 2 == 1:
             self.player_roles[self.channel_name] = 'player2'
 
         # Track connected players
@@ -105,12 +105,12 @@ class PingpongConsumer(AsyncWebsocketConsumer):
             self.room_group_name,
             {
                 'type': 'players_update',
-                'players': list(self.connected_players)
+                'players': len(self.connected_players)
             }
         )
 
         # Ensure only two players can connect
-        if len(self.connected_players) > 2:
+        if len(self.connected_players) > 10:
             await self.close()
 
     async def disconnect(self, close_code):
@@ -126,7 +126,7 @@ class PingpongConsumer(AsyncWebsocketConsumer):
             self.room_group_name,
             {
                 'type': 'players_update',
-                'players': list(self.connected_players)
+                'players': len(self.connected_players)
             }
         )
 
@@ -151,7 +151,7 @@ class PingpongConsumer(AsyncWebsocketConsumer):
             data = data.get('data', {})
 
             if message_type == 'initiate_remote_play':
-                role = 'A' if len(self.connected_players) == 1 else 'B'
+                role = 'A' if len(self.connected_players) % 2 == 1 else 'B'
 
                 # Send a message to the group indicating remote play initiation
                 await self.channel_layer.group_send(
@@ -163,7 +163,7 @@ class PingpongConsumer(AsyncWebsocketConsumer):
                 )
 
                 # Start the game if both players are ready
-                if len(self.connected_players) == 2 and not self.game_started:
+                if len(self.connected_players) % 2 == 0 and not self.game_started:
                     await self.start_game()
             
             elif message_type == 'player_action':
@@ -212,11 +212,6 @@ class PingpongConsumer(AsyncWebsocketConsumer):
         except Exception as e:
             # Log the exception or handle it appropriately
             print(f"Error sending message: {str(e)}")
- 
-
- 
-    
-
 
 
     async def start_game(self):

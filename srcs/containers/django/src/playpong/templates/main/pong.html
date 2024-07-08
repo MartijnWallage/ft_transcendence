@@ -61,6 +61,7 @@
     <p>Player 2 Score: <span id="player2-score">0</span></p>
 </div>
 
+
 <div id="remotePlay" style="display:none;">
     <p>Waiting for another player to join...</p>
     <button type="button" class="btn btn-danger" onclick="cancelRemotePlay()">Cancel</button>
@@ -83,6 +84,9 @@
 </div>
 
 <script>
+
+    let gameRunning = false; 
+
     function selectGameMode(mode) {
         if (mode === 'remote') {
             document.getElementById('gameModeSelection').style.display = 'none';
@@ -92,7 +96,6 @@
             initializepingpongWebSocket();
 
             is_first_player = true; // This player is the first player
-
         }
     }
 
@@ -101,8 +104,28 @@
         document.getElementById('gameModeSelection').style.display = 'block';
         if (pingpongsocket) {
             pingpongsocket.close(); // Close the WebSocket connection when canceling remote play
-        }  
+        }
+        gameRunning = false; // Stop the game loop
+        resetGameState();
+        // resetGameState(); // Reset the game state
+        // Redirect to the homepage
+        window.location.href = 'https://10.15.109.3:8443/';
     }
+
+    function resetGameState() {
+        player1.y = canvas.height / 2 - paddleHeight / 2;
+        player2.y = canvas.height / 2 - paddleHeight / 2;
+        ball.x = canvas.width / 2;
+        ball.y = canvas.height / 2;
+        ball.dx = -7;
+        ball.dy = 6;
+        player1Score = 0;
+        player2Score = 0;
+        document.getElementById('player1-score').textContent = player1Score;
+        document.getElementById('player2-score').textContent = player2Score;
+        draw();
+    }    
+
 
     function initiateRemotePlay() {
         const message = { type: 'initiate_remote_play', data: {} };
@@ -111,20 +134,6 @@
             console.log('Initiated remote play');
         } else {
             console.error('WebSocket is not open to send messages.');
-        }
-    }
-
-
-
-
-    // Function to update paddle positions based on their current velocities
-    function updatePaddles() {
-        updatePaddle(player1);
-        if (isPlayerA) {
-            // Simulate remote paddle movement for Player A
-            updateComputerPaddle();
-        } else {
-            updatePaddle(player2);
         }
     }
 
@@ -198,6 +207,7 @@
                 console.log('Both players are ready to start the game.');
                 isPlayerFirst = data.role === 'A';
                 document.getElementById('pongCanvas').style.display = 'block';
+                gameRunning = true;
                 draw();
             } else if (data.type === 'game_state_update') {
                 updateGameState(data.data);
@@ -205,11 +215,7 @@
                 handleRemotePlayInitiated(data.role);  
             } else if (data.type === 'player_action') {
                 handlePlayerAction(data.data);
-             
-            // else if (data.type === 'score_update') {
-            //     updateScores(data.data);
             } else if (data.type === 'game_end') {
-                // Handle game end
                 handleGameEnd(data.data);
             } else {
                 console.error('Unsupported message type:', data.type);
@@ -218,6 +224,7 @@
 
         pingpongsocket.onclose = function(event) {
             console.log('WebSocket connection closed');
+            gameRunning = false;
             // Set a timeout to attempt reconnecting after 15 seconds
             // setReconnectTimeout();
         };
@@ -284,6 +291,12 @@
     document.addEventListener("keydown", (event) => { keys[event.key] = true; });
     document.addEventListener("keyup", (event) => { keys[event.key] = false; });
 
+    // Function to update paddle positions based on their current velocities
+    function updatePaddles() {
+        updatePaddle(player1);
+        updatePaddle(player2);
+
+    }
     
     function draw() {
         context.clearRect(0, 0, canvas.width, canvas.height);
@@ -306,6 +319,7 @@
 
     // Main loop
     function gameLoop() {
+        if (!gameRunning) return;
         // Move paddles
         updatePaddles();
 
@@ -339,40 +353,9 @@
         console.log(`Starting remote game with ${player1Name} and ${player2Name} in ${mode} mode. First player: ${isFirstPlayer}`);
         isPlayerFirst = isFirstPlayer;
         document.getElementById('pongCanvas').style.display = 'block';
+        gameRunning = true;
         draw();  
     }
-
-
-    // function updateScores(data) {
-    //     // Example assuming data contains updated scores for both players
-    //     let player1Score = data.player1.score;
-    //     let player2Score = data.player2.score;
-
-    //     // Update your UI or perform any necessary actions based on the scores
-    //     console.log(`Player 1 score: ${player1Score}`);
-    //     console.log(`Player 2 score: ${player2Score}`);
-
-    //     // Check for game end conditions
-    //     if (player1Score === 10 || player2Score === 10) {
-    //         if (player1Score === 10) {
-    //             alert("Player 1 wins!");
-    //         } else {
-    //             alert("Player 2 wins!");
-    //         }
-            
-    //         // Reset scores
-    //         player1Score = 0;
-    //         player2Score = 0;
-
-    //         // Example: Update HTML elements after game end
-    //         document.getElementById('player1-score').textContent = player1Score;
-    //         document.getElementById('player2-score').textContent = player2Score;
-    //     } else {
-    //         // Example: Update HTML elements with current scores
-    //         document.getElementById('player1-score').textContent = player1Score;
-    //         document.getElementById('player2-score').textContent = player2Score;
-    //     }
-    // }
 
     function resetBall() {
         ball.x = canvas.width / 2;
@@ -386,6 +369,10 @@
         const winner = data.winner;
 
         // Display game end message
+        const gameEndMessageDiv = document.getElementById('gameEndMessage');
+        const winnerMessage = document.getElementById('winnerMessage');
+
+        // Display game end message
         if (winner === 'player1') {
             alert('Player 1 wins!');
         } else if (winner === 'player2') {
@@ -394,32 +381,15 @@
             alert('Game ended.');
         }
 
+        // Show the game end message div
+        gameEndMessageDiv.style.display = 'block';
+        
+        // Hide the game canvas
+        document.getElementById('pongCanvas').style.display = 'none';
+        
+        gameRunning = false;
         // Optionally, reset any game-related UI elements or prepare for a new game
     }
-
-
-
-
-
-
-
-    // Function to update computer-controlled paddle for Player A
-    function updateComputerPaddle() {
-        // Implement logic to move the computer-controlled paddle for Player A
-        // Example: Follow the ball's y position
-        if (ball.y < player1.y + player1.height / 2) {
-            player1.dy = -paddleSpeed;
-        } else if (ball.y > player1.y + player1.height / 2) {
-            player1.dy = paddleSpeed;
-        } else {
-            player1.dy = 0;
-        }
-    }
-
-
-
-
-
 
 
 
