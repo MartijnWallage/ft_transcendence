@@ -1,8 +1,7 @@
 let gameRunning = true;
 
 function displayScoreTournament() {
-    ctx.font = "20px Arial";
-    ctx.fillStyle = "white";
+	displayScore();
 	ctx.fillText( `${players[matchOrder[currentGameIndex - 1][0]]} Score: ` + player1Score, 20, 30);
 	ctx.fillText( `${players[matchOrder[currentGameIndex - 1][1]]} Score: ` + player2Score, canvas.width - 180, 30);
 }

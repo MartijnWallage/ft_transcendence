@@ -1,5 +1,3 @@
-"use strict";
-
 // Draw functions
 
 function drawRect(x, y, width, height, color) {
@@ -35,6 +33,13 @@ function updatePaddle(paddle) {
 	}
 }
 
+function abs(x) {
+	if (x < 0) {
+		return -x;
+	}
+	return x;
+}
+
 function updateBall() {
 	ball.x += ball.dx;
     ball.y += ball.dy;
@@ -48,7 +53,10 @@ function updateBall() {
     if (ball.x < player1.x + player1.width && ball.y > player1.y && ball.y < player1.y + player1.height + ball.height / 2 ||
 	ball.x + ball.width > player2.x && ball.y > player2.y && ball.y < player2.y + player2.height + ball.height / 2) {
 		ball.dy = (ball.y - (paddle.y + paddle.height / 2)) * 0.25;
-        ball.dx *= -1; // Bounce off paddles
+		if (abs(ball.dx) == 3) {
+			ball.dx *= 2;
+		}
+        ball.dx *= -1.03; // Bounce off paddles
     }
 }
 
@@ -56,8 +64,9 @@ function updateBall() {
 function resetBall() {
 	ball.x = canvas.width / 2;
 	ball.y = canvas.height / 2;
-	ball.dx *= -1; // Change ball direction
-	ball.dy = ball.dx / 2;
+	serve *= -1;
+	ball.dx = 3 * serve;
+	ball.dy = getRandomInt(6);
 }
 
 // Key controls
@@ -100,8 +109,9 @@ function movePaddlesPlayer2() {
 // Display score
 
 function displayScore() {
-	ctx.font = "40px Bitfont";
+	// Wait until the fonts are all loaded
+	ctx.font = '50px Bitfont';
 	ctx.fillStyle = monoColor;
-	ctx.fillText(player1Score, canvas.width / 2 - 80, 30);
-	ctx.fillText(player2Score, canvas.width / 2 + 50, 30);
+	ctx.fillText(player1Score, canvas.width / 2 - 80, 50);
+	ctx.fillText(player2Score, canvas.width / 2 + 52, 50);
 }

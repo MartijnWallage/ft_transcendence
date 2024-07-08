@@ -26,16 +26,20 @@ const player2 = {
 				color : monoColor,
 };
 
+function getRandomInt(max) {
+	return Math.floor(Math.random() * max);
+  }
+
 // Ball properties
 const ballSize = 14;
-
+let serve = 1;
 const ball = {
             x: canvas.width / 2,
             y: canvas.height / 2,
             width: ballSize,
             height: ballSize,
-            dx: -7,
-            dy: 6,
+            dx: 3 * serve,
+            dy: getRandomInt(6),
 			color : monoColor,
 };
 
@@ -43,4 +47,4 @@ const ball = {
 let player1Score = 0;
 let player2Score = 0;
 
-let scoreToWin = 3;
+let scoreToWin = 10;
