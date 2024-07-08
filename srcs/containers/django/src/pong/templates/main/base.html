@@ -4,41 +4,33 @@
   <head>
     <meta charset="utf-8" />
     <title>transcendence</title>
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1, shrink-to-fit=no"
-    />
+    <meta name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
     <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
-    <!-- Bootstrap CSS -->
-    <link
-      rel="stylesheet"
+    <link rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css"
       integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N"
-      crossorigin="anonymous"
-    />
-    <!--  Linked CDN links to support bootstrap functionality -->
+      crossorigin="anonymous"/>
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-    <script
-      src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"
-      integrity="sha384-Fy6S3B9q64WdZWQUiU+q4/2Lc9npb8tCaSX9FK7E8HnRr0Jz8D6OP9dO5Vg3Q9ct"
-      crossorigin="anonymous"
-    ></script>
   </head>
 
   <body>
-    <div class="background"></div>
+    <div id="threejs-container"></div>
     <div id="web-app" class="container mx-auto m-5 p-5">
       <div id="main-content" ></div>
       <canvas id="pongCanvas" width="600" height="400" display="none"></canvas>
     </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128/examples/jsm/objects/Sky.js" type="moudle"></script>
     <script src="{% static 'js/main.js' %}" defer ></script>
-	<script src="{% static 'js/fonts.js' %}" ></script>
-	<script src="{% static 'js/pong_core.js' %}" defer ></script>
+    <script src="{% static 'js/fonts.js' %}" ></script>
+    <script src="{% static 'js/pong_core.js' %}" defer ></script>
     <script src="{% static 'js/page_loading.js' %}" defer ></script>
     <script src="{% static 'js/pong-conf.js' %}" defer ></script>
     <script src="{% static 'js/pong-tournament.js' %}" defer ></script>
     <script src="{% static 'js/pong-user-vs-computer.js' %}" defer ></script>
     <script src="{% static 'js/pong-user-vs-user.js' %}" defer ></script>
     <script src="{% static 'js/tournament-init.js' %}" defer ></script>
+	  <script src="{% static 'js/3dapp.js' %}" defer></script>
   </body>
 </html>
