@@ -70,6 +70,13 @@ h1 {
   }
 
 @font-face {
+	font-family: 'Bitfont';
+	src: url( ../fonts/bit9x9.ttf ) format('truetype');
+	font-weight: 400;
+	font-style: normal;
+}
+
+@font-face {
 	font-family: 'Yapari';
 	src: url( ../fonts/YapariTrial-ExtraBold.ttf ) format('truetype');
 	/* Add additional font styles (font-weight, font-style) as needed */
