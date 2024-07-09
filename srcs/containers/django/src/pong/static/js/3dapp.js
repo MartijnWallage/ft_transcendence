@@ -1,45 +1,90 @@
+import * as THREE from './three.module.js';
+// import { OrbitControls } from './OrbitControls.js';
 const container = document.getElementById('threejs-container');
 
 // Scene, Camera, Renderer with Antialiasing
 const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 1000);
 const renderer = new THREE.WebGLRenderer({ antialias: true }); // Enable antialiasing
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.setClearColor(0xc1d1db); // Set background color
 container.appendChild(renderer.domElement);
+// const controls = new OrbitControls(camera, app);
 
-// Cube 1
-const geometry = new THREE.BoxGeometry(16, 0.5, 12);
-const material = new THREE.MeshBasicMaterial({ color: 0x0a1826 });
-const cube = new THREE.Mesh(geometry, material);
-scene.add(cube);
+// field
+const field_geometry = new THREE.BoxGeometry(16, 0.5, 12);
+const field_material = new THREE.MeshBasicMaterial({ color: 0x0a1826 });
+const field = new THREE.Mesh(field_geometry, field_material);
+scene.add(field);
 
-// Cube 2
-const geometry2 = new THREE.BoxGeometry(0.3, 0.6, 11.8);
-const material2 = new THREE.MeshBasicMaterial({ color: 0xc1d1db });
-const cube2 = new THREE.Mesh(geometry2, material2);
-scene.add(cube2);
+// Nett
+const nett_geometry = new THREE.BoxGeometry(0.3, 0.51, 11.8);
+const nett_material = new THREE.MeshBasicMaterial({ color: 0xc1d1db });
+const nett = new THREE.Mesh(nett_geometry, nett_material);
+scene.add(nett);
 
-camera.position.z = 10;
+function add_ball() {
+  const ball_geometry = new THREE.SphereGeometry(0.4, 12, 12);
+  const ball_material = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+  const ball = new THREE.Mesh(ball_geometry, ball_material);
+  ball.position.set(0 ,0.7 ,0);
+  scene.add(ball);
+  return ball;
+}
+
+function add_paddle(x) {
+  const paddle_geometry = new THREE.BoxGeometry(0.3, 1, 2);
+  const paddle_material = new THREE.MeshBasicMaterial({ color: 0xc1d1db });
+  const paddle = new THREE.Mesh(paddle_geometry, paddle_material);
+  paddle.position.set(x ,0.6 ,0);
+  scene.add(paddle);
+  return paddle;
+}
+
+const paddle_p1 = add_paddle(-7)
+const paddle_p2 = add_paddle(7);
+const ball = add_ball();
+
+function init()
+{
+  camera.position.z = 10;
+  camera.position.y = 10;
+  camera.rotateX(-0.85);
+} init();
+
+function animate_ball(){
+  ball.position.x += 0.1;
+}
+
+function update(){
+  animate_ball();
+  setTimeout(update, 100);
+} update();
+
+function checkCollisionWith(element){
+
+}
+
 
 function animate() {
   requestAnimationFrame(animate);
-  cube.rotation.x += 0.001;
-  cube.rotation.y += 0.001;
-  cube2.rotation.x += 0.001;
-  cube2.rotation.y += 0.001;
+  // controls.update();
   renderer.render(scene, camera);
-}
+} animate();
 
-animate();
-
-// // Sky
-// const sky = new Sky();
-// sky.scale.setScalar(450000);
-// scene.add(sky);
-
-// const phi = MathUtils.degToRad(90);
-// const theta = MathUtils.degToRad(180);
-// const sunPosition = new THREE.Vector3().setFromSphericalCoords(1, phi, theta);
-// sky.material.uniforms.sunPosition.value.copy(sunPosition);
-
+window.addEventListener('keydown', (e) => {
+  switch(e.key) {
+    case "ArrowUp":
+      paddle_p2.position.z -= 0.2;
+      break;
+    case "ArrowDown":
+      paddle_p2.position.z += 0.2;
+      break;
+    case "w":
+      paddle_p1.position.z -= 0.2;
+      break;
+    case "s":
+      paddle_p1.position.z += 0.2;
+      break;
+  }
+});

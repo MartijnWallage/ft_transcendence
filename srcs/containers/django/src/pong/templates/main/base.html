@@ -20,16 +20,13 @@
       <div id="main-content" ></div>
       <canvas id="pongCanvas" width="600" height="400" display="none"></canvas>
     </div>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128/examples/jsm/objects/Sky.js" type="moudle"></script>
     <script src="{% static 'js/main.js' %}" defer ></script>
     <script src="{% static 'js/pong_core.js' %}" defer ></script>
     <script src="{% static 'js/page_loading.js' %}" defer ></script>
     <script src="{% static 'js/pong-conf.js' %}" defer ></script>
     <script src="{% static 'js/pong-tournament.js' %}" defer ></script>
-    <script src="{% static 'js/pong-user-vs-computer.js' %}" defer ></script>
-    <script src="{% static 'js/pong-user-vs-user.js' %}" defer ></script>
+    <script src="{% static 'js/pong-ai.js' %}" defer ></script>
     <script src="{% static 'js/tournament-init.js' %}" defer ></script>
-	  <script src="{% static 'js/3dapp.js' %}" defer></script>
+	  <script type="module" src="{% static 'js/3dapp.js' %}" defer></script>
   </body>
 </html>
