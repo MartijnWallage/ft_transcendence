@@ -1,11 +1,4 @@
 
-function displayScoreUserVsUser() {
-    ctx.font = "20px Arial";
-    ctx.fillStyle = "white";
-	ctx.fillText("Player 1 Score: " + player1Score, 20, 30);
-	ctx.fillText("Player 2 Score: " + player2Score, canvas.width - 180, 30);
-}
-
 function updateScoreUserVsUser() {
     if (ball.x < 0) {
         player2Score += 1;

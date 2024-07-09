@@ -71,8 +71,8 @@ h1 {
 
 @font-face {
 	font-family: 'Bitfont';
-	src: url( ../fonts/bit9x9.ttf ) format('truetype');
-	font-weight: 400;
+	src: url('../fonts/pixelmono.ttf') format('truetype');
+	font-weight: normal;
 	font-style: normal;
 }
 

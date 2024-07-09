@@ -1,3 +1,4 @@
+
 function loadPage(page) {
 	fetch('/api/' + page + '/')
 	.then(response => response.json())
