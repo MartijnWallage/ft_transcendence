@@ -150,4 +150,4 @@ function endTournament() {
     // endGame();
 }
 
-export { displayPlayers, nextGame, endTournament };
+export { displayPlayers, nextGame, endTournament, initializeTournament, stopGame};

@@ -1,6 +1,6 @@
 "use strict";
-import {canvas, ctx, monoColor, paddleSpeed, player1, player2, ball, getRandomInt} from './pong-conf.js';
-
+import {canvas, ctx, monoColor, paddleSpeed, player1, player2, ball, getRandomInt, scoreToWin} from './pong-conf.js';
+import {movePaddlesComputer} from './pong-ai.js';
 // Draw functions
 
 function drawRect(x, y, width, height, color) {
@@ -121,7 +121,6 @@ function displayScore() {
 	ctx.fillText(player2Score, canvas.width / 2 + 52, 50);
 }
 
-export {drawRect, drawPaddle, drawBall, drawNet, updatePaddle, updateBall, resetBall, movePaddlesPlayer1, movePaddlesPlayer2, displayScore };
 function updateScore() {
 	if (ball.x < player1.x) {
 		player2Score += 1;
@@ -197,36 +196,5 @@ function gameLoop(mode)
 	requestAnimationFrame(gameLoop);
 }
 
-function startGameUserVsUser() {
-	const player2Name = document.getElementById('player2Name').value;
-	if (player2Name.trim() === '') {
-		alert('Please enter a valid name for Player 2');
-	} else {
-		loadPage('pong')
-		const player1Name = '{{ user.username|default:"Guest" }}';
-		startGame(player1Name, player2Name, 'user-vs-user');
-	}
-}
 
-function startGame(player1Name, player2Name, mode) {
-	document.getElementById('pongCanvas').style.display = 'block';
-    console.log(`Starting game: ${player1Name} vs ${player2Name}`);
-	player1Score = 0;
-	player2Score = 0;
-	gameRunning = true;
-	console.log(`Game mode: ${mode}`);
-	if (mode === 'tournament') {
-		gameLoop(mode);
-	}
-	else if (mode === 'user-vs-user') {
-		gameLoop(mode);
-	}
-	else if (mode === 'user-vs-computer') {
-		gameLoop(mode);
-	}
-}
-
-function endGame() {
-	var redirecturi = "/";
-	window.location.href = redirecturi;
-}
+export {gameLoop};

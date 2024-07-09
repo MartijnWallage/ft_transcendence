@@ -1,9 +1,5 @@
-import {gameLoopUserVsUser} from './pong-user-vs-user.js';
-import {gameLoopUserVsComputer} from './pong-user-vs-computer.js';
-import {gameLoopTournament} from './pong-tournament.js';
-import { displayPlayers } from './tournament-init.js';
-
-// import { player1Score, player2Score, gameRunning } from './pong-conf.js';
+import { displayPlayers, initializeTournament } from './tournament-init.js';
+import { gameLoop } from './pong_core.js';
 
 function startGameUserVsUser() {
 	const player2Name = document.getElementById('player2Name').value;
@@ -18,7 +14,6 @@ function startGameUserVsUser() {
 
 function addPlayer() {
     const playerName = document.getElementById('playerNameInput').value.trim();
-
     if (playerName === '') {
         alert('Please enter a valid name.');
         return;
@@ -44,17 +39,19 @@ function startGame(player1Name, player2Name, mode) {
 	gameRunning = true;
 	console.log(`Game mode: ${mode}`);
 	if (mode === 'tournament') {
-		gameLoopTournament();
+		gameLoop(mode);
 	}
 	else if (mode === 'user-vs-user') {
-		gameLoopUserVsUser();
+		gameLoop(mode);
 	}
 	else if (mode === 'user-vs-computer') {
-		gameLoopUserVsComputer();
+		gameLoop(mode);
 	}
 }
 
-
+function startGameSolo() {
+	startGame('Player 1', 'Computer', 'user-vs-computer');
+}
 
 function endGame() {
 	var redirecturi = "/";
@@ -65,14 +62,23 @@ let players = [];
 let matchOrder = [];
 let currentGameIndex = 0;
 
-export {startGameUserVsUser, startGame, endGame, addPlayer, startTournament, players, matchOrder, currentGameIndex};
+let player1Score = 0;
+let player2Score = 0;
+let gameRunning = true;
+
+export {startGameUserVsUser, startGameSolo, startGame, endGame, addPlayer, startTournament, players, matchOrder, currentGameIndex, player1Score, player2Score, gameRunning};
 
 window.startGameUserVsUser = startGameUserVsUser;
 window.addPlayer = addPlayer;
 window.startGame = startGame;
 window.endGame = endGame;
+window.startGameSolo = startGameSolo;
 window.startTournament = startTournament;
 
 window.players = players;
 window.matchOrder = matchOrder;
 window.currentGameIndex = currentGameIndex;
+
+window.player1Score = player1Score;
+window.player2Score = player2Score;
+window.gameRunning = gameRunning;
