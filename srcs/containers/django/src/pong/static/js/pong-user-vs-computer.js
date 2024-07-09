@@ -1,15 +1,9 @@
-function displayScoreUserVsComputer() {
-    ctx.font = "20px Arial";
-    ctx.fillStyle = "white";
-	ctx.fillText("Player 1 Score: " + player1Score, 20, 30);
-	ctx.fillText("Player 2 Score: " + player2Score, canvas.width - 180, 30);
-}
 
 function updateScoreUserVsComputer() {
-    if (ball.x < 0) {
+    if (ball.x < player1.x) {
         player2Score += 1;
         resetBall();
-    } else if (ball.x + ball.width > canvas.width) {
+    } else if (ball.x > player2.x + player2.width) {
         player1Score += 1;
         resetBall();
     }
@@ -62,6 +56,5 @@ function gameLoopUserVsComputer() {
     updatePaddle(player2);
     updateBall();
     gameRunning = updateScoreUserVsComputer();
-    requestAnimationFrame(gameLoopUserVsComputer);  
-
+	requestAnimationFrame(gameLoopUserVsComputer);  
 }

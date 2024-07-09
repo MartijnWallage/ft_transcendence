@@ -7,9 +7,11 @@ const monoColor = "#C4C5C6";
 const  paddleWidth = 14;
 const  paddleHeight = 70;
 const  paddleSpeed = 6;
+const  paddleOffset = 10;
+const  epsilon = 1;
 
 const player1 = {
-                x: 10,
+                x: paddleOffset,
                 y: canvas.height / 2 - paddleHeight / 2,
                 width: paddleWidth,
                 height: paddleHeight,
@@ -18,7 +20,7 @@ const player1 = {
 };
 
 const player2 = {
-                x: canvas.width - paddleWidth - 10,
+                x: canvas.width - paddleWidth - paddleOffset,
                 y: canvas.height / 2 - paddleHeight / 2,
                 width: paddleWidth,
                 height: paddleHeight,
@@ -26,16 +28,20 @@ const player2 = {
 				color : monoColor,
 };
 
+function getRandomInt(max) {
+	return Math.floor(Math.random() * max);
+  }
+
 // Ball properties
 const ballSize = 14;
-
+let serve = getRandomInt(2) ? 1 : -1;
 const ball = {
             x: canvas.width / 2,
             y: canvas.height / 2,
             width: ballSize,
             height: ballSize,
-            dx: -7,
-            dy: 6,
+            dx: 3 * serve,
+            dy: getRandomInt(6),
 			color : monoColor,
 };
 

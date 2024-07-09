@@ -36,29 +36,43 @@ function updatePaddle(paddle) {
 	}
 }
 
+function abs(x) {
+	if (x < 0) {
+		return -x;
+	}
+	return x;
+}
+
 function updateBall() {
 	ball.x += ball.dx;
     ball.y += ball.dy;
 	
+	// Bounce off top and bottom
     if (ball.y < 0 || ball.y + ball.height > canvas.height) {
-		ball.dy *= -1; // Bounce off top and bottom
+		ball.dy *= -1; 
     }
 	
-    let paddle = (ball.dx < 0) ? player1 : player2;
-	
-    if (ball.x < player1.x + player1.width && ball.y > player1.y && ball.y < player1.y + player1.height + ball.height / 2 ||
-	ball.x + ball.width > player2.x && ball.y > player2.y && ball.y < player2.y + player2.height + ball.height / 2) {
-		ball.dy = (ball.y - (paddle.y + paddle.height / 2)) * 0.25;
-        ball.dx *= -1; // Bounce off paddles
-    }
+	// Bounce off paddles
+	if (ball.x > player1.x && ball.x <= player1.x + player1.width) {
+		if (ball.y > player1.y && ball.y < player1.y + player1.height) {
+			ball.dy = (ball.y - (player1.y + player1.height / 2)) * 0.25;
+			ball.dx *= -1.03;
+		}
+	} else if (ball.x + ball.width >= player2.x && ball.x < player2.x + player2.width) {
+		if (ball.y > player2.y && ball.y < player2.y + player2.height) {
+			ball.dy = (ball.y - (player2.y + player2.height / 2)) * 0.25;
+			ball.dx *= -1.03;
+		}
+	}
 }
 
 // Serve
 function resetBall() {
 	ball.x = canvas.width / 2;
 	ball.y = canvas.height / 2;
-	ball.dx *= -1; // Change ball direction
-	ball.dy = ball.dx / 2;
+	serve *= -1;
+	ball.dx = 3 * serve;
+	ball.dy = getRandomInt(6);
 }
 
 // Key controls
@@ -101,10 +115,10 @@ function movePaddlesPlayer2() {
 // Display score
 
 function displayScore() {
-	ctx.font = "40px Bitfont";
+	ctx.font = '50px Bitfont';
 	ctx.fillStyle = monoColor;
-	ctx.fillText(player1Score, canvas.width / 2 - 80, 30);
-	ctx.fillText(player2Score, canvas.width / 2 + 50, 30);
+	ctx.fillText(player1Score, canvas.width / 2 - 80, 50);
+	ctx.fillText(player2Score, canvas.width / 2 + 52, 50);
 }
 
 export { drawRect, drawPaddle, drawBall, drawNet, updatePaddle, updateBall, resetBall, movePaddlesPlayer1, movePaddlesPlayer2, displayScore };
