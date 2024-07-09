@@ -46,9 +46,17 @@ const ball = {
 };
 
 // Score
+
 let player1Score = 0;
 let player2Score = 0;
+let gameRunning = false;
 
-let scoreToWin = 3;
+const scoreToWin = 3;
 
-export {canvas, ctx, monoColor, paddleWidth, paddleHeight, paddleSpeed, player1, player2, ball, player1Score, player2Score, scoreToWin};
+export {canvas, ctx, monoColor, paddleWidth, paddleHeight, paddleSpeed, player1, player2, ball, scoreToWin, getRandomInt};
+
+
+window.player1Score = player1Score;
+window.player2Score = player2Score;
+window.gameRunning = gameRunning;
+window.serve = serve;

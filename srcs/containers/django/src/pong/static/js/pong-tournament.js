@@ -1,4 +1,5 @@
-let gameRunning = true;
+import { drawPaddle, drawBall, drawNet, updatePaddle, updateBall, resetBall, movePaddlesPlayer1, movePaddlesPlayer2, displayScore } from './pong_core.js';
+import {canvas, ctx, player1, player2, ball, scoreToWin} from './pong-conf.js';
 
 function displayScoreTournament() {
 	displayScore();
@@ -67,3 +68,5 @@ function gameLoopTournament() {
 	gameRunning = updateScoreTournament();
 	requestAnimationFrame(gameLoopTournament);
 }
+
+export { gameLoopTournament };

@@ -1,4 +1,3 @@
-
 function loadPage(page) {
 	fetch('/api/' + page + '/')
 	.then(response => response.json())
@@ -35,10 +34,10 @@ function loadPage(page) {
 	if (leaderBoardClose) {
 	  leaderBoardClose.addEventListener('click', hideLeaderBoard);
 	}
-	var startUserVsUserButton = document.getElementById('startUserVsUserButton');
-	if (startUserVsUserButton) {
-	  startUserVsUserButton.addEventListener('click', startGameUserVsUser);
-	}
+	// var startUserVsUserButton = document.getElementById('startUserVsUserButton');
+	// if (startUserVsUserButton) {
+	//   startUserVsUserButton.addEventListener('click', startGameUserVsUser);
+	// }
   }
 
   function showLeaderBoard() {

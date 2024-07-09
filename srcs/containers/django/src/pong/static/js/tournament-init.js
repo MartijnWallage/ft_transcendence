@@ -1,18 +1,4 @@
-let players = [];
-let matchOrder = [];
-let currentGameIndex = 0;
 
-function addPlayer() {
-    const playerName = document.getElementById('playerNameInput').value.trim();
-
-    if (playerName === '') {
-        alert('Please enter a valid name.');
-        return;
-    }
-    players.push(playerName);
-    displayPlayers();
-    document.getElementById('playerNameInput').value = '';
-}
 
 function displayPlayers() {
     const playerListDiv = document.getElementById('playerList');
@@ -25,14 +11,6 @@ function displayPlayers() {
         playerElement.textContent = `Player ${index}: ${name}`;
         playerListDiv.appendChild(playerElement);
     });
-}
-
-function startTournament() {
-    if (players.length < 2) {
-        alert('Please add at least 2 players to start the tournament.');
-        return;
-    }
-	initializeTournament();
 }
 
 function matchOrderInit() {
@@ -171,3 +149,5 @@ function endTournament() {
     stopGame();
     // endGame();
 }
+
+export { displayPlayers, nextGame, endTournament };

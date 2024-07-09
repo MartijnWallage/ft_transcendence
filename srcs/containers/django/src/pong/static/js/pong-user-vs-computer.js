@@ -1,3 +1,5 @@
+import { drawPaddle, drawBall, drawNet, updatePaddle, updateBall, resetBall, movePaddlesPlayer1, displayScore } from './pong_core.js';
+import {canvas, ctx, player1, player2, ball, scoreToWin, paddleSpeed} from './pong-conf.js';
 
 function updateScoreUserVsComputer() {
     if (ball.x < player1.x) {
@@ -58,3 +60,5 @@ function gameLoopUserVsComputer() {
     gameRunning = updateScoreUserVsComputer();
 	requestAnimationFrame(gameLoopUserVsComputer);  
 }
+
+export { gameLoopUserVsComputer };
