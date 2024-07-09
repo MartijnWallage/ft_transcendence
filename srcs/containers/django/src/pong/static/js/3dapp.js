@@ -1,3 +1,5 @@
+import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.128/build/three.module.js';
+
 const container = document.getElementById('threejs-container');
 
 // Scene, Camera, Renderer with Antialiasing

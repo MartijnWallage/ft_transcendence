@@ -1,10 +1,5 @@
-
-function displayScoreUserVsUser() {
-    ctx.font = "20px Arial";
-    ctx.fillStyle = "white";
-	ctx.fillText("Player 1 Score: " + player1Score, 20, 30);
-	ctx.fillText("Player 2 Score: " + player2Score, canvas.width - 180, 30);
-}
+import { drawPaddle, drawBall, drawNet, updatePaddle, updateBall, resetBall, movePaddlesPlayer1, movePaddlesPlayer2, displayScore } from './pong_core.js';
+import {canvas, ctx, player1, player2, ball, player1Score, player2Score, scoreToWin} from './pong-conf.js';
 
 function updateScoreUserVsUser() {
     if (ball.x < 0) {
@@ -54,3 +49,5 @@ function gameLoopUserVsUser() {
 	gameRunning = updateScoreUserVsUser();
 	requestAnimationFrame(gameLoopUserVsUser);
 }
+
+export { gameLoopUserVsUser };

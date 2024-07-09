@@ -1,4 +1,5 @@
 "use strict";
+import {canvas, ctx, monoColor, paddleSpeed, player1, player2, ball, player1Score, player2Score} from './pong-conf.js';
 
 // Draw functions
 
@@ -105,3 +106,5 @@ function displayScore() {
 	ctx.fillText(player1Score, canvas.width / 2 - 80, 30);
 	ctx.fillText(player2Score, canvas.width / 2 + 50, 30);
 }
+
+export { drawRect, drawPaddle, drawBall, drawNet, updatePaddle, updateBall, resetBall, movePaddlesPlayer1, movePaddlesPlayer2, displayScore };

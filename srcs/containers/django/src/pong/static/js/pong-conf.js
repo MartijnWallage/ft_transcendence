@@ -44,3 +44,5 @@ let player1Score = 0;
 let player2Score = 0;
 
 let scoreToWin = 3;
+
+export {canvas, ctx, monoColor, paddleWidth, paddleHeight, paddleSpeed, player1, player2, ball, player1Score, player2Score, scoreToWin};

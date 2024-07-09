@@ -1,9 +1,11 @@
+import {gameLoopUserVsUser} from './pong-user-vs-user.js';
+
 function startGameUserVsUser() {
 	const player2Name = document.getElementById('player2Name').value;
 	if (player2Name.trim() === '') {
 		alert('Please enter a valid name for Player 2');
 	} else {
-		loadPage('pong')
+		// loadPage('pong')
 		const player1Name = '{{ user.username|default:"Guest" }}';
 		startGame(player1Name, player2Name, 'user-vs-user');
 	}
@@ -31,3 +33,5 @@ function endGame() {
 	var redirecturi = "/";
 	window.location.href = redirecturi;
 }
+
+export {startGameUserVsUser, startGame, endGame};
