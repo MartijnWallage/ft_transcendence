@@ -70,11 +70,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
 
 
-
-
-
-
-
 class PingpongConsumer(AsyncWebsocketConsumer):
     # A set keeps track of currently connected players.
     connected_players = set()
@@ -138,7 +133,26 @@ class PingpongConsumer(AsyncWebsocketConsumer):
         # Reset game if all players disconnect
         if len(self.connected_players) == 0:
             self.game_started = False
-            await self.reset_game_state() 
+            # await self.reset_game_state() 
+            # await self.reset_game_state() 
+                        # await self.reset_game_state() 
+            # await self.reset_game_state()             # await self.reset_game_state() 
+            # await self.reset_game_state()             # await self.reset_game_state() 
+            # await self.reset_game_state()             # await self.reset_game_state() 
+            # await self.reset_game_state()             # await self.reset_game_state() 
+            # await self.reset_game_state()             # await self.reset_game_state() 
+            # await self.reset_game_state()             # await self.reset_game_state() 
+            # await self.reset_game_state()             # await self.reset_game_state() 
+            # await self.reset_game_state()             # await self.reset_game_state() 
+            # await self.reset_game_state()             # await self.reset_game_state() 
+            # await self.reset_game_state()             # await self.reset_game_state() 
+            # await self.reset_game_state()             # await self.reset_game_state() 
+            # await self.reset_game_state() 
+        
+        await self.channel_layer.group_discard(
+            self.room_group_name,
+            self.channel_name
+        )
 
     async def reset_game_state(self):
         # Reset all game state variables
@@ -151,11 +165,16 @@ class PingpongConsumer(AsyncWebsocketConsumer):
 
     async def fetch_initial_data(self):
         url = 'https://10.15.109.3:8443/api/players/'
-        response = await sync_to_async(requests.get)(url)
-        if response.status_code == 200:
+        try:
+            response = await sync_to_async(requests.get)(url, verify=False)  # Disable SSL verification
             data = response.json()
-            self.player1 = data['player1']
-            self.player2 = data['player2']
+            # Handle the data as needed
+        except SSLError as e:
+            print(f"SSL Error: {str(e)}")
+            # Handle SSL error accordingly
+        except Exception as e:
+            print(f"Error fetching initial data: {str(e)}")
+
 
     async def receive(self, text_data):
         try:
@@ -201,18 +220,24 @@ class PingpongConsumer(AsyncWebsocketConsumer):
         }))
 
     async def handle_player_action(self, data):
-        # Determines which player ('player1' or 'player2') the current WebSocket client 
-        player = self.player_roles[self.channel_name]
-        
-        # how much the player's paddle moves up or down 
-        dy = data.get('dy')
+        try:
+            # Determines which player ('player1' or 'player2') the current WebSocket client 
+            player = self.player_roles[self.channel_name]
+            
+            # how much the player's paddle moves up or down 
+            dy = data.get('dy')
 
-        if player == 'player1':
-            self.player1['dy'] = dy
-        elif player == 'player2':
-            self.player2['dy'] = dy
+            if player == 'player1':
+                self.player1['dy'] = dy
+            elif player == 'player2':
+                self.player2['dy'] = dy
 
-        await self.broadcast_game_state()
+            await self.broadcast_game_state()
+        except KeyError:
+            print(f"KeyError: Could not find player role for channel {self.channel_name}")
+        except Exception as e:
+            print(f"Exception in handle_player_action: {str(e)}")
+    
     
     async def players_update(self, event):
         try:
@@ -228,20 +253,22 @@ class PingpongConsumer(AsyncWebsocketConsumer):
 
 
     async def start_game(self):
-        # Perform game start operations here
-        self.game_started = True
+        if not self.game_started:
+            # Perform game start operations here
+            self.game_started = True
+            
 
-        # Send a 'game_start' message to the channel layer group
-        await self.channel_layer.group_send(
-            self.room_group_name,
-            {
-                'type': 'game_start',
-            }
-        )
-        # Broadcast the initial game state to all clients
-        await self.broadcast_game_state()
-        # Start a task to update the game state continuously
-        asyncio.create_task(self.update_game_state())
+            # Send a 'game_start' message to the channel layer group
+            await self.channel_layer.group_send(
+                self.room_group_name,
+                {
+                    'type': 'game_start',
+                }
+            )
+            # Broadcast the initial game state to all clients
+            await self.broadcast_game_state()
+            # Start a task to update the game state continuously
+            asyncio.create_task(self.update_game_state())
 
     # sending a WebSocket message back to the client
     async def game_start(self, event):
@@ -335,4 +362,9 @@ class PingpongConsumer(AsyncWebsocketConsumer):
             }
         )
     
-    
+    async def game_end(self, event):
+        winner = event['winner']
+        await self.send(text_data=json.dumps({
+            'type': 'game_end',
+            'winner': winner
+        }))

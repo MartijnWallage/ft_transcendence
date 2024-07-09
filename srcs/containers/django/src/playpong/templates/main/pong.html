@@ -56,14 +56,14 @@
     {% endif %}
 </div>
 
-<div>
+<div id="gameInfo" style="display: block;">
     <p>Player 1 Score: <span id="player1-score">0</span></p>
     <p>Player 2 Score: <span id="player2-score">0</span></p>
+    <p id="game-status"></p>
 </div>
 
 
 <div id="remotePlay" style="display:none;">
-    <p>Waiting for another player to join...</p>
     <button type="button" class="btn btn-danger" onclick="cancelRemotePlay()">Cancel</button>
     <button type="button" class="btn btn-primary" onclick="initiateRemotePlay()" id="startGameButton">Start Game</button>
 </div>
@@ -239,7 +239,7 @@
             } else if (data.type === 'player_action') {
                 handlePlayerAction(data.data);
             } else if (data.type === 'game_end') {
-                handleGameEnd(data.data);
+                handleGameEnd(data.winner);
             } else {
                 console.error('Unsupported message type:', data.type);
             }
@@ -388,30 +388,28 @@
     }
 
 
-    function handleGameEnd(data) {
-        const winner = data.winner;
-
+    function handleGameEnd(winner) {
         // Display game end message
-        const gameEndMessageDiv = document.getElementById('gameEndMessage');
-        const winnerMessage = document.getElementById('winnerMessage');
-
-        // Display game end message
+        let message = '';
         if (winner === 'player1') {
-            alert('Player 1 wins!');
+            message = 'Player 1 wins!';
         } else if (winner === 'player2') {
-            alert('Player 2 wins!');
+            message = 'Player 2 wins!';
         } else {
-            alert('Game ended.');
+            message = 'Game ended.';
         }
+        // alert(message);
 
-        // Show the game end message div
-        gameEndMessageDiv.style.display = 'block';
-        
+        // Optionally update UI or reset for a new game
+        document.getElementById('game-status').innerText = message;
+
+        // Show the game end message
+        document.getElementById('gameInfo').style.display = 'block';
+
         // Hide the game canvas
         document.getElementById('pongCanvas').style.display = 'none';
-        
-        gameRunning = false;
-        // Optionally, reset any game-related UI elements or prepare for a new game
+
+        // Optionally reset any game-related UI elements or prepare for a new game
     }
 
 
