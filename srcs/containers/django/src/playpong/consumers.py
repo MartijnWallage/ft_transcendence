@@ -258,7 +258,6 @@ class PingpongConsumer(AsyncWebsocketConsumer):
            (self.ball['x'] >= 530 and self.player2['y'] < self.ball['y'] < self.player2['y'] + 50 and self.ball['dx'] > 0):
             self.ball['dx'] *= -1
 
-
         # Check if ball goes out of bounds
         if self.ball['x'] <= 0:
             # Player 2 scores
@@ -284,9 +283,6 @@ class PingpongConsumer(AsyncWebsocketConsumer):
         # Ensure paddles stay within the bounds of the game area
         self.player1['y'] = max(0, min(self.player1['y'], 400))
         self.player2['y'] = max(0, min(self.player2['y'], 400))
-    
-    
-
 
     # Continuously sending the updated game state to connected players ensures that
     # all players see the same game state and can interact with it correctly.
