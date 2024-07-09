@@ -84,6 +84,29 @@
 </div>
 
 <script>
+    async function fetchInitialData() {
+        try {
+            const response = await fetch('/api/players/');
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            const data = await response.json();
+            console.log(data);
+        
+            // Update player scores in UI
+            document.getElementById('player1-score').textContent = data.player1Score;
+            document.getElementById('player2-score').textContent = data.player2Score;
+            // Use this data to set initial state
+        
+        } catch (error) {
+            console.error('Error fetching initial data:', error);
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', fetchInitialData);
+</script>
+
+<script>
 
     let gameRunning = false; 
 

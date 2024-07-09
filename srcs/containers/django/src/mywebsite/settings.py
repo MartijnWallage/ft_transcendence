@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'playpong',
+    'rest_framework',
     'crispy_bootstrap5',
     'crispy_forms'
 ]

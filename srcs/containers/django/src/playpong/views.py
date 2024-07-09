@@ -10,6 +10,12 @@ from django.shortcuts import render, redirect
 from .forms import RegisterForm
 from django.contrib.auth import login, logout, authenticate
 
+
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from rest_framework import viewsets
+from .serializers import PlayerSerializer
+
 # def play_pong(request):
 #     return render(request, 'main/pong.html')
 
@@ -33,3 +39,31 @@ def sign_up(request):
         form = RegisterForm()
     
     return render(request, 'registration/sign_up.html', {"form": form})
+
+
+class PlayerViewSet(viewsets.ViewSet):
+    def list(self, request):
+        # Assuming you want to return fixed data for player1 and player2
+        player1 = {'y': 200, 'dy': 0, 'score': 0}
+        player2 = {'y': 200, 'dy': 0, 'score': 0}
+        
+        # Serialize player data using PlayerSerializer
+        data = {
+            'player1': PlayerSerializer(player1).data,
+            'player2': PlayerSerializer(player2).data
+        }
+
+        return Response(data)
+    
+
+@api_view(['GET'])
+def get_players_data(request):
+    player1 = {'y': 200, 'dy': 0, 'score': 0}
+    player2 = {'y': 200, 'dy': 0, 'score': 0}
+    data = {
+        'player1': player1,
+        'player2': player2
+    }
+    return Response(data)
+
+

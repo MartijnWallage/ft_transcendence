@@ -1,7 +1,10 @@
 import json
+import asyncio
 from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.db import database_sync_to_async
-import asyncio
+from asgiref.sync import sync_to_async
+from django.conf import settings
+import requests
 
 class ChatConsumer(AsyncWebsocketConsumer):
     # This method is called when a WebSocket connection is established.
@@ -91,6 +94,8 @@ class PingpongConsumer(AsyncWebsocketConsumer):
         )
         await self.accept()
 
+        await self.fetch_initial_data()
+
         # Assign player roles
         if len(self.connected_players) % 2 == 0:
             self.player_roles[self.channel_name] = 'player1'
@@ -143,6 +148,14 @@ class PingpongConsumer(AsyncWebsocketConsumer):
 
         # Broadcast the updated game state to all connected players
         await self.broadcast_game_state()
+
+    async def fetch_initial_data(self):
+        url = 'https://10.15.109.3:8443/api/players/'
+        response = await sync_to_async(requests.get)(url)
+        if response.status_code == 200:
+            data = response.json()
+            self.player1 = data['player1']
+            self.player2 = data['player2']
 
     async def receive(self, text_data):
         try:
@@ -309,12 +322,7 @@ class PingpongConsumer(AsyncWebsocketConsumer):
             'data': event['data']
         }))
 
-    
-
-
-
-
-
+ 
 
     async def end_game(self):
         self.game_started = False
