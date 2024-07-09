@@ -33,37 +33,3 @@ function updateScoreTournament() {
     }
 	return true;
 }
-
-function gameLoopTournament() {
-	// Clear the canvas
-	ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-	// Draw net, paddles, and ball
-	drawNet();
-	drawPaddle(player1);
-	drawPaddle(player2);
-	drawBall(ball);
-	displayScoreTournament();
-
-    if (!gameRunning){ 
-		player1Score = 0;
-		player2Score = 0;
-		if (player1Score === scoreToWin) {
-			scoreBoard[matchOrder[currentGameIndex - 1][0]] += 1;
-			console.log('number of victory player ' + matchOrder[currentGameIndex - 1][0] + ' :' + scoreBoard[matchOrder[currentGameIndex - 1][0]]);
-		} else {
-			scoreBoard[matchOrder[currentGameIndex - 1][1]] += 1;
-			console.log('number of victory player ' + matchOrder[currentGameIndex - 1][1] + ' :' + scoreBoard[matchOrder[currentGameIndex - 1][1]]);
-		}
-		nextGame();
-		return; 
-	}
-	// Update game state
-	movePaddlesPlayer1();
-	movePaddlesPlayer2();
-	updatePaddle(player1);
-	updatePaddle(player2);
-	updateBall();
-	gameRunning = updateScoreTournament();
-	requestAnimationFrame(gameLoopTournament);
-}
