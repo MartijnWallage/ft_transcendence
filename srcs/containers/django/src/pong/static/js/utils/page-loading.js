@@ -8,6 +8,16 @@ window.loadPage = (page) => {
 		document.getElementById('main-content').innerHTML = data.content;
 		history.pushState({page: page}, "", "#" + page);
 		bindEventListeners();
+		if (page === 'pong') {
+			setTimeout(function() {
+				const menu = document.getElementById('menu');
+				menu.classList.add('fade-out');
+				// Remove the menu element from the DOM after the fade-out transition
+				setTimeout(function() {
+				  menu.classList.add('hidden');
+				}, 2000); // Match the duration of the CSS transition
+			  }, 500);
+		}
 	})
 	.catch(error => {
 		console.error('Error loading page:', error);
