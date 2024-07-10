@@ -12,8 +12,9 @@
       integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N"
       crossorigin="anonymous"/>
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-	  <script type="module" src="{% static 'js/3dapp.js' %}" defer></script>
-    <script type="module" src="{% static 'js/main.js' %}" defer ></script>
+	  <script type="module" src="{% static 'js/module/3d-pong/3dapp.js' %}" defer></script>
+    <script type="module" src="{% static 'js/module/2d-pong/entrypoint.js' %}" defer ></script>
+    <script type="module" src="{% static 'js/utils/page-loading.js' %}" defer></script>
   </head>
 
   <body>
@@ -22,78 +23,5 @@
       <div id="main-content" ></div>
       <canvas id="pongCanvas" width="600" height="400" display="none"></canvas>
     </div>
-    <script>
-      function loadPage(page) {
-          fetch('/api/' + page + '/')
-          .then(response => response.json())
-          .then(data => {
-            document.getElementById('main-content').innerHTML = data.content;
-            history.pushState({page: page}, "", "#" + page);
-            bindEventListeners();
-          })
-          .catch(error => {
-            console.error('Error loading page:', error);
-          });
-        }
-
-        window.onpopstate = function(event) {
-        if (event.state) {
-          loadPage(event.state.page);
-        } else {
-          loadPage('home'); // Default page
-        }
-        };
-
-        // Example of loading the home page on document ready
-        document.addEventListener('DOMContentLoaded', function() {
-        const page = location.hash.replace('#', '') || 'home';
-        loadPage(page);
-        });
-
-        function bindEventListeners() {
-          var leaderBoardButton = document.getElementById('leaderboardButton');
-          if (leaderBoardButton) {
-            leaderBoardButton.addEventListener('click', showLeaderBoard);
-          }
-          var leaderBoardClose = document.getElementById('leaderboardClose');
-          if (leaderBoardClose) {
-            leaderBoardClose.addEventListener('click', hideLeaderBoard);
-          }
-          var startUserVsUserButton = document.getElementById('startUserVsUserButton');
-          if (startUserVsUserButton) {
-            startUserVsUserButton.addEventListener('click', startGameUserVsUser);
-          }
-          var addPlayerBtn = document.getElementById('addPlayerBtn');
-          if (addPlayerBtn) {
-            addPlayerBtn.addEventListener('click', addPlayer);
-          }
-          var startGameSolo = document.getElementById('startGameSolo');
-          if (startGameSolo) {
-            startGameSolo.addEventListener('click', startGameSolo);
-          }
-        }
-
-        function showLeaderBoard() {
-          var leaderBoardDiv = document.getElementById('leaderboardDiv');
-          if (leaderBoardDiv) {
-            leaderBoardDiv.style.display = 'block';
-          }
-          var leaderBoardButton = document.getElementById('leaderboardButton');
-          if (leaderBoardButton) {
-            leaderBoardButton.style.display = 'none';
-          }
-        }
-
-        function hideLeaderBoard() {
-          var leaderBoardDiv = document.getElementById('leaderboardDiv');
-          if (leaderBoardDiv) {
-            leaderBoardDiv.style.display = 'none';
-          }
-          var leaderBoardButton = document.getElementById('leaderboardButton');
-          if (leaderBoardButton) {
-            leaderBoardButton.style.display = 'block';
-          }
-        }
-    </script>
   </body>
 </html>

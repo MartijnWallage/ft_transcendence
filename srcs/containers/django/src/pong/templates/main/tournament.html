@@ -8,8 +8,7 @@
         <div class="col justify-content-center mx-auto">
           <div class="input-group w-50 mx-auto">
             <input type="text" id="playerNameInput" class="form-control" placeholder="Player Name">
-            <button type="button" class="btn btn-outline-secondary" id="addPlayerBtn"
-                    onclick="addPlayer()">Add Player</button>
+            <button type="button" class="btn btn-outline-secondary" id="js-add-player-btn">Add Player</button>
           </div>
         </div>
         <div class="col d-flex justify-content-center">
@@ -17,8 +16,8 @@
         </div>
       </div>
       <div class="row gx-5 justify-content-center">
-        <button type="button" class="btn btn-outline-light btn-lg" id="startTournamentBtn"
-                href="#pong_tournament" onclick="startTournament(); loadPage('pong_tournament')">Start Tournament</button>
+        <button type="button" class="btn btn-outline-light btn-lg" id="js-start-tournament-btn"
+                href="#pong_tournament" onclick="loadPage('pong_tournament')">Start Tournament</button>
     </div>
 </div>
 {% endblock %}

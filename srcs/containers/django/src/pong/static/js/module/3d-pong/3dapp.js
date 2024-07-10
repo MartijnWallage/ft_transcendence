@@ -1,4 +1,5 @@
 import * as THREE from './three.module.js';
+
 // import { OrbitControls } from './OrbitControls.js';
 const container = document.getElementById('threejs-container');
 
@@ -88,3 +89,5 @@ window.addEventListener('keydown', (e) => {
       break;
   }
 });
+
+export {scene, camera, renderer, paddle_p1, paddle_p2, ball};

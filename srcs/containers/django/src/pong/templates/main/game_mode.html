@@ -1,10 +1,10 @@
 {% block content %}
 {% load static %}
 <div>
-  <div id="leaderboardDiv" style="display: none;">
+  <div id="js-leaderboard-div" style="display: none;">
     <div class="col d-flex justify-content-end">
       <button type="button" class="btn btn-outline-light btn-lg"
-              id="leaderboardClose">X</button>
+              id="js-leaderboard-close">X</button>
     </div>
     <h2>I'm leader board stuff</h2>
     <h2>----------------------</h2>
@@ -14,14 +14,14 @@
   </div>
   <div class="col d-flex justify-content-end">
     <button type="button" class="btn btn-outline-light btn-lg"
-            id="leaderboardButton">Leaderboard</button>
+            id="js-leaderboard-btn">Leaderboard</button>
   </div>
   <h1 class="my-4 display-4">Transcendence.</h1>  
     <div class="container px-4">
       <div class="row gx-5">
         <div class="col gx-5">
-          <button type="button" class="btn btn-outline-light btn-lg w-100" id="startGameSolo"
-                  href="#pong_solo" onclick="startGame('Guest', 'Computer', 'user-vs-computer'); loadPage('pong_solo')">Solo</button>
+          <button type="button" class="btn btn-outline-light btn-lg w-100" id="js-start-game-solo-btn"
+                  href="#pong_solo" onclick="loadPage('pong_solo')">Solo</button>
         </div>
         <div class="col gx-5">
           <button type="button" class="btn btn-outline-light btn-lg w-100"

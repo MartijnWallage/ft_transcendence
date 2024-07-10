@@ -16,7 +16,7 @@ const player1 = {
                 width: paddleWidth,
                 height: paddleHeight,
                 dy: 0,
-				color : monoColor,
+				        color : monoColor,
 };
 
 const player2 = {
@@ -25,38 +25,30 @@ const player2 = {
                 width: paddleWidth,
                 height: paddleHeight,
                 dy: 0,
-				color : monoColor,
+				        color : monoColor,
 };
 
-function getRandomInt(max) {
-	return Math.floor(Math.random() * max);
-  }
+const getRandomInt = max => Math.floor(Math.random() * max);
 
 // Ball properties
 const ballSize = 14;
-let serve = getRandomInt(2) ? 1 : -1;
+
+let serveDirection = getRandomInt(2) ? 1 : -1;
+
 const ball = {
             x: canvas.width / 2,
             y: canvas.height / 2,
             width: ballSize,
             height: ballSize,
-            dx: 3 * serve,
+            serve: serveDirection,
+            dx: 3 * serveDirection,
             dy: getRandomInt(6),
-			color : monoColor,
+			      color : monoColor,
 };
 
 // Score
 
-// let player1Score = 0;
-// let player2Score = 0;
-// let gameRunning = false;
 
 const scoreToWin = 3;
 
 export {canvas, ctx, monoColor, paddleWidth, paddleHeight, paddleSpeed, player1, player2, ball, scoreToWin, getRandomInt};
-
-
-// window.player1Score = player1Score;
-// window.player2Score = player2Score;
-// window.gameRunning = gameRunning;
-window.serve = serve;
