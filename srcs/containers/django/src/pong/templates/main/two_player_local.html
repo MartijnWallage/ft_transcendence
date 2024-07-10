@@ -1,5 +1,5 @@
 {% block content %}
-<div>
+<div id="menu" class="container mx-auto m-5 p-5">
   <h1 class="my-4 display-4">Transcendence.</h1>
   <div class="container px-4 text-center">
     <div class="row gx-5">
@@ -15,7 +15,7 @@
   </div>
   <div class="d-grid gap-2 col-6 mx-auto">
     <button type="button" class="btn btn-outline-light"
-            href="#pong_two_player_local" onclick="startGame('player 1', 'player 2', 'user-vs-computer'); loadPage('pong_two_player_local')">Continue</button>
+            href="#pong_two_player_local" onclick="startGame('player 1', 'player 2', 'user-vs-user'); loadPage('pong')">Continue</button>
   </div>
 </div>
 {% endblock %}

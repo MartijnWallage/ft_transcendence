@@ -109,6 +109,19 @@ function movePaddlesPlayer2() {
 	}
 }
 
+function movePaddlesComputer() {
+	console.log(`move paddle ai`);
+	if (player2.y + player2.height / 2 < ball.y) {
+		console.log(`ai moving down`);
+		player2.dy = paddleSpeed;
+	} 
+	else {
+		console.log(`ai moving up`);
+		player2.dy = -paddleSpeed;
+	}
+}
+
+
 // Display score
 
 function displayScore() {
@@ -176,9 +189,11 @@ function gameLoop(mode)
 	// Update game state
 	movePaddlesPlayer1();
 	if (mode === 'user-vs-user'){
+		console.log(`in user-vs-user`);
 		movePaddlesPlayer2();
 	}
 	else if (mode === 'user-vs-computer'){
+		console.log(`in user-vs-computer to move paddle`);
 		movePaddlesComputer();
 	}
 	updatePaddle(player1);
@@ -212,12 +227,15 @@ function startGame(player1Name, player2Name, mode) {
 	gameRunning = true;
 	console.log(`Game mode: ${mode}`);
 	if (mode === 'tournament') {
+		console.log(`in tournament`);
 		gameLoop(mode);
 	}
 	else if (mode === 'user-vs-user') {
+		console.log(`in user-vs-user`);
 		gameLoop(mode);
 	}
 	else if (mode === 'user-vs-computer') {
+		console.log(`in user-vs-computer`);
 		gameLoop(mode);
 	}
 }
