@@ -1,4 +1,5 @@
 import * as THREE from './three.module.js';
+
 // import { OrbitControls } from './OrbitControls.js';
 const container = document.getElementById('threejs-container');
 
@@ -12,13 +13,10 @@ container.appendChild(renderer.domElement);
 // const controls = new OrbitControls(camera, app);
 
 // field
-function add_field(){
-  const field_geometry = new THREE.BoxGeometry(16, 0.5, 12);
-  const field_material = new THREE.MeshBasicMaterial({ color: 0x0a1826 });
-  const field = new THREE.Mesh(field_geometry, field_material);
-  scene.add(field);
-  return field;
-}
+const field_geometry = new THREE.BoxGeometry(16, 0.5, 12);
+const field_material = new THREE.MeshBasicMaterial({ color: 0x0a1826 });
+const field = new THREE.Mesh(field_geometry, field_material);
+scene.add(field);
 
 // Nett
 const nett_geometry = new THREE.BoxGeometry(0.3, 0.51, 11.8);
@@ -36,9 +34,9 @@ function add_ball() {
 }
 
 function add_paddle(x) {
-  const geometry = new THREE.BoxGeometry(0.3, 1, 2);
-  const material = new THREE.MeshBasicMaterial({ color: 0xc1d1db });
-  const paddle = new THREE.Mesh(geometry, material);
+  const paddle_geometry = new THREE.BoxGeometry(0.3, 1, 2);
+  const paddle_material = new THREE.MeshBasicMaterial({ color: 0xc1d1db });
+  const paddle = new THREE.Mesh(paddle_geometry, paddle_material);
   paddle.position.set(x ,0.6 ,0);
   scene.add(paddle);
   return paddle;
@@ -47,8 +45,6 @@ function add_paddle(x) {
 const paddle_p1 = add_paddle(-7)
 const paddle_p2 = add_paddle(7);
 const ball = add_ball();
-const field = add_field();
-ball.dx = 0.1;
 
 function init()
 {
@@ -58,61 +54,40 @@ function init()
 } init();
 
 function animate_ball(){
-  ball.position.x += ball.dx;
+  ball.position.x += 0.1;
 }
-
-function movePaddles(){
-  if (keys["w"]) {
-		paddle_p1.position.z -= 0.2;
-	}
-	else if (keys["s"]) {
-		paddle_p1.position.z += 0.2;
-	}
-  if (keys["ArrowUp"]) {
-		paddle_p2.position.z -= 0.2;
-	}
-	else if (keys["ArrowDown"]) {
-		paddle_p2.position.z += 0.2;
-	}
-}
-
-function checkCollisionPaddle(paddle){
-  if (ball.position.x < paddle.position.x + paddle.geometry.parameters.width/2 &&
-    ball.position.x > paddle.position.x - paddle.geometry.parameters.width/2 &&
-    ball.position.z < paddle.position.z + paddle.geometry.parameters.depth/2 &&
-    ball.position.z > paddle.position.z - paddle.geometry.parameters.depth/2){
-    ball.dx *= -1.03;
-  }
-}
-
-// function checkCollisionBorder(){
-//   if (ball.position.x < field.position.x - field.geometry.parameters.width/2 &&
-//     ball.position.x > field.position.x + field.geometry.parameters.width/2 &&
-//     ball.position.z < field.position.z + field.geometry.parameters.depth/2 &&
-//     ball.position.z > field.position.z - field.geometry.parameters.depth/2){
-//     ball.dx *= -1.03;
-//   }
-// }
 
 function update(){
-  checkCollisionPaddle(paddle_p1);
-  checkCollisionPaddle(paddle_p2);
-  // checkCollisionBorder()
   animate_ball();
-  movePaddles();
+  setTimeout(update, 100);
+} update();
+
+function checkCollisionWith(element){
+
 }
+
 
 function animate() {
   requestAnimationFrame(animate);
   // controls.update();
-  update();
   renderer.render(scene, camera);
 } animate();
 
-document.addEventListener("keydown", (event) => { 
-	keys[event.key] = true; 
+window.addEventListener('keydown', (e) => {
+  switch(e.key) {
+    case "ArrowUp":
+      paddle_p2.position.z -= 0.2;
+      break;
+    case "ArrowDown":
+      paddle_p2.position.z += 0.2;
+      break;
+    case "w":
+      paddle_p1.position.z -= 0.2;
+      break;
+    case "s":
+      paddle_p1.position.z += 0.2;
+      break;
+  }
 });
 
-document.addEventListener("keyup", (event) => {
-	keys[event.key] = false;
-});
+export {scene, camera, renderer, paddle_p1, paddle_p2, ball};
