@@ -79,29 +79,36 @@ def tournament_view(request):
 	return JsonResponse(data)
 
 @api_view(['GET'])
-def pong_solo_view(request):
+def pong(request):
 	data = {
-		'content': render_to_string("main/pong_solo.html", request=request)
+		'content': render_to_string("main/pong.html", request=request)
 	}
 	return JsonResponse(data)
 
-@api_view(['GET'])
-def pong_tournament_view(request):
-	data = {
-		'content': render_to_string("main/pong_tournament.html", request=request)
-	}
-	return JsonResponse(data)
+# @api_view(['GET'])
+# def pong_solo_view(request):
+# 	data = {
+# 		'content': render_to_string("main/pong_solo.html", request=request)
+# 	}
+# 	return JsonResponse(data)
 
-@api_view(['GET'])
-def pong_two_player_local_view(request):
-	data = {
-		'content': render_to_string("main/pong_two_player_local.html", request=request)
-	}
-	return JsonResponse(data)
+# @api_view(['GET'])
+# def pong_tournament_view(request):
+# 	data = {
+# 		'content': render_to_string("main/pong_tournament.html", request=request)
+# 	}
+# 	return JsonResponse(data)
 
-@api_view(['GET'])
-def pong_two_player_online_view(request):
-	data = {
-		'content': render_to_string("main/pong_two_player_online.html", request=request)
-	}
-	return JsonResponse(data)
+# @api_view(['GET'])
+# def pong_two_player_local_view(request):
+# 	data = {
+# 		'content': render_to_string("main/pong_two_player_local.html", request=request)
+# 	}
+# 	return JsonResponse(data)
+
+# @api_view(['GET'])
+# def pong_two_player_online_view(request):
+# 	data = {
+# 		'content': render_to_string("main/pong_two_player_online.html", request=request)
+# 	}
+# 	return JsonResponse(data)

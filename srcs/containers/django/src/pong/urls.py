@@ -14,9 +14,10 @@ urlpatterns = [
 	path('api/two_player_local/', views.two_player_local_view, name='api_two_player_local'),
 	path('api/two_player_online/', views.two_player_online_view, name='api_two_player_online'),
 
-	path('api/pong_solo/', views.pong_solo_view, name='api_pong_solo'),
-	path('api/pong_tournament/', views.pong_tournament_view, name='api_pong_tournament'),
-	path('api/pong_two_player_local/', views.pong_two_player_local_view, name='api_pong_two_player_local'),
-	path('api/pong_two_player_online/', views.pong_two_player_online_view, name='api_pong_two_player_online'),
+	path('api/pong/', views.pong, name='api_pong'),
+	# path('api/pong_solo/', views.pong_solo_view, name='api_pong_solo'),
+	# path('api/pong_tournament/', views.pong_tournament_view, name='api_pong_tournament'),
+	# path('api/pong_two_player_local/', views.pong_two_player_local_view, name='api_pong_two_player_local'),
+	# path('api/pong_two_player_online/', views.pong_two_player_online_view, name='api_pong_two_player_online'),
 
 ]
