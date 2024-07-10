@@ -1,3 +1,4 @@
+import { player2, paddleSpeed, ball } from "./pong-conf.js";
 
 // Control paddles
 function movePaddlesComputer() {
@@ -8,3 +9,5 @@ function movePaddlesComputer() {
 		player2.dy = -paddleSpeed;
 	}
 }
+
+export {movePaddlesComputer};
