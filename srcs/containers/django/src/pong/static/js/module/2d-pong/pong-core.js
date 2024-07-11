@@ -1,5 +1,5 @@
-import {canvas, ctx, monoColor, paddleSpeed, player1, player2, ball, getRandomInt, scoreToWin} from './pong-conf.js';
-import {movePaddlesComputer} from './pong-ai.js';
+import { canvas, ctx, monoColor, paddleSpeed, player1, player2, ball, getRandomInt, scoreToWin } from './pong-conf.js';
+import { movePaddlesComputer } from './pong-ai.js';
 import { gameState } from './game-state.js';
 import { displayScoreTournament, updateScoreTournament } from './pong-tournament.js';
 
@@ -37,8 +37,6 @@ function updatePaddle(paddle) {
 		paddle.y = canvas.height - paddle.height;
 	}
 }
-
-const abs = x => x < 0 ? -x : x;
 
 function updateBall() {
 	ball.x += ball.dx;
@@ -138,6 +136,7 @@ function updateScore() {
 // Main loop
 function gameLoop(mode)
 {
+	console.log(`In gameLoop: mode: ${mode}`);
 	// Clear the canvas
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -146,7 +145,7 @@ function gameLoop(mode)
 	drawPaddle(player1);
 	drawPaddle(player2);
 	drawBall(ball);
-	if (mode === 'tournament'){
+	if (mode ==='tournament'){
 		displayScoreTournament();
 		if (!gameState.gameRunning){ 
 			gameState.player1Score = 0;
@@ -169,22 +168,22 @@ function gameLoop(mode)
 
 	// Update game state
 	movePaddlesPlayer1();
-	if (mode === 'user-vs-user'){
+	if (mode === 'user-vs-user') {
 		movePaddlesPlayer2();
 	}
-	else if (mode === 'user-vs-computer'){
+	else if (mode === 'user-vs-computer') {
 		movePaddlesComputer();
 	}
 	updatePaddle(player1);
 	updatePaddle(player2);
 	updateBall();
-	if (mode === 'tournament'){
+	if (mode === 'tournament') {
 		gameState.gameRunning = updateScoreTournament();
 	}
-	else{
+	else {
 		gameState.gameRunning = updateScore();
 	}
-	requestAnimationFrame(gameLoop);
+	requestAnimationFrame(gameLoop.bind(null, mode));
 }
 
 export {gameLoop, resetBall, displayScore, gameState, updateScoreTournament, displayScoreTournament};
