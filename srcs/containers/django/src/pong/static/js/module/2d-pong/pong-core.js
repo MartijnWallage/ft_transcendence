@@ -1,4 +1,4 @@
-import { canvas, ctx, monoColor, paddleSpeed, player1, player2, ball, getRandomInt, scoreToWin } from './pong-conf.js';
+import { canvas, ctx, monoColor, paddleSpeed, player1, player2, ball, getRandomInt, scoreToWin, paddleWidth } from './pong-conf.js';
 import { movePaddlesComputer } from './pong-ai.js';
 import { gameState } from './game-state.js';
 import { displayScoreTournament, updateScoreTournament } from './pong-tournament.js';
@@ -110,6 +110,15 @@ function displayScore() {
 	ctx.fillText(gameState.player2Score, canvas.width / 2 + 52, 50);
 }
 
+function displayWinMessage(message) {
+  ctx.font = '30px Bitfont';
+  const textMetrics = ctx.measureText(message);
+  const x = (canvas.width - textMetrics.width) / 2;
+  const y = canvas.height / 2;
+
+  ctx.fillText(message, x, y);
+}
+
 function updateScore() {
 	if (ball.x < player1.x) {
 		gameState.player2Score += 1;
@@ -118,15 +127,15 @@ function updateScore() {
 		gameState.player1Score += 1;
 		resetBall();
 	}
-	if (gameState.player1Score === scoreToWin){
+	if (gameState.player1Score === scoreToWin) {
 		setTimeout(function() {
-			alert('Player 1 wins!');
-		} , 100);
+			displayWinMessage('Player 1 wins!');
+		}, 100);
 		return false;
 	}
 	else if (gameState.player2Score === scoreToWin){
 		setTimeout(function() {
-			alert('Player 2 wins!');
+			displayWinMessage('Player 2 wins!');
 		} , 100);
 		return false;
 	}
@@ -136,7 +145,6 @@ function updateScore() {
 // Main loop
 function gameLoop(mode)
 {
-	console.log(`In gameLoop: mode: ${mode}`);
 	// Clear the canvas
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -161,7 +169,7 @@ function gameLoop(mode)
 			return; 
 		}
 	}
-	else{
+	else {
 		displayScore();
 		if (!gameState.gameRunning) return;
 	}
