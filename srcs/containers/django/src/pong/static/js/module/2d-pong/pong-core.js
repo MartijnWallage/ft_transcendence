@@ -183,7 +183,7 @@ function gameLoop(mode)
 	else {
 		gameState.gameRunning = updateScore();
 	}
-	requestAnimationFrame(gameLoop. bind(null, mode));
+	requestAnimationFrame(gameLoop.bind(null, mode));
 }
 
 export {gameLoop, resetBall, displayScore, gameState, updateScoreTournament, displayScoreTournament};
