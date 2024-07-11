@@ -40,16 +40,7 @@ function startGame(player1Name, player2Name, mode) {
 	gameState.player2Score = 0;
 	gameState.gameRunning = true;
 	console.log(`Game mode: ${mode}`);
-	if (mode === 'tournament') {
-		gameLoop(mode);
-	}
-	else if (mode === 'user-vs-user') {
-		gameLoop(mode);
-	}
-	else if (mode === 'user-vs-computer') {
-		console.log('Starting game in user vs computer mode');
-		gameLoop(mode);
-	}
+	gameLoop(mode);
 }
 
 function startGameSolo() {
