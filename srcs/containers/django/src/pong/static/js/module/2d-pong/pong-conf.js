@@ -8,7 +8,6 @@ const  paddleWidth = 14;
 const  paddleHeight = 70;
 const  paddleSpeed = 6;
 const  paddleOffset = 10;
-const  epsilon = 1;
 
 const player1 = {
                 x: paddleOffset,
@@ -16,7 +15,7 @@ const player1 = {
                 width: paddleWidth,
                 height: paddleHeight,
                 dy: 0,
-				        color : monoColor,
+				color : monoColor,
 };
 
 const player2 = {
@@ -25,7 +24,7 @@ const player2 = {
                 width: paddleWidth,
                 height: paddleHeight,
                 dy: 0,
-				        color : monoColor,
+				color : monoColor,
 };
 
 const getRandomInt = max => Math.floor(Math.random() * max);
