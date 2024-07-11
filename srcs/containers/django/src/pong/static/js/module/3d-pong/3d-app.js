@@ -63,7 +63,7 @@ function checkCollisionPaddle(paddle){
 			ball.position.z + ballConf.radius > paddle.position.z - paddle.geometry.parameters.depth / 2) {
 			ball.dz = (ball.position.z - (paddle.position.z)) * 0.15;
 			ball.dx *= -1.03;
-			// hit.play();
+			// hit.play(); // uncomment to play sound on hit
 		}
 }
 
