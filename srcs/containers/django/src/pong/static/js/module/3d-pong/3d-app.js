@@ -1,6 +1,7 @@
 import Stats from './stats.module.js'
 import { initScene } from './3d-scene.js';
 import { addGeometry} from './3d-geometry.js';
+import { gameState } from './3d-game-state.js';
 
 import { scoreToWin, getRandomInt, ballConf} from './3d-pong-conf.js';
 
