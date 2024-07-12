@@ -23,7 +23,6 @@ function matchOrderInit() {
     console.log('Match order:', gameState.matchOrder);
 }
 
-
 function scoreBoardInit() {
     for (let i = 0; i < gameState.players.length; i++) {
         gameState.scoreBoard.push(0);
