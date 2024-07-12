@@ -22,7 +22,7 @@ window.loadPage = (page) => {
 		}
 	})
 	.catch(error => {
-		console.error('Erro      <h1 class="my-4 display-4">|| pause</h1>r loading page:', error);
+		console.error('Error loading page:', error);
 	});
 }
 
