@@ -18,18 +18,14 @@ function updateScoreTournament() {
     }
 
     if (gameState.player1Score === scoreToWin || gameState.player2Score === scoreToWin) {
+		console.log('player1: ', gameState.players[gameState.matchOrder[gameState.currentGameIndex - 1][0]]);
+		console.log('player2: ', gameState.players[gameState.matchOrder[gameState.currentGameIndex - 1][1]]);
 		if (gameState.player1Score == scoreToWin) {
-			setTimeout(function() {
-				alert(`${gameState.players[gameState.matchOrder[gameState.currentGameIndex - 1][0]]} wins!`);
-			}
-			, 100);
+			alert(`${gameState.players[gameState.matchOrder[gameState.currentGameIndex - 1][0]]} wins!`);
 			return false;
 		}
 		else {
-			setTimeout(function() {
-				alert(`${gameState.players[gameState.matchOrder[gameState.currentGameIndex - 1][1]]} wins!`);
-			}
-			, 100);
+			alert(`${gameState.players[gameState.matchOrder[gameState.currentGameIndex - 1][1]]} wins!`);
 			return false;
 		}
     }

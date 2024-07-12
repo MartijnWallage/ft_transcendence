@@ -20,7 +20,9 @@ function matchOrderInit() {
             gameState.matchOrder.push([i, j]);
         }
     }
-    console.log('Match order:', gameState.matchOrder);
+    gameState.matchOrder.forEach((value, index) => {
+        console.log(`Match ${index}: `, value);
+    });
 }
 
 function scoreBoardInit() {
@@ -30,6 +32,7 @@ function scoreBoardInit() {
 }
 
 function initializeTournament() {
+    console.log('Initializing tournament...');
     console.log('Players:', gameState.players); 
     // document.getElementById('announcement').innerText = `Next match: ${player1} vs ${player2}`;
     // document.getElementById('announcement').style.display = 'block';

@@ -48,6 +48,6 @@ const ball = {
 // Score
 
 
-const scoreToWin = 3;
+const scoreToWin = 1;
 
 export {canvas, ctx, monoColor, paddleWidth, paddleHeight, paddleSpeed, player1, player2, ball, scoreToWin, getRandomInt};

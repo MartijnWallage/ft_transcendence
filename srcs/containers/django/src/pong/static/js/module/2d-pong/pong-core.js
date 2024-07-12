@@ -2,6 +2,7 @@ import { canvas, ctx, monoColor, paddleSpeed, player1, player2, ball, getRandomI
 import { movePaddlesComputer } from './pong-ai.js';
 import { gameState } from './game-state.js';
 import { displayScoreTournament, updateScoreTournament } from './pong-tournament.js';
+import { nextGame } from './tournament-game.js';
 
 // Draw functions
 
@@ -176,7 +177,7 @@ function gameLoop(mode)
 
 	// Update game state
 	movePaddlesPlayer1();
-	if (mode === 'user-vs-user') {
+	if (mode === 'user-vs-user' || mode === 'tournament') {
 		movePaddlesPlayer2();
 	}
 	else if (mode === 'user-vs-computer') {

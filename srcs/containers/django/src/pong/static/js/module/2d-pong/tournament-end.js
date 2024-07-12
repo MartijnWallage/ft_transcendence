@@ -1,3 +1,5 @@
+import {gameState} from './game-state.js';
+
 
 function stopGame() {
     gameState.gameRunning = false;
@@ -13,11 +15,11 @@ function endTournament() {
     gameState.matchOrder = [];
     gameState.scoreBoard = [];
 
-    document.getElementById('js-start-tournament-btn').style.display = 'none';
-    document.getElementById('playerNameInput').value = '';
+    // document.getElementById('js-start-tournament-btn').style.display = 'none';
+    // document.getElementById('playerNameInput').value = '';
     // document.getElementById('announcement').innerText = 'Tournament has ended. Please add players for a new tournament.';
     setTimeout(() => document.getElementById('announcement').innerText = 'Tournament has ended. Please add players for a new tournament.', 4000);
-    document.getElementById('announcement').style.display = 'none';
+    // document.getElementById('announcement').style.display = 'none';
 
     stopGame();
 }
@@ -26,7 +28,7 @@ function scoreBoardTournament() {
 	// Step 1: Combine the player names and their victories into an array of objects
 	const scoreBoard = [];
 	for (let i = 0; i < gameState.players.length; i++) {
-		scoreBoard.push({ name: gameState.players[i], victories: scoreBoard[i] });
+		scoreBoard.push({ name: gameState.players[i], victories: gameState.scoreBoard[i] });
 	}
 
 	// Step 2: Sort the array of objects based on the number of victories in descending order
@@ -42,7 +44,7 @@ function scoreBoardTournament() {
 
 	// Display scoreBoard in the HTML as a table
 
-	const scoreBoardDiv = document.getElementById('scoreBoard');
+	const scoreBoardDiv = document.getElementById('scoreBoardTournament');
 	scoreBoardDiv.innerHTML = "<h2>scoreBoard</h2>";
 	const scoreBoardTable = document.createElement('table');
 	scoreBoardTable.style.width = '100%';
@@ -80,6 +82,8 @@ function scoreBoardTournament() {
 	});
 
 	scoreBoardDiv.appendChild(scoreBoardTable);
+	console.log('scoreBoardTournament display');
+	document.getElementById('scoreBoardTournament').style.display = 'block';
 }
 
 
