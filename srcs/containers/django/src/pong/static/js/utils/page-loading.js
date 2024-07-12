@@ -1,4 +1,5 @@
-import { addPlayer, startGameUserVsUser, startGameSolo, startTournament } from "../module/2d-pong/entrypoint.js";
+// import { addPlayer, startGameUserVsUser, startGameSolo, startTournament } from "../module/2d-pong/entrypoint.js";
+import { addPlayer, startGameUserVsUser, startGameSolo, startTournament } from "../module/3d-pong/3d-game.js";
 
 
 window.loadPage = (page) => {
@@ -20,7 +21,7 @@ window.loadPage = (page) => {
 		}
 	})
 	.catch(error => {
-		console.error('Error loading page:', error);
+		console.error('Erro      <h1 class="my-4 display-4">|| pause</h1>r loading page:', error);
 	});
 }
 

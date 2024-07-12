@@ -7,8 +7,9 @@ function addBall(scene) {
   const ball = new THREE.Mesh(ball_geometry, ball_material);
   ball.position.set(0 ,0.7 ,0);
   scene.add(ball);
-  ball.dx = 0.05;
+  ball.dx = ballConf.speed;
   ball.dz = 0;
+  ball.serve = 1;
   return ball;
 }
 

@@ -1,9 +1,10 @@
 import Stats from './stats.module.js'
 import { initScene } from './3d-scene.js';
 import { addGeometry} from './3d-geometry.js';
-import { gameState } from './3d-game-state.js';
+import {startGameUserVsUser, startGameSolo, startGame, endGame, startTournament} from './3d-game.js';
 
 import { scoreToWin, getRandomInt, ballConf} from './3d-pong-conf.js';
+import { gameState } from './3d-game-state.js';
 
 // FPS stats viewer
 const stats = new Stats();
@@ -22,7 +23,7 @@ document.addEventListener("keyup", (event) => {
 const {scene, camera, renderer, hit} = initScene();
 const {paddle_p1, paddle_p2, ball, field} = addGeometry(scene);
 
-function animate_ball(){
+function animateBall(){
 	ball.position.x += ball.dx;
 	ball.position.z += ball.dz;
 }
@@ -79,12 +80,61 @@ function checkCollisionField(){
 		}
 }
 
+// Serve
+function resetBall() {
+	ball.position.x = 0;
+	ball.position.z = 0;
+	ball.serve *= -1;
+	ball.dx = ballConf.speed * ball.serve;
+	ball.dz = 0;
+}
+
+function displayWinMessage(message) {
+	// ctx.font = '30px Bitfont';
+	// const textMetrics = ctx.measureText(message);
+	// const x = (canvas.width - textMetrics.width) / 2;
+	// const y = canvas.height / 2;
+  
+	// ctx.fillText(message, x, y);
+	alert('Player 1 wins!');
+  }
+
+function updateScore() {
+	if (ball.position.x < paddle_p1.position.x) {
+		gameState.player2Score += 1;
+		console.log("one point for player 2");
+		resetBall();
+		// resetPaddle() ??
+	} else if (ball.position.x > paddle_p2.position.x) {
+		gameState.player1Score += 1;
+		console.log("one point for player 1");
+		resetBall();
+		// resetPaddle() ??
+	}
+	if (gameState.player1Score === scoreToWin) {
+		setTimeout(function() {
+			displayWinMessage('Player 1 wins!');
+		}, 100);
+		return false;
+	}
+	else if (gameState.player2Score === scoreToWin){
+		setTimeout(function() {
+			displayWinMessage('Player 2 wins!');
+		} , 100);
+		return false;
+	}
+	return true;
+}
+
 function update(){
+	movePaddles();
 	checkCollisionPaddle(paddle_p1);
 	checkCollisionPaddle(paddle_p2);
 	checkCollisionField()
-	animate_ball();
-	movePaddles();
+	animateBall();
+	if (gameState.running === true) {
+		updateScore();
+	} 
 }
 
 function animate() {

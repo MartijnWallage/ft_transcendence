@@ -9,7 +9,7 @@ const paddleConf = {
 // Ball properties
 const ballConf = {
                     radius: 0.4,
-                    // Speed: 6,
+                    speed: 0.09,
 };
 
 // Score
