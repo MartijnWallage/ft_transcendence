@@ -9,11 +9,14 @@ const stats = new Stats();
 stats.showPanel(0);
 document.body.appendChild(stats.dom);
 
+
 //key listener
+
 let keys = {};
 document.addEventListener("keydown", (event) => { 
 	keys[event.key] = true; 
 });
+
 document.addEventListener("keyup", (event) => {
 	keys[event.key] = false;
 });
@@ -30,6 +33,7 @@ function update(){
 	if (gameState.running === true) {
 		updateScore();
 	}
+
 }
 
 function animate() {
@@ -41,3 +45,4 @@ function animate() {
 } animate();
 
 export { paddle_p2, paddle_p1, ball, field, keys };
+

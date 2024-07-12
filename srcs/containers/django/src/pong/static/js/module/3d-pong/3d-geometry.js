@@ -2,6 +2,7 @@ import * as THREE from './three.module.js';
 import { paddleConf, ballConf} from './3d-pong-conf.js';
 
 function addBall(scene) {
+
 	const ball_geometry = new THREE.SphereGeometry(ballConf.radius, 9, 9);
 	const ball_material = new THREE.MeshBasicMaterial({ color: 0xff0000, wireframe: true });
 	const ball = new THREE.Mesh(ball_geometry, ball_material);
@@ -44,6 +45,7 @@ function addGeometry(scene){
 	const field = addField(scene, );
 	addNet(scene);
 	return ({paddle_p1, paddle_p2, ball, field});
+
 }
 
 export {addGeometry};
