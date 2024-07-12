@@ -29,7 +29,7 @@ function update(){
 	animateBall();
 	if (gameState.running === true) {
 		updateScore();
-	} 
+	}
 }
 
 function animate() {

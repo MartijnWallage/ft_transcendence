@@ -2580,17 +2580,17 @@ class Vector4 {
 			m31 = te[ 2 ], m32 = te[ 6 ], m33 = te[ 10 ];
 
 		if ( ( Math.abs( m12 - m21 ) < epsilon ) &&
-			 ( Math.abs( m13 - m31 ) < epsilon ) &&
-			 ( Math.abs( m23 - m32 ) < epsilon ) ) {
+		     ( Math.abs( m13 - m31 ) < epsilon ) &&
+		     ( Math.abs( m23 - m32 ) < epsilon ) ) {
 
 			// singularity found
 			// first check for identity matrix which must have +1 for all terms
 			// in leading diagonal and zero in other terms
 
 			if ( ( Math.abs( m12 + m21 ) < epsilon2 ) &&
-				 ( Math.abs( m13 + m31 ) < epsilon2 ) &&
-				 ( Math.abs( m23 + m32 ) < epsilon2 ) &&
-				 ( Math.abs( m11 + m22 + m33 - 3 ) < epsilon2 ) ) {
+			     ( Math.abs( m13 + m31 ) < epsilon2 ) &&
+			     ( Math.abs( m23 + m32 ) < epsilon2 ) &&
+			     ( Math.abs( m11 + m22 + m33 - 3 ) < epsilon2 ) ) {
 
 				// this singularity is identity matrix so angle = 0
 
@@ -22754,8 +22754,8 @@ function WebGLState( gl ) {
 			setFunc: function ( stencilFunc, stencilRef, stencilMask ) {
 
 				if ( currentStencilFunc !== stencilFunc ||
-					 currentStencilRef !== stencilRef ||
-					 currentStencilFuncMask !== stencilMask ) {
+				     currentStencilRef !== stencilRef ||
+				     currentStencilFuncMask !== stencilMask ) {
 
 					gl.stencilFunc( stencilFunc, stencilRef, stencilMask );
 
@@ -22770,8 +22770,8 @@ function WebGLState( gl ) {
 			setOp: function ( stencilFail, stencilZFail, stencilZPass ) {
 
 				if ( currentStencilFail !== stencilFail ||
-					 currentStencilZFail !== stencilZFail ||
-					 currentStencilZPass !== stencilZPass ) {
+				     currentStencilZFail !== stencilZFail ||
+				     currentStencilZPass !== stencilZPass ) {
 
 					gl.stencilOp( stencilFail, stencilZFail, stencilZPass );
 
@@ -38754,8 +38754,8 @@ function getLeftmost( start ) {
 function pointInTriangle( ax, ay, bx, by, cx, cy, px, py ) {
 
 	return ( cx - px ) * ( ay - py ) >= ( ax - px ) * ( cy - py ) &&
-		   ( ax - px ) * ( by - py ) >= ( bx - px ) * ( ay - py ) &&
-		   ( bx - px ) * ( cy - py ) >= ( cx - px ) * ( by - py );
+           ( ax - px ) * ( by - py ) >= ( bx - px ) * ( ay - py ) &&
+           ( bx - px ) * ( cy - py ) >= ( cx - px ) * ( by - py );
 
 }
 
@@ -38763,9 +38763,9 @@ function pointInTriangle( ax, ay, bx, by, cx, cy, px, py ) {
 function isValidDiagonal( a, b ) {
 
 	return a.next.i !== b.i && a.prev.i !== b.i && ! intersectsPolygon( a, b ) && // dones't intersect other edges
-		   ( locallyInside( a, b ) && locallyInside( b, a ) && middleInside( a, b ) && // locally visible
-			( area( a.prev, a, b.prev ) || area( a, b.prev, b ) ) || // does not create opposite-facing sectors
-			equals( a, b ) && area( a.prev, a, a.next ) > 0 && area( b.prev, b, b.next ) > 0 ); // special zero-length case
+           ( locallyInside( a, b ) && locallyInside( b, a ) && middleInside( a, b ) && // locally visible
+            ( area( a.prev, a, b.prev ) || area( a, b.prev, b ) ) || // does not create opposite-facing sectors
+            equals( a, b ) && area( a.prev, a, a.next ) > 0 && area( b.prev, b, b.next ) > 0 ); // special zero-length case
 
 }
 
