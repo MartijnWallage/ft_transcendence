@@ -81,8 +81,7 @@ function displayWinMessage(message) {
 	// const x = (canvas.width - textMetrics.width) / 2;
 	// const y = canvas.height / 2;
   
-	// ctx.fillText(message, x, y);
-	alert(message);
+	ctx.fillText(message, x, y);
 }
 
 function updateScore() {
