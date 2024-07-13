@@ -50,13 +50,20 @@ function updateScore(player) {
 	}
 }
 
+function abs(x) {
+	return x < 0 ? -x : x;
+}
+
 function updateBall() {
 	ball.x += ball.dx;
 	ball.y += ball.dy;
 	
 	// Bounce off top and bottom
-	if (ball.y < 0 || ball.y + ball.height > canvas.height) {
-		ball.dy *= -1; 
+	if (ball.y <= 0 || ball.y + ball.height >= canvas.height) {
+		if (abs(ball.dy) < 1) {
+			ball.dy = ball.dy < 0 ? -1 : 1;
+		}
+		ball.dy *= -1;
 	}
 	
 	// Bounce off paddles
@@ -72,22 +79,23 @@ function updateBall() {
 		ball.x + ball.width >= paddle.x
 			&& ball.x + ball.width / 2 < paddle.x + paddle.width;
 	let ballReachedSide = ball.dx < 0 ?
-		ball.x < 0 : 
+		ball.x + ball.width < 0 : 
 		ball.x > canvas.width;
 	
 	// check if ball hit paddle or someone scored
-	if (ballReachedSide) {
-		let otherPlayer = ball.dx < 0 ? player2 : player1;
-		updateScore(otherPlayer);
-	} else if (ballReachedPaddle && ballHitPaddle) {
+	if (ballReachedPaddle && ballHitPaddle) {
 		if (ball.dx === ball.serveSpeed || ball.dx === -ball.serveSpeed) {
 			ball.dx *= 2;
 		} else {
 			ball.dx *= -1.03;
 		}
+
 		let middleBall = (bottomBall + topBall) / 2;
 		let middlePaddle = (bottomPaddle + topPaddle) / 2;
 		ball.dy = (middleBall - middlePaddle) * 0.20;
+	} else if (ballReachedSide) {
+		let otherPlayer = ball.dx < 0 ? player2 : player1;
+		updateScore(otherPlayer);
 	}
 }
 
