@@ -55,16 +55,17 @@ function abs(x) {
 }
 
 function updateBall() {
-	ball.x += ball.dx;
-	ball.y += ball.dy;
 	
-	// Bounce off top and bottom
 	if (ball.y <= 0 || ball.y + ball.height >= canvas.height) {
 		if (abs(ball.dy) < 1) {
 			ball.dy = ball.dy < 0 ? -1 : 1;
 		}
 		ball.dy *= -1;
 	}
+	
+	// Bounce off top and bottom
+	ball.x += ball.dx;
+	ball.y += ball.dy;
 	
 	// Bounce off paddles
 	let paddle = ball.dx < 0 ? player1 : player2;
@@ -84,7 +85,7 @@ function updateBall() {
 	
 	// check if ball hit paddle or someone scored
 	if (ballReachedPaddle && ballHitPaddle) {
-		if (ball.dx === ball.serveSpeed || ball.dx === -ball.serveSpeed) {
+		if (abs(ball.dx) == ball.serveSpeed) {
 			ball.dx *= 2;
 		} else {
 			ball.dx *= -1.03;
