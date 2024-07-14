@@ -56,6 +56,7 @@ function abs(x) {
 
 function updateBall() {
 	
+	// Bounce off top and bottom
 	if (ball.y <= 0 || ball.y + ball.height >= canvas.height) {
 		if (abs(ball.dy) < 1) {
 			ball.dy = ball.dy < 0 ? -1 : 1;
@@ -63,7 +64,6 @@ function updateBall() {
 		ball.dy *= -1;
 	}
 	
-	// Bounce off top and bottom
 	ball.x += ball.dx;
 	ball.y += ball.dy;
 	
@@ -165,12 +165,30 @@ function displayWinMessage(message) {
 	ctx.fillText(message, x, y);
 }
 
+function initTournamentGameState() {
+	gameState.player1Score = 0;
+	gameState.player2Score = 0;
+	if (gameState.player1Score === scoreToWin) {
+		gameState.scoreBoard[gameState.matchOrder[gameState.currentGameIndex - 1][0]] += 1;
+		console.log('number of victory player '
+			+ gameState.matchOrder[gameState.currentGameIndex - 1][0]
+			+ ' :' 
+			+ gameState.scoreBoard[gameState.matchOrder[gameState.currentGameIndex - 1][0]]);
+	} else {
+		gameState.scoreBoard[gameState.matchOrder[gameState.currentGameIndex - 1][1]] += 1;
+		console.log('number of victory player '
+			+ gameState.matchOrder[gameState.currentGameIndex - 1][1]
+			+ ' :' 
+			+ gameState.scoreBoard[gameState.matchOrder[gameState.currentGameIndex - 1][1]]);
+	}
+}
+
 // Main loop
 function gameLoop(mode)
 {
 	// Clear the canvas
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
-
+	
 	// Draw net, paddles, and ball
 	drawNet();
 	drawPaddle(player1);
@@ -178,21 +196,12 @@ function gameLoop(mode)
 	drawBall(ball);
 	if (mode ==='tournament'){
 		displayScoreTournament();
-		if (!gameState.gameRunning){ 
-			gameState.player1Score = 0;
-			gameState.player2Score = 0;
-			if (gameState.player1Score === scoreToWin) {
-				gameState.scoreBoard[gameState.matchOrder[gameState.currentGameIndex - 1][0]] += 1;
-				console.log('number of victory player ' + gameState.matchOrder[gameState.currentGameIndex - 1][0] + ' :' + gameState.scoreBoard[gameState.matchOrder[gameState.currentGameIndex - 1][0]]);
-			} else {
-				gameState.scoreBoard[gameState.matchOrder[gameState.currentGameIndex - 1][1]] += 1;
-				console.log('number of victory player ' + gameState.matchOrder[gameState.currentGameIndex - 1][1] + ' :' + gameState.scoreBoard[gameState.matchOrder[gameState.currentGameIndex - 1][1]]);
-			}
+		if (!gameState.gameRunning) { 
+			initTournamentGameState();
 			nextGame();
 			return; 
 		}
-	}
-	else {
+	} else {
 		displayScore();
 		if (!gameState.gameRunning) return;
 	}
