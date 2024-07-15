@@ -87,6 +87,12 @@ h1 {
 .font-weight-semi-bold {
 	font-weight: 600;
   }
+  
+.score {
+	font-family: 'Bitfont', sans-serif;
+	color: white;
+}
+
 
 @font-face {
 	font-family: 'Bitfont';

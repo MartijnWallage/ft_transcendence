@@ -4,9 +4,13 @@ import { startGame } from './3d-game.js';
 function addPlayer() {
 	const playerName = document.getElementById('playerNameInput').value.trim();
 	console.log(playerName);
+	var error = document.getElementById('error');
 	if (playerName === '') {
-		alert('Please enter a valid name.');
+		error.style.display = 'block'; 
 		return;
+	}
+	else {
+		error.style.display = 'none'; 
 	}
 	gameState.players.push(playerName);
 	displayPlayers();
