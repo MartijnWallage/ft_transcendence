@@ -12,8 +12,8 @@
       integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N"
       crossorigin="anonymous"/>
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-	  <script type="module" src="{% static 'js/module/3d-pong/3dapp.js' %}" defer></script>
-    <script type="module" src="{% static 'js/module/2d-pong/entrypoint.js' %}" defer ></script>
+	  <script type="module" src="{% static 'js/module/3d-pong/3d-app.js' %}" defer></script>
+    <!-- <script type="module" src="{% static 'js/module/2d-pong/entrypoint.js' %}" defer ></script> -->
     <script type="module" src="{% static 'js/utils/page-loading.js' %}" defer></script>
   </head>
 
@@ -21,7 +21,6 @@
     <div id="threejs-container"></div>
     <div id="web-app">
       <div id="main-content" class="container-fluid"></div></div>
-      <h1 class="my-4 display-4">|| pause</h1>
     </div>
     <canvas id="pongCanvas" width="600" height="400" display="none"></canvas>
   </body>
