@@ -1,6 +1,6 @@
-import { addPlayer, startGameUserVsUser, startGameSolo, startTournament } from "../module/2d-pong/entrypoint.js";
-//import { endGame, startGameUserVsUser, startGameSolo, startTournament } from "../module/3d-pong/3d-game.js";
-//import { addPlayer } from '../module/3d-pong/3d-tournament.js';
+// import { addPlayer, startGameUserVsUser, startGameSolo, startTournament } from "../module/2d-pong/entrypoint.js";
+import { endGame, startGameUserVsUser, startGameSolo, startTournament } from "../module/3d-pong/3d-game.js";
+import { addPlayer } from '../module/3d-pong/3d-tournament.js';
 
 
 window.loadPage = (page) => {
