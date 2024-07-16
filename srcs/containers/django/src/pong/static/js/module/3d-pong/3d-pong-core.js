@@ -3,6 +3,7 @@ import { paddle_p1, paddle_p2, ball, field, keys } from './3d-app.js';
 import { gameState } from './3d-game-state.js';
 import { movePaddlesComputer } from './3d-pong-ai.js';
 import { nextGame } from './3d-tournament.js';
+import { endGame } from './3d-game.js';
 
 function animateBall(){
 	ball.position.x += ball.dx;
@@ -81,51 +82,57 @@ function displayWinMessage(message) {
 	var menu = document.getElementById('menu');
 	menu.style.display = 'block';
 	menu.style.opacity = 1;
+
+	const btn = document.getElementById('js-next-game-btn');
+	btn.style.display = 'block';
+	return new Promise((resolve) => {
+		function onClick(event) {
+			btn.removeEventListener('click', onClick);
+			btn.style.display = 'none';
+			resolve(event); 
+		}
+		document.addEventListener('click', onClick);
+	});
 }
 
-function updateScore() {
-	if (gameState.mode === 'tournament'){
-		// ctx.fillText( `${gameState.players[gameState.matchOrder[gameState.currentGameIndex - 1][0]]} Score: ` + gameState.player1Score, 20, 30);
-		// ctx.fillText( `${gameState.players[gameState.matchOrder[gameState.currentGameIndex - 1][1]]} Score: ` + gameState.player2Score, canvas.width - 180, 30);
-	}
+async function updateScore() {
 	if (ball.position.x < paddle_p1.position.x) {
 		gameState.player2Score += 1;
 		var p2Score = document.getElementById('player2-score');
 		p2Score.textContent = gameState.player2Score;
 		console.log("one point for player 2");
 		serveBall();
-		// resetPaddle() ??
 	} else if (ball.position.x > paddle_p2.position.x) {
 		gameState.player1Score += 1;
 		var p1Score = document.getElementById('player1-score');
 		p1Score.textContent = gameState.player1Score;
 		console.log("one point for player 1");
 		serveBall();
-		// resetPaddle() ??
 	}
 	if (gameState.player1Score === scoreToWin) {
-		setTimeout(function() {
-			displayWinMessage('Player 1 wins!');
-		}, 100);
+		gameState.running = false;
 		resetBall();
+		await displayWinMessage('Player 1 wins!');
 		if (gameState.mode === 'tournament'){
 			gameState.scoreBoard[gameState.matchOrder[gameState.currentGameIndex - 1][0]] += 1;
 			console.log('number of victory player ' + gameState.matchOrder[gameState.currentGameIndex - 1][0] + ' :' + gameState.scoreBoard[gameState.matchOrder[gameState.currentGameIndex - 1][0]]);
-			nextGame()
+			nextGame();
+			return;
 		}
-		gameState.running = false;
+		endGame();
+		
 	}
 	else if (gameState.player2Score === scoreToWin){
-		setTimeout(function() {
-			displayWinMessage('Player 2 wins!');
-		} , 100);
+		gameState.running = false;
 		resetBall();
+		await displayWinMessage('Player 2 wins!');
 		if (gameState.mode === 'tournament'){
 			gameState.scoreBoard[gameState.matchOrder[gameState.currentGameIndex - 1][1]] += 1;
 			console.log('number of victory player ' + gameState.matchOrder[gameState.currentGameIndex - 1][1] + ' :' + gameState.scoreBoard[gameState.matchOrder[gameState.currentGameIndex - 1][1]]);
-			nextGame()
+			nextGame();
+			return;
 		}
-		gameState.running = false;
+		endGame();
 	}
 }
 

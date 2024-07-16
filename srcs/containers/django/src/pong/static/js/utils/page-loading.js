@@ -2,29 +2,22 @@
 import { endGame, startGameUserVsUser, startGameSolo, startTournament } from "../module/3d-pong/3d-game.js";
 import { addPlayer } from '../module/3d-pong/3d-tournament.js';
 
-
 window.loadPage = (page) => {
-	fetch('/api/' + page + '/')
-	.then(response => response.json())
-	.then(data => {
-		document.getElementById('main-content').innerHTML = data.content;
-		history.pushState({page: page}, "", "#" + page);
-		bindEventListeners();
-		if (page === 'pong') {
-			setTimeout(function() {
-				const menu = document.getElementById('menu');
-				menu.classList.add('fade-out');
-				// Remove the menu element from the DOM after the fade-out transition
-				setTimeout(function() {
-				  menu.classList.add('hidden');
-				}, 2000); // Match the duration of the CSS transition
-			  }, 500);
-		}
-	})
-	.catch(error => {
-		console.error('Error loading page:', error);
+	return new Promise((resolve, reject) => {
+		fetch('/api/' + page + '/')
+			.then(response => response.json())
+			.then(data => {
+				document.getElementById('main-content').innerHTML = data.content;
+				history.pushState({ page: page }, "", "#" + page);
+				bindEventListeners();
+				resolve();  // Resolve the promise after everything is done
+			})
+			.catch(error => {
+				console.error('Error loading page:', error);
+				reject(error);  // Reject the promise on error
+			});
 	});
-}
+};
 
 window.loadPage = loadPage;
 
