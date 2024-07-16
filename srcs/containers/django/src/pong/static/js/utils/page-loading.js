@@ -1,4 +1,6 @@
-import { addPlayer, startGameUserVsUser, startGameSolo, startTournament } from "../module/2d-pong/entrypoint.js";
+// import { addPlayer, startGameUserVsUser, startGameSolo, startTournament } from "../module/2d-pong/entrypoint.js";
+import { endGame, startGameUserVsUser, startGameSolo, startTournament } from "../module/3d-pong/3d-game.js";
+import { addPlayer } from '../module/3d-pong/3d-tournament.js';
 
 
 window.loadPage = (page) => {
@@ -65,7 +67,11 @@ function bindEventListeners() {
 	var startTournamentBtn = document.getElementById('js-start-tournament-btn');
 	if (startTournamentBtn) {
 	  startTournamentBtn.addEventListener('click', startTournament);
-  }
+}
+	var startTournamentBtn = document.getElementById('js-end-game-btn');
+	if (startTournamentBtn) {
+	  startTournamentBtn.addEventListener('click', endGame);
+}
 }
 
 function showLeaderBoard() {

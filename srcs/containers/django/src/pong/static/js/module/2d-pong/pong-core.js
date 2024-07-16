@@ -39,26 +39,65 @@ function updatePaddle(paddle) {
 	}
 }
 
+function updateScore(player) {
+	player.score += 1;
+	if (player.score === scoreToWin) {
+		setTimeout(function() {
+			displayWinMessage(`${player.name} wins!`);
+		}, 100);
+		gameState.gameRunning = false;
+	} else {
+		resetBall();
+	}
+}
+
+function abs(x) {
+	return x < 0 ? -x : x;
+}
+
 function updateBall() {
+	
+	// Bounce off top and bottom
+	if (ball.y <= 0 || ball.y + ball.height >= canvas.height) {
+		if (abs(ball.dy) < 1) {
+			ball.dy = ball.dy < 0 ? -1 : 1;
+		}
+		ball.dy *= -1;
+	}
+	
 	ball.x += ball.dx;
 	ball.y += ball.dy;
 	
-	// Bounce off top and bottom
-	if (ball.y < 0 || ball.y + ball.height > canvas.height) {
-		ball.dy *= -1; 
-	}
-	
 	// Bounce off paddles
-	if (ball.x > player1.x && ball.x <= player1.x + player1.width) {
-		if (ball.y > player1.y && ball.y < player1.y + player1.height) {
-			ball.dy = (ball.y - (player1.y + player1.height / 2)) * 0.25;
+	let paddle = ball.dx < 0 ? player1 : player2;
+	let bottomPaddle = paddle.y;
+	let topPaddle = paddle.y + paddle.height;
+	let bottomBall = ball.y;
+	let topBall = ball.y + ball.height;
+	let ballHitPaddle = topBall > bottomPaddle && bottomBall < topPaddle;
+	let ballReachedPaddle = ball.dx < 0 ?
+		ball.x + ball.width / 2 > paddle.x
+			&& ball.x <= paddle.x + paddle.width : 
+		ball.x + ball.width >= paddle.x
+			&& ball.x + ball.width / 2 < paddle.x + paddle.width;
+	let ballReachedSide = ball.dx < 0 ?
+		ball.x + ball.width < 0 : 
+		ball.x > canvas.width;
+	
+	// check if ball hit paddle or someone scored
+	if (ballReachedPaddle && ballHitPaddle) {
+		if (abs(ball.dx) == ball.serveSpeed) {
+			ball.dx *= 2;
+		} else {
 			ball.dx *= -1.03;
 		}
-	} else if (ball.x + ball.width >= player2.x && ball.x < player2.x + player2.width) {
-		if (ball.y > player2.y && ball.y < player2.y + player2.height) {
-			ball.dy = (ball.y - (player2.y + player2.height / 2)) * 0.25;
-			ball.dx *= -1.03;
-		}
+
+		let middleBall = (bottomBall + topBall) / 2;
+		let middlePaddle = (bottomPaddle + topPaddle) / 2;
+		ball.dy = (middleBall - middlePaddle) * 0.20;
+	} else if (ballReachedSide) {
+		let otherPlayer = ball.dx < 0 ? player2 : player1;
+		updateScore(otherPlayer);
 	}
 }
 
@@ -67,7 +106,7 @@ function resetBall() {
 	ball.x = canvas.width / 2;
 	ball.y = canvas.height / 2;
 	ball.serve *= -1;
-	ball.dx = 3 * ball.serve;
+	ball.dx = ball.serveSpeed * ball.serve;
 	ball.dy = getRandomInt(6);
 }
 
@@ -107,40 +146,42 @@ function movePaddlesPlayer2() {
 function displayScore() {
 	ctx.font = '50px Bitfont';
 	ctx.fillStyle = monoColor;
-	ctx.fillText(gameState.player1Score, canvas.width / 2 - 80, 50);
-	ctx.fillText(gameState.player2Score, canvas.width / 2 + 52, 50);
+	ctx.fillText(player1.score, canvas.width / 2 - 80, 50);
+	ctx.fillText(player2.score, canvas.width / 2 + 52, 50);
 }
 
 function displayWinMessage(message) {
-  ctx.font = '30px Bitfont';
-  const textMetrics = ctx.measureText(message);
-  const x = (canvas.width - textMetrics.width) / 2;
-  const y = canvas.height / 2;
-
-  ctx.fillText(message, x, y);
+	ctx.font = '30px Bitfont';
+	message = message.toUpperCase();
+	const textMetrics = ctx.measureText(message);
+	const x = (canvas.width - textMetrics.width) / 2;
+	const y = canvas.height / 2;
+	const lineHeight = 30;
+  
+	// drawing rectangle to remove net
+	ctx.fillStyle = 'black';
+	ctx.fillRect(x, y - lineHeight, textMetrics.width, lineHeight * 2);
+	ctx.fillStyle = monoColor;
+  
+	ctx.fillText(message, x, y);
 }
 
-function updateScore() {
-	if (ball.x < player1.x) {
-		gameState.player2Score += 1;
-		resetBall();
-	} else if (ball.x + ball.width > canvas.width) {
-		gameState.player1Score += 1;
-		resetBall();
-	}
+function initTournamentGameState() {
+	gameState.player1Score = 0;
+	gameState.player2Score = 0;
 	if (gameState.player1Score === scoreToWin) {
-		setTimeout(function() {
-			displayWinMessage('Player 1 wins!');
-		}, 100);
-		return false;
+		gameState.scoreBoard[gameState.matchOrder[gameState.currentGameIndex - 1][0]] += 1;
+		console.log('number of victory player '
+			+ gameState.matchOrder[gameState.currentGameIndex - 1][0]
+			+ ' :' 
+			+ gameState.scoreBoard[gameState.matchOrder[gameState.currentGameIndex - 1][0]]);
+	} else {
+		gameState.scoreBoard[gameState.matchOrder[gameState.currentGameIndex - 1][1]] += 1;
+		console.log('number of victory player '
+			+ gameState.matchOrder[gameState.currentGameIndex - 1][1]
+			+ ' :' 
+			+ gameState.scoreBoard[gameState.matchOrder[gameState.currentGameIndex - 1][1]]);
 	}
-	else if (gameState.player2Score === scoreToWin){
-		setTimeout(function() {
-			displayWinMessage('Player 2 wins!');
-		} , 100);
-		return false;
-	}
-	return true;
 }
 
 // Main loop
@@ -148,7 +189,7 @@ function gameLoop(mode)
 {
 	// Clear the canvas
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
-
+	
 	// Draw net, paddles, and ball
 	drawNet();
 	drawPaddle(player1);
@@ -156,21 +197,12 @@ function gameLoop(mode)
 	drawBall(ball);
 	if (mode ==='tournament'){
 		displayScoreTournament();
-		if (!gameState.gameRunning){ 
-			gameState.player1Score = 0;
-			gameState.player2Score = 0;
-			if (gameState.player1Score === scoreToWin) {
-				gameState.scoreBoard[gameState.matchOrder[gameState.currentGameIndex - 1][0]] += 1;
-				console.log('number of victory player ' + gameState.matchOrder[gameState.currentGameIndex - 1][0] + ' :' + gameState.scoreBoard[gameState.matchOrder[gameState.currentGameIndex - 1][0]]);
-			} else {
-				gameState.scoreBoard[gameState.matchOrder[gameState.currentGameIndex - 1][1]] += 1;
-				console.log('number of victory player ' + gameState.matchOrder[gameState.currentGameIndex - 1][1] + ' :' + gameState.scoreBoard[gameState.matchOrder[gameState.currentGameIndex - 1][1]]);
-			}
+		if (!gameState.gameRunning) { 
+			initTournamentGameState();
 			nextGame();
 			return; 
 		}
-	}
-	else {
+	} else {
 		displayScore();
 		if (!gameState.gameRunning) return;
 	}
@@ -188,9 +220,6 @@ function gameLoop(mode)
 	updateBall();
 	if (mode === 'tournament') {
 		gameState.gameRunning = updateScoreTournament();
-	}
-	else {
-		gameState.gameRunning = updateScore();
 	}
 	requestAnimationFrame(gameLoop.bind(null, mode));
 }
