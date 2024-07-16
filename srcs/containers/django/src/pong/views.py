@@ -85,6 +85,13 @@ def pong(request):
 	}
 	return JsonResponse(data)
 
+@api_view(['GET'])
+def tournament_score(request):
+	data = {
+		'content': render_to_string("main/tournament_score.html", request=request)
+	}
+	return JsonResponse(data)
+
 # @api_view(['GET'])
 # def pong_solo_view(request):
 # 	data = {
