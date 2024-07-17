@@ -13,7 +13,7 @@ const ballConf = {
 };
 
 // Score
-const scoreToWin = 1;
+const scoreToWin = 3;
 
 const getRandomInt = max => Math.floor(Math.random() * max);
 
