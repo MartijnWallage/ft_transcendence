@@ -1,5 +1,6 @@
 import { gameState } from './3d-game-state.js';
 import { startGame } from './3d-game.js';
+import {endTournament} from './3d-tournament-end.js';
 
 function addPlayer() {
 	const playerName = document.getElementById('playerNameInput').value.trim();

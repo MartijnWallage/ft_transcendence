@@ -2,17 +2,18 @@ from django.db import models
 
 # Create your models here.
 
-class player(models.Model):
+class Player(models.Model):
 	name = models.CharField(max_length=100)
 
 	def __str__(self):
 		return self.name
 
-class tournament(models.Model):
+class Tournament(models.Model):
 	# tournament_index = models.IntegerField()
+	name = models.CharField(max_length=100)
 	date = models.DateTimeField()
-	# players = models.ManyToManyField(player)
-	winner = models.ForeignKey(player, on_delete=models.CASCADE)
+	players = models.ManyToManyField(Player, related_name='tournaments')
+	# winner = models.ForeignKey(Player, on_delete=models.CASCADE)
 	# hash = models.CharField(max_length=100)
 
 	def __str__(self):
