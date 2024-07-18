@@ -1,4 +1,5 @@
 import * as THREE from './three.module.js';
+import { OrbitControls } from './OrbitControls.js';
 
 function initScene()
 {
@@ -10,10 +11,12 @@ function initScene()
 	renderer.setSize(window.innerWidth, window.innerHeight);
 	renderer.setClearColor(0xc1d1db); // Set background color
 	container.appendChild(renderer.domElement);
+	const controls = new OrbitControls(camera, container);
 
 	camera.position.z = 0;
 	camera.position.y = 32;
 	camera.rotateX(-Math.PI/2);
+	controls.update();
 
 	// Add audio listener to the camera
 	const listener = new THREE.AudioListener();
@@ -30,7 +33,7 @@ function initScene()
 						hit.setVolume(1.0);
 				});
 
-	return ({scene, camera, renderer, hit});
+	return ({scene, camera, renderer, hit, controls});
 }
 
 export { initScene };

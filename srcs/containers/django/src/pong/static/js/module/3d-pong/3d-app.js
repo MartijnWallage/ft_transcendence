@@ -21,7 +21,7 @@ document.addEventListener("keyup", (event) => {
 	keys[event.key] = false;
 });
 
-const {scene, camera, renderer, hit} = initScene();
+const {scene, camera, renderer, hit, controls} = initScene();
 const {paddle_p1, paddle_p2, ball, field} = addGeometry(scene);
 
 function update(){
@@ -33,12 +33,12 @@ function update(){
 	if (gameState.running === true) {
 		updateScore();
 	}
-
 }
 
 function animate() {
 	stats.begin(); // for the FPS stats
 	update();
+	controls.update();
 	requestAnimationFrame(animate);
 	renderer.render(scene, camera);
 	stats.end(); // for the FPS stats
