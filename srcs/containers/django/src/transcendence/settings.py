@@ -39,6 +39,7 @@ print("ALLOWED_HOSTS:", ALLOWED_HOSTS)
 # Application definition
 
 INSTALLED_APPS = [
+	'pong.apps.PongConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -46,7 +47,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'pong',
+    # 'pong',
     'crispy_bootstrap5',
     'crispy_forms'
 ]

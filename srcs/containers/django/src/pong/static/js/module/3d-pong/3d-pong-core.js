@@ -9,7 +9,7 @@ function animateBall(){
 	ball.position.z += ball.dz;
 }
 
-function movePaddles(){
+function 	movePaddles(){
 	if (paddle_p1.position.z - paddle_p1.geometry.parameters.depth / 2 >
 			field.position.z - field.geometry.parameters.depth / 2 
 			&& keys["w"]) {
@@ -76,13 +76,11 @@ function serveBall() {
 }
 
 function displayWinMessage(message) {
-	// ctx.font = '30px Bitfont';
-	// const textMetrics = ctx.measureText(message);
-	// const x = (canvas.width - textMetrics.width) / 2;
-	// const y = canvas.height / 2;
-  
-	// ctx.fillText(message, x, y);
-	alert(message);
+	var announcement = document.getElementById('announcement');
+	announcement.textContent = message;
+	var menu = document.getElementById('menu');
+	menu.style.display = 'block';
+	menu.style.opacity = 1;
 }
 
 function updateScore() {
@@ -92,11 +90,15 @@ function updateScore() {
 	}
 	if (ball.position.x < paddle_p1.position.x) {
 		gameState.player2Score += 1;
+		var p2Score = document.getElementById('player2-score');
+		p2Score.textContent = gameState.player2Score;
 		console.log("one point for player 2");
 		serveBall();
 		// resetPaddle() ??
 	} else if (ball.position.x > paddle_p2.position.x) {
 		gameState.player1Score += 1;
+		var p1Score = document.getElementById('player1-score');
+		p1Score.textContent = gameState.player1Score;
 		console.log("one point for player 1");
 		serveBall();
 		// resetPaddle() ??

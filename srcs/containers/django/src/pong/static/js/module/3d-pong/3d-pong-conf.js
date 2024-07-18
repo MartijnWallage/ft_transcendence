@@ -9,11 +9,11 @@ const paddleConf = {
 // Ball properties
 const ballConf = {
 					radius: 0.4,
-					speed: 0.09,
+					speed: 0.10,
 };
 
 // Score
-const scoreToWin = 3;
+const scoreToWin = 1;
 
 const getRandomInt = max => Math.floor(Math.random() * max);
 

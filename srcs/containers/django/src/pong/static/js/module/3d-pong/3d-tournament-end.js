@@ -1,3 +1,5 @@
+import { addParticipant, createTournament } from "./tournament-score.js";
+import {gameState} from './3d-game-state.js';
 
 function stopGame() {
 	gameState.running= false;
@@ -9,36 +11,53 @@ function endTournament() {
 
 	scoreBoardTournament();
 
+	// Example usage:
+	
+	createTournament("tourn1");
+
+	const tournamentId = 1;
+	gameState.players.forEach(player => {
+		addParticipant(player, tournamentId);
+	});
+
 	gameState.players = [];
 	gameState.matchOrder = [];
 	gameState.scoreBoard = [];
 
-	document.getElementById('js-start-tournament-btn').style.display = 'none';
-	document.getElementById('playerNameInput').value = '';
+	// document.getElementById('js-start-tournament-btn').style.display = 'none';
+	// document.getElementById('playerNameInput').value = '';
 	// document.getElementById('announcement').innerText = 'Tournament has ended. Please add players for a new tournament.';
-	setTimeout(() => document.getElementById('announcement').innerText = 'Tournament has ended. Please add players for a new tournament.', 4000);
-	document.getElementById('announcement').style.display = 'none';
+	// setTimeout(() => document.getElementById('announcement').innerText = 'Tournament has ended. Please add players for a new tournament.', 4000);
+	// document.getElementById('announcement').style.display = 'none';
 
 	stopGame();
 }
 
+
 function scoreBoardTournament() {
 	// Step 1: Combine the player names and their victories into an array of objects
 	const scoreBoard = [];
-	for (let i = 0; i < gameState.players.length; i++) {
-		scoreBoard.push({ name: gameState.players[i], victories: scoreBoard[i] });
-	}
+
+	gameState.players.forEach((player, index) => {
+		scoreBoard.push({ name: player, victories: gameState.scoreBoard[index] });
+	});
+
+	// for (let i = 0; i < gameState.players.length; i++) {
+	// 	scoreBoard.push({ name: gameState.players[i], victories: gameState.scoreBoard[i] });
+	// }
+	
+
 
 	// Step 2: Sort the array of objects based on the number of victories in descending order
 	scoreBoard.sort((a, b) => b.victories - a.victories);
 
 	// Step 3: Extract the sorted player names and their victories (optional, for display)
-	const sortedPlayerNames = scoreBoard.map(player => player.name);
-	const sortedVictories = scoreBoard.map(player => player.victories);
+	// const sortedPlayerNames = scoreBoard.map(player => player.name);
+	// const sortedVictories = scoreBoard.map(player => player.victories);
 
 	console.log("scoreBoard:", scoreBoard);
-	console.log("Sorted Player Names:", sortedPlayerNames);
-	console.log("Sorted Victories:", sortedVictories);
+	// console.log("Sorted Player Names:", sortedPlayerNames);
+	// console.log("Sorted Victories:", sortedVictories);
 
 	// Display scoreBoard in the HTML as a table
 

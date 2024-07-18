@@ -1,0 +1,17 @@
+{% block content %}
+  <h1>Tournament Scoreboard</h1>
+  <table>
+      <thead>
+          <tr>
+              <th>Player Name</th>
+          </tr>
+      </thead>
+      <tbody>
+          {% for player in tournament.players.all %}
+          <tr>
+              <td>{{ player.name }}</td>
+          </tr>
+          {% endfor %}
+      </tbody>
+  </table>
+{% endblock %}
