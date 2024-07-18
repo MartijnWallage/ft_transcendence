@@ -94,8 +94,10 @@ def pong(request):
 
 @api_view(['GET'])
 def tournament_score(request):
+	tournament = get_object_or_404(Tournament)
+	html_content = render_to_string("main/tournament_score.html", {'tournament': tournament}, request=request)
 	data = {
-		'content': render_to_string("main/tournament_score.html", request=request)
+		'content': html_content
 	}
 	return JsonResponse(data)
 

@@ -9,7 +9,6 @@ class Player(models.Model):
 		return self.name
 
 class Tournament(models.Model):
-	# tournament_index = models.IntegerField()
 	name = models.CharField(max_length=100)
 	date = models.DateTimeField()
 	players = models.ManyToManyField(Player, related_name='tournaments')
@@ -19,12 +18,12 @@ class Tournament(models.Model):
 	def __str__(self):
 		return self.name
 
-# class match(models.Model):
-# 	match_index = models.IntegerField()
-# 	player1 = models.ForeignKey(player, on_delete=models.CASCADE)
-# 	player2 = models.ForeignKey(player, on_delete=models.CASCADE)
-# 	player1_score = models.IntegerField()
-# 	player2_score = models.IntegerField()
+class match(models.Model):
+	match_index = models.IntegerField()
+	player1 = models.ForeignKey(Player, on_delete=models.CASCADE)
+	player2 = models.ForeignKey(Player, on_delete=models.CASCADE)
+	player1_score = models.IntegerField()
+	player2_score = models.IntegerField()
 
-# 	def __str__(self):
-# 		return self.player1 + " vs " + self.player2
+	def __str__(self):
+		return self.player1 + " vs " + self.player2
