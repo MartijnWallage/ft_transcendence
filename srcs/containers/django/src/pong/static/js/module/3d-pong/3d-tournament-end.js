@@ -1,4 +1,4 @@
-import { addParticipant, createTournament } from "./tournament-score.js";
+import { addParticipant, createMatch, createTournament } from "./tournament-score.js";
 import {gameState} from './3d-game-state.js';
 
 function stopGame() {
@@ -13,11 +13,20 @@ function endTournament() {
 
 	// Example usage:
 	
-	createTournament("tourn1");
+	createTournament();
 
 	const tournamentId = 1;
 	gameState.players.forEach(player => {
 		addParticipant(player, tournamentId);
+	});
+
+	gameState.matchResult.forEach((match, index) => {
+		let player1 = gameState.players[gameState.matchOrder[index][0]];
+		let player2 = gameState.players[gameState.matchOrder[index][1]];
+		let player1Score = match[0];
+		let player2Score = match[1];
+		console.log('Match:', index, ': ', player1, player2, player1Score, player2Score);
+		createMatch(tournamentId, player1, player2, player1Score, player2Score);
 	});
 
 	gameState.players = [];

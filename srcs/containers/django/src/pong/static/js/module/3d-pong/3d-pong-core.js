@@ -110,6 +110,7 @@ function updateScore() {
 		resetBall();
 		if (gameState.mode === 'tournament'){
 			gameState.scoreBoard[gameState.matchOrder[gameState.currentGameIndex - 1][0]] += 1;
+			gameState.matchResult.push( [gameState.player1Score, gameState.player2Score] );
 			console.log('number of victory player ' + gameState.matchOrder[gameState.currentGameIndex - 1][0] + ' :' + gameState.scoreBoard[gameState.matchOrder[gameState.currentGameIndex - 1][0]]);
 			nextGame()
 		}
@@ -122,6 +123,7 @@ function updateScore() {
 		resetBall();
 		if (gameState.mode === 'tournament'){
 			gameState.scoreBoard[gameState.matchOrder[gameState.currentGameIndex - 1][1]] += 1;
+			gameState.matchResult.push( [gameState.player1Score, gameState.player2Score] );
 			console.log('number of victory player ' + gameState.matchOrder[gameState.currentGameIndex - 1][1] + ' :' + gameState.scoreBoard[gameState.matchOrder[gameState.currentGameIndex - 1][1]]);
 			nextGame()
 		}

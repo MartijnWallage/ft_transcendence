@@ -1,18 +1,3 @@
-function getCookie(name) {
-	let cookieValue = null;
-	if (document.cookie && document.cookie !== '') {
-		const cookies = document.cookie.split(';');
-		for (let i = 0; i < cookies.length; i++) {
-			const cookie = cookies[i].trim();
-			if (cookie.substring(0, name.length + 1) === (name + '=')) {
-				cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-				break;
-			}
-		}
-	}
-	return cookieValue;
-}
-
 function getCurrentDateISO() {
     const now = new Date();
     return now.toISOString();  // Format ISO 8601
@@ -25,30 +10,26 @@ function addParticipant(playerName, tournamentId) {
 		type: 'POST',
 
 		data: JSON.stringify({
-			'player_name': playerName,
-			'tournament_id': tournamentId
+			'tournament_id': tournamentId,
+			'player_name': playerName
 		}),
 
 		contentType: 'application/json; charset=utf-8',
 
 		dataType: 'json',
 
-		beforeSend: function(xhr) {
-			xhr.setRequestHeader('X-CSRFToken', getCookie('csrftoken'));
-		},
-
 		success: function(response) {
 			console.log('Participant added:', response);
 		},
 
 		error: function(error) {
-			console.log('Erroor:', error);
+			console.log('Error addParicipant:', error);
 		}
 
 	});
 }
 
-function createTournament(tournament_name) {
+function createTournament() {
 	console.log('Creating tournament...');
 	const currentDate = getCurrentDateISO();
 	console.log('Current Date:', currentDate);
@@ -56,17 +37,13 @@ function createTournament(tournament_name) {
         url: '/api/create_tournament/',
         type: 'POST',
         data: JSON.stringify({
-			'name': tournament_name,
             'date': currentDate
         }),
         contentType: 'application/json; charset=utf-8',
         dataType: 'json',
-        // beforeSend: function(xhr) {
-        //     xhr.setRequestHeader('X-CSRFToken', getCookie('csrftoken'));
-        // },
+
         success: function(response) {
             console.log('Tournament created successfully:', response);
-            // Optionally, you can now proceed with adding participants or performing other actions
         },
         error: function(error) {
             console.error('Error creating tournament:', error);
@@ -74,6 +51,30 @@ function createTournament(tournament_name) {
     });
 }
 
+function createMatch(tournamentId, player1, player2, player1_score, player2_score) {
+	console.log('Creating Match...');
+    $.ajax({
+        url: '/api/create_match/',
+        type: 'POST',
+        data: JSON.stringify({
+			'tournament_id': tournamentId,
+			'player1' : player1,
+			'player2' : player2,
+			'player1_score' : player1_score,
+			'player2_score' : player2_score
+        }),
+        contentType: 'application/json; charset=utf-8',
+        dataType: 'json',
+
+        success: function(response) {
+            console.log('Match created successfully:', response);
+        },
+        error: function(error) {
+            console.error('Error creating match:', error);
+        }
+    });
+}
 
 
-export {addParticipant, createTournament};
+
+export {addParticipant, createTournament, createMatch};

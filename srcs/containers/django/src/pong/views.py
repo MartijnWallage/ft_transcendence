@@ -16,7 +16,7 @@ from rest_framework.decorators import api_view
 
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-from .models import Player, Tournament
+from .models import Player, Tournament, Match
 import json
 
 
@@ -108,8 +108,8 @@ import traceback
 def add_participant(request):
     try:
         data = json.loads(request.body)
-        player_name = data.get('player_name')
         tournament_id = data.get('tournament_id')
+        player_name = data.get('player_name')
 
         if not player_name or not tournament_id:
             raise ValueError("Player name and tournament ID are required")
@@ -125,6 +125,11 @@ def add_participant(request):
         tournament.save()
 
         return JsonResponse({'status': 'success'})
+	
+    except Player.DoesNotExist:
+        return JsonResponse({'status': 'error', 'message': 'Player not found.'}, status=404)
+    except Tournament.DoesNotExist:
+        return JsonResponse({'status': 'error', 'message': 'Tournament not found.'}, status=404)
     except Exception as e:
         error_message = str(e)
         traceback.print_exc()  # This will print the traceback to the console
@@ -135,13 +140,41 @@ def add_participant(request):
 def create_tournament(request):
 	try:
 		data = json.loads(request.body)
-		name = data.get('name')
 		date = data.get('date')
 
 		# Create the tournament
 		# tournament = Tournament.objects.create(date=date)
-		tournament = Tournament.objects.create(name=name, date=date)
+		tournament = Tournament.objects.create(date=date)
 
+
+		return JsonResponse({'status': 'success', 'tournament_id': tournament.id})
+	except Exception as e:
+		error_message = str(e)
+		traceback.print_exc()
+		return JsonResponse({'status': 'error', 'message': error_message}, status=500)
+	
+@api_view(['POST'])
+def create_match(request):
+	try:
+		data = json.loads(request.body)
+		tournament_id = data.get('tournament_id')
+		player1_score = data.get('player1_score')
+		player2_score = data.get('player2_score')
+
+
+		# Retrieve the tournament
+		tournament = Tournament.objects.get(id=tournament_id)
+
+		# Retrieve the players
+		player1 = Player.objects.get(name=data.get('player1'))
+		player2 = Player.objects.get(name=data.get('player2'))
+
+		# Create the match
+		match = Match.objects.create(player1=player1, player2=player2, player1_score=player1_score, player2_score=player2_score)
+
+		# Add match to the tournament
+		tournament.match.add(match)
+		tournament.save()
 
 		return JsonResponse({'status': 'success', 'tournament_id': tournament.id})
 	except Exception as e:

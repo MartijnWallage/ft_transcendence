@@ -3,13 +3,21 @@
   <table>
       <thead>
           <tr>
-              <th>Player Name</th>
+              <th>Match</th>
+              <th>Player 1</th>
+              <th>Player 2</th>
+              <th>Score Player 1</th>
+              <th>Score Player 2</th>
           </tr>
       </thead>
       <tbody>
-          {% for player in tournament.players.all %}
+          {% for match in tournament.match.all %}
           <tr>
-              <td>{{ player.name }}</td>
+              <td>{{ forloop.counter }}</td>
+              <td>{{ match.player1.name }}</td>
+              <td>{{ match.player2.name }}</td>
+              <td>{{ match.player1_score }}</td>
+              <td>{{ match.player2_score }}</td>
           </tr>
           {% endfor %}
       </tbody>
