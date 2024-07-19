@@ -1,5 +1,23 @@
 {% block content %}
-  <h1>Tournament Scoreboard</h1>
+  <h1>Tournament Leaderboard</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Rank</th>
+                <th>Player</th>
+                <th>Score</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for player in tournament.players.all %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ player.name }}</td>
+                <td>{{ player.score }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+  <h1>Tournament match results</h1>
   <table>
       <thead>
           <tr>
@@ -22,4 +40,5 @@
           {% endfor %}
       </tbody>
   </table>
+  <button type="button" class="btn btn-outline-light mx-1" id ="js-end-game-btn">Exit</button>
 {% endblock %}

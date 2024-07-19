@@ -16,6 +16,7 @@ class Match(models.Model):
 
     def __str__(self):
         return f"{self.player1} vs {self.player2}"
+	
 class Tournament(models.Model):
 	date = models.DateTimeField()
 	players = models.ManyToManyField(Player, related_name='tournament_players')

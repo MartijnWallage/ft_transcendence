@@ -30,24 +30,35 @@ function addParticipant(playerName, tournamentId) {
 }
 
 function createTournament() {
-	console.log('Creating tournament...');
-	const currentDate = getCurrentDateISO();
-	console.log('Current Date:', currentDate);
-    $.ajax({
-        url: '/api/create_tournament/',
-        type: 'POST',
-        data: JSON.stringify({
-            'date': currentDate
-        }),
-        contentType: 'application/json; charset=utf-8',
-        dataType: 'json',
+    console.log('Creating tournament...');
+    const currentDate = getCurrentDateISO();
+    console.log('Current Date:', currentDate);
 
-        success: function(response) {
-            console.log('Tournament created successfully:', response);
-        },
-        error: function(error) {
-            console.error('Error creating tournament:', error);
-        }
+    return new Promise((resolve, reject) => {
+        $.ajax({
+            url: '/api/create_tournament/',
+            type: 'POST',
+            data: JSON.stringify({
+                'date': currentDate
+            }),
+            contentType: 'application/json; charset=utf-8',
+            dataType: 'json',
+
+            success: function(response) {
+                console.log('Tournament created successfully:', response);
+                if (response && response.tournament_id) {
+                    console.log('Tournament ID:', response.tournament_id);
+                    resolve(response.tournament_id);
+                } else {
+                    console.log('Tournament ID not found in the response.');
+                    resolve(null);
+                }
+            },
+            error: function(error) {
+                console.error('Error creating tournament:', error);
+                reject(error);
+            }
+        });
     });
 }
 

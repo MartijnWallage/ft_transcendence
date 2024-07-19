@@ -5,7 +5,7 @@ function stopGame() {
 	gameState.running= false;
 }
 
-function endTournament() {
+async function endTournament() {
 	alert("Tournament Ended!");
 	gameState.running= false;
 
@@ -13,33 +13,35 @@ function endTournament() {
 
 	// Example usage:
 	
-	createTournament();
+    try {
+        let tournamentId = await createTournament();
 
-	const tournamentId = 1;
-	gameState.players.forEach(player => {
-		addParticipant(player, tournamentId);
-	});
+        gameState.players.forEach(player => {
+            addParticipant(player, tournamentId);
+        });
 
-	gameState.matchResult.forEach((match, index) => {
-		let player1 = gameState.players[gameState.matchOrder[index][0]];
-		let player2 = gameState.players[gameState.matchOrder[index][1]];
-		let player1Score = match[0];
-		let player2Score = match[1];
-		console.log('Match:', index, ': ', player1, player2, player1Score, player2Score);
-		createMatch(tournamentId, player1, player2, player1Score, player2Score);
-	});
+        gameState.matchResult.forEach((match, index) => {
+            let player1 = gameState.players[gameState.matchOrder[index][0]];
+            let player2 = gameState.players[gameState.matchOrder[index][1]];
+            let player1Score = match[0];
+            let player2Score = match[1];
+            console.log('Match:', index, ': ', player1, player2, player1Score, player2Score);
+            createMatch(tournamentId, player1, player2, player1Score, player2Score);
+        });
 
-	gameState.players = [];
-	gameState.matchOrder = [];
-	gameState.scoreBoard = [];
+        // Clear the game state
+        gameState.players = [];
+        gameState.matchOrder = [];
+        gameState.scoreBoard = [];
+        gameState.matchResult = [];
+		gameState.currentGameIndex = 0;
+		gameState.player1Score = 0;
+		gameState.player2Score = 0;
 
-	// document.getElementById('js-start-tournament-btn').style.display = 'none';
-	// document.getElementById('playerNameInput').value = '';
-	// document.getElementById('announcement').innerText = 'Tournament has ended. Please add players for a new tournament.';
-	// setTimeout(() => document.getElementById('announcement').innerText = 'Tournament has ended. Please add players for a new tournament.', 4000);
-	// document.getElementById('announcement').style.display = 'none';
-
-	stopGame();
+        stopGame();
+    } catch (error) {
+        console.error('Error ending tournament:', error);
+    }
 }
 
 
