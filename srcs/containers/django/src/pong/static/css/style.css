@@ -47,6 +47,19 @@
 	transition: opacity 1.5s ease-out;
 }
 
+#under-title {
+	opacity: 1;
+	transition: opacity 1.5s ease;
+}
+
+#under-title.fade-out {
+	opacity: 0;
+}
+
+#under-title.fade-in {
+	opacity: 1;
+}
+
 #menu.fade-out {
 	opacity: 0;
 }

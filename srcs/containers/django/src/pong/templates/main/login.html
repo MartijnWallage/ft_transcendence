@@ -2,13 +2,13 @@
 {% load crispy_forms_tags %}
 {% block content %}
 <div id="menu" class="container mx-auto m-5 p-5">
-	<p>welcome to</p>
 	<h1 class="my-4" class="display-4">Transcendence. login</h1>
-	<form method="post">
-		{% csrf_token %}{{form|crispy}}
-		<p>Don't have an account? Create one <a href="/sign-up">here</a></p>
-		<button type="submit" class="btn btn-success">Login</button>
-	</form>
-
+	<div id="under-title" class="container my-5 px-4">
+		<form method="post">
+			{% csrf_token %}{{form|crispy}}
+			<p>Don't have an account? Create one <a href="/sign-up">here</a></p>
+			<button type="submit" class="btn btn-success">Login</button>
+		</form>
+	</div>
 </div>
 {% endblock %}
