@@ -20,6 +20,8 @@ RUN apt-get update && apt-get install -y \
 	gcc \
 	sudo
 
+RUN pip3 install web3
+
 RUN groupadd -g 1000 mygroup && useradd -u 1000 -g mygroup -m myuser
 RUN usermod -aG sudo myuser
 

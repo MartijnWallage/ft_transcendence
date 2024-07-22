@@ -185,3 +185,13 @@ def create_match(request):
 		error_message = str(e)
 		traceback.print_exc()
 		return JsonResponse({'status': 'error', 'message': error_message}, status=500)
+	
+
+from web3 import Web3
+
+# Connect to the blockchain container
+web3 = Web3(Web3.HTTPProvider('http://blockchain:8545'))
+
+def get_contract_address(request):
+    contract_address = os.getenv('CONTRACT_ADDRESS', 'Address not set')
+    return JsonResponse({'contract_address': contract_address})
