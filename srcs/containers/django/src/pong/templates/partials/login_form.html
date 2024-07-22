@@ -1,4 +1,21 @@
 
+{% load crispy_forms_tags %}
+<h2>Login</h2>
+<form id="login-form" method="post">
+    {% csrf_token %}
+    {{ form|crispy }}
+    <div class="mt-3">
+        <button type="submit" class="btn btn-primary">Login</button>
+        <button type="button" class="btn btn-link" href="#register" onclick="loadPage('register')">Sign Up</button>
+        <button type="button" href="register_form.html">Click Me</button>
+    </div>
+</form>
+<div id="error-container"></div>
+
+
+
+
+<!-- 
 <h2>Login</h2>
 <form id="login-form" method="post">
     <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
@@ -13,7 +30,7 @@
 </form>
 <div id="error-container"></div>
 
-
+ -->
 
 <!-- {% load crispy_forms_tags %}
 <h2>Login</h2>

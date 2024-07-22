@@ -15,21 +15,24 @@ from rest_framework.decorators import api_view
 from .serializers import RegisterSerializer
 
 def index(request):
-	return render(request, 'main/base.html')
+    return render(request, 'main/base.html')
 
 @api_view(['GET'])
 def home_view(request):
-	data = {
-		'content': render_to_string("main/home.html", request=request)
-	}
-	return JsonResponse(data)
+    data = {
+        'content': render_to_string("main/home.html", request=request)
+    }
+    return JsonResponse(data)
 
 @api_view(['GET'])
 def load_page(request, page):
+    print("this get method only is called for request")
     if page == 'login':
+        print("login form serving")
         form = LoginForm()
         content = render_to_string('partials/login_form.html', {'form': form}, request)
     elif page == 'register':
+        print("Register form serving")
         form = RegisterForm()
         content = render_to_string('partials/register_form.html', {'form': form}, request)
     else:
@@ -39,6 +42,7 @@ def load_page(request, page):
 
 @api_view(['POST'])
 def register(request):
+    print("this post method only is called for register request")
     serializer = RegisterSerializer(data=request.data)
     if serializer.is_valid():
         user = serializer.save()
@@ -47,6 +51,7 @@ def register(request):
 
 @api_view(['POST'])
 def login(request):
+    print("this post method only is called for login request")
     form = LoginForm(data=request.data)
     if form.is_valid():
         user = form.get_user()
@@ -57,65 +62,65 @@ def login(request):
 
 @api_view(['GET'])
 def login_view(request):
-	data = {
-		'content': render_to_string("main/login.html", request=request)
-	}
-	# if request.method == 'POST':
-	# 	form = RegisterForm(request.POST)
-	# 	if form.is_valid():
-	# 		user = form.save()
-	# 		login(request, user)
-	# 		return JsonResponse({'success': True, 'redirect_url': '/pong'})
-	# 	else:
-	# 		errors = form.errors.as_json()
-	# 		return JsonResponse({'success': False, 'errors': errors})
-	# else:
-	# 	form = RegisterForm()
-	# # Return form data as JSON if requested via AJAX
-	# return JsonResponse({'html': render_to_string('registration/sign_up.html', {'form': form}, request=request)})
-	return JsonResponse(data)
+    data = {
+        'content': render_to_string("main/login.html", request=request)
+    }
+    # if request.method == 'POST':
+    # 	form = RegisterForm(request.POST)
+    # 	if form.is_valid():
+    # 		user = form.save()
+    # 		login(request, user)
+    # 		return JsonResponse({'success': True, 'redirect_url': '/pong'})
+    # 	else:
+    # 		errors = form.errors.as_json()
+    # 		return JsonResponse({'success': False, 'errors': errors})
+    # else:
+    # 	form = RegisterForm()
+    # # Return form data as JSON if requested via AJAX
+    # return JsonResponse({'html': render_to_string('registration/sign_up.html', {'form': form}, request=request)})
+    return JsonResponse(data)
 
 @api_view(['GET'])	
 def game_mode_view(request):
-	data = {
-		'content': render_to_string("main/game_mode.html", request=request)
-	}
-	return JsonResponse(data)
+    data = {
+        'content': render_to_string("main/game_mode.html", request=request)
+    }
+    return JsonResponse(data)
 
 @api_view(['GET'])
 def two_player_view(request):
-	data = {
-		'content': render_to_string("main/two_player.html", request=request)
-	}
-	return JsonResponse(data)
+    data = {
+        'content': render_to_string("main/two_player.html", request=request)
+    }
+    return JsonResponse(data)
 
 @api_view(['GET'])
 def two_player_local_view(request):
-	data = {
-		'content': render_to_string("main/two_player_local.html", request=request)
-	}
-	return JsonResponse(data)
+    data = {
+        'content': render_to_string("main/two_player_local.html", request=request)
+    }
+    return JsonResponse(data)
 
 @api_view(['GET'])
 def two_player_online_view(request):
-	data = {
-		'content': render_to_string("main/two_player_online.html", request=request)
-	}
-	return JsonResponse(data)
+    data = {
+        'content': render_to_string("main/two_player_online.html", request=request)
+    }
+    return JsonResponse(data)
 
 @api_view(['GET'])
 def tournament_view(request):
-	data = {
-		'content': render_to_string("main/tournament.html", request=request)
-	}
-	return JsonResponse(data)
+    data = {
+        'content': render_to_string("main/tournament.html", request=request)
+    }
+    return JsonResponse(data)
 
 @api_view(['GET'])
 def pong(request):
-	data = {
-		'content': render_to_string("main/pong.html", request=request)
-	}
-	return JsonResponse(data)
+    data = {
+        'content': render_to_string("main/pong.html", request=request)
+    }
+    return JsonResponse(data)
 
 # @api_view(['GET'])
 # def pong_solo_view(request):

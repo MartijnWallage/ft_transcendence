@@ -37,19 +37,19 @@ window.loadPage = (page) => {
 		fetch('/api/' + page + '/')
 			// .then(response => response.json())
 			.then(response => {
-				console.log('Response received:', response);
+				// console.log('Response received:', response);
 				if (!response.ok) {
 					throw new Error(`HTTP error! status: ${response.status}`);
 				}
 				return response.json();
 			})
 			.then(data => {
-				console.log('Data received:', data);
-				if (data.content) {
-					console.log('Content found in data:', data.content);
-				} else {
-					console.error('No content found in data');
-				}
+				// console.log('Data received:', data);
+				// if (data.content) {
+				// 	console.log('Content found in data:', data.content);
+				// } else {
+				// 	console.error('No content found in data');
+				// }
 				// mainContent.innerHTML = data.content;
 				// also adding user management to load page
 				if (page === 'login' || page === 'register') {
@@ -114,8 +114,10 @@ function bindEventListeners() {
         event.preventDefault();
         const form = event.target;
         if (form.id === 'login-form') {
+			console.log("main content login-form handling")
             handleFormSubmit(form, '/api/login/');
-        } else if (form.id === 'register-form') {
+		} else if (form.id === 'register-form') {
+			console.log("main content register-form handling")
             handleFormSubmit(form, '/api/register/');
         }
     });
@@ -124,8 +126,10 @@ function bindEventListeners() {
         event.preventDefault();
         const form = event.target;
         if (form.id === 'login-form') {
-            handleFormSubmit(form, '/api/login/');
+			console.log("user content login-form handling")
+            handleFormSubmit(form, 'api-login');
         } else if (form.id === 'register-form') {
+			console.log("user content register-form handling")
             handleFormSubmit(form, '/api/register/');
         }
     });
@@ -182,6 +186,8 @@ function hideLeaderBoard() {
 function handleFormSubmit(form, url) {
     const formData = new FormData(form);
 
+	console.log("handleformsubmit called")
+	console.log(url)
     fetch(url, {
         method: 'POST',
         body: JSON.stringify(Object.fromEntries(formData)),
