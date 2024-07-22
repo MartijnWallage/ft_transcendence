@@ -15,13 +15,18 @@
 	  <script type="module" src="{% static 'js/module/3d-pong/3d-app.js' %}" defer></script>
     <!-- <script type="module" src="{% static 'js/module/2d-pong/entrypoint.js' %}" defer ></script> -->
     <script type="module" src="{% static 'js/utils/page-loading.js' %}" defer></script>
+    <link rel="icon" href="{% static 'images/favicon.ico' %}">
   </head>
 
   <body>
     <div id="threejs-container"></div>
     <div id="web-app">
-      <div id="main-content" class="container-fluid"></div></div>
+      <div id="main-content" class="container-fluid"></div>
+      <div id="user" class="container-fluid" style="display: none;"></div>
     </div>
+    <!-- for here -->
+    <div id="error-container"></div>
+    <!-- Made 2 new container for user and error for user. -->
     <canvas id="pongCanvas" width="600" height="400" display="none"></canvas>
   </body>
 </html>

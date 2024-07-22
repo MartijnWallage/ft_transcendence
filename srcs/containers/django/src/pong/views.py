@@ -7,11 +7,12 @@
 # # Create your views here.
 
 from django.shortcuts import render, redirect
-from .forms import RegisterForm
-from django.contrib.auth import login, logout, authenticate
+from .forms import LoginForm, RegisterForm
+from django.contrib.auth import login as django_login
 from django.http import JsonResponse
 from django.template.loader import render_to_string
 from rest_framework.decorators import api_view
+from .serializers import RegisterSerializer
 
 def index(request):
 	return render(request, 'main/base.html')
@@ -22,6 +23,37 @@ def home_view(request):
 		'content': render_to_string("main/home.html", request=request)
 	}
 	return JsonResponse(data)
+
+@api_view(['GET'])
+def load_page(request, page):
+    if page == 'login':
+        form = LoginForm()
+        content = render_to_string('partials/login_form.html', {'form': form}, request)
+    elif page == 'register':
+        form = RegisterForm()
+        content = render_to_string('partials/register_form.html', {'form': form}, request)
+    else:
+        # Handle other pages
+        content = render_to_string('main/home.html', {}, request)
+    return JsonResponse({'content': content})
+
+@api_view(['POST'])
+def register(request):
+    serializer = RegisterSerializer(data=request.data)
+    if serializer.is_valid():
+        user = serializer.save()
+        return JsonResponse({'status': 'success'}, status=201)
+    return JsonResponse(serializer.errors, status=400)
+
+@api_view(['POST'])
+def login(request):
+    form = LoginForm(data=request.data)
+    if form.is_valid():
+        user = form.get_user()
+        django_login(request, user)
+        return JsonResponse({'status': 'success'})
+    return JsonResponse({'status': 'error', 'errors': form.errors}, status=400)
+
 
 @api_view(['GET'])
 def login_view(request):

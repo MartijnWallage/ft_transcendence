@@ -31,21 +31,48 @@ window.loadPage = (page) => {
 	return new Promise((resolve, reject) => {
 		const mainContent = document.getElementById('main-content');
 		const underTitle = document.getElementById('under-title');
+		const userContent = document.getElementById('user');
   
 		const updateContent = () => {
 		fetch('/api/' + page + '/')
-			.then(response => response.json())
+			// .then(response => response.json())
+			.then(response => {
+				console.log('Response received:', response);
+				if (!response.ok) {
+					throw new Error(`HTTP error! status: ${response.status}`);
+				}
+				return response.json();
+			})
 			.then(data => {
-			mainContent.innerHTML = data.content;
-			history.pushState({ page: page }, "", "#" + page);
-			bindEventListeners();
-  
-			const updatedUnderTitle = document.getElementById('under-title');
-			if (updatedUnderTitle) {
-				fadeIn(updatedUnderTitle).then(resolve);
-			} else {
-				resolve();
-			}
+				console.log('Data received:', data);
+				if (data.content) {
+					console.log('Content found in data:', data.content);
+				} else {
+					console.error('No content found in data');
+				}
+				// mainContent.innerHTML = data.content;
+				// also adding user management to load page
+				if (page === 'login' || page === 'register') {
+					console.log('login called', page);
+					mainContent.style.display = 'none';
+					userContent.style.display = 'block';
+					userContent.innerHTML = data.content;
+					} else {
+					console.log('login is not ********* called', page);
+					mainContent.style.display = 'block';
+					userContent.style.display = 'none';
+					mainContent.innerHTML = data.content;
+				}
+				//when showing users signup or login other contain will be invisible
+				history.pushState({ page: page }, "", "#" + page);
+				bindEventListeners();
+	
+				const updatedUnderTitle = document.getElementById('under-title');
+				if (updatedUnderTitle) {
+					fadeIn(updatedUnderTitle).then(resolve);
+				} else {
+					resolve();
+				}
 			})
 			.catch(error => {
 			console.error('Error loading page:', error);
@@ -79,6 +106,30 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 function bindEventListeners() {
+// trying to handle user event
+    const mainContent = document.getElementById('main-content');
+    const userContent = document.getElementById('user');
+
+    mainContent.addEventListener('submit', function(event) {
+        event.preventDefault();
+        const form = event.target;
+        if (form.id === 'login-form') {
+            handleFormSubmit(form, '/api/login/');
+        } else if (form.id === 'register-form') {
+            handleFormSubmit(form, '/api/register/');
+        }
+    });
+
+    userContent.addEventListener('submit', function(event) {
+        event.preventDefault();
+        const form = event.target;
+        if (form.id === 'login-form') {
+            handleFormSubmit(form, '/api/login/');
+        } else if (form.id === 'register-form') {
+            handleFormSubmit(form, '/api/register/');
+        }
+    });
+	// user event listerner
 	var leaderBoardButton = document.getElementById('js-leaderboard-btn');
 	if (leaderBoardButton) {
 	  leaderBoardButton.addEventListener('click', showLeaderBoard);
@@ -126,3 +177,52 @@ function hideLeaderBoard() {
 	if (leaderBoardButton)
 		leaderBoardButton.style.display = 'block';
 }
+
+// functions to handle form submits
+function handleFormSubmit(form, url) {
+    const formData = new FormData(form);
+
+    fetch(url, {
+        method: 'POST',
+        body: JSON.stringify(Object.fromEntries(formData)),
+        headers: {
+            'Content-Type': 'application/json',// CSRF token handling
+        }
+        // headers: {
+        //     'Content-Type': 'application/json',
+        //     'X-CSRFToken': getCookie('csrftoken'),  // CSRF token handling
+        // }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            loadPage('home');  // Redirect to home or another page
+        } else {
+            const errorContainer = document.getElementById('error-container');
+            if (errorContainer) {
+                errorContainer.innerHTML = JSON.stringify(data);
+            }
+        }
+    })
+    .catch(error => {
+        console.error('Error submitting form:', error);
+    });
+}
+
+
+//Cookies to check login
+
+// function getCookie(name) {
+//     let cookieValue = null;
+//     if (document.cookie && document.cookie !== '') {
+//         const cookies = document.cookie.split(';');
+//         for (let i = 0; i < cookies.length; i++) {
+//             const cookie = cookies[i].trim();
+//             if (cookie.substring(0, name.length + 1) === (name + '=')) {
+//                 cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+//                 break;
+//             }
+//         }
+//     }
+//     return cookieValue;
+// }
