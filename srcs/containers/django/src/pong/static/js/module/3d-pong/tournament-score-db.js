@@ -3,7 +3,7 @@ function getCurrentDateISO() {
     return now.toISOString();  // Format ISO 8601
 }
 
-function addParticipant(playerName, tournamentId) {
+async function addParticipant(playerName, tournamentId) {
 	console.log('Adding participant:', playerName);
 	$.ajax({
 		url: '/api/add_participant/',
@@ -29,7 +29,7 @@ function addParticipant(playerName, tournamentId) {
 	});
 }
 
-function createTournament() {
+async function createTournament() {
     console.log('Creating tournament...');
     const currentDate = getCurrentDateISO();
     console.log('Current Date:', currentDate);
@@ -62,7 +62,7 @@ function createTournament() {
     });
 }
 
-function createMatch(tournamentId, player1, player2, player1_score, player2_score) {
+async function createMatch(tournamentId, player1, player2, player1_score, player2_score) {
 	console.log('Creating Match...');
     $.ajax({
         url: '/api/create_match/',

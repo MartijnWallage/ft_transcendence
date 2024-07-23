@@ -12,6 +12,7 @@ from django.contrib.auth import login, logout, authenticate
 from django.http import JsonResponse
 from django.template.loader import render_to_string
 from rest_framework.decorators import api_view
+from django.conf import settings
 
 
 from django.http import JsonResponse
@@ -187,17 +188,7 @@ def create_match(request):
 		return JsonResponse({'status': 'error', 'message': error_message}, status=500)
 	
 
-# from web3 import Web3
-
-# # Connect to the blockchain container
-# web3 = Web3(Web3.HTTPProvider('http://blockchain:8545'))
-
-from .models import SmartContract
-
+@api_view(['GET'])
 def get_contract_address(request):
-    try:
-        contract = SmartContract.objects.get(contract_name='PongTournament')
-        return JsonResponse({'contract_address': contract.contract_address})
-    except SmartContract.DoesNotExist:
-        return JsonResponse({'error': 'Contract address not found'}, status=500)
-
+    contract_address = settings.SMART_CONTRACT_ADDRESS
+    return JsonResponse({'contract_address': contract_address})

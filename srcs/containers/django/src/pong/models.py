@@ -28,8 +28,3 @@ class Tournament(models.Model):
 		return self.name
 
 
-class SmartContract(models.Model):
-    contract_name = models.CharField(max_length=255)
-    contract_address = models.CharField(max_length=255)
-    created_at = models.DateTimeField(auto_now_add=True)
-

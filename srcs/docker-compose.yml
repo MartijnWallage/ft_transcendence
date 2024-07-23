@@ -15,7 +15,6 @@ services:
       - "8000:8000"
     depends_on:
       - postgressql
-      - blockchain
     restart: on-failure # always # Restart containers on system boot and in case of failures
 
   postgressql:
@@ -52,18 +51,18 @@ services:
     #   - static:/static/
       #- media:/media/
 
-  blockchain:
-    container_name: blockchain
-    build:
-      context: containers/blockchain
-      dockerfile: Dockerfile
-    env_file: 
-      - .env
-    networks:
-      - ts-network
-    ports:
-      - "8545:8545"
-    restart: on-failure # always
+  # blockchain:
+  #   container_name: blockchain
+  #   build:
+  #     context: containers/blockchain
+  #     dockerfile: Dockerfile
+  #   env_file: 
+  #     - .env
+  #   networks:
+  #     - ts-network
+  #   ports:
+  #     - "8545:8545"
+  #   restart: on-failure # always
 
 networks:
   ts-network:

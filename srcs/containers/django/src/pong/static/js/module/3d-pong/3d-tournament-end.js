@@ -1,4 +1,4 @@
-import { addParticipant, createMatch, createTournament } from "./tournament-score.js";
+import { addParticipant, createMatch, createTournament } from "./tournament-score-db.js";
 import {gameState} from './3d-game-state.js';
 
 function stopGame() {
@@ -16,18 +16,28 @@ async function endTournament() {
     try {
         let tournamentId = await createTournament();
 
-        gameState.players.forEach(player => {
-            addParticipant(player, tournamentId);
-        });
+		for (const player of gameState.players) {
+			await addParticipant(player, tournamentId);
+		}
 
-        gameState.matchResult.forEach((match, index) => {
-            let player1 = gameState.players[gameState.matchOrder[index][0]];
-            let player2 = gameState.players[gameState.matchOrder[index][1]];
-            let player1Score = match[0];
-            let player2Score = match[1];
-            console.log('Match:', index, ': ', player1, player2, player1Score, player2Score);
-            createMatch(tournamentId, player1, player2, player1Score, player2Score);
-        });
+		for (let index = 0; index < gameState.matchResult.length; index++) {
+			let match = gameState.matchResult[index];
+			let player1 = gameState.players[gameState.matchOrder[index][0]];
+			let player2 = gameState.players[gameState.matchOrder[index][1]];
+			let player1Score = match[0];
+			let player2Score = match[1];
+			console.log('Match:', index, ': ', player1, player2, player1Score, player2Score);
+			await createMatch(tournamentId, player1, player2, player1Score, player2Score);
+		}
+
+        // gameState.matchResult.forEach( async (match, index) => {
+        //     let player1 = gameState.players[gameState.matchOrder[index][0]];
+        //     let player2 = gameState.players[gameState.matchOrder[index][1]];
+        //     let player1Score = match[0];
+        //     let player2Score = match[1];
+        //     console.log('Match:', index, ': ', player1, player2, player1Score, player2Score);
+        //     await createMatch(tournamentId, player1, player2, player1Score, player2Score);
+        // });
 
         // Clear the game state
         gameState.players = [];
@@ -53,23 +63,10 @@ function scoreBoardTournament() {
 		scoreBoard.push({ name: player, victories: gameState.scoreBoard[index] });
 	});
 
-	// for (let i = 0; i < gameState.players.length; i++) {
-	// 	scoreBoard.push({ name: gameState.players[i], victories: gameState.scoreBoard[i] });
-	// }
-	
-
-
 	// Step 2: Sort the array of objects based on the number of victories in descending order
 	scoreBoard.sort((a, b) => b.victories - a.victories);
 
-	// Step 3: Extract the sorted player names and their victories (optional, for display)
-	// const sortedPlayerNames = scoreBoard.map(player => player.name);
-	// const sortedVictories = scoreBoard.map(player => player.victories);
-
 	console.log("scoreBoard:", scoreBoard);
-	// console.log("Sorted Player Names:", sortedPlayerNames);
-	// console.log("Sorted Victories:", sortedVictories);
-
 	// Display scoreBoard in the HTML as a table
 
 	const scoreBoardDiv = document.getElementById('scoreBoard');
