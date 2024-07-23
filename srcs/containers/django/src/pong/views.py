@@ -187,11 +187,17 @@ def create_match(request):
 		return JsonResponse({'status': 'error', 'message': error_message}, status=500)
 	
 
-from web3 import Web3
+# from web3 import Web3
 
-# Connect to the blockchain container
-web3 = Web3(Web3.HTTPProvider('http://blockchain:8545'))
+# # Connect to the blockchain container
+# web3 = Web3(Web3.HTTPProvider('http://blockchain:8545'))
+
+from .models import SmartContract
 
 def get_contract_address(request):
-    contract_address = os.getenv('CONTRACT_ADDRESS', 'Address not set')
-    return JsonResponse({'contract_address': contract_address})
+    try:
+        contract = SmartContract.objects.get(contract_name='PongTournament')
+        return JsonResponse({'contract_address': contract.contract_address})
+    except SmartContract.DoesNotExist:
+        return JsonResponse({'error': 'Contract address not found'}, status=500)
+
