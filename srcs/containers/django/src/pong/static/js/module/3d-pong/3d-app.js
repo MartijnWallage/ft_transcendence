@@ -30,10 +30,10 @@ function onWindowResize() {
 window.addEventListener( 'resize', onWindowResize );
 
 function addGeometry(scene) {
-	const paddle_p1 = new Paddle(scene, -7);
-	const paddle_p2 = new Paddle(scene, 7);
-	const ball = new Ball(scene);
 	const field = new Field(scene);
+	const paddle_p1 = new Paddle(scene, field, true);
+	const paddle_p2 = new Paddle(scene, field, false);
+	const ball = new Ball(scene);
 	return ({paddle_p1, paddle_p2, ball, field});
 }
 
@@ -53,11 +53,12 @@ function update() {
 	}
     paddle_p2.movePaddle(direction, field);
 
-    // move ball
+    // move and bounce ball
 	ball.animateBall();
 	ball.checkCollisionPaddle(paddle_p1);
 	ball.checkCollisionPaddle(paddle_p2);
 	ball.checkCollisionField(field);
+
 	if (gameState.running === false) {
 		orbitCamera();
 	}
