@@ -53,7 +53,7 @@ function update() {
 	if (gameState.running === true) {
 		camera.cam.position.set(0, 15, 0);
 		camera.cam.lookAt(0, 1, 0);
-		updateScore();
+		updateScore(field);
 	}
 }
 
