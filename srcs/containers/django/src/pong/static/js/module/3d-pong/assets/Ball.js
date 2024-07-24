@@ -1,4 +1,4 @@
-import * as THREE from '../three.module.js';
+import * as THREE from '../utils/three.module.js';
 
 class Ball {
 	constructor(scene) {
@@ -20,14 +20,14 @@ class Ball {
 	scene.add(this.mesh);
 	}
 
-	checkCollisionPaddle(paddle) {
+	checkCollisionPaddle(paddle, audio) {
 		if (this.position.x - this.radius < paddle.position.x + paddle.geometry.parameters.width / 2 &&
 				this.position.x + this.radius > paddle.position.x - paddle.geometry.parameters.width / 2 &&
 				this.position.z - this.radius < paddle.position.z + paddle.geometry.parameters.depth / 2 &&
 				this.position.z + this.radius > paddle.position.z - paddle.geometry.parameters.depth / 2) {
 				this.dz = (this.position.z - (paddle.position.z)) * 0.15;
 				this.dx *= -1.03;
-				// hit.play(); // uncomment to play sound on hit
+				audio.playSound(audio.hit); // uncomment to play sound on hit
 			}
 	}
 

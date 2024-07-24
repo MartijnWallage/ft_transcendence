@@ -1,4 +1,4 @@
-import Stats from './stats.module.js'
+import Stats from './utils/stats.module.js'
 import { Scene } from './assets/Scene.js';
 import { movePaddlesComputer } from './3d-pong-ai.js';
 import { updateScore } from './3d-pong-core.js';
@@ -21,25 +21,24 @@ document.addEventListener("keyup", (event) => {
 
 const container = document.getElementById('threejs-container');
 const scene = new Scene(container);
+window.addEventListener( 'resize', scene.onWindowResize());
 const ball = scene.ball;
 const field = scene.field;
 const paddle_p1 = scene.paddle_p1;
 const paddle_p2 = scene.paddle_p2;
 const camera = scene.camera;
 
-window.addEventListener( 'resize', scene.onWindowResize());
-
 function update(){
 	paddle_p1.movePaddles(keys["w"], keys["s"], field);
 	if (gameState.mode === 'user-vs-computer'){ 
-		movePaddlesComputer(paddle_p2);
+		movePaddlesComputer(paddle_p2, ball);
 	}
 	else {
 		paddle_p2.movePaddles(keys["ArrowUp"], keys["ArrowDown"], field);
 	}
 	ball.animateBall();
-	ball.checkCollisionPaddle(paddle_p1);
-	ball.checkCollisionPaddle(paddle_p2);
+	ball.checkCollisionPaddle(paddle_p1, scene.audio);
+	ball.checkCollisionPaddle(paddle_p2, scene.audio);
 	ball.checkCollisionField(field);
 	if (gameState.running === false) {
 		camera.orbitCamera();
@@ -54,8 +53,8 @@ function update(){
 function animate() {
 	stats.begin(); // for the FPS stats
 	update();
-	controls.update();
-	renderer.render(scene, camera);
+	scene.controls.update();
+	scene.renderer.render(scene.scene, scene.camera.cam);
 	requestAnimationFrame(animate);
 	stats.end(); // for the FPS stats
 } animate();
