@@ -3,7 +3,7 @@ import { initScene } from './3d-scene.js';
 import { Ball } from './assets/Ball.js';
 import { Field } from './assets/Field.js';
 import { Paddle } from './assets/Paddle.js';
-import { movePaddlesComputer } from './3d-pong-ai.js';
+import { movePaddleAI } from './3d-pong-ai.js';
 import { updateScore } from './3d-pong-core.js';
 import { gameState } from './3d-game-state.js';
 
@@ -40,14 +40,20 @@ function addGeometry(scene) {
 const {scene, camera, renderer, hit, controls} = initScene();
 const {paddle_p1, paddle_p2, ball, field} = addGeometry(scene);
 
-function update(){
-	paddle_p1.movePaddles(keys["w"], keys["s"], field);
+function update() {
+    // move left paddle
+    let direction = keys['w'] ? -1 : keys['s'] ? 1 : 0;
+    paddle_p1.movePaddle(direction, field);
+
+    // move right paddle
 	if (gameState.mode === 'user-vs-computer'){ 
-		movePaddlesComputer(paddle_p2);
+        direction = movePaddleAI(paddle_p2);
+	} else {
+        direction = keys['ArrowUp'] ? -1 : keys['ArrowDown'] ? 1 : 0;
 	}
-	else {
-		paddle_p2.movePaddles(keys["ArrowUp"], keys["ArrowDown"], field);
-	}
+    paddle_p2.movePaddle(direction, field);
+
+    // move ball
 	ball.animateBall();
 	ball.checkCollisionPaddle(paddle_p1);
 	ball.checkCollisionPaddle(paddle_p2);

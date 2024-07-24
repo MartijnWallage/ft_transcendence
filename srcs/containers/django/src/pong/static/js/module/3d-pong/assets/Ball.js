@@ -1,23 +1,24 @@
 import * as THREE from '../three.module.js';
+import { getRandomInt, abs } from '../3d-utils.js'; 
 
 class Ball {
 	constructor(scene) {
-	this.radius = 0.4;
-	this.geometry = new THREE.SphereGeometry(this.radius);
-	this.material = new THREE.MeshStandardMaterial({
-		color: 0xc70000,
-		roughness: 0.4,
-		metalness: 0.8,
-		flatShading: true
-	});
-	this.mesh = new THREE.Mesh(this.geometry, this.material);
-	this.mesh.position.set(0, 0.7, 0);
-	this.resetBall();
-	this.serve = 1;
-	this.dx = 0;
-	this.dz = 0;
-	this.speed = 0.1;
-	scene.add(this.mesh);
+        this.radius = 0.3;
+        this.geometry = new THREE.SphereGeometry(this.radius);
+        this.material = new THREE.MeshStandardMaterial({
+            color: 0xc70000,
+            roughness: 0.4,
+            metalness: 0.8,
+            flatShading: true
+        });
+        this.mesh = new THREE.Mesh(this.geometry, this.material);
+        this.mesh.position.set(0, 0.7, 0);
+        this.resetBall();
+        this.serve = 1;
+        this.dx = 0;
+        this.dz = 0;
+        this.speed = 0.2;
+        scene.add(this.mesh);
 	}
 
 	checkCollisionPaddle(paddle) {
@@ -26,7 +27,11 @@ class Ball {
 				this.position.z - this.radius < paddle.position.z + paddle.geometry.parameters.depth / 2 &&
 				this.position.z + this.radius > paddle.position.z - paddle.geometry.parameters.depth / 2) {
 				this.dz = (this.position.z - (paddle.position.z)) * 0.15;
-				this.dx *= -1.03;
+                if (abs(this.dx) < this.speed / 1.5) {
+                    this.dx *= -2;
+                } else {
+				    this.dx *= -1.03;
+                }
 				// hit.play(); // uncomment to play sound on hit
 			}
 	}
@@ -58,7 +63,7 @@ class Ball {
 		this.position.x = 0;
 		this.position.z = 0;
 		this.serve *= -1;
-		this.dx = this.speed * this.serve;
+		this.dx = this.speed * this.serve / 2;
 		this.dz = 0;
 	}
 
