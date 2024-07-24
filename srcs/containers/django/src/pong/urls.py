@@ -1,11 +1,12 @@
 from django.urls import path
+from django.contrib.auth.views import LogoutView
 from . import views
 
 urlpatterns = [
 	path('', views.index, name='index'),
 	path('api/home/', views.home_view, name='api_home'),
 	# path('api/login/', views.login_view, name='api_login'),
-
+	path('logout/', LogoutView.as_view(), name='logout'),
 	path('api/game_mode/', views.game_mode_view, name='api_game_mode'),
 
 	path('api/tournament/', views.tournament_view, name='api_tournament'),
@@ -17,7 +18,8 @@ urlpatterns = [
 	path('api/pong/', views.pong, name='api_pong'),
     
 	# pages for login and registration
-	path('api/<str:page>/', views.load_page, name='load_page'),
+	path('api/register_user/', views.load_page_reg, name='load_page'),
+	path('api/login_user/', views.load_page, name='load_page_login'),
     path('api/register/', views.register, name='api-register'),
     path('api/login/', views.login, name='api-login'),
 	# path('api/pong_solo/', views.pong_solo_view, name='api_pong_solo'),

@@ -22,9 +22,11 @@ echo "Collecting static files..."
 sudo -E python3 manage.py collectstatic --noinput
 
 if [ "$DJANGO_INITIAL_SETUP" = "true" ]; then
+	echo "making migration and creating user"
 	python3 manage.py makemigrations
 	python3 manage.py migrate
 	python3 manage.py createsuperuser --noinput --username $DJANGO_SUPERUSER_USERNAME --email $DJANGO_SUPERUSER_EMAIL
+	export DJANGO_INITIAL_SETUP=false
 fi
 
 gunicorn transcendence.wsgi:application --bind 0.0.0.0:8000

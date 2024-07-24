@@ -30,8 +30,8 @@ SECRET_KEY = os.environ.get("SECRET_KEY")
 #DEBUG = False
 DEBUG = True
 
-#ALLOWED_HOSTS = ['*']  # For development, allow all hosts
-ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS", "").split(" ")
+ALLOWED_HOSTS = ['*']  # For development, allow all hosts
+# ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS", "").split(" ")
 #ALLOWED_HOSTS = []
 
 print("ALLOWED_HOSTS:", ALLOWED_HOSTS)

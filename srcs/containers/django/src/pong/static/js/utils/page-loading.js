@@ -44,20 +44,17 @@ window.loadPage = (page) => {
 				return response.json();
 			})
 			.then(data => {
-				// console.log('Data received:', data);
-				// if (data.content) {
-				// 	console.log('Content found in data:', data.content);
-				// } else {
-				// 	console.error('No content found in data');
-				// }
-				// mainContent.innerHTML = data.content;
-				// also adding user management to load page
-				if (page === 'login' || page === 'register') {
+				if (page === 'login_user') {
 					console.log('login called', page);
 					mainContent.style.display = 'none';
 					userContent.style.display = 'block';
 					userContent.innerHTML = data.content;
-					} else {
+				} else if (page === 'register_user'){
+					console.log('Register called', page);
+					mainContent.style.display = 'none';
+					userContent.style.display = 'block';
+					userContent.innerHTML = data.content;
+				} else {
 					console.log('login is not ********* called', page);
 					mainContent.style.display = 'block';
 					userContent.style.display = 'none';
@@ -127,12 +124,17 @@ function bindEventListeners() {
         const form = event.target;
         if (form.id === 'login-form') {
 			console.log("user content login-form handling")
-            handleFormSubmit(form, 'api-login');
+            handleFormSubmit(form, 'api/login/');
         } else if (form.id === 'register-form') {
 			console.log("user content register-form handling")
             handleFormSubmit(form, '/api/register/');
         }
     });
+
+	if (data.is_logged_in) {
+        // Display user info
+        document.getElementById('user-info').innerText = `Welcome, ${data.user_info.username}`;
+    }
 	// user event listerner
 	var leaderBoardButton = document.getElementById('js-leaderboard-btn');
 	if (leaderBoardButton) {
@@ -186,22 +188,27 @@ function hideLeaderBoard() {
 function handleFormSubmit(form, url) {
     const formData = new FormData(form);
 
+	for (let [key, value] of formData.entries()) {
+        console.log(key, value);
+    }
 	console.log("handleformsubmit called")
-	console.log(url)
+    // fetch(url)
     fetch(url, {
         method: 'POST',
         body: JSON.stringify(Object.fromEntries(formData)),
-        headers: {
-            'Content-Type': 'application/json',// CSRF token handling
-        }
         // headers: {
         //     'Content-Type': 'application/json',
-        //     'X-CSRFToken': getCookie('csrftoken'),  // CSRF token handling
         // }
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken'),  // CSRF token handling
+        }
     })
     .then(response => response.json())
     .then(data => {
         if (data.status === 'success') {
+			alert("logging in worked");
+			// console.log(data);
             loadPage('home');  // Redirect to home or another page
         } else {
             const errorContainer = document.getElementById('error-container');
@@ -211,24 +218,23 @@ function handleFormSubmit(form, url) {
         }
     })
     .catch(error => {
-        console.error('Error submitting form:', error);
+        alert("User Logging error")
     });
 }
 
 
-//Cookies to check login
 
-// function getCookie(name) {
-//     let cookieValue = null;
-//     if (document.cookie && document.cookie !== '') {
-//         const cookies = document.cookie.split(';');
-//         for (let i = 0; i < cookies.length; i++) {
-//             const cookie = cookies[i].trim();
-//             if (cookie.substring(0, name.length + 1) === (name + '=')) {
-//                 cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-//                 break;
-//             }
-//         }
-//     }
-//     return cookieValue;
-// }
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
