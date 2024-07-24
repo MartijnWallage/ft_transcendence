@@ -1,5 +1,5 @@
 import { gameState } from './3d-game-state.js';
-import { paddle_p1, paddle_p2, ball, field, keys } from './3d-app.js';
+import { ball } from './3d-app.js';
 import { initializeTournament } from './3d-tournament.js';
 import { getRandomInt  } from './3d-utils.js';
 

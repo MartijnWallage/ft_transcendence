@@ -1,6 +1,5 @@
-import { ball } from './3d-app.js';
 
-function movePaddleAI(paddle) {
+function movePaddleAI(paddle, ball) {
     const bottomPaddle = paddle.position.z + paddle.geometry.parameters.depth / 2;
     const topPaddle = paddle.position.z - paddle.geometry.parameters.depth / 2;
     const bottomBall = ball.position.z + ball.radius / 2;

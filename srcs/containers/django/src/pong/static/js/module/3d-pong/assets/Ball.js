@@ -1,4 +1,4 @@
-import * as THREE from '../three.module.js';
+import * as THREE from '../utils/three.module.js';
 import { getRandomInt, abs } from '../3d-utils.js'; 
 
 class Ball {
@@ -21,7 +21,7 @@ class Ball {
         scene.add(this.mesh);
 	}
 
-	checkCollisionPaddle(paddle) {
+	checkCollisionPaddle(paddle, audio) {
         const topPaddle = paddle.position.z - paddle.geometry.parameters.depth / 2;
         const bottomPaddle = paddle.position.z + paddle.geometry.parameters.depth / 2;
         const topBall = this.position.z - this.radius;
@@ -41,7 +41,7 @@ class Ball {
                 } else {
 				    this.dx *= -1.03;
                 }
-				// hit.play(); // uncomment to play sound on hit
+				audio.playSound(audio.hit); // uncomment to play sound on hit
 			}
 	}
 
