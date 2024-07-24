@@ -1,5 +1,6 @@
 import { gameState } from './3d-game-state.js';
 import { startGame } from './3d-game.js';
+import { paddle_p1, paddle_p2, ball, field, keys } from './3d-app.js';
 
 function addPlayer() {
 	const playerName = document.getElementById('playerNameInput').value.trim();
@@ -80,14 +81,14 @@ function displayScoreTournament() {
 function updateScoreTournament() {
 	if (ball.x < 0) {
 		gameState.player2Score += 1;
-		resetBall();
+		ball.resetBall();
 	} else if (ball.x + ball.width > canvas.width) {
 		gameState.player1Score += 1;
-		resetBall();
+		ball.resetBall();
 	}
 
-	if (gameState.player1Score === scoreToWin || gameState.player2Score === scoreToWin) {
-		if (gameState.player1Score == scoreToWin) {
+	if (gameState.player1Score === gameState.scoreToWin || gameState.player2Score === gameState.scoreToWin) {
+		if (gameState.player1Score == gameState.scoreToWin) {
 			setTimeout(function() {
 				alert(`${gameState.players[gameState.matchOrder[gameState.currentGameIndex - 1][0]]} wins!`);
 			}

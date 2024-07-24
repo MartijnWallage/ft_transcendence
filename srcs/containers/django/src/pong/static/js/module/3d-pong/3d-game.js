@@ -50,7 +50,7 @@ async function startGame(player1Name, player2Name, mode) {
 	
 	const getRandomInt = max => Math.floor(Math.random() * max);
 	ball.serve = getRandomInt(2) ? 1 : -1;
-	serveBall();
+	ball.serveBall();
 	var p1Score = document.getElementById('player1-score');
 	p1Score.textContent = '0';
 	var p1Name = document.getElementById('player1-name');

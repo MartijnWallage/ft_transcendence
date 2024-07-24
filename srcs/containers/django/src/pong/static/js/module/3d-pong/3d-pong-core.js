@@ -28,17 +28,17 @@ async function updateScore() {
 		var p2Score = document.getElementById('player2-score');
 		p2Score.textContent = gameState.player2Score;
 		console.log("one point for player 2");
-		serveBall();
+		ball.serveBall();
 	} else if (ball.position.x > paddle_p2.position.x) {
 		gameState.player1Score += 1;
 		var p1Score = document.getElementById('player1-score');
 		p1Score.textContent = gameState.player1Score;
 		console.log("one point for player 1");
-		serveBall();
+		ball.serveBall();
 	}
-	if (gameState.player1Score === scoreToWin) {
+	if (gameState.player1Score === gameState.scoreToWin) {
 		gameState.running = false;
-		resetBall();
+		ball.resetBall();
 		await displayWinMessage('Player 1 wins!');
 		if (gameState.mode === 'tournament'){
 			gameState.scoreBoard[gameState.matchOrder[gameState.currentGameIndex - 1][0]] += 1;
@@ -49,9 +49,9 @@ async function updateScore() {
 		endGame();
 		
 	}
-	else if (gameState.player2Score === scoreToWin){
+	else if (gameState.player2Score === gameState.scoreToWin){
 		gameState.running = false;
-		resetBall();
+		ball.resetBall();
 		await displayWinMessage('Player 2 wins!');
 		if (gameState.mode === 'tournament'){
 			gameState.scoreBoard[gameState.matchOrder[gameState.currentGameIndex - 1][1]] += 1;

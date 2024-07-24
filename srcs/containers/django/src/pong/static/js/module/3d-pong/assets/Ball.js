@@ -1,8 +1,9 @@
 import * as THREE from '../three.module.js';
 
 class Ball {
-	constructor(scene, radius = 0.4, speed = 0.1) {
-	this.geometry = new THREE.SphereGeometry(radius);
+	constructor(scene) {
+	this.radius = 0.4;
+	this.geometry = new THREE.SphereGeometry(this.radius);
 	this.material = new THREE.MeshStandardMaterial({
 		color: 0xc70000,
 		roughness: 0.4,
@@ -13,6 +14,9 @@ class Ball {
 	this.mesh.position.set(0, 0.7, 0);
 	this.resetBall();
 	this.serve = 1;
+	this.dx = 0;
+	this.dz = 0;
+	this.speed = 0.1;
 	scene.add(this.mesh);
 	}
 
@@ -54,7 +58,7 @@ class Ball {
 		this.position.x = 0;
 		this.position.z = 0;
 		this.serve *= -1;
-		this.dx = ballConf.speed * ball.serve;
+		this.dx = this.speed * this.serve;
 		this.dz = 0;
 	}
 
