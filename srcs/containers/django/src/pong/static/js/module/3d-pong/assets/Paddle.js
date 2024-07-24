@@ -9,20 +9,24 @@ class Paddle {
 		metalness: 0.5
 	});
 	this.mesh = new THREE.Mesh(this.geometry, this.material);
-	this.mesh.position.set(distanceFromCenter ,(0.8 / 2) + 0.5 , 0);
+	this.mesh.position.set(distanceFromCenter, (0.8 / 2) + 0.5 , 0);
 	scene.add(this.mesh);
-	this.speed = 0.2;
+	this.speed = 0.15;
 	}
-
-	movePaddles(left, right, field) {
-		if (left && this.position.z - this.geometry.parameters.depth / 2 >
-			field.position.z - field.geometry.parameters.depth / 2) {
-					this.position.z -= this.speed;
-		}
-		if (right && this.position.z + this.geometry.parameters.depth / 2 <
-				field.position.z + field.geometry.parameters.depth / 2) {
-					this.position.z += this.speed;
-		}
+    
+	movePaddle(direction, field ) {
+        this.mesh.position.z += direction * this.speed;
+   
+        const halfPaddle = this.geometry.parameters.depth / 2;
+        const halfField = field.geometry.parameters.depth / 2;
+        const topPaddle = this.mesh.position.z + halfPaddle;
+        const bottomPaddle = this.mesh.position.z - halfPaddle;
+    
+        if (bottomPaddle < -halfField) {
+            this.mesh.position.z = halfPaddle - halfField;
+        } else if (topPaddle > halfField) {
+            this.mesh.position.z = halfField - halfPaddle;
+        }
 	};
 
 	get position() {

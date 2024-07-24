@@ -1,7 +1,8 @@
-import { canvas, ctx, monoColor, paddleSpeed, player1, player2, ball, getRandomInt, scoreToWin, paddleWidth } from './pong-conf.js';
+import { canvas, ctx, monoColor, paddleSpeed, player1, player2, ball, scoreToWin, paddleWidth } from './pong-conf.js';
 import { movePaddlesComputer } from './pong-ai.js';
 import { gameState } from './game-state.js';
 import { displayScoreTournament, updateScoreTournament } from './pong-tournament.js';
+import { getRandomInt } from './pong-utils.js';
 
 // Draw functions
 

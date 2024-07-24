@@ -1,6 +1,7 @@
 import { gameState } from './3d-game-state.js';
 import { paddle_p1, paddle_p2, ball, field, keys } from './3d-app.js';
 import { initializeTournament } from './3d-tournament.js';
+import { getRandomInt  } from './3d-utils.js';
 
 function waitForEnter(enter) {
 	return new Promise((resolve) => {
@@ -48,7 +49,6 @@ async function startGame(player1Name, player2Name, mode) {
 	  menu.classList.add('hidden');
 	}, 1500); 
 	
-	const getRandomInt = max => Math.floor(Math.random() * max);
 	ball.serve = getRandomInt(2) ? 1 : -1;
 	ball.serveBall();
 	var p1Score = document.getElementById('player1-score');

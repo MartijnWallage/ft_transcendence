@@ -1,3 +1,5 @@
+import {getRandomInt} from "./pong-utils.js";
+
 const canvas = document.getElementById("pongCanvas");
 const ctx = canvas.getContext("2d");
 
@@ -30,8 +32,6 @@ const player2 = {
 				color : monoColor,
 				score : 0,
 };
-
-const getRandomInt = max => Math.floor(Math.random() * max);
 
 // Ball properties
 const ballSize = 14;
