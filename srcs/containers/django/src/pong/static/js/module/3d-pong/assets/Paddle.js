@@ -1,7 +1,7 @@
 import * as THREE from '../three.module.js';
 
 class Paddle {
-	constructor (scene, distanceFromCenter, speed = 0.2, width = 2) {
+	constructor (scene, distanceFromCenter, width = 2) {
 	this.geometry = new THREE.BoxGeometry(0.3, 0.8, width);
 	this.material = new THREE.MeshStandardMaterial({
 		color: 0xc1d1db,
@@ -11,6 +11,7 @@ class Paddle {
 	this.mesh = new THREE.Mesh(this.geometry, this.material);
 	this.mesh.position.set(distanceFromCenter ,(0.8 / 2) + 0.5 , 0);
 	scene.add(this.mesh);
+	this.speed = 0.2;
 	}
 
 	movePaddles(left, right, field) {

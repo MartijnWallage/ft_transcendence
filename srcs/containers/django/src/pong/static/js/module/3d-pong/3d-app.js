@@ -41,17 +41,17 @@ const {scene, camera, renderer, hit, controls} = initScene();
 const {paddle_p1, paddle_p2, ball, field} = addGeometry(scene);
 
 function update(){
-	ball.checkCollisionPaddle(paddle_p1);
-	ball.checkCollisionPaddle(paddle_p2);
-	ball.checkCollisionField(field);
 	paddle_p1.movePaddles(keys["w"], keys["s"], field);
 	if (gameState.mode === 'user-vs-computer'){ 
 		movePaddlesComputer(paddle_p2);
 	}
 	else {
-		paddle_p2.movePaddles(keys["ArrowDown"], keys["ArrowUp"], field);
+		paddle_p2.movePaddles(keys["ArrowUp"], keys["ArrowDown"], field);
 	}
 	ball.animateBall();
+	ball.checkCollisionPaddle(paddle_p1);
+	ball.checkCollisionPaddle(paddle_p2);
+	ball.checkCollisionField(field);
 	if (gameState.running === false) {
 		orbitCamera();
 	}
