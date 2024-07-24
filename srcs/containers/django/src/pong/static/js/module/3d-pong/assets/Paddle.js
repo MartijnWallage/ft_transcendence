@@ -8,7 +8,6 @@ class Paddle {
 		roughness: 0.5,
 		metalness: 0.5
 	});
-    this.dz = 0;
 	this.mesh = new THREE.Mesh(this.geometry, this.material);
 	this.mesh.position.set(distanceFromCenter, (0.8 / 2) + 0.5 , 0);
 	scene.add(this.mesh);
@@ -16,8 +15,7 @@ class Paddle {
 	}
     
 	movePaddle(direction, field ) {
-        this.dz = direction * this.speed;
-        this.mesh.position.z += this.dz;
+        this.mesh.position.z += direction * this.speed;
    
         const halfPaddle = this.geometry.parameters.depth / 2;
         const halfField = field.geometry.parameters.depth / 2;

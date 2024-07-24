@@ -22,11 +22,20 @@ class Ball {
 	}
 
 	checkCollisionPaddle(paddle) {
-		if (this.position.x - this.radius < paddle.position.x + paddle.geometry.parameters.width / 2 &&
-				this.position.x + this.radius > paddle.position.x - paddle.geometry.parameters.width / 2 &&
-				this.position.z - this.radius < paddle.position.z + paddle.geometry.parameters.depth / 2 &&
-				this.position.z + this.radius > paddle.position.z - paddle.geometry.parameters.depth / 2) {
-				this.dz = (this.position.z - (paddle.position.z)) * 0.15;
+        const topPaddle = paddle.position.z - paddle.geometry.parameters.depth / 2;
+        const bottomPaddle = paddle.position.z + paddle.geometry.parameters.depth / 2;
+        const topBall = this.position.z - this.radius;
+        const bottomBall = this.position.z + this.radius;
+
+        if (bottomBall < topPaddle || topBall > bottomPaddle) {
+            return;  // no collision
+        }
+    
+        if ((this.dx < 0 && this.position.x - this.radius < paddle.position.x + paddle.geometry.parameters.width / 2 &&
+            this.position.x + this.radius > paddle.position.x - paddle.geometry.parameters.width / 2) ||
+            (this.dx > 0 && this.position.x + this.radius > paddle.position.x - paddle.geometry.parameters.width / 2 &&
+            this.position.x - this.radius < paddle.position.x + paddle.geometry.parameters.width / 2)) {
+				this.dz = (this.position.z - paddle.position.z) * 0.20;
                 if (abs(this.dx) < this.speed / 1.5) {
                     this.dx *= -2;
                 } else {
