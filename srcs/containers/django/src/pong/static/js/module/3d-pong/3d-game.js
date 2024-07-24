@@ -1,5 +1,5 @@
 import { gameState } from './3d-game-state.js';
-import { serveBall } from './3d-pong-core.js';
+import { paddle_p1, paddle_p2, ball, field, keys } from './3d-app.js';
 import { initializeTournament } from './3d-tournament.js';
 
 function waitForEnter(enter) {
@@ -48,6 +48,8 @@ async function startGame(player1Name, player2Name, mode) {
 	  menu.classList.add('hidden');
 	}, 1500); 
 	
+	const getRandomInt = max => Math.floor(Math.random() * max);
+	ball.serve = getRandomInt(2) ? 1 : -1;
 	serveBall();
 	var p1Score = document.getElementById('player1-score');
 	p1Score.textContent = '0';

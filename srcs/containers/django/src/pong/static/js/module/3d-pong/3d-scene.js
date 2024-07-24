@@ -1,6 +1,5 @@
 import * as THREE from './three.module.js';
 import { OrbitControls } from './OrbitControls.js';
-import { ballConf } from './3d-pong-conf.js';
 
 function initScene()
 {

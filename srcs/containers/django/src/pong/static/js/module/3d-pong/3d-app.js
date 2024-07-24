@@ -1,7 +1,10 @@
 import Stats from './stats.module.js'
 import { initScene } from './3d-scene.js';
-import { addGeometry} from './3d-geometry.js';
-import { movePaddles, checkCollisionPaddle, checkCollisionField, animateBall, updateScore } from './3d-pong-core.js';
+import { Ball } from './assets/Ball.js';
+import { Field } from './assets/Field.js';
+import { Paddle } from './assets/Paddle.js';
+import { movePaddlesComputer } from './3d-pong-ai.js';
+import { updateScore } from './3d-pong-core.js';
 import { gameState } from './3d-game-state.js';
 
 // FPS stats viewer
@@ -9,9 +12,7 @@ const stats = new Stats();
 stats.showPanel(0);
 document.body.appendChild(stats.dom);
 
-
 //key listener
-
 let keys = {};
 document.addEventListener("keydown", (event) => { 
 	keys[event.key] = true; 
@@ -22,23 +23,35 @@ document.addEventListener("keyup", (event) => {
 });
 
 function onWindowResize() {
-	
 	camera.aspect = window.innerWidth / window.innerHeight;
 	camera.updateProjectionMatrix();
-
 	renderer.setSize( window.innerWidth, window.innerHeight );
+}
+window.addEventListener( 'resize', onWindowResize );
+
+function addGeometry(scene) {
+	const paddle_p1 = new Paddle(scene, -7);
+	const paddle_p2 = new Paddle(scene, 7);
+	const ball = new Ball(scene);
+	const field = new Field(scene);
+	return ({paddle_p1, paddle_p2, ball, field});
 }
 
 const {scene, camera, renderer, hit, controls} = initScene();
 const {paddle_p1, paddle_p2, ball, field} = addGeometry(scene);
-window.addEventListener( 'resize', onWindowResize );
 
 function update(){
-	movePaddles();
-	checkCollisionPaddle(paddle_p1);
-	checkCollisionPaddle(paddle_p2);
-	checkCollisionField()
-	animateBall();
+	ball.checkCollisionPaddle(paddle_p1);
+	ball.checkCollisionPaddle(paddle_p2);
+	ball.checkCollisionField(field);
+	paddle_p1.movePaddles(keys["w"], keys["s"], field);
+	if (gameState.mode === 'user-vs-computer'){ 
+		movePaddlesComputer(paddle_p2);
+	}
+	else {
+		paddle_p2.movePaddles(keys["ArrowDown"], keys["ArrowUp"], field);
+	}
+	ball.animateBall();
 	if (gameState.running === false) {
 		orbitCamera();
 	}
@@ -54,7 +67,7 @@ let angle = 0.8;
 function orbitCamera(){
 	angle += 0.008; // Adjust this value to change the speed of orbit
 	const radius = 6;
-	console.log(angle);
+	//console.log(angle);
 	camera.position.x = radius * Math.cos(angle);
 	camera.position.z = radius * Math.sin(angle);
 	camera.lookAt(0, 1, 0);
@@ -64,8 +77,8 @@ function animate() {
 	stats.begin(); // for the FPS stats
 	update();
 	controls.update();
-	requestAnimationFrame(animate);
 	renderer.render(scene, camera);
+	requestAnimationFrame(animate);
 	stats.end(); // for the FPS stats
 } animate();
 
