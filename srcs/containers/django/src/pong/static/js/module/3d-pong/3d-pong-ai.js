@@ -1,15 +1,11 @@
 
-function movePaddlesComputer(paddle_p2, ball) {
-	if (paddle_p2.position.z - paddle_p2.geometry.parameters.depth / 2 <
-		ball.position.z - ball.radius / 2) {
-		paddle_p2.position.z += paddle_p2.speed;
-	}
-	else if (paddle_p2.position.z + paddle_p2.geometry.parameters.depth / 2 >
-		ball.position.z + ball.radius / 2) {
-		paddle_p2.position.z -= paddle_p2.speed;
-	} else {
-		paddle_p2.position.z = 0;
-	}
+function movePaddleAI(paddle, ball) {
+    const bottomPaddle = paddle.position.z + paddle.geometry.parameters.depth / 2;
+    const topPaddle = paddle.position.z - paddle.geometry.parameters.depth / 2;
+    const bottomBall = ball.position.z + ball.radius / 2;
+    const topBall = ball.position.z - ball.radius / 2;
+
+    return bottomBall < topPaddle ? -1 : topBall > bottomPaddle ? 1 : 0;
 }
 
-export {movePaddlesComputer};
+export {movePaddleAI};

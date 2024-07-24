@@ -1,6 +1,6 @@
 import Stats from './utils/stats.module.js'
 import { Scene } from './assets/Scene.js';
-import { movePaddlesComputer } from './3d-pong-ai.js';
+import { movePaddleAI } from './3d-pong-ai.js';
 import { updateScore } from './3d-pong-core.js';
 import { gameState } from './3d-game-state.js';
 
@@ -28,14 +28,20 @@ const paddle_p1 = scene.paddle_p1;
 const paddle_p2 = scene.paddle_p2;
 const camera = scene.camera;
 
-function update(){
-	paddle_p1.movePaddles(keys["w"], keys["s"], field);
+function update() {
+	// move left paddle
+	let direction = keys['w'] ? -1 : keys['s'] ? 1 : 0;
+	paddle_p1.movePaddle(direction, field);
+
+	// move right paddle
 	if (gameState.mode === 'user-vs-computer'){ 
-		movePaddlesComputer(paddle_p2, ball);
+		direction = movePaddleAI(paddle_p2, ball);
+	} else {
+		direction = keys['ArrowUp'] ? -1 : keys['ArrowDown'] ? 1 : 0;
 	}
-	else {
-		paddle_p2.movePaddles(keys["ArrowUp"], keys["ArrowDown"], field);
-	}
+	paddle_p2.movePaddle(direction, field);
+
+	// move ball
 	ball.animateBall();
 	ball.checkCollisionPaddle(paddle_p1, scene.audio);
 	ball.checkCollisionPaddle(paddle_p2, scene.audio);
