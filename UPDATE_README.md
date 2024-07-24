@@ -28,6 +28,6 @@
 # Current Problem
 
 -   nav bar is in the middle
--   User logging in working but the username is not shown by navbar
--   some of the games are showing strange behaviour
+-   User loggin in is working with login but not with sign up
+-   logout redirect will be handled from javascript, django is showing strange behaviour
 

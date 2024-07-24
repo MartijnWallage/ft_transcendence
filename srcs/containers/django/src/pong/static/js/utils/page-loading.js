@@ -2,6 +2,36 @@
 import { endGame, startGameUserVsUser, startGameSolo, startTournament } from "../module/3d-pong/3d-game.js";
 import { addPlayer } from '../module/3d-pong/3d-tournament.js';
 
+
+document.addEventListener('DOMContentLoaded', function() {
+	fetch('/api/home/')
+		.then(response => response.json())
+		.then(data => {
+			updateUI(data);
+			bindEventListeners();
+		});
+
+	// window.onpopstate = (event)
+});
+
+
+function updateUI(data) {
+    if (data.is_logged_in) {
+        document.getElementById('login-link').style.display = 'none';
+        document.getElementById('register-link').style.display = 'none';
+        document.getElementById('logout-link').style.display = 'block';
+        document.getElementById('user-info').style.display = 'block';
+        document.getElementById('user-info').innerText = `Welcome, ${data.user_info.username}`;
+    } else {
+        document.getElementById('login-link').style.display = 'block';
+        document.getElementById('register-link').style.display = 'block';
+        document.getElementById('logout-link').style.display = 'none';
+        document.getElementById('user-info').style.display = 'none';
+    }
+
+    document.getElementById('main-content').innerHTML = data.content;
+}
+
 function fadeIn(element) {
 	return new Promise((resolve) => {
 		element.style.opacity = 0;
@@ -96,10 +126,10 @@ else
 
 
 // Example of loading the home page on document ready
-document.addEventListener('DOMContentLoaded', () => {
-	const page = location.hash.replace('#', '') || 'home';
-	loadPage(page);
-});
+// document.addEventListener('DOMContentLoaded', () => {
+// 	const page = location.hash.replace('#', '') || 'home';
+// 	loadPage(page);
+// });
 
 
 function bindEventListeners() {
@@ -131,10 +161,6 @@ function bindEventListeners() {
         }
     });
 
-	if (data.is_logged_in) {
-        // Display user info
-        document.getElementById('user-info').innerText = `Welcome, ${data.user_info.username}`;
-    }
 	// user event listerner
 	var leaderBoardButton = document.getElementById('js-leaderboard-btn');
 	if (leaderBoardButton) {
@@ -188,9 +214,6 @@ function hideLeaderBoard() {
 function handleFormSubmit(form, url) {
     const formData = new FormData(form);
 
-	for (let [key, value] of formData.entries()) {
-        console.log(key, value);
-    }
 	console.log("handleformsubmit called")
     // fetch(url)
     fetch(url, {
@@ -208,8 +231,9 @@ function handleFormSubmit(form, url) {
     .then(data => {
         if (data.status === 'success') {
 			alert("logging in worked");
+			location.reload();
 			// console.log(data);
-            loadPage('home');  // Redirect to home or another page
+            // loadPage('home');  // Redirect to home or another page
         } else {
             const errorContainer = document.getElementById('error-container');
             if (errorContainer) {

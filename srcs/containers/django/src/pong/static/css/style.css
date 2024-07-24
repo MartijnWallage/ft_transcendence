@@ -10,19 +10,18 @@
 }
 
 .background {
-	position: fixed;
-	top: 0;
-	left: 0;
-	width: 100%;
-	height: 100%;
-	z-index: -1; /* Place behind other content */
-	/* Adjust background properties */
-	background-image: url( ../images/getty.jpg );
-	/* background-color: #33ff55; */
-	background-size: cover; /* Adjust to cover the entire screen */
-	background-position: center;
+    position: fixed;
+    top: 50px; /* Adjust this value to the height of your navbar */
+    left: 0;
+    width: 100%;
+    height: calc(100% - 50px); /* Adjust this value to the height of your navbar */
+    z-index: -1; /* Place behind other content */
+    /* Adjust background properties */
+    background-image: url(../images/getty.jpg);
+    /* background-color: #33ff55; */
+    background-size: cover; /* Adjust to cover the entire screen */
+    background-position: center;
 }
-
 #threejs-container {
 	position: absolute;
 	width: 100vw;
