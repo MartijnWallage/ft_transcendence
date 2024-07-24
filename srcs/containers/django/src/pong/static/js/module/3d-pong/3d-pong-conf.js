@@ -1,7 +1,7 @@
 // Paddle properties
 const paddleConf = {
 					width: 0.3,
-					height: 1,
+					height: 0.8,
 					depth: 2,
 					speed: 0.2,
 };
