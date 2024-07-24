@@ -1,6 +1,6 @@
 import { gameState } from './3d-game-state.js';
 import { startGame } from './3d-game.js';
-import { paddle_p1, paddle_p2, ball, field, keys } from './3d-app.js';
+import { ball} from './3d-app.js';
 
 function addPlayer() {
 	const playerName = document.getElementById('playerNameInput').value.trim();
