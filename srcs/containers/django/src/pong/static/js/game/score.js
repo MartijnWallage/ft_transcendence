@@ -1,8 +1,8 @@
-import { paddle_p1, paddle_p2, ball, field, keys } from './update.js';
+import { ball } from './update.js';
 import { gameState } from './game-state.js';
 import { nextGame } from './tournament.js';
 import { endGame } from './start-end-game.js';
-import { textToDiv, HTMLToDiv } from './game-utils.js';
+import { textToDiv } from './game-utils.js';
 
 function displayWinMessage(message) {
 	textToDiv(message, 'announcement');
@@ -26,39 +26,34 @@ async function updateScore(field) {
     const ballRightSide = ball.position.x + ball.radius;
     const ballLeftSide = ball.position.x - ball.radius;
 
-	if (ballRightSide < -halfFieldWidth) {
-		gameState.player2Score += 1;
-		textToDiv(gameState.player2Score, 'player2-score');
-		ball.serveBall();
-	} else if (ballLeftSide > halfFieldWidth) {
-		gameState.player1Score += 1;
+    if (ballRightSide < -halfFieldWidth) {
+        gameState.player2Score += 1;
+        textToDiv(gameState.player2Score, 'player2-score');
+    } else if (ballLeftSide > halfFieldWidth) {
+        gameState.player1Score += 1;
         textToDiv(gameState.player1Score, 'player1-score');
-		ball.serveBall();
-	}
+    } else {
+        return;
+    }
 
-	if (gameState.player1Score === gameState.scoreToWin) {
-		gameState.running = false;
-		ball.resetBall();
-		await displayWinMessage('Player 1 wins!');
-		if (gameState.mode === 'tournament'){
-			gameState.scoreBoard[gameState.matchOrder[gameState.currentGameIndex - 1][0]] += 1;
-			console.log('number of victory player ' + gameState.matchOrder[gameState.currentGameIndex - 1][0] + ' :' + gameState.scoreBoard[gameState.matchOrder[gameState.currentGameIndex - 1][0]]);
-			nextGame();
-			return;
-		}
-		endGame();
-	} else if (gameState.player2Score === gameState.scoreToWin){
-		gameState.running = false;
-		ball.resetBall();
-		await displayWinMessage('Player 2 wins!');
-		if (gameState.mode === 'tournament'){
-			gameState.scoreBoard[gameState.matchOrder[gameState.currentGameIndex - 1][1]] += 1;
-			console.log('number of victory player ' + gameState.matchOrder[gameState.currentGameIndex - 1][1] + ' :' + gameState.scoreBoard[gameState.matchOrder[gameState.currentGameIndex - 1][1]]);
-			nextGame();
-			return;
-		}
-		endGame();
-	}
+    ball.serveBall();
+
+    const winner = gameState.player1Score === gameState.scoreToWin ? 1 :
+        gameState.player2Score === gameState.scoreToWin ? 2 :
+        null;
+
+    if (winner === null) return;
+
+    gameState.running = false;
+    ball.resetBall();
+    await displayWinMessage(`Player ${winner} wins!`);
+    if (gameState.mode === 'tournament'){
+        gameState.scoreBoard[gameState.matchOrder[gameState.currentGameIndex - 1][winner - 1]] += 1;
+        console.log('number of victory player ' + gameState.matchOrder[gameState.currentGameIndex - 1][winner - 1] + ' :' + gameState.scoreBoard[gameState.matchOrder[gameState.currentGameIndex - 1][winner - 1]]);
+        nextGame();
+        return;
+    }
+    endGame();
 }
 
 export { updateScore };
