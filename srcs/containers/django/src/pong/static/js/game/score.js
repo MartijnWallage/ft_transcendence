@@ -1,8 +1,8 @@
-import { paddle_p1, paddle_p2, ball, field, keys } from './app.js';
+import { paddle_p1, paddle_p2, ball, field, keys } from './update.js';
 import { gameState } from './game-state.js';
 import { nextGame } from './tournament.js';
-import { endGame } from './game.js';
-import { textToDiv, HTMLToDiv } from './utils.js';
+import { endGame } from './start-end-game.js';
+import { textToDiv, HTMLToDiv } from './game-utils.js';
 
 function displayWinMessage(message) {
 	textToDiv(message, 'announcement');
@@ -22,15 +22,17 @@ function displayWinMessage(message) {
 }
 
 async function updateScore(field) {
-	if (ball.position.x + ball.radius < -field.geometry.parameters.width / 2) {
+    const halfFieldWidth = field.geometry.parameters.width / 2;
+    const ballRightSide = ball.position.x + ball.radius;
+    const ballLeftSide = ball.position.x - ball.radius;
+
+	if (ballRightSide < -halfFieldWidth) {
 		gameState.player2Score += 1;
 		textToDiv(gameState.player2Score, 'player2-score');
-		console.log("one point for player 2");
 		ball.serveBall();
-	} else if (ball.position.x - ball.radius > field.geometry.parameters.width / 2) {
+	} else if (ballLeftSide > halfFieldWidth) {
 		gameState.player1Score += 1;
-		textToDiv(gameState.player1Score, 'player1-score');
-		console.log("one point for player 1");
+        textToDiv(gameState.player1Score, 'player1-score');
 		ball.serveBall();
 	}
 
@@ -45,9 +47,7 @@ async function updateScore(field) {
 			return;
 		}
 		endGame();
-		
-	}
-	else if (gameState.player2Score === gameState.scoreToWin){
+	} else if (gameState.player2Score === gameState.scoreToWin){
 		gameState.running = false;
 		ball.resetBall();
 		await displayWinMessage('Player 2 wins!');

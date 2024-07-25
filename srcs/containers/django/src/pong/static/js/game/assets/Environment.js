@@ -1,4 +1,4 @@
-import * as THREE from '../utils/three.module.js';
+import * as THREE from '../THREE-utils/three.module.js';
 
 class Environment {
 	constructor(scene) {
