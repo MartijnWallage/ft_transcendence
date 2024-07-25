@@ -1,6 +1,6 @@
-import { gameState } from './3d-game-state.js';
-import { startGame } from './3d-game.js';
-import { ball} from './3d-app.js';
+import { gameState } from './game-state.js';
+import { startGame } from './game.js';
+import { ball} from './app.js';
 
 function addPlayer() {
 	const playerName = document.getElementById('playerNameInput').value.trim();
