@@ -40,6 +40,7 @@ async function updateScore(field) {
 		await displayWinMessage('Player 1 wins!');
 		if (gameState.mode === 'tournament'){
 			gameState.scoreBoard[gameState.matchOrder[gameState.currentGameIndex - 1][0]] += 1;
+			gameState.matchResult.push( [gameState.player1Score, gameState.player2Score] );
 			console.log('number of victory player ' + gameState.matchOrder[gameState.currentGameIndex - 1][0] + ' :' + gameState.scoreBoard[gameState.matchOrder[gameState.currentGameIndex - 1][0]]);
 			nextGame();
 			return;
@@ -53,6 +54,7 @@ async function updateScore(field) {
 		await displayWinMessage('Player 2 wins!');
 		if (gameState.mode === 'tournament'){
 			gameState.scoreBoard[gameState.matchOrder[gameState.currentGameIndex - 1][1]] += 1;
+			gameState.matchResult.push( [gameState.player1Score, gameState.player2Score] );
 			console.log('number of victory player ' + gameState.matchOrder[gameState.currentGameIndex - 1][1] + ' :' + gameState.scoreBoard[gameState.matchOrder[gameState.currentGameIndex - 1][1]]);
 			nextGame();
 			return;
