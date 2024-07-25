@@ -39,9 +39,8 @@ function update() {
 
     // move and bounce ball
 	ball.animateBall();
-	ball.checkCollisionPaddle(paddle_p1, scene.audio);
-	ball.checkCollisionPaddle(paddle_p2, scene.audio);
-	ball.checkCollisionField(field);
+    ball.tryPaddleCollision(paddle_p1, paddle_p2, scene.audio);
+	ball.tryCourtCollision(field);
 
 	if (gameState.running === false) {
 		camera.orbitCamera();
