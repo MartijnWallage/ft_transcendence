@@ -1,7 +1,7 @@
 import * as THREE from '../utils/three.module.js';
 
 class Environment {
-	constructor(scene){
+	constructor(scene) {
 		// SKYDOME
 		const geometry = new THREE.SphereGeometry(50);
 		geometry.computeBoundingBox();

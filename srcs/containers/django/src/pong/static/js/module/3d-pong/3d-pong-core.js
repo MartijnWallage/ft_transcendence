@@ -2,14 +2,13 @@ import { paddle_p1, paddle_p2, ball, field, keys } from './3d-app.js';
 import { gameState } from './3d-game-state.js';
 import { nextGame } from './3d-tournament.js';
 import { endGame } from './3d-game.js';
+import { textToDiv, HTMLToDiv } from './3d-utils.js';
 
 function displayWinMessage(message) {
-	var announcement = document.getElementById('announcement');
-	announcement.textContent = message;
+	textToDiv(message, 'announcement');
 	var menu = document.getElementById('menu');
 	menu.style.display = 'block';
 	menu.style.opacity = 1;
-
 	const btn = document.getElementById('js-next-game-btn');
 	btn.style.display = 'block';
 	return new Promise((resolve) => {
@@ -25,14 +24,12 @@ function displayWinMessage(message) {
 async function updateScore(field) {
 	if (ball.position.x + ball.radius < -field.geometry.parameters.width / 2) {
 		gameState.player2Score += 1;
-		var p2Score = document.getElementById('player2-score');
-		p2Score.textContent = gameState.player2Score;
+		textToDiv(gameState.player2Score, 'player2-score');
 		console.log("one point for player 2");
 		ball.serveBall();
 	} else if (ball.position.x - ball.radius > field.geometry.parameters.width / 2) {
 		gameState.player1Score += 1;
-		var p1Score = document.getElementById('player1-score');
-		p1Score.textContent = gameState.player1Score;
+		textToDiv(gameState.player1Score, 'player1-score');
 		console.log("one point for player 1");
 		ball.serveBall();
 	}

@@ -21,12 +21,8 @@ document.addEventListener("keyup", (event) => {
 
 const container = document.getElementById('threejs-container');
 const scene = new Scene(container);
-window.addEventListener( 'resize', scene.onWindowResize());
-const ball = scene.ball;
-const field = scene.field;
-const paddle_p1 = scene.paddle_p1;
-const paddle_p2 = scene.paddle_p2;
-const camera = scene.camera;
+window.addEventListener('resize', () => scene.onWindowResize());
+const { ball, field, paddle_p1, paddle_p2, camera } = scene;
 
 function update() {
 	// move left paddle
