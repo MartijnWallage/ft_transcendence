@@ -21,35 +21,47 @@ class Ball {
 		scene.add(this.mesh);
 	}
 
-	checkCollisionPaddle(paddle, audio) {
+	checkPaddleCollision(paddle) {
 		const topPaddle = paddle.position.z - paddle.geometry.parameters.depth / 2;
 		const bottomPaddle = paddle.position.z + paddle.geometry.parameters.depth / 2;
+        const leftSidePaddle = paddle.position.x - paddle.geometry.parameters.width / 2;
+        const rightSidePaddle = paddle.position.x + paddle.geometry.parameters.width / 2;
 		const topBall = this.position.z - this.radius;
 		const bottomBall = this.position.z + this.radius;
+        const leftSideBall = this.position.x - this.radius;
+        const rightSideBall = this.position.x + this.radius;
 
-		if (bottomBall < topPaddle || topBall > bottomPaddle) {
-			return;  // no collision
-		}
-	
-		if ((this.dx < 0 && this.position.x - this.radius < paddle.position.x + paddle.geometry.parameters.width / 2 &&
-			this.position.x + this.radius > paddle.position.x - paddle.geometry.parameters.width / 2) ||
-			(this.dx > 0 && this.position.x + this.radius > paddle.position.x - paddle.geometry.parameters.width / 2 &&
-			this.position.x - this.radius < paddle.position.x + paddle.geometry.parameters.width / 2)) {
-				this.dz = (this.position.z - paddle.position.z) * 0.20;
-				if (abs(this.dx) < this.speed / 1.5) {
-					this.dx *= -2;
-				} else {
-					this.dx *= -1.03;
-				}
-				audio.playSound(audio.hit); // uncomment to play sound on hit
-			}
+        return (bottomBall < topPaddle || topBall > bottomPaddle) ? false :
+            (this.dx < 0 && (leftSideBall > rightSidePaddle || rightSideBall < leftSidePaddle)) ? false :
+            (this.dx > 0 && (rightSideBall < leftSidePaddle || leftSideBall > rightSidePaddle)) ? false : 
+            true;
 	}
 
-	checkCollisionField(field) {
-		if (this.position.z - this.radius < field.position.z - field.geometry.parameters.depth / 2 ||
-				this.position.z + this.radius > field.position.z + field.geometry.parameters.depth / 2) {
-				this.dz *= -1;
-			}
+    tryPaddleCollision(paddle_p1, paddle_p2, audio) {
+        const paddle = this.dx > 0 ? paddle_p2 : paddle_p1;
+
+        if (this.checkPaddleCollision(paddle)) {
+            this.dz = (this.position.z - paddle.position.z) * 0.20;
+            this.dx = abs(this.dx) < this.speed / 1.5 ? this.dx *= -2 : this.dx *= -1.02;
+            audio.playSound(audio.hit);
+        }
+    }
+
+    checkCourtCollision(court) {
+        const topBall = this.position.z - this.radius;
+        const bottomBall = this.position.z + this.radius;
+        const halfCourt = court.geometry.parameters.depth / 2;
+        const topCourt = -halfCourt;
+        const bottomCourt = halfCourt;
+        
+        return (this.dz > 0 && bottomBall > bottomCourt)
+            || (this.dz < 0 && topBall < topCourt);
+    }
+
+	tryCourtCollision(court) {
+		if (this.checkCourtCollision(court)) {
+			this.dz *= -1;
+		}
 	}
 
 	animateBall() {
