@@ -1,8 +1,8 @@
 import Stats from './utils/stats.module.js'
 import { Scene } from './assets/Scene.js';
-import { movePaddleAI } from './3d-pong-ai.js';
-import { updateScore } from './3d-pong-core.js';
-import { gameState } from './3d-game-state.js';
+import { movePaddleAI } from './pong-ai.js';
+import { updateScore } from './pong-core.js';
+import { gameState } from './game-state.js';
 
 // FPS stats viewer
 const stats = new Stats();
@@ -26,14 +26,14 @@ const { ball, field, paddle_p1, paddle_p2, camera } = scene;
 
 function update() {
 	// move left paddle
-	let direction = keys['w'] ? -1 : keys['s'] ? 1 : 0;
+	let direction = keys['a'] ? -1 : keys['d'] ? 1 : 0;
 	paddle_p1.movePaddle(direction, field);
 
 	// move right paddle
 	if (gameState.mode === 'user-vs-computer'){ 
 		direction = movePaddleAI(paddle_p2, ball);
 	} else {
-		direction = keys['ArrowUp'] ? -1 : keys['ArrowDown'] ? 1 : 0;
+		direction = keys['ArrowRight'] ? -1 : keys['ArrowLeft'] ? 1 : 0;
 	}
 	paddle_p2.movePaddle(direction, field);
 
@@ -46,7 +46,7 @@ function update() {
 		camera.orbitCamera();
 	}
 	if (gameState.running === true) {
-		camera.cam.position.set(0, 15, 0);
+		camera.cam.position.set(-14, 14, 0);
 		camera.cam.lookAt(0, 1, 0);
 		updateScore(field);
 	}

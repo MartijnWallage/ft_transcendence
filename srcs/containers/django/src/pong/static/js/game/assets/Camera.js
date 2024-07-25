@@ -9,7 +9,7 @@ class Camera {
 	}
 
 	orbitCamera() {
-		this.rotateAngle += 0.008; // Adjust this value to change the speed of orbit
+		this.rotateAngle += 0.006; // Adjust this value to change the speed of orbit
 		const radius = 6;
 		//console.log(angle);
 		this.cam.position.x = radius * Math.cos(this.rotateAngle);

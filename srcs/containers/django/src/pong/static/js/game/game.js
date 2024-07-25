@@ -1,7 +1,7 @@
-import { gameState } from './3d-game-state.js';
-import { ball } from './3d-app.js';
-import { initializeTournament } from './3d-tournament.js';
-import { getRandomInt, textToDiv, HTMLToDiv } from './3d-utils.js';
+import { gameState } from './game-state.js';
+import { ball } from './app.js';
+import { initializeTournament } from './tournament.js';
+import { getRandomInt, textToDiv, HTMLToDiv } from './utils.js';
 
 function waitForEnter(enter) {
 	return new Promise((resolve) => {
@@ -41,7 +41,8 @@ async function startGame(player1Name, player2Name, mode) {
 	const enter = document.getElementById('enter');
 	enter.style.display = 'block';
 	await waitForEnter(enter);
-	await countdown(3, announcement);
+	await countdown(1, announcement);
+	// await countdown(3, announcement);
 	const menu = document.getElementById('menu');
 	menu.classList.add('fade-out');
 	setTimeout(function() {
