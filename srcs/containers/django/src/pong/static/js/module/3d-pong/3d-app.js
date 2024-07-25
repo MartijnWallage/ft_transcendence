@@ -41,18 +41,19 @@ function update() {
 	}
 	paddle_p2.movePaddle(direction, field);
 
-	// move ball
+    // move and bounce ball
 	ball.animateBall();
 	ball.checkCollisionPaddle(paddle_p1, scene.audio);
 	ball.checkCollisionPaddle(paddle_p2, scene.audio);
 	ball.checkCollisionField(field);
+
 	if (gameState.running === false) {
 		camera.orbitCamera();
 	}
 	if (gameState.running === true) {
 		camera.cam.position.set(0, 15, 0);
 		camera.cam.lookAt(0, 1, 0);
-		updateScore();
+		updateScore(field);
 	}
 }
 

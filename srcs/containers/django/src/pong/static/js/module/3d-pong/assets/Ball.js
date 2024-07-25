@@ -41,15 +41,11 @@ class Ball {
                 } else {
 				    this.dx *= -1.03;
                 }
-				audio.playSound(audio.hit); // uncomment to play sound on hit
+				audio.playSound(audio.hit);
 			}
 	}
 
 	checkCollisionField(field){
-		if (this.position.x - this.radius < field.position.x - field.geometry.parameters.width / 2 ||
-				this.position.x + this.radius > field.position.x + field.geometry.parameters.width / 2) {
-				this.dx *= -1.03;
-			}
 		if (this.position.z - this.radius < field.position.z - field.geometry.parameters.depth / 2 ||
 				this.position.z + this.radius > field.position.z + field.geometry.parameters.depth / 2) {
 				this.dz *= -1;

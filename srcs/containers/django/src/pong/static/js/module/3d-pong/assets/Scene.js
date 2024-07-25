@@ -16,10 +16,10 @@ class Scene {
 	this.renderer.setClearColor(0xc1d1db);
 	container.appendChild(this.renderer.domElement);
 
-	this.paddle_p1 = new Paddle(this.scene, -7);
-	this.paddle_p2 = new Paddle(this.scene, 7);
-	this.ball = new Ball(this.scene);
 	this.field = new Field(this.scene);
+	this.paddle_p1 = new Paddle(this.scene, this.field, true);
+	this.paddle_p2 = new Paddle(this.scene, this.field, false);
+	this.ball = new Ball(this.scene);
 	this.environment = new Environment(this.scene);
 	this.controls = new OrbitControls(this.camera.cam, container);
 	this.audio = new Audio(this.camera);
