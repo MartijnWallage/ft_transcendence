@@ -1,8 +1,8 @@
 import Stats from './utils/stats.module.js'
 import { Scene } from './assets/Scene.js';
-import { movePaddleAI } from './3d-pong-ai.js';
-import { updateScore } from './3d-pong-core.js';
-import { gameState } from './3d-game-state.js';
+import { movePaddleAI } from './pong-ai.js';
+import { updateScore } from './pong-core.js';
+import { gameState } from './game-state.js';
 
 // FPS stats viewer
 const stats = new Stats();

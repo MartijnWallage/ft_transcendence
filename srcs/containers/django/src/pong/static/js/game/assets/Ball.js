@@ -1,5 +1,5 @@
 import * as THREE from '../utils/three.module.js';
-import { getRandomInt, abs } from '../3d-utils.js'; 
+import { getRandomInt, abs } from '../utils.js'; 
 
 class Ball {
 	constructor(scene) {

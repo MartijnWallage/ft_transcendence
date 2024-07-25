@@ -1,7 +1,7 @@
-import { gameState } from './3d-game-state.js';
-import { ball } from './3d-app.js';
-import { initializeTournament } from './3d-tournament.js';
-import { getRandomInt, textToDiv, HTMLToDiv } from './3d-utils.js';
+import { gameState } from './game-state.js';
+import { ball } from './app.js';
+import { initializeTournament } from './tournament.js';
+import { getRandomInt, textToDiv, HTMLToDiv } from './utils.js';
 
 function waitForEnter(enter) {
 	return new Promise((resolve) => {

@@ -1,8 +1,8 @@
-import { paddle_p1, paddle_p2, ball, field, keys } from './3d-app.js';
-import { gameState } from './3d-game-state.js';
-import { nextGame } from './3d-tournament.js';
-import { endGame } from './3d-game.js';
-import { textToDiv, HTMLToDiv } from './3d-utils.js';
+import { paddle_p1, paddle_p2, ball, field, keys } from './app.js';
+import { gameState } from './game-state.js';
+import { nextGame } from './tournament.js';
+import { endGame } from './game.js';
+import { textToDiv, HTMLToDiv } from './utils.js';
 
 function displayWinMessage(message) {
 	textToDiv(message, 'announcement');

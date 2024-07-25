@@ -1,5 +1,5 @@
 import { addParticipant, createMatch, createTournament } from "./tournament-score-db.js";
-import {gameState} from './3d-game-state.js';
+import {gameState} from './game-state.js';
 
 function stopGame() {
 	gameState.running= false;
@@ -9,7 +9,7 @@ async function endTournament() {
 	alert("Tournament Ended!");
 	gameState.running= false;
 
-	scoreBoardTournament();
+	// scoreBoardTournament();
 
 	// Example usage:
 	

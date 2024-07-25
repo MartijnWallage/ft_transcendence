@@ -171,8 +171,18 @@ def create_match(request):
 		tournament = Tournament.objects.get(id=tournament_id)
 
 		# Retrieve the players
-		player1 = Player.objects.get(name=data.get('player1'))
-		player2 = Player.objects.get(name=data.get('player2'))
+		# player1 = Player.objects.get(name=data.get('player1'))
+		# player2 = Player.objects.get(name=data.get('player2'))
+		try:
+			player1 = Player.objects.get(name=data.get('player1'))
+		except Player.DoesNotExist:
+			return JsonResponse({'error': f'Player {player1} does not exist'}, status=400)
+
+		try:
+			player2 = Player.objects.get(name=data.get('player2'))
+		except Player.DoesNotExist:
+			return JsonResponse({'error': f'Player {player2} does not exist'}, status=400)
+
 
 		# Create the match
 		match = Match.objects.create(player1=player1, player2=player2, player1_score=player1_score, player2_score=player2_score)
