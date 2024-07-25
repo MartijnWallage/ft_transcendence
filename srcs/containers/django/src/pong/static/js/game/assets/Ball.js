@@ -1,5 +1,5 @@
 import * as THREE from '../utils/three.module.js';
-import { getRandomInt, abs } from '../3d-utils.js'; 
+import { getRandomInt, abs } from '../utils.js'; 
 
 class Ball {
 	constructor(scene) {
@@ -80,7 +80,7 @@ class Ball {
 		this.position.z = 0;
 		this.serve *= -1;
 		this.dx = this.speed * this.serve / 2;
-		this.dz = 0;
+		this.dz = getRandomInt(-7.5, 7.5) / 100;
 	}
 
 	get position() {

@@ -1,8 +1,8 @@
 import Stats from './utils/stats.module.js'
 import { Scene } from './assets/Scene.js';
-import { movePaddleAI } from './3d-pong-ai.js';
-import { updateScore } from './3d-pong-core.js';
-import { gameState } from './3d-game-state.js';
+import { movePaddleAI } from './pong-ai.js';
+import { updateScore } from './pong-core.js';
+import { gameState } from './game-state.js';
 
 // FPS stats viewer
 const stats = new Stats();
@@ -42,14 +42,13 @@ function update() {
     ball.tryPaddleCollision(paddle_p1, paddle_p2, scene.audio);
 	ball.tryCourtCollision(field);
 
-	if (gameState.running === false) {
-		camera.orbitCamera();
-	}
-	if (gameState.running === true) {
+	if (gameState.running) {
 		camera.cam.position.set(0, 15, 0);
 		camera.cam.lookAt(0, 1, 0);
 		updateScore(field);
-	}
+	} else {
+        camera.orbitCamera();
+    }
 }
 
 function animate() {
