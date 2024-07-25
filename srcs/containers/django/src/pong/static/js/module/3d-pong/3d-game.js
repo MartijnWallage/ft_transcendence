@@ -1,7 +1,7 @@
 import { gameState } from './3d-game-state.js';
 import { ball } from './3d-app.js';
 import { initializeTournament } from './3d-tournament.js';
-import { getRandomInt  } from './3d-utils.js';
+import { getRandomInt, textToDiv, HTMLToDiv } from './3d-utils.js';
 
 function waitForEnter(enter) {
 	return new Promise((resolve) => {
@@ -32,8 +32,7 @@ function countdown(seconds, announcement) {
 
 async function startGame(player1Name, player2Name, mode) {
 	console.log(`Starting game: ${player1Name} vs ${player2Name}`);
-	const announcement = document.getElementById('announcement');
-	announcement.innerHTML = `${player1Name}<br>VS<br>${player2Name}`;
+	HTMLToDiv(`${player1Name}<br>VS<br>${player2Name}`, 'announcement');
 	gameState.player1Score = 0;
 	gameState.player2Score = 0;
 	gameState.running = true;
@@ -46,19 +45,15 @@ async function startGame(player1Name, player2Name, mode) {
 	const menu = document.getElementById('menu');
 	menu.classList.add('fade-out');
 	setTimeout(function() {
-	  menu.classList.add('hidden');
+		menu.classList.add('hidden');
 	}, 1500); 
 	
 	ball.serve = getRandomInt(2) ? 1 : -1;
 	ball.serveBall();
-	var p1Score = document.getElementById('player1-score');
-	p1Score.textContent = '0';
-	var p1Name = document.getElementById('player1-name');
-	p1Name.textContent = player1Name;
-	var p2Score = document.getElementById('player2-score');
-	p2Score.textContent = '0';
-	var p2Name = document.getElementById('player2-name');
-	p2Name.textContent = player2Name;
+	textToDiv('0', 'player1-score');
+	textToDiv(player1Name, 'player1-name');
+	textToDiv('0', 'player2-score');
+	textToDiv(player2Name, 'player2-name');
 	console.log(`Game starting in mode: ${mode}`);
 }
 

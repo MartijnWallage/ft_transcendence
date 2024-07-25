@@ -1,18 +1,15 @@
 clean up code.
 
 add camera key frame events.
+add double camera.
 
 add sky.
 
 add hitting sounds.
 
-add double camera.
-
 add ball movements.
 
-add point animation.
-
-replace linear speed by vector speed?
+add point instance animation.
 
 make new paddles.
 
