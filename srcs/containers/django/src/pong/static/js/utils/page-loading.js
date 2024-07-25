@@ -1,4 +1,3 @@
-// import { addPlayer, startGameUserVsUser, startGameSolo, startTournament } from "../module/2d-pong/entrypoint.js";
 import { endGame, startGameUserVsUser, startGameSolo, startTournament } from "../game/game.js";
 import { addPlayer } from '../game/tournament.js';
 

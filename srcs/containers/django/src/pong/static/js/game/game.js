@@ -49,7 +49,7 @@ async function startGame(player1Name, player2Name, mode) {
 		menu.classList.add('hidden');
 	}, 1500); 
 	
-	ball.serve = getRandomInt(2) ? 1 : -1;
+	ball.serve = getRandomInt(0, 2) ? 1 : -1;
 	ball.serveBall();
 	textToDiv('0', 'player1-score');
 	textToDiv(player1Name, 'player1-name');
