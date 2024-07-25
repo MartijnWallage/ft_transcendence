@@ -1,5 +1,6 @@
 import { gameState } from './3d-game-state.js';
 import { startGame } from './3d-game.js';
+import { ball} from './3d-app.js';
 import {endTournament} from './3d-tournament-end.js';
 
 function addPlayer() {
@@ -29,12 +30,8 @@ function nextGame() {
 	}
 	const player1 = gameState.players[gameState.matchOrder[gameState.currentGameIndex - 1][0]];
 	const player2 = gameState.players[gameState.matchOrder[gameState.currentGameIndex - 1][1]];
-	setTimeout(function() {
-		console.log('Next match:', player1, 'vs', player2);
-		alert(`Next match: ${player1} vs ${player2}`);
-	}, 500);
-	// document.getElementById('announcement').innerText = `Current match: ${player1} vs ${player2}`;
-	setTimeout(() => startGame(player1, player2, 'tournament'), 1000);
+	console.log('Next match:', player1, 'vs', player2);
+	startGame(player1, player2, 'tournament');
 }
 
 function displayPlayers() {
@@ -70,8 +67,8 @@ function initializeTournament() {
 	// document.getElementById('announcement').innerText = `Next match: ${player1} vs ${player2}`;
 	// document.getElementById('announcement').style.display = 'block';
 	matchOrderInit();    
-	nextGame();
 	scoreBoardInit();
+	nextGame();
 	console.log('Players length:', gameState.players.length);
 }
 
@@ -85,14 +82,14 @@ function displayScoreTournament() {
 function updateScoreTournament() {
 	if (ball.x < 0) {
 		gameState.player2Score += 1;
-		resetBall();
+		ball.resetBall();
 	} else if (ball.x + ball.width > canvas.width) {
 		gameState.player1Score += 1;
-		resetBall();
+		ball.resetBall();
 	}
 
-	if (gameState.player1Score === scoreToWin || gameState.player2Score === scoreToWin) {
-		if (gameState.player1Score == scoreToWin) {
+	if (gameState.player1Score === gameState.scoreToWin || gameState.player2Score === gameState.scoreToWin) {
+		if (gameState.player1Score == gameState.scoreToWin) {
 			setTimeout(function() {
 				alert(`${gameState.players[gameState.matchOrder[gameState.currentGameIndex - 1][0]]} wins!`);
 			}
