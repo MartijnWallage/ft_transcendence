@@ -42,14 +42,13 @@ function update() {
     ball.tryPaddleCollision(paddle_p1, paddle_p2, scene.audio);
 	ball.tryCourtCollision(field);
 
-	if (gameState.running === false) {
-		camera.orbitCamera();
-	}
-	if (gameState.running === true) {
+	if (gameState.running) {
 		camera.cam.position.set(0, 15, 0);
 		camera.cam.lookAt(0, 1, 0);
 		updateScore(field);
-	}
+	} else {
+        camera.orbitCamera();
+    }
 }
 
 function animate() {

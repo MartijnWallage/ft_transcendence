@@ -31,10 +31,9 @@ class Ball {
         const leftSideBall = this.position.x - this.radius;
         const rightSideBall = this.position.x + this.radius;
 
-        return (bottomBall < topPaddle || topBall > bottomPaddle) ? false :
-            (this.dx < 0 && (leftSideBall > rightSidePaddle || rightSideBall < leftSidePaddle)) ? false :
-            (this.dx > 0 && (rightSideBall < leftSidePaddle || leftSideBall > rightSidePaddle)) ? false : 
-            true;
+        return (bottomBall >= topPaddle && topBall <= bottomPaddle) &&
+            ((this.dx < 0 && leftSideBall <= rightSidePaddle && rightSideBall >= leftSidePaddle) ||
+            (this.dx > 0 && rightSideBall >= leftSidePaddle && leftSideBall <= rightSidePaddle));
 	}
 
     tryPaddleCollision(paddle_p1, paddle_p2, audio) {
@@ -42,7 +41,7 @@ class Ball {
 
         if (this.checkPaddleCollision(paddle)) {
             this.dz = (this.position.z - paddle.position.z) * 0.20;
-            this.dx = abs(this.dx) < this.speed / 1.5 ? this.dx *= -2 : this.dx *= -1.02;
+            this.dx *= (abs(this.dx) < this.speed / 1.5) ? -2 : -1.03;
             audio.playSound(audio.hit);
         }
     }
@@ -81,7 +80,7 @@ class Ball {
 		this.position.z = 0;
 		this.serve *= -1;
 		this.dx = this.speed * this.serve / 2;
-		this.dz = 0;
+		this.dz = getRandomInt(-7.5, 7.5) / 100;
 	}
 
 	get position() {
