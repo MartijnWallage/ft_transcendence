@@ -1,4 +1,4 @@
-import * as THREE from '../utils/three.module.js';
+import * as THREE from '../three-lib/three.module.js';
 
 class Audio {
 	constructor(camera) {

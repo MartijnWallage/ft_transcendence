@@ -1,4 +1,4 @@
-import { endGame, startGameUserVsUser, startGameSolo, startTournament } from "../game/game.js";
+import { endGame, startGameUserVsUser, startGameSolo, startTournament } from "../game/start-end-game.js";
 import { addPlayer } from '../game/tournament.js';
 
 function fadeIn(element) {
@@ -101,7 +101,7 @@ function bindEventListeners() {
 	var startTournamentBtn = document.getElementById('js-start-tournament-btn');
 	if (startTournamentBtn) {
 	  startTournamentBtn.addEventListener('click', startTournament);
-}
+	}
 	var startTournamentBtn = document.getElementById('js-end-game-btn');
 	if (startTournamentBtn) {
 	  startTournamentBtn.addEventListener('click', endGame);

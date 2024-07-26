@@ -1,0 +1,44 @@
+{% block content %}
+  <!-- <h1>Tournament Leaderboard</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Rank</th>
+                <th>Player</th>
+                <th>Score</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for player in tournament.players.all %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ player.name }}</td>
+                <td>{{ player.score }}</td>
+            </tr>
+            {% endfor %}
+        </tbody> -->
+  <h1>Tournament match results</h1>
+  <table>
+      <thead>
+          <tr>
+              <th>Match</th>
+              <th>Player 1</th>
+              <th>Player 2</th>
+              <th>Score Player 1</th>
+              <th>Score Player 2</th>
+          </tr>
+      </thead>
+      <tbody>
+          {% for match in tournament.match.all %}
+          <tr>
+              <td>{{ forloop.counter }}</td>
+              <td>{{ match.player1.name }}</td>
+              <td>{{ match.player2.name }}</td>
+              <td>{{ match.player1_score }}</td>
+              <td>{{ match.player2_score }}</td>
+          </tr>
+          {% endfor %}
+      </tbody>
+  </table>
+  <button type="button" class="btn btn-outline-light mx-1" id ="js-end-game-btn">Exit</button>
+{% endblock %}

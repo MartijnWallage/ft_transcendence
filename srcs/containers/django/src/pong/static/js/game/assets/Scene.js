@@ -1,11 +1,11 @@
-import * as THREE from '../utils/three.module.js';
+import * as THREE from '../three-lib/three.module.js';
 import { Ball } from './Ball.js';
 import { Field } from './Field.js';
 import { Paddle } from './Paddle.js';
 import { Camera } from './Camera.js';
 import { Audio } from './Audio.js';
 import { Environment } from './Environment.js';
-import { OrbitControls } from '../utils/OrbitControls.js';
+import { OrbitControls } from '../three-lib/OrbitControls.js';
 
 class Scene {
 	constructor(container) {

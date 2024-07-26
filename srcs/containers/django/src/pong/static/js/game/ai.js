@@ -5,7 +5,9 @@ function movePaddleAI(paddle, ball) {
 	const bottomBall = ball.position.z + ball.radius / 2;
 	const topBall = ball.position.z - ball.radius / 2;
 
-	return bottomBall < topPaddle ? -1 : topBall > bottomPaddle ? 1 : 0;
+	return topBall < topPaddle ? -1 : 
+        bottomBall > bottomPaddle ? 1 : 
+        0;
 }
 
-export {movePaddleAI};
+export { movePaddleAI };
