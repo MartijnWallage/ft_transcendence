@@ -51,6 +51,19 @@ services:
     #   - static:/static/
       #- media:/media/
 
+  # blockchain:
+  #   container_name: blockchain
+  #   build:
+  #     context: containers/blockchain
+  #     dockerfile: Dockerfile
+  #   env_file: 
+  #     - .env
+  #   networks:
+  #     - ts-network
+  #   ports:
+  #     - "8545:8545"
+  #   restart: on-failure # always
+
 networks:
   ts-network:
     driver: bridge

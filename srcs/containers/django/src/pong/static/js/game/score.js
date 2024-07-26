@@ -2,7 +2,7 @@ import { ball } from './update.js';
 import { gameState } from './game-state.js';
 import { nextGame } from './tournament.js';
 import { endGame } from './start-end-game.js';
-import { textToDiv } from './game-utils.js';
+import { textToDiv } from './utils.js';
 
 function displayWinMessage(message) {
 	textToDiv(message, 'announcement');

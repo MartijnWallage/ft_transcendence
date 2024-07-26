@@ -1,4 +1,4 @@
-import Stats from './THREE-utils/stats.module.js'
+import Stats from './three-lib/stats.module.js'
 import { Scene } from './assets/Scene.js';
 import { movePaddleAI } from './ai.js';
 import { updateScore } from './score.js';

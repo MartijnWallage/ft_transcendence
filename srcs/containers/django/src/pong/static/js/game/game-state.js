@@ -7,6 +7,7 @@ let gameState = {
 	scoreToWin: 6,
 	running: false,
 	mode: '',
+	matchResult: [],
 	scoreBoard: []
 };
 

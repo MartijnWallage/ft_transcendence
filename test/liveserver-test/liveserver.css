@@ -13,6 +13,7 @@
 }
 
 #threejs-container {
+	background-color: rgba(0, 0, 0, 0.5);
 	position: absolute;
 	width: 100vw;
 	height: 100vh;
@@ -44,20 +45,7 @@
 	backdrop-filter: blur(5px);
 	text-align: center;
 	opacity: 1;
-	transition: opacity 1.5s ease-out;
-}
-
-#under-title {
-	opacity: 1;
-	transition: opacity 1.5s ease;
-}
-
-#under-title.fade-out {
-	opacity: 0;
-}
-
-#under-title.fade-in {
-	opacity: 1;
+	transition: opacity 2s ease-out;
 }
 
 #menu.fade-out {
@@ -149,4 +137,18 @@ h1 {
 	margin-left: auto;
 	margin-right: auto;
 }
+/* 
+#js-start-tournament-btn {
+	background-color: #ff5733;
+	color: white;
+	border: none;
+	border-radius: 5px;
+	padding: 10px 20px;
+	text-align: center;
+	text-decoration: none;
+	display: inline-block;
+	font-size: 16px;
+	margin: 4px 2px;
+	cursor: pointer;
+} */
 

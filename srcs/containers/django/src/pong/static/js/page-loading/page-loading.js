@@ -101,7 +101,7 @@ function bindEventListeners() {
 	var startTournamentBtn = document.getElementById('js-start-tournament-btn');
 	if (startTournamentBtn) {
 	  startTournamentBtn.addEventListener('click', startTournament);
-}
+	}
 	var startTournamentBtn = document.getElementById('js-end-game-btn');
 	if (startTournamentBtn) {
 	  startTournamentBtn.addEventListener('click', endGame);

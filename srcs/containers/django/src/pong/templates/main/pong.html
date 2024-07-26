@@ -4,6 +4,7 @@
     <button type="button" class="btn btn-outline-light mx-1" id ="js-sound-game-btn">Sound</button>
     <!-- <button type="button" class="btn btn-outline-light mx-1" id ="js-pause-game-btn">Pause</button> -->
     <button type="button" class="btn btn-outline-light mx-1" id ="js-end-game-btn">Exit</button>
+    <button type="button" class="btn btn-outline-light mx-1" id ="js-end-game-btn" onclick="loadPage('tournament_score')">Score Tournament</button>
   </div>
 </div>
 
@@ -16,6 +17,7 @@
 
 <div id="game-scores" class="container-fluid mx-auto p-5 fixed-bottom">
   <div class="row gx-5">
+    <div id="scoreBoard" display="block"></div>
     <div id="player1-info" class="col d-flex flex-column justify-content-start">
       <div id="player1-score" class="score text-white display-2">0</div>
       <div id="player1-name" class="text-white">Host</div>

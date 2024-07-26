@@ -1,4 +1,4 @@
-import * as THREE from '../THREE-utils/three.module.js';
+import * as THREE from '../three-lib/three.module.js';
 
 class Camera {
 	constructor() {

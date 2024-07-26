@@ -1,45 +1,72 @@
+import { addParticipant, createMatch, createTournament } from "./tournament-score-db.js";
+import {gameState} from './game-state.js';
 
 function stopGame() {
 	gameState.running= false;
 }
 
-function endTournament() {
+async function endTournament() {
 	alert("Tournament Ended!");
 	gameState.running= false;
 
-	scoreBoardTournament();
+	// scoreBoardTournament();
 
-	gameState.players = [];
-	gameState.matchOrder = [];
-	gameState.scoreBoard = [];
+	// Example usage:
+	
+    try {
+        let tournamentId = await createTournament();
 
-	document.getElementById('js-start-tournament-btn').style.display = 'none';
-	document.getElementById('playerNameInput').value = '';
-	// document.getElementById('announcement').innerText = 'Tournament has ended. Please add players for a new tournament.';
-	setTimeout(() => document.getElementById('announcement').innerText = 'Tournament has ended. Please add players for a new tournament.', 4000);
-	document.getElementById('announcement').style.display = 'none';
+		for (const player of gameState.players) {
+			await addParticipant(player, tournamentId);
+		}
 
-	stopGame();
+		for (let index = 0; index < gameState.matchResult.length; index++) {
+			let match = gameState.matchResult[index];
+			let player1 = gameState.players[gameState.matchOrder[index][0]];
+			let player2 = gameState.players[gameState.matchOrder[index][1]];
+			let player1Score = match[0];
+			let player2Score = match[1];
+			console.log('Match:', index, ': ', player1, player2, player1Score, player2Score);
+			await createMatch(tournamentId, player1, player2, player1Score, player2Score);
+		}
+
+        // gameState.matchResult.forEach( async (match, index) => {
+        //     let player1 = gameState.players[gameState.matchOrder[index][0]];
+        //     let player2 = gameState.players[gameState.matchOrder[index][1]];
+        //     let player1Score = match[0];
+        //     let player2Score = match[1];
+        //     console.log('Match:', index, ': ', player1, player2, player1Score, player2Score);
+        //     await createMatch(tournamentId, player1, player2, player1Score, player2Score);
+        // });
+
+        // Clear the game state
+        gameState.players = [];
+        gameState.matchOrder = [];
+        gameState.scoreBoard = [];
+        gameState.matchResult = [];
+		gameState.currentGameIndex = 0;
+		gameState.player1Score = 0;
+		gameState.player2Score = 0;
+
+        stopGame();
+    } catch (error) {
+        console.error('Error ending tournament:', error);
+    }
 }
+
 
 function scoreBoardTournament() {
 	// Step 1: Combine the player names and their victories into an array of objects
 	const scoreBoard = [];
-	for (let i = 0; i < gameState.players.length; i++) {
-		scoreBoard.push({ name: gameState.players[i], victories: scoreBoard[i] });
-	}
+
+	gameState.players.forEach((player, index) => {
+		scoreBoard.push({ name: player, victories: gameState.scoreBoard[index] });
+	});
 
 	// Step 2: Sort the array of objects based on the number of victories in descending order
 	scoreBoard.sort((a, b) => b.victories - a.victories);
 
-	// Step 3: Extract the sorted player names and their victories (optional, for display)
-	const sortedPlayerNames = scoreBoard.map(player => player.name);
-	const sortedVictories = scoreBoard.map(player => player.victories);
-
 	console.log("scoreBoard:", scoreBoard);
-	console.log("Sorted Player Names:", sortedPlayerNames);
-	console.log("Sorted Victories:", sortedVictories);
-
 	// Display scoreBoard in the HTML as a table
 
 	const scoreBoardDiv = document.getElementById('scoreBoard');
