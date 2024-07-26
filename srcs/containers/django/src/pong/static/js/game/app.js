@@ -21,8 +21,8 @@ document.addEventListener("keyup", (event) => {
 
 const container = document.getElementById('threejs-container');
 const scene = new Scene(container);
-window.addEventListener('resize', () => scene.onWindowResize());
-const { ball, field, paddle_p1, paddle_p2, camera } = scene;
+window.addEventListener('resize', () => scene.onWindowResize(gameState));
+const { ball, field, paddle_p1, paddle_p2, cam1, cam2 } = scene;
 
 function update() {
 	// move left paddle
@@ -42,13 +42,21 @@ function update() {
     ball.tryPaddleCollision(paddle_p1, paddle_p2, scene.audio);
 	ball.tryCourtCollision(field);
 
+	var split = document.getElementById('vertical-line');
 	if (gameState.running === false) {
-		camera.orbitCamera();
+		cam1.renderMenuView(scene);
+		split.style.display = 'none';
 	}
 	if (gameState.running === true) {
-		camera.cam.position.set(-14, 14, 0);
-		camera.cam.lookAt(0, 1, 0);
 		updateScore(field);
+		if (gameState.mode === 'user-vs-computer') {
+			cam1.renderSingleView(scene);
+		}
+		if (gameState.mode === 'user-vs-user' || gameState.mode === 'tournament') {
+			cam1.renderSplitView(scene, 0);
+			cam2.renderSplitView(scene, 1);
+			split.style.display = 'block';
+		}
 	}
 }
 
@@ -56,10 +64,11 @@ function animate() {
 	stats.begin(); // for the FPS stats
 	update();
 	scene.controls.update();
-	scene.renderer.render(scene.scene, scene.camera.cam);
 	requestAnimationFrame(animate);
 	stats.end(); // for the FPS stats
-} animate();
+}
+
+requestAnimationFrame(animate);
 
 export { paddle_p2, paddle_p1, ball, field, keys };
 
