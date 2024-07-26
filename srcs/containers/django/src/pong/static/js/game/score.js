@@ -32,27 +32,26 @@ function isScore(court) {
 }
 
 async function updateScore(court) {
-    let player;
-    if ((player = isScore(court)) === -1) {
-        return;
-    }
+    const player = isScore(court);
+    if (player === -1) return;
 
     gameState.playerScores[player] += 1;
     textToDiv(gameState.playerScores[player], `player${player + 1}-score`);
     ball.serveBall();
 
-    let winner;
-    if ((winner = isWinner()) === -1) {
-        return;
-    }
+    const winner = isWinner();
+    if (winner === -1) return;
 
     gameState.running = false;
     ball.resetBall();
     await displayWinMessage(`Player ${winner + 1} wins!`);
-    if (gameState.mode === 'tournament'){
+    if (gameState.mode === 'tournament') {
         gameState.scoreBoard[gameState.matchOrder[gameState.currentGameIndex - 1][winner]] += 1;
         gameState.matchResult.push(gameState.playerScores);
-        console.log('number of victory player ' + gameState.matchOrder[gameState.currentGameIndex - 1][winner] + ' :' + gameState.scoreBoard[gameState.matchOrder[gameState.currentGameIndex - 1][winner]]);
+        console.log('number of victory player ' +
+            gameState.matchOrder[gameState.currentGameIndex - 1][winner] +
+            ' :' + 
+            gameState.scoreBoard[gameState.matchOrder[gameState.currentGameIndex - 1][winner]]);
         nextGame();
         return;
     }
