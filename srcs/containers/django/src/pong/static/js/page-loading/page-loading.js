@@ -1,4 +1,4 @@
-import { endGame, startGameUserVsUser, startGameSolo, startTournament } from "../game/game.js";
+import { endGame, startGameUserVsUser, startGameSolo, startTournament } from "../game/start-end-game.js";
 import { addPlayer } from '../game/tournament.js';
 
 function fadeIn(element) {
