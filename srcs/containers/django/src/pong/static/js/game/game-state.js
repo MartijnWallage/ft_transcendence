@@ -2,13 +2,18 @@ let gameState = {
 	players: [],
 	matchOrder: [],
 	currentGameIndex: 0,
-	player1Score: 0,
-	player2Score: 0,
-	scoreToWin: 1,
+	playerScores: [0, 0],
+	scoreToWin: 6,
 	running: false,
 	mode: '',
 	matchResult: [],
 	scoreBoard: []
 };
 
-export {gameState};
+function isWinner() {
+    return gameState.playerScores[0] === gameState.scoreToWin ? 0:
+        gameState.playerScores[1] === gameState.scoreToWin ? 1:
+        -1;
+}
+
+export { gameState, isWinner };

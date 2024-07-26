@@ -1,9 +1,9 @@
-import * as THREE from '../utils/three.module.js';
+import * as THREE from '../three-lib/three.module.js';
 
 class Audio {
 	constructor(camera) {
 	this.listener = new THREE.AudioListener();
-	camera.cam.add(this.listener);
+	camera.camera.add(this.listener);
 	this.hit = this.addSound('./static/audio/hit.wav');
 	}
 
