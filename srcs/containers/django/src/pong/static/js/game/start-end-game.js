@@ -40,7 +40,8 @@ async function startGame(player1Name, player2Name, mode) {
 	const enter = document.getElementById('enter');
 	enter.style.display = 'block';
 	await waitForEnter(enter);
-	await countdown(3, announcement);
+	await countdown(1, announcement);
+	// await countdown(3, announcement);
 	const menu = document.getElementById('menu');
 	menu.classList.add('fade-out');
 	setTimeout(function() {
