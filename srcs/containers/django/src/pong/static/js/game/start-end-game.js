@@ -33,8 +33,7 @@ function countdown(seconds, announcement) {
 async function startGame(player1Name, player2Name, mode) {
 	console.log(`Starting game: ${player1Name} vs ${player2Name}`);
 	HTMLToDiv(`${player1Name}<br>VS<br>${player2Name}`, 'announcement');
-	gameState.player1Score = 0;
-	gameState.player2Score = 0;
+	gameState.playerScores = [0, 0];
 	gameState.running = true;
 	gameState.mode = mode;
 

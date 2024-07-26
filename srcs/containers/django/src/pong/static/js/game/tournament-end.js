@@ -45,8 +45,7 @@ async function endTournament() {
         gameState.scoreBoard = [];
         gameState.matchResult = [];
 		gameState.currentGameIndex = 0;
-		gameState.player1Score = 0;
-		gameState.player2Score = 0;
+		gameState.playerScores = [0, 0];
 
         stopGame();
     } catch (error) {

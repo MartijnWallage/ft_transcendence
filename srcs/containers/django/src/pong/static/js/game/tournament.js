@@ -1,6 +1,7 @@
 import { gameState } from './game-state.js';
 import { startGame } from './start-end-game.js';
 import { ball} from './update.js';
+import {endTournament} from './tournament-end.js';
 
 function addPlayer() {
 	const playerName = document.getElementById('playerNameInput').value.trim();
@@ -74,21 +75,21 @@ function initializeTournament() {
 
 function displayScoreTournament() {
 	displayScore();
-	ctx.fillText( `${gameState.players[gameState.matchOrder[gameState.currentGameIndex - 1][0]]} Score: ` + gameState.player1Score, 20, 30);
-	ctx.fillText( `${gameState.players[gameState.matchOrder[gameState.currentGameIndex - 1][1]]} Score: ` + gameState.player2Score, canvas.width - 180, 30);
+	ctx.fillText( `${gameState.players[gameState.matchOrder[gameState.currentGameIndex - 1][0]]} Score: ` + gameState.playerScores[0], 20, 30);
+	ctx.fillText( `${gameState.players[gameState.matchOrder[gameState.currentGameIndex - 1][1]]} Score: ` + gameState.playerScores[1], canvas.width - 180, 30);
 }
 
 function updateScoreTournament() {
 	if (ball.x < 0) {
-		gameState.player2Score += 1;
+		gameState.playerScores[0] += 1;
 		ball.resetBall();
 	} else if (ball.x + ball.width > canvas.width) {
-		gameState.player1Score += 1;
+		gameState.playerScores[1] += 1;
 		ball.resetBall();
 	}
 
-	if (gameState.player1Score === gameState.scoreToWin || gameState.player2Score === gameState.scoreToWin) {
-		if (gameState.player1Score == gameState.scoreToWin) {
+	if (gameState.playerScores[0] === gameState.scoreToWin || gameState.playerScores[1] === gameState.scoreToWin) {
+		if (gameState.playerScores[0] == gameState.scoreToWin) {
 			setTimeout(function() {
 				alert(`${gameState.players[gameState.matchOrder[gameState.currentGameIndex - 1][0]]} wins!`);
 			}
