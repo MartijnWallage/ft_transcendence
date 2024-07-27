@@ -1,5 +1,5 @@
 import { ball } from './update.js';
-import { gameState, isWinner } from './game-state.js';
+import { gameState } from './game-state.js';
 import { nextGame } from './tournament.js';
 import { endGame } from './start-end-game.js';
 import { textToDiv } from './utils.js';
@@ -28,6 +28,12 @@ function isScore(court) {
 
     return ballRightSide < -halfFieldWidth ? 1 :
         ballLeftSide > halfFieldWidth ? 0 :
+        -1;
+}
+
+function isWinner() {
+    return gameState.playerScores[0] === gameState.scoreToWin ? 0:
+        gameState.playerScores[1] === gameState.scoreToWin ? 1:
         -1;
 }
 

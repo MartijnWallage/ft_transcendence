@@ -10,10 +10,4 @@ let gameState = {
 	scoreBoard: []
 };
 
-function isWinner() {
-    return gameState.playerScores[0] === gameState.scoreToWin ? 0:
-        gameState.playerScores[1] === gameState.scoreToWin ? 1:
-        -1;
-}
-
-export { gameState, isWinner };
+export { gameState };

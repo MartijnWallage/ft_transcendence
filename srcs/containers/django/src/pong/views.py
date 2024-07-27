@@ -95,6 +95,12 @@ def pong(request):
 
 from django.db.models import Max
 
+@api_view(['GET'])
+def settings(request):
+	data = {
+		'content': render_to_string("main/settings.html", request=request)
+	}
+	return JsonResponse(data)
 
 @api_view(['GET'])
 def tournament_score(request):
