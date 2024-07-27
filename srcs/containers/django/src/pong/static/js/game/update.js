@@ -1,28 +1,5 @@
-import Stats from './three-lib/stats.module.js'
-import { Scene } from './assets/Scene.js';
 import { movePaddleAI } from './ai.js';
 import { updateScore } from './score.js';
-import { gameState } from './game-state.js';
-
-// FPS stats viewer
-const stats = new Stats();
-stats.showPanel(0);
-document.body.appendChild(stats.dom);
-
-//key listener
-let keys = {};
-document.addEventListener("keydown", (event) => { 
-	keys[event.key] = true; 
-});
-
-document.addEventListener("keyup", (event) => {
-	keys[event.key] = false;
-});
-
-const container = document.getElementById('threejs-container');
-const scene = new Scene(container);
-window.addEventListener('resize', () => scene.onWindowResize(gameState));
-const { ball, field, paddle_p1, paddle_p2, cam1, cam2 } = scene;
 
 function update() {
 	// move left paddle
@@ -60,15 +37,5 @@ function update() {
 	}
 }
 
-function animate() {
-	stats.begin(); // for the FPS stats
-	update();
-	scene.controls.update();
-	requestAnimationFrame(animate);
-	stats.end(); // for the FPS stats
-}
-
-requestAnimationFrame(animate);
-
-export { paddle_p2, paddle_p1, ball, field, keys };
+export { update };
 

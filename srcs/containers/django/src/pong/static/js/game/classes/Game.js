@@ -2,12 +2,13 @@ import * as THREE from '../three-lib/three.module.js';
 import { Ball } from './Ball.js';
 import { Field } from './Field.js';
 import { Paddle } from './Paddle.js';
+import { AI } from './AI.js';
 import { Camera } from './Camera.js';
 import { Audio } from './Audio.js';
 import { Environment } from './Environment.js';
 import { OrbitControls } from '../three-lib/OrbitControls.js';
 
-class Scene {
+class Game {
 	constructor(container) {
 		this.scene = new THREE.Scene();
 		this.renderer = new THREE.WebGLRenderer({container}, { antialias: true });
@@ -18,17 +19,24 @@ class Scene {
 		container.appendChild(this.renderer.domElement);
 
 		this.field = new Field(this.scene);
-		this.paddle_p1 = new Paddle(this.scene, this.field, true);
-		this.paddle_p2 = new Paddle(this.scene, this.field, false);
+		this.paddle1 = new Paddle(this.scene, this.field, true);
+		this.paddle2 = new Paddle(this.scene, this.field, false);
 		this.ball = new Ball(this.scene);
+		this.ai = new AI();
 		this.environment = new Environment(this.scene);
 		this.controls = new OrbitControls(this.cam1.camera, container);
 		this.audio = new Audio(this.cam1);
 	}
+
+	startGame() {}
+	pauseGame() {}
+	endGame() {}
+	startRound() {}
+	endRound() {}
 
 	onWindowResize() {
 			this.renderer.setSize( window.innerWidth, window.innerHeight );
 	}
 }
 
-export { Scene };
+export { Game };
