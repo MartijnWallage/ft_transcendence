@@ -1,4 +1,3 @@
-import { ball } from './update.js';
 import { gameState, isWinner } from './game-state.js';
 import { nextGame } from './tournament.js';
 import { endGame } from './start-end-game.js';
@@ -21,7 +20,7 @@ function displayWinMessage(message) {
 	});
 }
 
-function isScore(court) {
+function isScore(court, ball) {
     const halfFieldWidth = court.geometry.parameters.width / 2;
     const ballRightSide = ball.position.x + ball.radius;
     const ballLeftSide = ball.position.x - ball.radius;
@@ -31,8 +30,11 @@ function isScore(court) {
         -1;
 }
 
-async function updateScore(court) {
-    const player = isScore(court);
+async function updateScore(game) {
+    court = game.field;
+    ball = game.ball;
+
+    const player = isScore(court, ball);
     if (player === -1) return;
 
     gameState.playerScores[player] += 1;
@@ -45,17 +47,17 @@ async function updateScore(court) {
     gameState.running = false;
     ball.resetBall();
     await displayWinMessage(`Player ${winner + 1} wins!`);
-    if (gameState.mode === 'tournament') {
-        gameState.scoreBoard[gameState.matchOrder[gameState.currentGameIndex - 1][winner]] += 1;
-        gameState.matchResult.push(gameState.playerScores);
-        console.log('number of victory player ' +
-            gameState.matchOrder[gameState.currentGameIndex - 1][winner] +
-            ' :' + 
-            gameState.scoreBoard[gameState.matchOrder[gameState.currentGameIndex - 1][winner]]);
-        nextGame();
-        return;
+    if (gameState.mode != 'tournament') {
+        endGame();
+        return ;
     }
-    endGame();
+    gameState.scoreBoard[gameState.matchOrder[gameState.currentGameIndex - 1][winner]] += 1;
+    gameState.matchResult.push(gameState.playerScores);
+    console.log('number of victory player ' +
+        gameState.matchOrder[gameState.currentGameIndex - 1][winner] +
+        ' :' + 
+        gameState.scoreBoard[gameState.matchOrder[gameState.currentGameIndex - 1][winner]]);
+    nextGame(game);
 }
 
 export { updateScore };

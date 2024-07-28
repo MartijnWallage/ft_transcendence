@@ -12,3 +12,5 @@ class AI {
 	stopUpdating() {}
 	
 }
+
+export { AI }

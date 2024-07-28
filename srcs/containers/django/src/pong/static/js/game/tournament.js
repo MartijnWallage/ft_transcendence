@@ -1,6 +1,5 @@
 import { gameState } from './game-state.js';
 import { startGame } from './start-end-game.js';
-import { ball} from './update.js';
 import {endTournament} from './tournament-end.js';
 
 function addPlayer() {
@@ -19,7 +18,7 @@ function addPlayer() {
 	document.getElementById('playerNameInput').value = '';
 }
 
-function nextGame() {
+function nextGame(game) {
 	gameState.running = true;
 	gameState.currentGameIndex += 1;
 	console.log('Game index:', gameState.currentGameIndex);
@@ -31,7 +30,9 @@ function nextGame() {
 	const player1 = gameState.players[gameState.matchOrder[gameState.currentGameIndex - 1][0]];
 	const player2 = gameState.players[gameState.matchOrder[gameState.currentGameIndex - 1][1]];
 	console.log('Next match:', player1, 'vs', player2);
-	startGame(player1, player2, 'tournament');
+	game.playerNames = ['player1', 'player2'];
+	game.mode = 'tournament';
+	startGame(game);
 }
 
 function displayPlayers() {
@@ -62,13 +63,13 @@ function scoreBoardInit() {
 	}
 }
 
-function initializeTournament() {
+function initializeTournament(game) {
 	console.log('Players:', gameState.players); 
 	// document.getElementById('announcement').innerText = `Next match: ${player1} vs ${player2}`;
 	// document.getElementById('announcement').style.display = 'block';
 	matchOrderInit();    
 	scoreBoardInit();
-	nextGame();
+	nextGame(game);
 	console.log('Players length:', gameState.players.length);
 }
 
@@ -79,7 +80,9 @@ function displayScoreTournament() {
 	ctx.fillText( `${gameState.players[gameState.matchOrder[gameState.currentGameIndex - 1][1]]} Score: ` + gameState.playerScores[1], canvas.width - 180, 30);
 }
 
-function updateScoreTournament() {
+function updateScoreTournament(game) {
+	ball = game.ball;
+
 	if (ball.x < 0) {
 		gameState.playerScores[0] += 1;
 		ball.resetBall();

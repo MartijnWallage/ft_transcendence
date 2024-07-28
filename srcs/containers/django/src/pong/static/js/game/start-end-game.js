@@ -1,5 +1,4 @@
 import { gameState } from './game-state.js';
-import { ball } from './update.js';
 import { initializeTournament } from './tournament.js';
 import { getRandomInt, textToDiv, HTMLToDiv } from './utils.js';
 
@@ -30,7 +29,12 @@ function countdown(seconds, announcement) {
 	});
 }
 
-async function startGame(player1Name, player2Name, mode) {
+async function startGame(game) {
+	ball = game.ball;
+	mode = game.mode;
+	player1Name = game.playerNames[0];
+	player2Name = game.playerNames[1];
+
 	console.log(`Starting game: ${player1Name} vs ${player2Name}`);
 	HTMLToDiv(`${player1Name}<br>VS<br>${player2Name}`, 'announcement');
 	gameState.playerScores = [0, 0];
@@ -57,12 +61,12 @@ async function startGame(player1Name, player2Name, mode) {
 	console.log(`Game starting in mode: ${mode}`);
 }
 
-function endGame() {
+function endGame(game) {
 	var redirecturi = "/#home";
 	window.location.href = redirecturi;
 }
 
-async function startGameUserVsUser() {
+async function startGameUserVsUser(game) {
 	const player2Name = document.getElementById('player2Name').value;
 	var error = document.getElementById('error');
 	if (player2Name.trim() === '') {
@@ -70,24 +74,28 @@ async function startGameUserVsUser() {
 		return;
 	} else {
 		try {
-		await loadPage('pong');
-			startGame('Guest', player2Name, 'user-vs-user');
+			await loadPage('pong');
+			game.playerNames = ['Guest', player2Name];
+			game.mode = 'user-vs-user';
+			startGame(game);
 		} catch (error) {
 			console.error('Error starting game:', error);
 		}
 	}
 }
 
-async function startGameSolo() {
+async function startGameSolo(game) {
 	try {
 		await loadPage('pong');
-		startGame('Guest', 'pongAI', 'user-vs-computer');
+		game.playerNames = ['Guest', 'pongAI'];
+		game.mode = 'user-vs-computer';
+		startGame(game);
 	} catch (error) {
 		console.error('Error starting game:', error);
 	}
 }
 
-async function startTournament() {
+async function startTournament(game) {
 	if (gameState.players.length < 2) {
 		var error2 = document.getElementById('error2');
 		error2.style.display = 'block'; 
@@ -95,7 +103,7 @@ async function startTournament() {
 	}
 	try {
 		await loadPage('pong');
-		initializeTournament();
+		initializeTournament(game);
 	} catch (error) {
 		console.error('Error starting game:', error);
 	}

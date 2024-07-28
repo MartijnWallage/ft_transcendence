@@ -26,16 +26,19 @@ class Game {
 		this.environment = new Environment(this.scene);
 		this.controls = new OrbitControls(this.cam1.camera, container);
 		this.audio = new Audio(this.cam1);
+
+		this.playerNames = [];
+		this.mode = '';
 	}
 
-	startGame() {}
+/* 	startGame() {}
 	pauseGame() {}
 	endGame() {}
 	startRound() {}
-	endRound() {}
+	endRound() {} */
 
 	onWindowResize() {
-			this.renderer.setSize( window.innerWidth, window.innerHeight );
+		this.renderer.setSize( window.innerWidth, window.innerHeight );
 	}
 }
 
