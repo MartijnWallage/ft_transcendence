@@ -3,6 +3,8 @@ import { startGame, startTournament } from './start-end-game.js';
 import { ball} from './update.js';
 import { endTournament } from './tournament-end.js';
 
+
+
 function addPlayer() {
 	const playerName = document.getElementById('playerNameInput').value.trim();
 	console.log(playerName);
