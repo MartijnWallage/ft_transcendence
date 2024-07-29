@@ -10,30 +10,15 @@ function main() {
 	const this_game = new Game(container);
 
 	window.loadPage = loadPageClosure(this_game);
-	// page loading
-/* 	window.onpopstate = (event, game) => {
-		const page = event.state ? event.state.page : 'home';
-		console.log(`Calling loadpage with game: ${game}`);
-		window.loadPage(page, game);
-	};
-	
-	// Loading the home page on document ready
-	document.addEventListener('DOMContentLoaded', (game) => {
-		const page = location.hash.replace('#', '') || 'home';
-		console.log(`Calling loadpage again with game: ${game}`);
-		window.loadPage(page, game);
-	}); */
-
-	
 	
 	// Assigning handlers with game context
 	window.onpopstate = createOnPopStateHandler(this_game);
 	document.addEventListener('DOMContentLoaded', createDomContentLoadedHandler(this_game));
 	
 	// FPS stats viewer
-	//	const stats = new Stats();
-	//	stats.showPanel(0);
-	//	document.body.appendChild(stats.dom);
+	const stats = new Stats();
+	stats.showPanel(0);
+	document.body.appendChild(stats.dom);
 	
 	//key listener
 	let keys = {};
@@ -46,21 +31,20 @@ function main() {
 	});
 	
 	window.addEventListener('resize', () => this_game.onWindowResize(gameState));
-	requestAnimationFrame(animate.bind(null, keys, this_game));
+	requestAnimationFrame(animate.bind(null, stats, keys, this_game));
 }
 
-function animate(keys, game) {
-	//	stats.begin(); // for the FPS stats
+function animate(stats, keys, game) {
+	stats.begin(); // for the FPS stats
 	update(keys, game);
 	game.controls.update();
-	requestAnimationFrame(animate.bind(null, keys, game));
-	//	stats.end(); // for the FPS stats
+	requestAnimationFrame(animate.bind(null, stats, keys, game));
+	stats.end(); // for the FPS stats
 }
 
 function createOnPopStateHandler(game) {
 	return function(event) {
 		const page = event.state ? event.state.page : 'home';
-		console.log(`Calling loadPage with game: ${game}`);
 		window.loadPage(page, game);
 	};
 }
@@ -68,7 +52,6 @@ function createOnPopStateHandler(game) {
 function createDomContentLoadedHandler(game) {
 	return function() {
 		const page = location.hash.replace('#', '') || 'home';
-		console.log(`Calling loadPage again with game: ${game}`);
 		window.loadPage(page, game);
 	};
 }
@@ -168,7 +151,6 @@ function loadPageClosure(game) {
 }
  */
 function bindEventListeners(game) {
-	console.log(`In bindEventListeners still game: ${game}`);
 	var leaderBoardButton = document.getElementById('js-leaderboard-btn');
 	if (leaderBoardButton) {
 	  leaderBoardButton.addEventListener('click', showLeaderBoard);

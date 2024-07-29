@@ -29,31 +29,28 @@ function countdown(seconds, announcement) {
 	});
 }
 
-function startGame(game) {
-	console.log(`in startGame, game: ${game}, ${game.ball}, ${game.mode}, ${game.playerNames}`);
+async function startGame(game) {
 	const ball = game.ball;
 	const mode = game.mode;
 	const player1Name = game.playerNames[0];
 	const player2Name = game.playerNames[1];
 
-	console.log('game and game.ball', `${game}, ${game.ball}`);
-
 	console.log(`Starting game: ${player1Name} vs ${player2Name}`);
-//	HTMLToDiv(`${player1Name}<br>VS<br>${player2Name}`, 'announcement');
+	HTMLToDiv(`${player1Name}<br>VS<br>${player2Name}`, 'announcement');
 	gameState.playerScores = [0, 0];
 	gameState.running = true;
 	gameState.mode = mode;
 
-/* 	const enter = document.getElementById('enter');
+	const enter = document.getElementById('enter');
 	enter.style.display = 'block';
 	await waitForEnter(enter);
-	await countdown(1, announcement); */
+	await countdown(1, announcement);
 	// await countdown(3, announcement);
-/* 	const menu = document.getElementById('menu');
+	const menu = document.getElementById('menu');
 	menu.classList.add('fade-out');
 	setTimeout(function() {
 		menu.classList.add('hidden');
-	}, 1500);  */
+	}, 1500); 
 	
 	ball.serve = getRandomInt(0, 2) ? 1 : -1;
 	ball.serveBall();
@@ -89,11 +86,9 @@ async function startGameUserVsUser(game) {
 
 async function startGameSolo(game) {
 	try {
-		console.log(`Starting solo game: ${game}, ${game.ball}`);
 		await window.loadPage('pong');
 		game.playerNames = ['Guest', 'pongAI'];
 		game.mode = 'user-vs-computer';
-		console.log(`After load page: ${game}, ${game.mode}`);
 		startGame(game);
 	} catch (error) {
 		console.error('Error starting game:', error);
