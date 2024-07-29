@@ -106,8 +106,8 @@ function bindEventListeners() {
 	var startTournamentBtn = document.getElementById('js-end-game-btn');
 	if (startTournamentBtn) {
 	  startTournamentBtn.addEventListener('click', endGame);
-	var blockchainScore = document.getElementById('js-register-blockchain');
 	}
+	var blockchainScore = document.getElementById('js-register-blockchain');
 	if (blockchainScore) {
 		blockchainScore.addEventListener('click', registerMatches);
 	}
