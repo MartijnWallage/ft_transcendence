@@ -23,6 +23,11 @@ run:
 build:
 	@${COMPOSE_CMD} up --build
 
+cloud:
+	git fetch origin
+	git reset --hard origin/dev
+	@${COMPOSE_CMD} up --build
+
 down:
 	@${COMPOSE_CMD} down
 
