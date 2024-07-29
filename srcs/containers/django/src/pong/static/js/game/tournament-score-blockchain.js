@@ -7,7 +7,8 @@ export async function registerMatches() {
         const web3 = new Web3(new Web3.providers.HttpProvider(alchemyUrl));
         await window.ethereum.enable();
         const contract = new web3.eth.Contract(contractABI, contractAddress);
-        const accounts = await web3.eth.getAccounts();
+        // const account = await web3.eth.getAccounts();
+        const account = '0x639c1d062776b3aE1dAE38a918bDDa7486170746';
 
         const matches = [
             { player1: "Emma", player2: "Jean", score1: 3, score2: 0, timestamp: 0 },
