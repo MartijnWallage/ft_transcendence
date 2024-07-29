@@ -1,5 +1,6 @@
 import { endGame, startGameUserVsUser, startGameSolo, startTournament } from "../game/start-end-game.js";
 import { addPlayer } from '../game/tournament.js';
+import { registerMatches } from '../game/tournament-score-blockchain.js';
 
 function fadeIn(element) {
 	return new Promise((resolve) => {
@@ -105,7 +106,11 @@ function bindEventListeners() {
 	var startTournamentBtn = document.getElementById('js-end-game-btn');
 	if (startTournamentBtn) {
 	  startTournamentBtn.addEventListener('click', endGame);
-}
+	var blockchainScore = document.getElementById('js-register-blockchain');
+	}
+	if (blockchainScore) {
+		blockchainScore.addEventListener('click', registerMatches);
+	}
 }
 
 function showLeaderBoard() {
