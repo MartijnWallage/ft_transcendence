@@ -30,9 +30,8 @@ function update(keys, game) {
 	if (gameState.running === false) {
 		cam1.renderMenuView(game);
 		split.style.display = 'none';
-	}
-	if (gameState.running === true) {
-		updateScore(field, ball);
+	} else {
+		updateScore(game);
 		if (gameState.mode === 'user-vs-computer') {
 			cam1.renderSingleView(game);
 		}

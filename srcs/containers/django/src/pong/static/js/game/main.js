@@ -6,17 +6,29 @@ import { endGame, startGameUserVsUser, startGameSolo, startTournament } from "..
 import { addPlayer } from '../game/tournament.js';
 
 function main() {
+	const container = document.getElementById('threejs-container');
+	const this_game = new Game(container);
+
+	window.loadPage = loadPageClosure(this_game);
 	// page loading
-	window.onpopstate = (event) => {
+/* 	window.onpopstate = (event, game) => {
 		const page = event.state ? event.state.page : 'home';
-		window.loadPage(page);
+		console.log(`Calling loadpage with game: ${game}`);
+		window.loadPage(page, game);
 	};
 	
 	// Loading the home page on document ready
-	document.addEventListener('DOMContentLoaded', () => {
+	document.addEventListener('DOMContentLoaded', (game) => {
 		const page = location.hash.replace('#', '') || 'home';
-		window.loadPage(page);
-	});
+		console.log(`Calling loadpage again with game: ${game}`);
+		window.loadPage(page, game);
+	}); */
+
+	
+	
+	// Assigning handlers with game context
+	window.onpopstate = createOnPopStateHandler(this_game);
+	document.addEventListener('DOMContentLoaded', createDomContentLoadedHandler(this_game));
 	
 	// FPS stats viewer
 	//	const stats = new Stats();
@@ -33,22 +45,33 @@ function main() {
 		keys[event.key] = false;
 	});
 	
-	
-	const container = document.getElementById('threejs-container');
-	const game = new Game(container);
-	window.addEventListener('resize', () => game.onWindowResize(gameState));
-	bindEventListeners(game);
-	requestAnimationFrame(animate.bind(null, keys, game));
+	window.addEventListener('resize', () => this_game.onWindowResize(gameState));
+	requestAnimationFrame(animate.bind(null, keys, this_game));
 }
 
 function animate(keys, game) {
-//	stats.begin(); // for the FPS stats
+	//	stats.begin(); // for the FPS stats
 	update(keys, game);
 	game.controls.update();
 	requestAnimationFrame(animate.bind(null, keys, game));
-//	stats.end(); // for the FPS stats
+	//	stats.end(); // for the FPS stats
 }
 
+function createOnPopStateHandler(game) {
+	return function(event) {
+		const page = event.state ? event.state.page : 'home';
+		console.log(`Calling loadPage with game: ${game}`);
+		window.loadPage(page, game);
+	};
+}
+
+function createDomContentLoadedHandler(game) {
+	return function() {
+		const page = location.hash.replace('#', '') || 'home';
+		console.log(`Calling loadPage again with game: ${game}`);
+		window.loadPage(page, game);
+	};
+}
 
 function fadeIn(element) {
 	return new Promise((resolve) => {
@@ -75,36 +98,41 @@ function fadeOut(element) {
 	});
 }
 
-window.loadPage = async (page) => {
-    try {
-        const mainContent = document.getElementById('main-content');
-        const underTitle = document.getElementById('under-title');
-
-        if (underTitle) {
-            await fadeOut(underTitle);
-        }
-
-        const response = await fetch('/api/' + page + '/');
-        if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-        
-        const data = await response.json();
-        mainContent.innerHTML = data.content;
-        history.pushState({ page: page }, "", "#" + page);
-
-        const updatedUnderTitle = document.getElementById('under-title');
-        if (updatedUnderTitle) {
-            await fadeIn(updatedUnderTitle);
-        }
-        
-    } catch (error) {
-        console.error('Error loading page:', error);
-        throw error;
-    }
-};
-
-/* window.loadPage = (page, game) => {
+function loadPageClosure(game) {
+	return async (page) => {
+		try {
+			const mainContent = document.getElementById('main-content');
+			const underTitle = document.getElementById('under-title');
+			
+			if (underTitle) {
+				await fadeOut(underTitle);
+			}
+			
+			const response = await fetch('/api/' + page + '/');
+			if (!response.ok) {
+				throw new Error(`HTTP error! Status: ${response.status}`);
+			}
+			
+			const data = await response.json();
+			mainContent.innerHTML = data.content;
+			history.pushState({ page: page }, "", "#" + page);
+			
+			const updatedUnderTitle = document.getElementById('under-title');
+			if (updatedUnderTitle) {
+				await fadeIn(updatedUnderTitle);
+			}
+			bindEventListeners(game);
+			
+		} catch (error) {
+			console.error('Error loading page:', error);
+			throw error;
+		}
+	};
+}
+/* 
+function loadPageClosure(game) {
+	return (page) => {
+	console.log(`loadpage game: ${game}`);
 	return new Promise((resolve, reject) => {
 		const mainContent = document.getElementById('main-content');
 		const underTitle = document.getElementById('under-title');
@@ -113,20 +141,20 @@ window.loadPage = async (page) => {
 		fetch('/api/' + page + '/')
 			.then(response => response.json())
 			.then(data => {
-			mainContent.innerHTML = data.content;
-			history.pushState({ page: page }, "", "#" + page);
-			bindEventListeners(game);
-  
-			const updatedUnderTitle = document.getElementById('under-title');
-			if (updatedUnderTitle) {
-				fadeIn(updatedUnderTitle).then(resolve);
-			} else {
-				resolve();
-			}
+				mainContent.innerHTML = data.content;
+				history.pushState({ page: page }, "", "#" + page);
+				bindEventListeners(game);
+	
+				const updatedUnderTitle = document.getElementById('under-title');
+				if (updatedUnderTitle) {
+					fadeIn(updatedUnderTitle).then(resolve);
+				} else {
+					resolve();
+				}
 			})
 			.catch(error => {
-			console.error('Error loading page:', error);
-			reject(error);
+				console.error('Error loading page:', error);
+				reject(error);
 			});
 		};
 
@@ -136,9 +164,11 @@ window.loadPage = async (page) => {
 			updateContent();
 		}
 	});
-}; */
-
+};
+}
+ */
 function bindEventListeners(game) {
+	console.log(`In bindEventListeners still game: ${game}`);
 	var leaderBoardButton = document.getElementById('js-leaderboard-btn');
 	if (leaderBoardButton) {
 	  leaderBoardButton.addEventListener('click', showLeaderBoard);

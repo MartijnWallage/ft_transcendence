@@ -31,8 +31,8 @@ function isScore(court, ball) {
 }
 
 async function updateScore(game) {
-    court = game.field;
-    ball = game.ball;
+    const court = game.field;
+    const ball = game.ball;
 
     const player = isScore(court, ball);
     if (player === -1) return;
