@@ -1,7 +1,7 @@
 import { gameState } from './game-state.js';
-import { startGame } from './start-end-game.js';
+import { startGame, startTournament } from './start-end-game.js';
 import { ball} from './update.js';
-import {endTournament} from './tournament-end.js';
+import { endTournament } from './tournament-end.js';
 
 function addPlayer() {
 	const playerName = document.getElementById('playerNameInput').value.trim();
@@ -21,23 +21,25 @@ function addPlayer() {
 
 function nextGame() {
 	gameState.running = true;
-	gameState.currentGameIndex += 1;
-	console.log('Game index:', gameState.currentGameIndex);
-	console.log('Match order length:', gameState.matchOrder.length);
-	if (gameState.currentGameIndex > gameState.matchOrder.length) {
+	gameState.indexNewPlayer += 1;
+	console.log('Index new player:', gameState.indexNewPlayer);
+	if (gameState.indexNewPlayer >= gameState.players.length) {
 		endTournament();
 		return ;
 	}
-	const player1 = gameState.players[gameState.matchOrder[gameState.currentGameIndex - 1][0]];
-	const player2 = gameState.players[gameState.matchOrder[gameState.currentGameIndex - 1][1]];
-	console.log('Next match:', player1, 'vs', player2);
-	startGame(player1, player2, 'tournament');
+	if (gameState.playerScores[0] > gameState.playerScores[1]) {
+		gameState.player2 = gameState.players[gameState.indexNewPlayer];
+	}
+	else {
+		gameState.player1 = gameState.players[gameState.indexNewPlayer];
+	}
+	console.log('Next match:', gameState.player1, 'vs', gameState.player2);
+	startGame(gameState.player1, gameState.player2, 'tournament');
 }
 
 function displayPlayers() {
 	const playerListDiv = document.getElementById('playerList');
 	playerListDiv.innerHTML = ''; // Clear existing list
-	console.log('Players:', gameState.players);
 	gameState.players.forEach(player => {
 		let index = gameState.players.indexOf(player) + 1;
 		let name = player;
@@ -47,36 +49,22 @@ function displayPlayers() {
 	});
 }
 
-function matchOrderInit() {
-	for (let i = 0; i < gameState.players.length; i++) {
-		for (let j = i + 1; j < gameState.players.length; j++) {
-			gameState.matchOrder.push([i, j]);
-		}
-	}
-	console.log('Match order:', gameState.matchOrder);
-}
-
-function scoreBoardInit() {
-	for (let i = 0; i < gameState.players.length; i++) {
-		gameState.scoreBoard.push(0);
-	}
-}
-
 function initializeTournament() {
-	console.log('Players:', gameState.players); 
-	// document.getElementById('announcement').innerText = `Next match: ${player1} vs ${player2}`;
-	// document.getElementById('announcement').style.display = 'block';
-	matchOrderInit();    
-	scoreBoardInit();
-	nextGame();
-	console.log('Players length:', gameState.players.length);
+	gameState.matchResult = [];
+	gameState.indexNewPlayer = 1;
+	gameState.playerScores = [0, 0];
+	gameState.player1 = gameState.players[0];
+	gameState.player2 = gameState.players[1];
+	console.log('Players:', gameState.players);
+	console.log('Next match:', gameState.player1, 'vs', gameState.player2);
+	startGame(gameState.player1, gameState.player2, 'tournament');
 }
 
 
 function displayScoreTournament() {
 	displayScore();
-	ctx.fillText( `${gameState.players[gameState.matchOrder[gameState.currentGameIndex - 1][0]]} Score: ` + gameState.playerScores[0], 20, 30);
-	ctx.fillText( `${gameState.players[gameState.matchOrder[gameState.currentGameIndex - 1][1]]} Score: ` + gameState.playerScores[1], canvas.width - 180, 30);
+	ctx.fillText( `${gameState.player1} Score: ` + gameState.playerScores[0], 20, 30);
+	ctx.fillText( `${gameState.player2} Score: ` + gameState.playerScores[1], canvas.width - 180, 30);
 }
 
 function updateScoreTournament() {
@@ -91,14 +79,14 @@ function updateScoreTournament() {
 	if (gameState.playerScores[0] === gameState.scoreToWin || gameState.playerScores[1] === gameState.scoreToWin) {
 		if (gameState.playerScores[0] == gameState.scoreToWin) {
 			setTimeout(function() {
-				alert(`${gameState.players[gameState.matchOrder[gameState.currentGameIndex - 1][0]]} wins!`);
+				alert(`${gameState.player1} wins!`);
 			}
 			, 100);
 			return false;
 		}
 		else {
 			setTimeout(function() {
-				alert(`${gameState.players[gameState.matchOrder[gameState.currentGameIndex - 1][1]]} wins!`);
+				alert(`${gameState.player2} wins!`);
 			}
 			, 100);
 			return false;

@@ -1,13 +1,15 @@
 let gameState = {
+	player1: '',
+	player2: '',
 	players: [],
 	matchOrder: [],
 	currentGameIndex: 0,
+	indexNewPlayer: 1,
 	playerScores: [0, 0],
 	scoreToWin: 1,
 	running: false,
 	mode: '',
 	matchResult: [],
-	scoreBoard: []
 };
 
 function isWinner() {
