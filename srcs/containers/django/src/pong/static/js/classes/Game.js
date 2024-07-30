@@ -8,7 +8,6 @@ import { Audio } from './Audio.js';
 import { Environment } from './Environment.js';
 import { OrbitControls } from '../three-lib/OrbitControls.js';
 import { getRandomInt, textToDiv, HTMLToDiv, countdown, waitForEnter, displayWinMessage } from '../utils.js';
-import { nextGame } from '../tournament.js';
 
 class Game {
 	constructor(container) {
@@ -31,42 +30,48 @@ class Game {
 		this.audio = new Audio(this.cam1);
 
 		// Game State
-		this.playerNames = [];
+		this.player1 = '';
+		this.player2 = '';
+		this.players = [];
 		this.mode = '';
-		this.matchOrder = []; // should be part of tournament class
-		this.currentGameIndex = 0; // should be part of tournament class
 		this.playerScores = [0, 0];
-		this.scoreToWin = 6; // should be in settings
+		this.scoreToWin = 3; // should be in settings
 		this.running = false;
 		this.matchResult = [];
-		this.scoreBoard = []; // should be part of tournament class
 	}
 
-	async startGame(mode) {
+	async startMatch(mode) {
 		try {
 			await window.loadPage('pong');
 			this.mode = mode;
-			this.setPlayerNames(mode);
+			console.log('Starting game in mode:', mode);
+			this.setplayers(mode);
 			this.gameMain();
 		} catch (error) {
 			console.error('Error starting game:', error);
 		}
 	}
 
-	setPlayerNames(mode) {
+	setplayers(mode) {
 		if (mode === 'user-vs-user') {
-			this.playerNames.push('Guest 1', 'Guest 2');
+			this.players.push('Guest 1', 'Guest 2');
 		} else if (mode == 'user-vs-computer') {
-			this.playerNames.push('Guest', 'pongAI');
+			this.players.push('Guest', 'pongAI');
 		}
 	}
 
 	async gameMain() {
 		const ball = this.ball;
 		const mode = this.mode;
-		const player1Name = this.playerNames[0];
-		const player2Name = this.playerNames[1];
-
+		let player1Name;
+		let player2Name;
+		if (mode !== 'tournament') {
+			player1Name = this.players[0];
+			player2Name = this.players[1];
+		} else {
+			player1Name = this.player1;
+			player2Name = this.player2;
+		}
 		console.log(`Starting game: ${player1Name} vs ${player2Name}`);
 		HTMLToDiv(`${player1Name}<br>VS<br>${player2Name}`, 'announcement');
 		this.playerScores = [0, 0];
@@ -165,13 +170,8 @@ class Game {
 			this.endGame();
 			return ;
 		}
-		this.scoreBoard[this.matchOrder[this.currentGameIndex - 1][winner]] += 1;
-		this.matchResult.push(this.playerScores);
-		console.log('number of victory player ' +
-			this.matchOrder[this.currentGameIndex - 1][winner] +
-			' :' + 
-			this.scoreBoard[this.matchOrder[this.currentGameIndex - 1][winner]]);
-		nextGame(this);
+
+
 	}
 
 	endGame() {

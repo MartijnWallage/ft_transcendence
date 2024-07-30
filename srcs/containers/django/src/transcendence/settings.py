@@ -57,6 +57,8 @@ INSTALLED_APPS = [
 # # Initialize environment variables
 
 SMART_CONTRACT_ADDRESS = os.environ.get("SMART_CONTRACT_ADDRESS")
+PRIVATE_KEY= os.environ.get("PRIVATE_KEY")
+ALCHEMY_API_KEY=os.environ.get("ALCHEMY_API_KEY")
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = 'bootstrap5'
 CRISPY_TEMPLATE_PACK = 'bootstrap5'

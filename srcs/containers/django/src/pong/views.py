@@ -22,7 +22,12 @@ import json
 
 
 def index(request):
-	return render(request, 'main/base.html')
+	config_data = {
+        'private_key': settings.PRIVATE_KEY,
+		'alchemy_api_key': settings.ALCHEMY_API_KEY,
+		'smart_contract_address': settings.SMART_CONTRACT_ADDRESS
+    }
+	return render(request, 'main/base.html', config_data)
 
 @api_view(['GET'])
 def home_view(request):

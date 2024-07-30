@@ -1,6 +1,7 @@
 import Stats from './three-lib/stats.module.js'
 import { Game } from './classes/Game.js';
-import { addPlayer, startTournament } from './tournament.js';
+import { Tournament } from './classes/Tournament.js';
+import { registerMatches } from './tournament-score-blockchain.js';
 
 function main() {
 	const container = document.getElementById('threejs-container');
@@ -122,27 +123,33 @@ function bindEventListeners(game) {
 
 	const startUserVsUserButton = document.getElementById('js-start-user-vs-user-btn');
 	if (startUserVsUserButton) {
-		startUserVsUserButton.addEventListener('click', game.startGame.bind(game, 'user-vs-user'));
+		startUserVsUserButton.addEventListener('click', game.startMatch.bind(game, 'user-vs-user'));
 	}
 
 	const addPlayerBtn = document.getElementById('js-add-player-btn');
 	if (addPlayerBtn) {
-		addPlayerBtn.addEventListener('click', addPlayer.bind(null, game));
+		var tournament = new Tournament(game);
+		addPlayerBtn.addEventListener('click', tournament.addPlayer.bind(tournament));
 	}
 	
 	const gameSoloBtn = document.getElementById('js-start-game-solo-btn');
 	if (gameSoloBtn) {
-		gameSoloBtn.addEventListener('click', game.startGame.bind(game, 'user-vs-computer'));
+		gameSoloBtn.addEventListener('click', game.startMatch.bind(game, 'user-vs-computer'));
 	}
 	
 	let startTournamentBtn = document.getElementById('js-start-tournament-btn');
 	if (startTournamentBtn) {
-		startTournamentBtn.addEventListener('click', startTournament.bind(null, game));
+		startTournamentBtn.addEventListener('click', tournament.startTournament.bind(tournament));
 	}
 
 	startTournamentBtn = document.getElementById('js-end-game-btn');
 	if (startTournamentBtn) {
 	  startTournamentBtn.addEventListener('click', game.endGame.bind(game));
+	}
+
+	var blockchainScore = document.getElementById('js-register-blockchain');
+	if (blockchainScore) {
+		blockchainScore.addEventListener('click', registerMatches.bind(null, game));
 	}
 }
 
