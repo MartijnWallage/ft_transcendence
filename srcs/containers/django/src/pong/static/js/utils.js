@@ -26,4 +26,31 @@ function HTMLToDiv(html, divID) {
 	div.innerHTML = html;
 }
 
-export { getRandomInt, abs, min, textToDiv, HTMLToDiv };
+function waitForEnter(enter) {
+	return new Promise((resolve) => {
+		function onKeyDown(event) {
+			if (event.key === 'Enter') {
+				document.removeEventListener('keydown', onKeyDown);
+				enter.style.display = 'none';
+				resolve();
+			}
+		}
+		document.addEventListener('keydown', onKeyDown);
+	});
+}
+
+function countdown(seconds, announcement) {
+	return new Promise(resolve => {
+		announcement.innerHTML = seconds;
+		const interval = setInterval(() => {
+			announcement.innerHTML = seconds;
+			seconds -= 1;
+			if (seconds < 0) {
+				clearInterval(interval);
+				resolve();
+			}
+		}, 600);
+	});
+}
+
+export { getRandomInt, abs, min, textToDiv, HTMLToDiv, countdown, waitForEnter };

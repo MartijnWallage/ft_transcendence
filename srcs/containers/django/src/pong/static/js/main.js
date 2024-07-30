@@ -135,7 +135,7 @@ function bindEventListeners(game) {
 	
 	const gameSoloBtn = document.getElementById('js-start-game-solo-btn');
 	if (gameSoloBtn) {
-		gameSoloBtn.addEventListener('click', startGameSolo.bind(null, game));
+		gameSoloBtn.addEventListener('click', game.startGame.bind(game, 'user-vs-computer'));
 	}
 	
 	let startTournamentBtn = document.getElementById('js-start-tournament-btn');
