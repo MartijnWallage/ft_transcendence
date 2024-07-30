@@ -7,8 +7,8 @@ import { Camera } from './Camera.js';
 import { Audio } from './Audio.js';
 import { Environment } from './Environment.js';
 import { OrbitControls } from '../three-lib/OrbitControls.js';
-import { getRandomInt, textToDiv, HTMLToDiv, countdown, waitForEnter } from '../utils.js';
-import { updateScore } from '../score.js';
+import { getRandomInt, textToDiv, HTMLToDiv, countdown, waitForEnter, displayWinMessage } from '../utils.js';
+import { nextGame } from '../tournament.js';
 
 class Game {
 	constructor(container) {
@@ -122,7 +122,7 @@ class Game {
 			cam1.renderMenuView(this);
 			split.style.display = 'none';
 		} else {
-			updateScore(this);
+			this.updateScore();
 			if (this.mode === 'user-vs-computer') {
 				cam1.renderSingleView(this);
 			}
@@ -132,6 +132,46 @@ class Game {
 				split.style.display = 'block';
 			}
 		}
+	}
+
+	isScore() {
+		const ball = this.ball;
+		const field = this.field;
+		const halfFieldWidth = field.geometry.parameters.width / 2;
+		const ballRightSide = this.ball.position.x + ball.radius;
+		const ballLeftSide = ball.position.x - ball.radius;
+
+		return ballRightSide < -halfFieldWidth ? 1 :
+			ballLeftSide > halfFieldWidth ? 0 :
+			-1;
+	}
+
+	async updateScore() {
+		const ball = this.ball;
+		const player = this.isScore();
+		if (player === -1) return;
+
+		this.playerScores[player] += 1;
+		textToDiv(this.playerScores[player], `player${player + 1}-score`);
+		ball.serveBall();
+
+		const winner = this.isWinner();
+		if (winner === -1) return;
+
+		this.running = false;
+		ball.resetBall();
+		await displayWinMessage(`Player ${winner + 1} wins!`);
+		if (this.mode != 'tournament') {
+			this.endGame();
+			return ;
+		}
+		this.scoreBoard[this.matchOrder[this.currentGameIndex - 1][winner]] += 1;
+		this.matchResult.push(this.playerScores);
+		console.log('number of victory player ' +
+			this.matchOrder[this.currentGameIndex - 1][winner] +
+			' :' + 
+			this.scoreBoard[this.matchOrder[this.currentGameIndex - 1][winner]]);
+		nextGame(this);
 	}
 
 	endGame() {

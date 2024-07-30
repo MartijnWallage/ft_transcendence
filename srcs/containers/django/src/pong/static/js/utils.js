@@ -1,3 +1,4 @@
+
 const getRandomInt = (min, max) => Math.floor(Math.random() * (max - min + 1) + min);
 
 const abs = x => {
@@ -53,4 +54,21 @@ function countdown(seconds, announcement) {
 	});
 }
 
-export { getRandomInt, abs, min, textToDiv, HTMLToDiv, countdown, waitForEnter };
+function displayWinMessage(message) {
+	textToDiv(message, 'announcement');
+	var menu = document.getElementById('menu');
+	menu.style.display = 'block';
+	menu.style.opacity = 1;
+	const btn = document.getElementById('js-next-game-btn');
+	btn.style.display = 'block';
+	return new Promise((resolve) => {
+		function onClick(event) {
+			btn.removeEventListener('click', onClick);
+			btn.style.display = 'none';
+			resolve(event); 
+		}
+		document.addEventListener('click', onClick);
+	});
+}
+
+export { getRandomInt, abs, min, textToDiv, HTMLToDiv, countdown, waitForEnter, displayWinMessage };
