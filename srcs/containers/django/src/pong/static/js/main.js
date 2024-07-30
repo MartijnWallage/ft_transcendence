@@ -1,6 +1,5 @@
 import Stats from './three-lib/stats.module.js'
 import { Game } from './classes/Game.js';
-import { update } from './update.js'
 import { addPlayer, startTournament } from './tournament.js';
 
 function main() {
@@ -46,7 +45,7 @@ function main() {
 
 function animate(stats, keys, game) {
 	stats.begin(); // for the FPS stats
-	update(keys, game);
+	game.update(keys);
 	game.controls.update();
 	requestAnimationFrame(animate.bind(null, stats, keys, game));
 	stats.end(); // for the FPS stats

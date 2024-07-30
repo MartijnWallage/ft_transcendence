@@ -8,6 +8,7 @@ import { Audio } from './Audio.js';
 import { Environment } from './Environment.js';
 import { OrbitControls } from '../three-lib/OrbitControls.js';
 import { getRandomInt, textToDiv, HTMLToDiv, countdown, waitForEnter } from '../utils.js';
+import { updateScore } from '../score.js';
 
 class Game {
 	constructor(container) {
@@ -92,6 +93,47 @@ class Game {
 		console.log(`Game starting in mode: ${mode}`);
 	}
 
+	update(keys) {
+		const field = this.field;
+		const paddle1 = this.paddle1;
+		const paddle2 = this.paddle2;
+		const ball = this.ball;
+		const cam1 = this.cam1;
+		const cam2 = this.cam2;
+	
+		// move left paddle
+		let direction = keys['a'] ? -1 : keys['d'] ? 1 : 0;
+		paddle1.movePaddle(direction, field);
+	
+		// move right paddle
+		direction = this.mode === 'user-vs-computer' ? this.ai.movePaddle(paddle2, ball) :
+			keys['ArrowRight'] ? -1 :
+			keys['ArrowLeft'] ? 1 :
+			0;
+		paddle2.movePaddle(direction, field);
+	
+		// move and bounce ball
+		ball.animateBall();
+		ball.tryPaddleCollision(paddle1, paddle2, this.audio);
+		ball.tryCourtCollision(field);
+	
+		var split = document.getElementById('vertical-line');
+		if (this.running === false) {
+			cam1.renderMenuView(this);
+			split.style.display = 'none';
+		} else {
+			updateScore(this);
+			if (this.mode === 'user-vs-computer') {
+				cam1.renderSingleView(this);
+			}
+			if (this.mode === 'user-vs-user' || this.mode === 'tournament') {
+				cam1.renderSplitView(this, 0);
+				cam2.renderSplitView(this, 1);
+				split.style.display = 'block';
+			}
+		}
+	}
+
 	endGame() {
 		var redirecturi = "/#home";
 		window.location.href = redirecturi;
@@ -107,7 +149,6 @@ class Game {
 			-1;
 	}
 	
-
 /* 	pauseGame() {}
 	startRound() {}
 	endRound() {}
