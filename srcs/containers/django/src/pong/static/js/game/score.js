@@ -46,12 +46,15 @@ async function updateScore(court) {
     ball.resetBall();
     await displayWinMessage(`Player ${winner + 1} wins!`);
     if (gameState.mode === 'tournament') {
-        gameState.scoreBoard[gameState.matchOrder[gameState.currentGameIndex - 1][winner]] += 1;
-        gameState.matchResult.push(gameState.playerScores);
-        console.log('number of victory player ' +
-            gameState.matchOrder[gameState.currentGameIndex - 1][winner] +
-            ' :' + 
-            gameState.scoreBoard[gameState.matchOrder[gameState.currentGameIndex - 1][winner]]);
+        const match = {
+            player1: gameState.player1,
+            player2: gameState.player2,
+            score1: gameState.playerScores[0],
+            score2: gameState.playerScores[1],
+            timestamp: Date.now()
+        };
+        gameState.matchResult.push(match);
+        console.log('Match:', gameState.matchResult);
         nextGame();
         return;
     }
