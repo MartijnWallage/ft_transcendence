@@ -1,4 +1,5 @@
 import { endGame, startGameUserVsUser, startGameSolo, startTournament } from "../game/start-end-game.js";
+import { startGameUserVsUserremote } from "../game/remote.js";
 import { addPlayer } from '../game/tournament.js';
 
 function fadeIn(element) {
@@ -89,6 +90,10 @@ function bindEventListeners() {
 	var startUserVsUserButton = document.getElementById('js-start-user-vs-user-btn');
 	if (startUserVsUserButton) {
 	  startUserVsUserButton.addEventListener('click', startGameUserVsUser);
+	}
+	var startUserVsUserButton = document.getElementById('js-start-user-vs-user-remote-btn');
+	if (startUserVsUserButton) {
+	  startUserVsUserButton.addEventListener('click', startGameUserVsUserremote);
 	}
 	var addPlayerBtn = document.getElementById('js-add-player-btn');
 	if (addPlayerBtn) {

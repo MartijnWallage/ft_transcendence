@@ -13,7 +13,8 @@ class PingpongConsumer(AsyncWebsocketConsumer):
         await self.accept()
         self.__class__.connected_players += 1
         self.is_first_player = self.__class__.connected_players == 1
-
+        self.is_second_player = not self.is_first_player
+        
         if self.__class__.connected_players <= 2:
             await self.channel_layer.group_send(
                 self.room_group_name,
@@ -22,6 +23,9 @@ class PingpongConsumer(AsyncWebsocketConsumer):
                     'role': 'first' if self.is_first_player else 'second'
                 }
             )
+        else:
+            # If there are more than 2 players, close the connection
+            await self.close()
 
     async def disconnect(self, close_code):
         await self.channel_layer.group_discard(
@@ -29,6 +33,14 @@ class PingpongConsumer(AsyncWebsocketConsumer):
             self.channel_name
         )
         self.__class__.connected_players -= 1
+        # if self.is_first_player or self.is_second_player:
+        #     await self.channel_layer.group_send(
+        #         self.room_group_name,
+        #         {
+        #             'type': 'player_disconnected',
+        #             'role': 'first' if self.is_first_player else 'second'
+        #         }
+        #     )
 
     async def receive(self, text_data):
         try:
@@ -36,7 +48,19 @@ class PingpongConsumer(AsyncWebsocketConsumer):
             message_type = data.get('type', '')
             payload = data.get('data', {})
 
-            if message_type == 'player_action':
+            if message_type == 'player_ready':
+                role = 'first' if self.is_first_player else 'second'
+                
+                await self.channel_layer.group_send(
+                    self.room_group_name,
+                    {
+                        'type': 'players_ready',
+                        'role': role
+                    }
+                )
+
+            
+            elif message_type == 'player_action':
                 await self.channel_layer.group_send(
                     self.room_group_name,
                     {
@@ -44,10 +68,24 @@ class PingpongConsumer(AsyncWebsocketConsumer):
                         'data': payload
                     }
                 )
+            
+            # # Add handling for 'player_ready' message type
+            # elif message_type == 'player_ready':
+            #     # Update the state or do something when a player is ready
+            #     role = 'first' if self.is_first_player else 'second'
+            #     await self.channel_layer.group_send(
+            #         self.room_group_name,
+            #         {
+            #             'type': 'players_ready',
+            #             'role': role
+            #         }
+            #     )
+
             else:
                 await self.send(text_data=json.dumps({
                     'error': f'Unsupported message type: {message_type}'
                 }))
+        
         except json.JSONDecodeError:
             await self.send(text_data=json.dumps({
                 'error': 'Invalid JSON data received'
@@ -55,10 +93,13 @@ class PingpongConsumer(AsyncWebsocketConsumer):
 
     async def players_ready(self, event):
         role = event.get('role', '')
-        await self.send(text_data=json.dumps({
-            'type': 'players_ready',
-            'role': role
-        }))
+        if role in ['first', 'second']:
+            await self.send(text_data=json.dumps({
+                'type': 'players_ready',
+                'role': role
+            }))
+        else:
+            print("Unknown or missing 'role' in event data:", event)
 
     async def player_action(self, event):
         data = event['data']

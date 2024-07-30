@@ -3,6 +3,7 @@ import { ball } from './update.js';
 import { initializeTournament } from './tournament.js';
 import { getRandomInt, textToDiv, HTMLToDiv } from './utils.js';
 
+
 function waitForEnter(enter) {
 	return new Promise((resolve) => {
 		function onKeyDown(event) {
