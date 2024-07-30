@@ -1,9 +1,7 @@
 import Stats from './three-lib/stats.module.js'
 import { Game } from './classes/Game.js';
-import { gameState } from './game-state.js';
 import { update } from './update.js'
-import { endGame, startGameUserVsUser, startGameSolo, startTournament } from "./start-end-game.js";
-import { addPlayer } from './tournament.js';
+import { addPlayer, startTournament } from './tournament.js';
 
 function main() {
 	const container = document.getElementById('threejs-container');
@@ -40,7 +38,7 @@ function main() {
 		keys[event.key] = false;
 	});
 	
-	window.addEventListener('resize', () => this_game.onWindowResize(gameState));
+	window.addEventListener('resize', () => this_game.onWindowResize());
 
 	// main loop
 	requestAnimationFrame(animate.bind(null, stats, keys, this_game));
@@ -125,7 +123,7 @@ function bindEventListeners(game) {
 
 	const startUserVsUserButton = document.getElementById('js-start-user-vs-user-btn');
 	if (startUserVsUserButton) {
-		startUserVsUserButton.addEventListener('click', startGameUserVsUser.bind(null, game));
+		startUserVsUserButton.addEventListener('click', game.startGame.bind(game, 'user-vs-user'));
 	}
 
 	const addPlayerBtn = document.getElementById('js-add-player-btn');
@@ -145,7 +143,7 @@ function bindEventListeners(game) {
 
 	startTournamentBtn = document.getElementById('js-end-game-btn');
 	if (startTournamentBtn) {
-	  startTournamentBtn.addEventListener('click', endGame.bind(null, game));
+	  startTournamentBtn.addEventListener('click', game.endGame.bind(game));
 	}
 }
 

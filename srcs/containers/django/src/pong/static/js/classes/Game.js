@@ -7,11 +7,11 @@ import { Camera } from './Camera.js';
 import { Audio } from './Audio.js';
 import { Environment } from './Environment.js';
 import { OrbitControls } from '../three-lib/OrbitControls.js';
-import { gameState } from '../game-state.js';
 import { getRandomInt, textToDiv, HTMLToDiv, countdown, waitForEnter } from '../utils.js';
 
 class Game {
 	constructor(container) {
+		// maybe should be its own scene class
 		this.scene = new THREE.Scene();
 		this.renderer = new THREE.WebGLRenderer({container}, { antialias: true });
 		this.cam1 = new Camera;
@@ -29,19 +29,34 @@ class Game {
 		this.controls = new OrbitControls(this.cam1.camera, container);
 		this.audio = new Audio(this.cam1);
 
+		// Game State
 		this.playerNames = [];
-		console.log('Game object created, player names: ', this.playerNames);
 		this.mode = '';
+		this.matchOrder = []; // should be part of tournament class
+		this.currentGameIndex = 0; // should be part of tournament class
+		this.playerScores = [0, 0];
+		this.scoreToWin = 6; // should be in settings
+		this.running = false;
+		this.matchResult = [];
+		this.scoreBoard = []; // should be part of tournament class
 	}
 
- 	async startGame(mode) {
+	async startGame(mode) {
 		try {
 			await window.loadPage('pong');
-			this.playerNames.push('Guest', 'pongAI');
 			this.mode = mode;
+			this.setPlayerNames(mode);
 			this.gameMain();
 		} catch (error) {
 			console.error('Error starting game:', error);
+		}
+	}
+
+	setPlayerNames(mode) {
+		if (mode === 'user-vs-user') {
+			this.playerNames.push('Guest 1', 'Guest 2');
+		} else if (mode == 'user-vs-computer') {
+			this.playerNames.push('Guest', 'pongAI');
 		}
 	}
 
@@ -53,9 +68,9 @@ class Game {
 
 		console.log(`Starting game: ${player1Name} vs ${player2Name}`);
 		HTMLToDiv(`${player1Name}<br>VS<br>${player2Name}`, 'announcement');
-		gameState.playerScores = [0, 0];
-		gameState.running = true;
-		gameState.mode = mode;
+		this.playerScores = [0, 0];
+		this.running = true;
+		this.mode = mode;
 
 		const enter = document.getElementById('enter');
 		enter.style.display = 'block';
@@ -77,8 +92,23 @@ class Game {
 		console.log(`Game starting in mode: ${mode}`);
 	}
 
+	endGame() {
+		var redirecturi = "/#home";
+		window.location.href = redirecturi;
+	}
+
+	stopGame() {
+		this.running = false;
+	}
+
+	isWinner() {
+		return this.playerScores[0] === this.scoreToWin ? 0:
+			this.playerScores[1] === this.scoreToWin ? 1:
+			-1;
+	}
+	
+
 /* 	pauseGame() {}
-	endGame() {}
 	startRound() {}
 	endRound() {}
  */

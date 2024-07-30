@@ -1,6 +1,4 @@
-import { gameState, isWinner } from './game-state.js';
 import { nextGame } from './tournament.js';
-import { endGame } from './start-end-game.js';
 import { textToDiv } from './utils.js';
 
 function displayWinMessage(message) {
@@ -37,26 +35,26 @@ async function updateScore(game) {
     const player = isScore(court, ball);
     if (player === -1) return;
 
-    gameState.playerScores[player] += 1;
-    textToDiv(gameState.playerScores[player], `player${player + 1}-score`);
+    game.playerScores[player] += 1;
+    textToDiv(game.playerScores[player], `player${player + 1}-score`);
     ball.serveBall();
 
-    const winner = isWinner();
+    const winner = game.isWinner();
     if (winner === -1) return;
 
-    gameState.running = false;
+    game.running = false;
     ball.resetBall();
     await displayWinMessage(`Player ${winner + 1} wins!`);
-    if (gameState.mode != 'tournament') {
-        endGame();
+    if (game.mode != 'tournament') {
+        game.endGame();
         return ;
     }
-    gameState.scoreBoard[gameState.matchOrder[gameState.currentGameIndex - 1][winner]] += 1;
-    gameState.matchResult.push(gameState.playerScores);
+    game.scoreBoard[game.matchOrder[game.currentGameIndex - 1][winner]] += 1;
+    game.matchResult.push(game.playerScores);
     console.log('number of victory player ' +
-        gameState.matchOrder[gameState.currentGameIndex - 1][winner] +
+        game.matchOrder[game.currentGameIndex - 1][winner] +
         ' :' + 
-        gameState.scoreBoard[gameState.matchOrder[gameState.currentGameIndex - 1][winner]]);
+        game.scoreBoard[game.matchOrder[game.currentGameIndex - 1][winner]]);
     nextGame(game);
 }
 

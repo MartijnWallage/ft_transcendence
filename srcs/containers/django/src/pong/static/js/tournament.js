@@ -1,8 +1,23 @@
-import { gameState } from './game-state.js';
-import { startGame } from './start-end-game.js';
+
 import {endTournament} from './tournament-end.js';
 
-function addPlayer() {
+async function startTournament(game) {
+	if (game.playerNames.length < 2) {
+		var error2 = document.getElementById('error2');
+		error2.style.display = 'block'; 
+		return;
+	}
+
+	try {
+		await loadPage('pong');
+		initializeTournament(game);
+	} catch (error) {
+		console.error('Error starting game:', error);
+	}
+}
+
+function addPlayer(game) {
+	console.log(`Is game defined? ${game}`);
 	const playerName = document.getElementById('playerNameInput').value.trim();
 	console.log(playerName);
 	var error = document.getElementById('error');
@@ -13,34 +28,34 @@ function addPlayer() {
 	else {
 		error.style.display = 'none'; 
 	}
-	gameState.players.push(playerName);
-	displayPlayers();
+	game.playerNames.push(playerName);
+	displayPlayers(game);
 	document.getElementById('playerNameInput').value = '';
 }
 
 function nextGame(game) {
-	gameState.running = true;
-	gameState.currentGameIndex += 1;
-	console.log('Game index:', gameState.currentGameIndex);
-	console.log('Match order length:', gameState.matchOrder.length);
-	if (gameState.currentGameIndex > gameState.matchOrder.length) {
-		endTournament();
+	game.running = true;
+	game.currentGameIndex += 1;
+	console.log('Game index:', game.currentGameIndex);
+	console.log('Match order length:', game.matchOrder.length);
+	if (game.currentGameIndex > game.matchOrder.length) {
+		endTournament(game);
 		return ;
 	}
-	const player1 = gameState.players[gameState.matchOrder[gameState.currentGameIndex - 1][0]];
-	const player2 = gameState.players[gameState.matchOrder[gameState.currentGameIndex - 1][1]];
+	const player1 = game.playerNames[game.matchOrder[game.currentGameIndex - 1][0]];
+	const player2 = game.playerNames[game.matchOrder[game.currentGameIndex - 1][1]];
 	console.log('Next match:', player1, 'vs', player2);
 	game.playerNames = ['player1', 'player2'];
 	game.mode = 'tournament';
-	startGame(game);
+	game.startGame('tournament');
 }
 
-function displayPlayers() {
+function displayPlayers(game) {
 	const playerListDiv = document.getElementById('playerList');
 	playerListDiv.innerHTML = ''; // Clear existing list
-	console.log('Players:', gameState.players);
-	gameState.players.forEach(player => {
-		let index = gameState.players.indexOf(player) + 1;
+	console.log('Players:', game.playerNames);
+	game.playerNames.forEach(player => {
+		let index = game.playerNames.indexOf(player) + 1;
 		let name = player;
 		const playerElement = document.createElement('p');
 		playerElement.textContent = `Player ${index}: ${name}`;
@@ -48,60 +63,60 @@ function displayPlayers() {
 	});
 }
 
-function matchOrderInit() {
-	for (let i = 0; i < gameState.players.length; i++) {
-		for (let j = i + 1; j < gameState.players.length; j++) {
-			gameState.matchOrder.push([i, j]);
+function matchOrderInit(game) {
+	for (let i = 0; i < game.playerNames.length; i++) {
+		for (let j = i + 1; j < game.playerNames.length; j++) {
+			game.matchOrder.push([i, j]);
 		}
 	}
-	console.log('Match order:', gameState.matchOrder);
+	console.log('Match order:', game.matchOrder);
 }
 
-function scoreBoardInit() {
-	for (let i = 0; i < gameState.players.length; i++) {
-		gameState.scoreBoard.push(0);
+function scoreBoardInit(game) {
+	for (let i = 0; i < game.playerNames.length; i++) {
+		game.scoreBoard.push(0);
 	}
 }
 
 function initializeTournament(game) {
-	console.log('Players:', gameState.players); 
+	console.log('Players:', game.playerNames); 
 	// document.getElementById('announcement').innerText = `Next match: ${player1} vs ${player2}`;
 	// document.getElementById('announcement').style.display = 'block';
-	matchOrderInit();    
-	scoreBoardInit();
+	matchOrderInit(game);    
+	scoreBoardInit(game);
 	nextGame(game);
-	console.log('Players length:', gameState.players.length);
+	console.log('Players length:', game.playerNames.length);
 }
 
 
-function displayScoreTournament() {
+function displayScoreTournament(game) {
 	displayScore();
-	ctx.fillText( `${gameState.players[gameState.matchOrder[gameState.currentGameIndex - 1][0]]} Score: ` + gameState.playerScores[0], 20, 30);
-	ctx.fillText( `${gameState.players[gameState.matchOrder[gameState.currentGameIndex - 1][1]]} Score: ` + gameState.playerScores[1], canvas.width - 180, 30);
+	ctx.fillText( `${game.playerNames[game.matchOrder[game.currentGameIndex - 1][0]]} Score: ` + game.playerScores[0], 20, 30);
+	ctx.fillText( `${game.playerNames[game.matchOrder[game.currentGameIndex - 1][1]]} Score: ` + game.playerScores[1], canvas.width - 180, 30);
 }
 
 function updateScoreTournament(game) {
 	ball = game.ball;
 
 	if (ball.x < 0) {
-		gameState.playerScores[0] += 1;
+		game.playerScores[0] += 1;
 		ball.resetBall();
 	} else if (ball.x + ball.width > canvas.width) {
-		gameState.playerScores[1] += 1;
+		game.playerScores[1] += 1;
 		ball.resetBall();
 	}
 
-	if (gameState.playerScores[0] === gameState.scoreToWin || gameState.playerScores[1] === gameState.scoreToWin) {
-		if (gameState.playerScores[0] == gameState.scoreToWin) {
+	if (game.playerScores[0] === game.scoreToWin || game.playerScores[1] === game.scoreToWin) {
+		if (game.playerScores[0] == game.scoreToWin) {
 			setTimeout(function() {
-				alert(`${gameState.players[gameState.matchOrder[gameState.currentGameIndex - 1][0]]} wins!`);
+				alert(`${game.playerNames[game.matchOrder[game.currentGameIndex - 1][0]]} wins!`);
 			}
 			, 100);
 			return false;
 		}
 		else {
 			setTimeout(function() {
-				alert(`${gameState.players[gameState.matchOrder[gameState.currentGameIndex - 1][1]]} wins!`);
+				alert(`${game.playerNames[game.matchOrder[game.currentGameIndex - 1][1]]} wins!`);
 			}
 			, 100);
 			return false;
@@ -110,4 +125,4 @@ function updateScoreTournament(game) {
 	return true;
 }
 
-export { addPlayer, displayPlayers, initializeTournament, displayScoreTournament, updateScoreTournament, nextGame };
+export { startTournament, addPlayer, displayPlayers, initializeTournament, displayScoreTournament, updateScoreTournament, nextGame };

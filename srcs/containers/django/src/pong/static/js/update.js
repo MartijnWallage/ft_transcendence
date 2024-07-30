@@ -1,6 +1,5 @@
 import { movePaddleAI } from './ai.js';
 import { updateScore } from './score.js';
-import { gameState } from './game-state.js';
 
 function update(keys, game) {
 	const field = game.field;
@@ -15,7 +14,7 @@ function update(keys, game) {
 	paddle1.movePaddle(direction, field);
 
 	// move right paddle
-	direction = gameState.mode === 'user-vs-computer' ? movePaddleAI(paddle2, ball) :
+	direction = game.mode === 'user-vs-computer' ? movePaddleAI(paddle2, ball) :
 		keys['ArrowRight'] ? -1 :
 		keys['ArrowLeft'] ? 1 :
 		0;
@@ -27,15 +26,15 @@ function update(keys, game) {
 	ball.tryCourtCollision(field);
 
 	var split = document.getElementById('vertical-line');
-	if (gameState.running === false) {
+	if (game.running === false) {
 		cam1.renderMenuView(game);
 		split.style.display = 'none';
 	} else {
 		updateScore(game);
-		if (gameState.mode === 'user-vs-computer') {
+		if (game.mode === 'user-vs-computer') {
 			cam1.renderSingleView(game);
 		}
-		if (gameState.mode === 'user-vs-user' || gameState.mode === 'tournament') {
+		if (game.mode === 'user-vs-user' || game.mode === 'tournament') {
 			cam1.renderSplitView(game, 0);
 			cam2.renderSplitView(game, 1);
 			split.style.display = 'block';
