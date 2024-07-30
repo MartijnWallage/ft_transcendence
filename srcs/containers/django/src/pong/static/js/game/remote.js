@@ -5,9 +5,8 @@ import {endTournament} from './tournament-end.js';
 
 let pingpongSocket;
 
-
 function initializeWebSocket() {
-    pingpongSocket = new WebSocket('wss://10.15.106.3:8443/ws/pingpongsocket/');
+    pingpongSocket = new WebSocket('wss://10.15.108.4:8443/ws/pingpongsocket/');
     
     pingpongSocket.onopen = function(event) {
         console.log('WebSocket is connected.');
@@ -181,7 +180,7 @@ export { addPlayer, displayPlayers, initializeTournament, displayScoreTournament
 
 // function initializepingpongWebSocket() {
     
-//     pingpongsocket = new WebSocket('wss://10.15.106.3:8443/ws/pingpongsocket/');
+//     pingpongsocket = new WebSocket('wss://10.15.108.4:8443/ws/pingpongsocket/');
     
 //     pingpongsocket.onopen = function(event) {
 //         console.log('WebSocket connection opened');
