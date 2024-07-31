@@ -2,10 +2,12 @@ import { ball } from './update.js';
 import { gameState, isWinner } from './game-state.js';
 import { nextGame } from './tournament.js';
 import { endGame } from './start-end-game.js';
-import { textToDiv } from './utils.js';
+import { textToDiv, HTMLToDiv } from './utils.js';
 
-function displayWinMessage(message) {
-	textToDiv(message, 'announcement');
+function displayWinMessage(winner) {
+    winner = winner === '0' ? 'player1Name' : 'player2Name';
+	textToDiv(winner, 'announcement-l1');
+    textToDiv('is a winner', 'announcement-mid');
 	var menu = document.getElementById('menu');
 	menu.style.display = 'block';
 	menu.style.opacity = 1;
@@ -44,7 +46,7 @@ async function updateScore(court) {
 
     gameState.running = false;
     ball.resetBall();
-    await displayWinMessage(`Player ${winner + 1} wins!`);
+    await displayWinMessage(`${winner}`);
     if (gameState.mode === 'tournament') {
         gameState.scoreBoard[gameState.matchOrder[gameState.currentGameIndex - 1][winner]] += 1;
         gameState.matchResult.push(gameState.playerScores);

@@ -18,9 +18,9 @@ function waitForEnter(enter) {
 
 function countdown(seconds, announcement) {
 	return new Promise(resolve => {
-		announcement.innerHTML = seconds;
+		textToDiv(seconds, 'announcement-l1');
 		const interval = setInterval(() => {
-			announcement.innerHTML = seconds;
+			textToDiv(seconds, 'announcement-l1');
 			seconds -= 1;
 			if (seconds < 0) {
 				clearInterval(interval);
@@ -32,15 +32,24 @@ function countdown(seconds, announcement) {
 
 async function startGame(player1Name, player2Name, mode) {
 	console.log(`Starting game: ${player1Name} vs ${player2Name}`);
-	HTMLToDiv(`${player1Name}<br>VS<br>${player2Name}`, 'announcement');
+	HTMLToDiv(`${player1Name}`, 'announcement-l1');
+	HTMLToDiv(`VS`, 'announcement-mid');
+	HTMLToDiv(`${player2Name}`, 'announcement-l2');
 	gameState.playerScores = [0, 0];
 	gameState.running = true;
 	gameState.mode = mode;
+	textToDiv('0', 'player1-score');
+	textToDiv(player1Name, 'player1-name');
+	textToDiv('0', 'player2-score');
+	textToDiv(player2Name, 'player2-name');
 
 	const enter = document.getElementById('enter');
 	enter.style.display = 'block';
 	await waitForEnter(enter);
-	await countdown(1, announcement);
+	HTMLToDiv(``, 'announcement-l1');
+	HTMLToDiv(``, 'announcement-mid');
+	HTMLToDiv(``, 'announcement-l2');
+	await countdown(2);
 	// await countdown(3, announcement);
 	const menu = document.getElementById('menu');
 	menu.classList.add('fade-out');
@@ -50,10 +59,7 @@ async function startGame(player1Name, player2Name, mode) {
 	
 	ball.serve = getRandomInt(0, 2) ? 1 : -1;
 	ball.serveBall();
-	textToDiv('0', 'player1-score');
-	textToDiv(player1Name, 'player1-name');
-	textToDiv('0', 'player2-score');
-	textToDiv(player2Name, 'player2-name');
+	textToDiv('', 'announcement-l1');
 	console.log(`Game starting in mode: ${mode}`);
 }
 
