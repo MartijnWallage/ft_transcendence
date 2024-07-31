@@ -54,21 +54,4 @@ function countdown(seconds, announcement) {
 	});
 }
 
-function displayWinMessage(message) {
-	textToDiv(message, 'announcement');
-	var menu = document.getElementById('menu');
-	menu.style.display = 'block';
-	menu.style.opacity = 1;
-	const btn = document.getElementById('js-next-game-btn');
-	btn.style.display = 'block';
-	return new Promise((resolve) => {
-		function onClick(event) {
-			btn.removeEventListener('click', onClick);
-			btn.style.display = 'none';
-			resolve(event); 
-		}
-		document.addEventListener('click', onClick);
-	});
-}
-
-export { getRandomInt, abs, min, textToDiv, HTMLToDiv, countdown, waitForEnter, displayWinMessage };
+export { getRandomInt, abs, min, textToDiv, HTMLToDiv, countdown, waitForEnter };
