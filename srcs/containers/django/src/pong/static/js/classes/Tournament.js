@@ -24,7 +24,7 @@ class Tournament {
 			console.log('Players:', game.players);
 			console.log('Next match:', game.player1, 'vs', game.player2);
 			console.log(`before start match indexNewPlayer: ${this.indexNewPlayer} >= players.length: ${game.players.length}`);
-			await game.startMatch('tournament');
+			await game.initMatch('tournament');
 			console.log(`after start match indexNewPlayer: ${this.indexNewPlayer} >= players.length: ${game.players.length}`);
 			// while(this.nextTournamentMatch());
 			for (let index = 0; index < game.players.length; index++)
@@ -80,7 +80,7 @@ class Tournament {
 			game.player1 = game.players[this.indexNewPlayer];
 		}
 		console.log('Next match:', game.player1, 'vs', game.player2);
-		await game.startMatch();
+		await game.initMatch();
 		return 1;
 	}
 

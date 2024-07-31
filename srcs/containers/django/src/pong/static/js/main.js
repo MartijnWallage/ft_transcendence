@@ -123,7 +123,7 @@ function bindEventListeners(game) {
 
 	const startUserVsUserButton = document.getElementById('js-start-user-vs-user-btn');
 	if (startUserVsUserButton) {
-		startUserVsUserButton.addEventListener('click', game.startMatch.bind(game, 'user-vs-user'));
+		startUserVsUserButton.addEventListener('click', game.initMatch.bind(game, 'user-vs-user'));
 	}
 
 	const addPlayerBtn = document.getElementById('js-add-player-btn');
@@ -134,7 +134,7 @@ function bindEventListeners(game) {
 	
 	const gameSoloBtn = document.getElementById('js-start-game-solo-btn');
 	if (gameSoloBtn) {
-		gameSoloBtn.addEventListener('click', game.startMatch.bind(game, 'user-vs-computer'));
+		gameSoloBtn.addEventListener('click', game.initMatch.bind(game, 'user-vs-computer'));
 	}
 	
 	let startTournamentBtn = document.getElementById('js-start-tournament-btn');

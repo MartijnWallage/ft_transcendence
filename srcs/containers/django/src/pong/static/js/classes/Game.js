@@ -18,13 +18,13 @@ class Game {
 		this.matchResult = [];
 	}
 
-	async startMatch(mode) {
+	async initMatch(mode) {
 		try {
 			await window.loadPage('pong');
 			this.mode = mode;
 			console.log('Starting game in mode:', mode);
 			this.setplayers(mode);
-			this.gameMain();
+			this.startMatch();
 		} catch (error) {
 			console.error('Error starting game:', error);
 		}
@@ -38,7 +38,7 @@ class Game {
 		}
 	}
 
-	async gameMain() {
+	async startMatch() {
 		const ball = this.ball;
 		const mode = this.mode;
 		let player1Name;
