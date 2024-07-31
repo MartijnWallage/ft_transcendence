@@ -19,35 +19,24 @@ document.addEventListener("keyup", (event) => {
 	keys[event.key] = false;
 });
 
+document.addEventListener("touchstart", (event) => {
+	let touchX = event.touches[0].clientX;
+	let containerWidth = document.offsetWidth;
+	let middle = containerWidth / 2;
+
+	if (touchX < middle) {
+		keys['a'] = true;
+		keys['d'] = false;
+	} else {
+		keys['a'] = false;
+		keys['d'] = true;
+	}
+});
+
 document.addEventListener("touchend", (event) => {
 	// Reset the direction when touch ends
 	keys['a'] = false;
 	keys['d'] = false;
-	isTouching = false;
-	initialTouchX = null;
-});
-
-let initialTouchX = null;
-let isTouching = false;
-
-document.addEventListener("touchstart", (event) => {
-	// Track the initial touch position
-	initialTouchX = event.touches[0].clientX;
-	isTouching = true;
-});
-
-document.addEventListener("touchmove", (event) => {
-	if (isTouching) {
-		let currentTouchX = event.touches[0].clientX;
-		// Determine the direction based on touch movement
-		if (currentTouchX < initialTouchX) {
-			keys['a'] = true;
-			keys['d'] = false;
-		} else if (currentTouchX > initialTouchX) {
-			keys['a'] = false;
-			keys['d'] = true;
-		}
-	}
 });
 
 const container = document.getElementById('threejs-container');
