@@ -10,10 +10,10 @@ async function endTournament() {
 	gameState.running= false;
 	
     try {
-        let tournamentId = await createTournament();
+        gameState.tournamentId = await createTournament();
 
 		for (const player of gameState.players) {
-			await addParticipant(player, tournamentId);
+			await addParticipant(player, gameState.tournamentId);
 		}
 
 		console.log('Match Result:', gameState.matchResult);
@@ -25,7 +25,7 @@ async function endTournament() {
 			let player1Score = match.score1;
 			let player2Score = match.score2;
 			console.log('Match:', index, ': ', player1, player2, player1Score, player2Score);
-			await createMatch(tournamentId, player1, player2, player1Score, player2Score);
+			await createMatch(gameState.tournamentId, player1, player2, player1Score, player2Score);
 		}
 
         stopGame();

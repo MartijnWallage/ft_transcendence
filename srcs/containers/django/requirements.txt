@@ -1,5 +1,6 @@
 Django== 4.1 #Django framework
 psycopg2== 2.9.9 #PostgreSQL adapter for Python
+web3		  # Ethereum
 # psycopg2-binary==2.9.9
 gunicorn==21.2.0
 django_postgres_extensions== 0.9.3
@@ -9,7 +10,6 @@ crispy-bootstrap5 # To integrate Bootstrap 5 with Django forms
 djangorestframework
 markdown       # Markdown support for the browsable API.
 django-filter  # Filtering support
-web3		  # Ethereum
 django-environ # To read environment variables
 # djangorestframework-filters
 # django-utils-six

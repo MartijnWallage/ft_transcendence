@@ -39,7 +39,8 @@ async function createTournament() {
             url: '/api/create_tournament/',
             type: 'POST',
             data: JSON.stringify({
-                'date': currentDate
+                'date': currentDate,
+                'transaction_hash': null
             }),
             contentType: 'application/json; charset=utf-8',
             dataType: 'json',

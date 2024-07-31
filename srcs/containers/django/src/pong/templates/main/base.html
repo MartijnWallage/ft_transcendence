@@ -13,11 +13,6 @@
       href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css"
       integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N"
       crossorigin="anonymous"/>
-    <script>
-      const alchemyApiKey = "{{ alchemy_api_key|escapejs }}";
-      const contractAddress = "{{ smart_contract_address|escapejs }}";
-      const privateKey = "{{ private_key|escapejs }}";
-    </script>
     <script src=" https://cdn.jsdelivr.net/npm/web3@4.11.1/dist/web3.min.js "></script>
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 	  <script type="module" src="{% static 'js/game/update.js' %}" defer></script>

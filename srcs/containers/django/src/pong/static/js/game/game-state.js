@@ -10,6 +10,7 @@ let gameState = {
 	running: false,
 	mode: '',
 	matchResult: [],
+	tournamentId: null
 };
 
 function isWinner() {
