@@ -7,6 +7,7 @@ class Match {
 		this.players = players;
 		this.running = false;
 		this.score = new Score(game, players);
+		this.timestamp = null;
 
 		//key listener
 		this.keys = {};
@@ -41,6 +42,7 @@ class Match {
 			menu.classList.add('hidden');
 		}, 1500); 
 		
+		this.timestamp = Date.now();
 		ball.serve = getRandomInt(0, 2) ? 1 : -1;
 		ball.serveBall();
 		textToDiv('0', 'player1-score');

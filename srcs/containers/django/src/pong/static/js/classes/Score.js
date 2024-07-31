@@ -7,6 +7,7 @@ class Score {
 		console.log('In Score: Players:', this.players);
 		this.scoreToWin = game.scoreToWin;
 		this.result = [0, 0];
+		this.winner = null;
 	}
 
 	async update() {
@@ -28,20 +29,20 @@ class Score {
 		textToDiv(this.result[scorer], `player${scorer + 1}-score`);
 		ball.serveBall();
 		
-		let winner;
 		if (this.result[0] === this.scoreToWin)
-			winner = 0;
+			this.winner = 0;
 		else if (this.result[1] === this.scoreToWin)
-			winner = 1;
+			this.winner = 1;
 		else
 			return;
 		
 		this.game.running = false;
+
 		ball.resetBall();
-		await this.displayWinMessage(`${this.players[winner].name} wins!`);
+		await this.displayWinMessage(`${this.players[this.winner].name} wins!`);
 	}
 
-	displayWinMessage(message) {
+/* 	displayWinMessage(message) {
 		textToDiv(message, 'announcement');
 		var menu = document.getElementById('menu');
 		menu.style.display = 'block';
@@ -56,7 +57,29 @@ class Score {
 			}
 			document.addEventListener('click', onClick);
 		});
-	}
+	} */
+
+	displayWinMessage(message) {
+		textToDiv(message, 'announcement');
+		
+		var menu = document.getElementById('menu');
+		menu.style.display = 'block';
+		menu.style.opacity = 1; // Ensure this matches your CSS transitions if any
+		
+		const btn = document.getElementById('js-next-game-btn');
+		btn.style.display = 'block';
+		
+		return new Promise((resolve) => {
+			function onClick(event) {
+			btn.removeEventListener('click', onClick); // Remove the event listener after the click
+			btn.style.display = 'none';
+			resolve(event);
+			}
+		
+			btn.addEventListener('click', onClick); // Attach the event listener to the button
+		});
+		}
+		  
 }
 
 export { Score };

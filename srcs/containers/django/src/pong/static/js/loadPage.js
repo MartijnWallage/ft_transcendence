@@ -1,4 +1,3 @@
-import { Tournament } from './classes/Tournament.js';
 import { registerMatches } from './tournament-score-blockchain.js';
 
 function loadPageClosure(game) {
@@ -52,7 +51,9 @@ function bindEventListeners(game) {
 	
 	const addPlayerBtn = document.getElementById('js-add-player-btn');
 	if (addPlayerBtn) {
-		addPlayerBtn.addEventListener('click', game.startTournament.bind(game));
+		game.createTournament();
+		console.log('adding player');
+		addPlayerBtn.addEventListener('click', game.tournament.addPlayer.bind(game.tournament));
 	}
 	
 	const gameSoloBtn = document.getElementById('js-start-game-solo-btn');
@@ -62,17 +63,18 @@ function bindEventListeners(game) {
 	
 	let startTournamentBtn = document.getElementById('js-start-tournament-btn');
 	if (startTournamentBtn) {
-		startTournamentBtn.addEventListener('click', game.tournament.play);
+		console.log('creating tournament');
+		startTournamentBtn.addEventListener('click', game.tournament.start.bind(game.tournament));
 	}
 
-	startTournamentBtn = document.getElementById('js-end-game-btn');
-	if (startTournamentBtn) {
-		startTournamentBtn.addEventListener('click', game.endGame.bind(game));
+	let endGameBtn = document.getElementById('js-end-game-btn');
+	if (endGameBtn) {
+		endGameBtn.addEventListener('click', game.endGame.bind(game));
 	}
 	
 	var blockchainScore = document.getElementById('js-register-blockchain');
 	if (blockchainScore) {
-		blockchainScore.addEventListener('click', registerMatches.bind(null, game));
+		blockchainScore.addEventListener('click', registerMatches.bind(null, game.tournament));
 	}
 }
 

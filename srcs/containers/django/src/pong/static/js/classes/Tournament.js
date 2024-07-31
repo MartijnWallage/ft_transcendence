@@ -1,42 +1,54 @@
+import { Player } from './Player.js';
+import { Match } from './Match.js';
+
 class Tournament {
 
 	constructor(game) {
 		this.game = game;
-//		this.players = [];
-		this.indexNewPlayer = 1;
+		this.players = [];
+		this.matchResult = [];
 	}
 
-	async startTournament() {
+	async start() {
 		const game = this.game;
 
-		if (game.players.length < 2) {
+		if (this.players.length < 2) {
 			var error2 = document.getElementById('error2');
 			error2.style.display = 'block'; 
 			return;
 		}
+		console.log('Starting tournament... with players:', this.players);
 
 		try {
 			await loadPage('pong');
-			game.matchResult = [];
-			game.playerScores = [0, 0];
-			game.player1 = game.players[0];
-			game.player2 = game.players[1];
-			console.log('Players:', game.players);
-			console.log('Next match:', game.player1, 'vs', game.player2);
-			console.log(`before start match indexNewPlayer: ${this.indexNewPlayer} >= players.length: ${game.players.length}`);
-			await game.initMatch('tournament');
-			console.log(`after start match indexNewPlayer: ${this.indexNewPlayer} >= players.length: ${game.players.length}`);
-			// while(this.nextTournamentMatch());
-			for (let index = 0; index < game.players.length; index++)
-				await this.nextTournamentMatch();
+			let currentPlayers = [this.players[0], this.players[1]];
+			for (let index = 1; index < this.players.length; index++) {
+				game.match = new Match(game, currentPlayers);
+				await game.match.play();
+				while (game.match.score.winner === null) {
+					await new Promise(resolve => setTimeout(resolve, 100));
+				}
+				console.log('Match winner:', game.match.score.winner);
+				console.log('Match Result:', game.match.score.result);
+				
+				let matchResult = { player1: currentPlayers[0].name, player2: currentPlayers[1].name, player1Score: game.match.score.result[0], player2Score: game.match.score.result[1], timestamp: game.match.timestamp };
+
+				this.matchResult.push(matchResult);
+
+				if (index + 1 < this.players.length) {
+					const loser = game.match.score.winner === 0 ? 1 : 0;
+					currentPlayers[loser] = this.players[index + 1];
+					console.log(`New player names after match ${index}: ${currentPlayers[0].name} vs ${currentPlayers[1].name}`);
+				}
+			}
+
+			this.endTournament();
 		} catch (error) {
 			console.error('Error starting game:', error);
 		}
 	}
 
 	addPlayer() {
-		const game = this.game;
-	
 		const playerName = document.getElementById('playerNameInput').value.trim();
 		console.log(playerName);
 		var error = document.getElementById('error');
@@ -47,95 +59,24 @@ class Tournament {
 		else {
 			error.style.display = 'none'; 
 		}
-		game.players.push(playerName);
+		const newPlayer = new Player(playerName);
+		this.players.push(newPlayer);
 		this.displayPlayers();
 		document.getElementById('playerNameInput').value = '';
 	}
-
-	async nextTournamentMatch() {
-		const game = this.game;
-
-		const match = {
-			player1: game.player1,
-			player2: game.player2,
-			score1: game.playerScores[0],
-			score2: game.playerScores[1],
-			timestamp: Date.now()
-		};
-		game.matchResult.push(match);
-		console.log('Match:', game.matchResult);
-
-		game.running = true;
-		this.indexNewPlayer += 1;
-		console.log('Index new player:', this.indexNewPlayer);
-		if (this.indexNewPlayer >= game.players.length) {
-			console.log(`indexNewPlayer: ${this.indexNewPlayer} >= players.length: ${game.players.length}`);
-			this.endTournament();
-			return 0;
-		}
-		if (game.playerScores[0] > game.playerScores[1]) {
-			game.player2 = game.players[this.indexNewPlayer];
-		}
-		else {
-			game.player1 = game.players[this.indexNewPlayer];
-		}
-		console.log('Next match:', game.player1, 'vs', game.player2);
-		await game.initMatch();
-		return 1;
-	}
-
 
 	displayPlayers() {
 		const game = this.game;
 	
 		const playerListDiv = document.getElementById('playerList');
 		playerListDiv.innerHTML = ''; // Clear existing list
-		game.players.forEach(player => {
-			let index = game.players.indexOf(player) + 1;
-			let name = player;
+		this.players.forEach(player => {
+			let index = this.players.indexOf(player) + 1;
+			let name = player.name;
 			const playerElement = document.createElement('p');
 			playerElement.textContent = `Player ${index}: ${name}`;
 			playerListDiv.appendChild(playerElement);
 		});
-	}
-
-	displayScoreTournament() {
-		const game = this.game;
-
-		game.displayScore();
-		ctx.fillText( `${game.player1} Score: ` + game.playerScores[0], 20, 30);
-		ctx.fillText( `${game.player2} Score: ` + game.playerScores[1], canvas.width - 180, 30);
-	}
-
-	updateScoreTournament() {
-		const game = this.game;
-		ball = game.ball;
-
-		if (ball.x < 0) {
-			game.playerScores[0] += 1;
-			ball.resetBall();
-		} else if (ball.x + ball.width > canvas.width) {
-			game.playerScores[1] += 1;
-			ball.resetBall();
-		}
-
-		if (game.playerScores[0] === game.scoreToWin || game.playerScores[1] === game.scoreToWin) {
-			if (game.playerScores[0] == game.scoreToWin) {
-				setTimeout(function() {
-					alert(`${game.player1} wins!`);
-				}
-				, 100);
-				return false;
-			}
-			else {
-				setTimeout(function() {
-					alert(`${game.player2} wins!`);
-				}
-				, 100);
-				return false;
-			}
-		}
-		return true;
 	}
 
 	// Tournament Score Database
@@ -204,17 +145,17 @@ class Tournament {
 		});
 	}
 	
-	async createMatch(tournamentId, player1, player2, player1_score, player2_score) {
+	async createMatch(tournamentId, matchResult) {
 		console.log('Creating Match...');
 		$.ajax({
 			url: '/api/create_match/',
 			type: 'POST',
 			data: JSON.stringify({
 				'tournament_id': tournamentId,
-				'player1' : player1,
-				'player2' : player2,
-				'player1_score' : player1_score,
-				'player2_score' : player2_score
+				'player1' : matchResult.player1,
+				'player2' : matchResult.player2,
+				'player1_score' : matchResult.player1Score,
+				'player2_score' : matchResult.player2Score,
 			}),
 			contentType: 'application/json; charset=utf-8',
 			dataType: 'json',
@@ -232,9 +173,9 @@ class Tournament {
 
 	async endTournament() {
 		const game = this.game;
+		const score = game.match.score.result;
 
 		alert("Tournament Ended!");
-		game.running = false;
 
 		// scoreBoardTournament();
 
@@ -243,28 +184,23 @@ class Tournament {
 		try {
 			let tournamentId = await this.createTournament();
 
-			for (const player of game.players) {
-				await this.addParticipant(player, tournamentId);
+			for (const player of this.players) {
+				await this.addParticipant(player.name, tournamentId);
 			}
 
-			console.log('Match Result:', game.matchResult);
+			console.log('Match Result:', this.matchResult);
 
-			for (let index = 0; index < game.matchResult.length; index++) {
-				let match = game.matchResult[index];
-				let player1 = match.player1;
-				let player2 = match.player2;
-				let player1Score = match.score1;
-				let player2Score = match.score2;
-				console.log('Match:', index, ': ', player1, player2, player1Score, player2Score);
-				await this.createMatch(tournamentId, player1, player2, player1Score, player2Score);
+			for (let index = 0; index < this.matchResult.length; index++) {
+				const currentMatchResult = this.matchResult[index];
+				console.log('Match:', index, ': ', currentMatchResult);
+				await this.createMatch(tournamentId, currentMatchResult);
 			}
 
-			game.stopGame();
 		} catch (error) {
 			console.error('Error ending tournament:', error);
 		}
 
-		game.players = [];
+		this.players = [];
 	}
 }
 

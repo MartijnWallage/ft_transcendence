@@ -32,9 +32,10 @@ class Game {
 		this.audio = new Audio(this.cam1);
 
 		// Game state
-		this.scoreToWin = 3;
+		this.scoreToWin = 1;
 		this.running = false;
 		this.match = null;
+		this.tournament = null;
 	}
 
 	// These are the modes bound to the buttons in the menu
@@ -53,9 +54,9 @@ class Game {
 		this.match.play();
 	}
 
-	startTournament() {
+	createTournament() {
 		const tournament = new Tournament(this);
-		this.tournament.startTournament();
+		this.tournament = tournament;
 	}
 
 	// Not sure what this function is for.
