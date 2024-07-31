@@ -21,7 +21,7 @@ document.addEventListener("keyup", (event) => {
 
 document.addEventListener("touchstart", (event) => {
 	let touchX = event.touches[0].clientX;
-	let containerWidth = document.offsetWidth;
+	let containerWidth = window.innerWidth;
 	let middle = containerWidth / 2;
 
 	if (touchX < middle) {
