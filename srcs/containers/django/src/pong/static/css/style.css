@@ -43,6 +43,20 @@
 	transition: opacity 1.5s ease-out;
 }
 
+#player1-info {
+	user-select: none;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+}
+
+#player2-info {
+	user-select: none;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+}
+
 #under-title {
 	opacity: 1;
 	transition: opacity 1.5s ease;
