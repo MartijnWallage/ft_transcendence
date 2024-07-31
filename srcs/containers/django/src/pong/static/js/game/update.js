@@ -83,7 +83,7 @@ function update() {
 function animate() {
 	// stats.begin(); // for the FPS stats
 	update();
-	scene.controls.update();
+	// scene.controls.update();
 	requestAnimationFrame(animate);
 	// stats.end(); // for the FPS stats
 }
