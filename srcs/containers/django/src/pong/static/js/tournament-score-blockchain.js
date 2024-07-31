@@ -1,16 +1,14 @@
-import { gameState } from "./game-state.js";
-
-export async function registerMatches() {
-    console.log('Match Result:', gameState.matchResult);
-
-    const matches = gameState.matchResult.map(match => ({
+export async function registerMatches(tournament) {
+    console.log('Match Result:', tournament.matchResult);
+    console.log('Tournament ID:', tournament.tournamentId);
+    const matches = tournament.matchResult.map(match => ({
         player1: match.player1,
         player2: match.player2,
-        score1: match.score1,
-        score2: match.score2,
+        score1: match.player1Score,
+        score2: match.player2Score,
         timestamp: match.timestamp || Date.now()
     }));
-
+    console.log('Matches:', matches);
     try {
         // Send the match data to the server
         const response = await fetch('/api/register_matches/', {
@@ -19,7 +17,7 @@ export async function registerMatches() {
                 'Content-Type': 'application/json',
                 'X-CSRFToken': getCSRFToken() // Include CSRF token for security
             },
-            body: JSON.stringify({ matches, tournament_id: gameState.tournamentId })
+            body: JSON.stringify({ matches, tournament_id: tournament.tournamentId })
         });
 
         if (!response.ok) {
