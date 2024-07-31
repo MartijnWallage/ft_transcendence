@@ -1,12 +1,14 @@
 .navbar {
-    position: fixed; /* Fix the navbar at the top */
-    top: 0; /* Align to the top of the page */
-    left: 0; /* Align to the left edge of the page */
-    width: 100%; /* Full width */
+    position: fixed;
+    top: 0;
+    right: 0;
     z-index: 1000; /* Ensure it is above all other elements */
-    background-color: rgba(0, 0, 0, 0.7); /* Semi-transparent background */
-    color: white; /* Text color */
-    padding: 10px; /* Padding around the content */
+    background-color: transparent; /* No background color */
+    padding: 0; /* Remove padding */
+    border: none; /* Remove any borders if present */
+    width: auto; /* Adjust width to fit content */
+    display: flex; /* Ensure contents are aligned properly */
+    justify-content: flex-end; /* Align contents to the right */
 }
 
 .background {

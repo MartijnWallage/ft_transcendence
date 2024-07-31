@@ -6,8 +6,7 @@ urlpatterns = [
 	path('', views.index, name='index'),
 	path('view/index/', views.index, name='index1'),
 	path('api/home/', views.home_view, name='api_home'),
-	# path('api/login/', views.login_view, name='api_login'),
-	path('logout/', LogoutView.as_view(), name='logout'),
+	path('api/logout/', views.logout_view, name='logout'),
 	path('api/game_mode/', views.game_mode_view, name='api_game_mode'),
 
 	path('api/tournament/', views.tournament_view, name='api_tournament'),

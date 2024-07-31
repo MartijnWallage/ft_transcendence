@@ -22,11 +22,13 @@ function updateUI(data) {
         document.getElementById('logout-link').style.display = 'block';
         document.getElementById('user-info').style.display = 'block';
         document.getElementById('user-info').innerText = `Welcome, ${data.user_info.username}`;
+		loadPage('home')
     } else {
-        document.getElementById('login-link').style.display = 'block';
+		document.getElementById('login-link').style.display = 'block';
         document.getElementById('register-link').style.display = 'block';
         document.getElementById('logout-link').style.display = 'none';
         document.getElementById('user-info').style.display = 'none';
+		loadPage('home')
     }
 
     document.getElementById('main-content').innerHTML = data.content;
@@ -146,7 +148,10 @@ function bindEventListeners() {
 		} else if (form.id === 'register-form') {
 			console.log("main content register-form handling")
             handleFormSubmit(form, '/api/register/');
-        }
+        } else if (form.id == 'logout-form') {
+			console.log("main content register-form handling")
+			handleFormSubmit(form, '/api/logout/');
+		}
     });
 
     userContent.addEventListener('submit', function(event) {
@@ -158,7 +163,10 @@ function bindEventListeners() {
         } else if (form.id === 'register-form') {
 			console.log("user content register-form handling")
             handleFormSubmit(form, '/api/register/');
-        }
+        } else if (form.id == 'logout-form') {
+			console.log("user content register-form handling")
+			handleFormSubmit(form, '/api/logout/');
+		}
     });
 
 	// user event listerner
@@ -229,9 +237,15 @@ function handleFormSubmit(form, url) {
     })
     .then(response => response.json())
     .then(data => {
-        if (data.status === 'success') {
-			alert("logging in worked");
-			location.reload();
+        if (data.status === 'success' || response.ok) {
+			if (url.includes('login') || url.includes('register')) {
+				updateUIAfterLogin();
+				// successAction();
+			} else if (url.includes('logout')) {
+				updateUIAfterLogout();
+			}
+			// location.reload();
+			// alert("logging in worked");
 			// console.log(data);
             // loadPage('home');  // Redirect to home or another page
         } else {
@@ -246,7 +260,23 @@ function handleFormSubmit(form, url) {
     });
 }
 
+function updateUIAfterLogin() {
+    fetch('/api/home/')
+        .then(response => response.json())
+        .then(data => {
+            updateUI(data);
+            // bindEventListeners();
+        });
+}
 
+function updateUIAfterLogout() {
+    fetch('/api/home/')
+        .then(response => response.json())
+        .then(data => {
+            updateUI(data);
+            // bindEventListeners();
+        });
+}
 
 function getCookie(name) {
     let cookieValue = null;

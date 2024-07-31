@@ -167,8 +167,8 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
-# LOGIN_REDIRECT_URL = '/index'
-LOGOUT_REDIRECT_URL = 'view/index'
+LOGIN_REDIRECT_URL = ''
+LOGOUT_REDIRECT_URL = ''
 
 # Cross-Site Request Forgery (CSRF) protection mechanism has blocked a request, so it just opend 
 CSRF_TRUSTED_ORIGINS = [

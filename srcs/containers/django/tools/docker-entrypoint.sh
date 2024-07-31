@@ -20,7 +20,7 @@ retries=5
 # Always run collectstatic
 echo "Collecting static files..."
 sudo -E python3 manage.py collectstatic --noinput
-
+sleep 2
 if [ "$DJANGO_INITIAL_SETUP" = "true" ]; then
 	echo "making migration and creating user"
 	python3 manage.py makemigrations

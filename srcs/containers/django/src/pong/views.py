@@ -36,48 +36,18 @@ def home_view(request):
     }
     return JsonResponse(data)
 
-
-# @api_view(['GET'])
-# def home_view(request):
-#     # save the logged in status in global variable and could be called everywhere
-#     data = {
-#         'is_logged_in': request.user.is_authenticated,
-#         'content': render_to_string("main/home.html", request=request)
-#     }
-#     return JsonResponse(data)
-
 @api_view(['GET'])
 def load_page(request):
-    page = 'login'
-    print("this get method only is called for request")
-    if page == 'login':
-        print("login form serving")
-        form = LoginForm()
-        content = render_to_string('partials/login_form.html', {'form': form}, request)
-    elif page == 'register':
-        print("Register form serving")
-        form = RegisterForm()
-        content = render_to_string('partials/register_form.html', {'form': form}, request)
-    else:
-        # Handle other pages
-        content = render_to_string('main/home.html', {}, request)
+    print("login form serving")
+    form = LoginForm()
+    content = render_to_string('partials/login_form.html', {'form': form}, request)
     return JsonResponse({'content': content})
 
 @api_view(['GET'])
 def load_page_reg(request):
-    page = 'register'
-    print("this get method only is called for request")
-    if page == 'login':
-        print("login form serving")
-        form = LoginForm()
-        content = render_to_string('partials/login_form.html', {'form': form}, request)
-    elif page == 'register':
-        print("Register form serving")
-        form = RegisterForm()
-        content = render_to_string('partials/register_form.html', {'form': form}, request)
-    else:
-        # Handle other pages
-        content = render_to_string('main/home.html', {}, request)
+    print("Register form serving")
+    form = RegisterForm()
+    content = render_to_string('partials/register_form.html', {'form': form}, request)
     return JsonResponse({'content': content})
 
 # @csrf_exempt
@@ -86,7 +56,8 @@ def register(request):
     print("this post method only is called for register request")
     serializer = RegisterSerializer(data=request.data)
     if serializer.is_valid():
-        serializer.save()
+        user = serializer.save()
+        django_login(request, user)
         return JsonResponse({'status': 'success'}, status=201)
     return JsonResponse(serializer.errors, status=400)
 
@@ -101,26 +72,11 @@ def login(request):
         return JsonResponse({'status': 'success'})
     return JsonResponse({'status': 'error', 'errors': form.errors}, status=400)
 
-
-@api_view(['GET'])
-def login_view(request):
-    data = {
-        'content': render_to_string("main/login.html", request=request)
-    }
-    # if request.method == 'POST':
-    # 	form = RegisterForm(request.POST)
-    # 	if form.is_valid():
-    # 		user = form.save()
-    # 		login(request, user)
-    # 		return JsonResponse({'success': True, 'redirect_url': '/pong'})
-    # 	else:
-    # 		errors = form.errors.as_json()
-    # 		return JsonResponse({'success': False, 'errors': errors})
-    # else:
-    # 	form = RegisterForm()
-    # # Return form data as JSON if requested via AJAX
-    # return JsonResponse({'html': render_to_string('registration/sign_up.html', {'form': form}, request=request)})
-    return JsonResponse(data)
+@api_view(['POST'])
+def logout_view(request):
+    print("this post method only is called for logout request")
+    logout(request)
+    return JsonResponse({'status': 'success'})
 
 @api_view(['GET'])	
 def game_mode_view(request):
