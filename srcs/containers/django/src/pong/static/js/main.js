@@ -4,8 +4,8 @@ import { Tournament } from './classes/Tournament.js';
 import { registerMatches } from './tournament-score-blockchain.js';
 
 function main() {
-	const container = document.getElementById('threejs-container');
-	const this_game = new Game(container);
+
+	const this_game = new Game();
 
 	// Making game object available for load page
 	window.loadPage = loadPageClosure(this_game);
