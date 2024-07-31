@@ -5,9 +5,9 @@ import { updateScore } from './score.js';
 import { gameState } from './game-state.js';
 
 // FPS stats viewer
-const stats = new Stats();
-stats.showPanel(0);
-document.body.appendChild(stats.dom);
+// const stats = new Stats();
+// stats.showPanel(0);
+// document.body.appendChild(stats.dom);
 
 //key listener
 let keys = {};
@@ -17,6 +17,37 @@ document.addEventListener("keydown", (event) => {
 
 document.addEventListener("keyup", (event) => {
 	keys[event.key] = false;
+});
+
+document.addEventListener("touchend", (event) => {
+	// Reset the direction when touch ends
+	keys['a'] = false;
+	keys['d'] = false;
+	isTouching = false;
+	initialTouchX = null;
+});
+
+let initialTouchX = null;
+let isTouching = false;
+
+document.addEventListener("touchstart", (event) => {
+	// Track the initial touch position
+	initialTouchX = event.touches[0].clientX;
+	isTouching = true;
+});
+
+document.addEventListener("touchmove", (event) => {
+	if (isTouching) {
+		let currentTouchX = event.touches[0].clientX;
+		// Determine the direction based on touch movement
+		if (currentTouchX < initialTouchX) {
+			keys['a'] = true;
+			keys['d'] = false;
+		} else if (currentTouchX > initialTouchX) {
+			keys['a'] = false;
+			keys['d'] = true;
+		}
+	}
 });
 
 const container = document.getElementById('threejs-container');
@@ -61,11 +92,11 @@ function update() {
 }
 
 function animate() {
-	stats.begin(); // for the FPS stats
+	// stats.begin(); // for the FPS stats
 	update();
 	scene.controls.update();
 	requestAnimationFrame(animate);
-	stats.end(); // for the FPS stats
+	// stats.end(); // for the FPS stats
 }
 
 requestAnimationFrame(animate);

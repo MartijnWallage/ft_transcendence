@@ -3,7 +3,7 @@ let gameState = {
 	matchOrder: [],
 	currentGameIndex: 0,
 	playerScores: [0, 0],
-	scoreToWin: 1,
+	scoreToWin: 3,
 	running: false,
 	mode: '',
 	matchResult: [],
