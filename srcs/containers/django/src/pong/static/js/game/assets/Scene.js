@@ -32,6 +32,7 @@ class Scene {
 	createAudioContext() {
 		console.log('createAudioContext');
 		this.audio = new Audio(this.cam1);
+		document.removeEventListener('click', createAudioContext);
 		}
 
 	onWindowResize() {
