@@ -23,8 +23,16 @@ class Scene {
 		this.ball = new Ball(this.scene);
 		this.environment = new Environment(this.scene);
 		this.controls = new OrbitControls(this.cam1.camera, container);
-		this.audio = new Audio(this.cam1);
+		this.audio = null;
+		
+
+		document.addEventListener('click', () => this.createAudioContext());
 	}
+
+	createAudioContext() {
+		console.log('createAudioContext');
+		this.audio = new Audio(this.cam1);
+		}
 
 	onWindowResize() {
 			this.renderer.setSize( window.innerWidth, window.innerHeight );

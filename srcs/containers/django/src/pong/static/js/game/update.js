@@ -80,6 +80,8 @@ function update() {
 	}
 }
 
+
+
 function animate() {
 	// stats.begin(); // for the FPS stats
 	update();
