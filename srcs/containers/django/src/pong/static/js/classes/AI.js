@@ -8,7 +8,7 @@ class AI {
 		this.destination = 0;
 		this.side = 1;
         this.lastUpdateTime = 0;
-        this.updateInterval = 500; // 1000 milliseconds = 1 second
+        this.updateInterval = 1000; // 1000 milliseconds = 1 second
         this.init();
     }
 
