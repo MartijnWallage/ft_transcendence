@@ -39,28 +39,12 @@ class Score {
 		this.game.running = false;
 
 		ball.resetBall();
-		await this.displayWinMessage(`${this.players[this.winner].name} wins!`);
+		await this.displayWinMessage(`${this.players[this.winner].name}`);
 	}
 
-/* 	displayWinMessage(message) {
-		textToDiv(message, 'announcement');
-		var menu = document.getElementById('menu');
-		menu.style.display = 'block';
-		menu.style.opacity = 1;
-		const btn = document.getElementById('js-next-game-btn');
-		btn.style.display = 'block';
-		return new Promise((resolve) => {
-			function onClick(event) {
-				btn.removeEventListener('click', onClick);
-				btn.style.display = 'none';
-				resolve(event); 
-			}
-			document.addEventListener('click', onClick);
-		});
-	} */
-
-	displayWinMessage(message) {
-		textToDiv(message, 'announcement');
+	displayWinMessage(winner) {
+		textToDiv(winner, 'announcement-l1');
+		textToDiv('is a winner', 'announcement-mid');
 		
 		var menu = document.getElementById('menu');
 		menu.style.display = 'block';
@@ -78,8 +62,8 @@ class Score {
 		
 			btn.addEventListener('click', onClick); // Attach the event listener to the button
 		});
-		}
-		  
+	}
+	
 }
 
 export { Score };
