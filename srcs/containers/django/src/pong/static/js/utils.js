@@ -32,11 +32,21 @@ function waitForEnter(enter) {
 		function onKeyDown(event) {
 			if (event.key === 'Enter') {
 				document.removeEventListener('keydown', onKeyDown);
+				document.removeEventListener('touchstart', onTouchStart);
 				enter.style.display = 'none';
 				resolve();
 			}
 		}
+
+		function onTouchStart(event) {
+			document.removeEventListener('keydown', onKeyDown);
+			document.removeEventListener('touchstart', onTouchStart);
+			enter.style.display = 'none';
+			resolve();
+		}
+
 		document.addEventListener('keydown', onKeyDown);
+		document.addEventListener('touchstart', onTouchStart);
 	});
 }
 

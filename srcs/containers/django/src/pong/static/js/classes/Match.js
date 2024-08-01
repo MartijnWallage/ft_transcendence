@@ -2,7 +2,7 @@ import { getRandomInt, textToDiv, HTMLToDiv, countdown, waitForEnter } from '../
 import { Score } from './Score.js';
 
 class Match {
-	constructor(game, players) {
+		constructor(game, players) {
 		this.game = game;
 		this.players = players;
 		this.running = false;
@@ -25,19 +25,20 @@ class Match {
 			let middle = window.innerWidth / 2;
 		
 			if (touchX < middle) {
-				keys['a'] = true;
-				keys['d'] = false;
+				this.keys['a'] = true;
+				this.keys['d'] = false;
 			} else {
-				keys['a'] = false;
-				keys['d'] = true;
+				this.keys['a'] = false;
+				this.keys['d'] = true;
 			}
 		});
 		
 		document.addEventListener("touchend", (event) => {
 			// Reset the direction when touch ends
-			keys['a'] = false;
-			keys['d'] = false;
+			this.keys['a'] = false;
+			this.keys['d'] = false;
 		});
+		console.log('Match instance created');
 	}
 
 	async play() {
