@@ -9,6 +9,7 @@ import { Environment } from './Environment.js';
 import { Camera } from './Camera.js';
 import { Audio } from './Audio.js';
 import { OrbitControls } from '../three-lib/OrbitControls.js';
+import { BlockchainStoring } from './BlockchainStoring.js';
 
 class Game {
 	constructor() {
@@ -67,6 +68,10 @@ class Game {
 
 	onWindowResize() {
 		this.renderer.setSize( window.innerWidth, window.innerHeight );
+	}
+
+	executeBlockchainTransaction() {
+		new BlockchainStoring(this.tournament.tournamentId);
 	}
 }
 

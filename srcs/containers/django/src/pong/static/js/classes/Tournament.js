@@ -158,6 +158,7 @@ class Tournament {
 				'player2' : matchResult.player2,
 				'player1_score' : matchResult.player1Score,
 				'player2_score' : matchResult.player2Score,
+				'timestamp' : matchResult.timestamp
 			}),
 			contentType: 'application/json; charset=utf-8',
 			dataType: 'json',
@@ -186,9 +187,15 @@ class Tournament {
 		try {
 			this.tournamentId = await this.createTournament();
 
-			for (const player of this.players) {
+			for (let index = 0; index < this.players.length; index++) {
+				const player = this.players[index];
+				console.log('Adding participant:', player.name);
 				await this.addParticipant(player.name, this.tournamentId);
 			}
+
+			// for (const player of this.players) {
+			// 	await this.addParticipant(player.name, this.tournamentId);
+			// }
 
 			console.log('Match Result:', this.matchResult);
 

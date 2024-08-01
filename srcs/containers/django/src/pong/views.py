@@ -13,7 +13,8 @@ from django.http import JsonResponse
 from django.template.loader import render_to_string
 from rest_framework.decorators import api_view
 from django.conf import settings
-
+from web3 import Web3
+from web3.middleware import geth_poa_middleware
 
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
@@ -175,6 +176,7 @@ def create_match(request):
 		tournament_id = data.get('tournament_id')
 		player1_score = data.get('player1_score')
 		player2_score = data.get('player2_score')
+		timestamp = data.get('timestamp')
 
 
 		# Retrieve the tournament
@@ -195,7 +197,7 @@ def create_match(request):
 
 
 		# Create the match
-		match = Match.objects.create(player1=player1, player2=player2, player1_score=player1_score, player2_score=player2_score)
+		match = Match.objects.create(player1=player1, player2=player2, player1_score=player1_score, player2_score=player2_score, timestamp=timestamp)
 
 		# Add match to the tournament
 		tournament.match.add(match)
@@ -213,15 +215,26 @@ def get_contract_address(request):
     contract_address = settings.SMART_CONTRACT_ADDRESS
     return JsonResponse({'contract_address': contract_address})
 
-from web3 import Web3
-from web3.middleware import geth_poa_middleware
 
 @api_view(['POST'])
 def register_matches(request):
 	data = json.loads(request.body)
-	matches = data.get('matches', [])
 	tournament_id = data.get('tournament_id')
-
+	print('tournament_id:', tournament_id)
+	try:
+		tournament = Tournament.objects.get(id=tournament_id)
+		matches = tournament.match.all()
+		match_data = [{
+			'player1': match.player1.name,
+			'player2': match.player2.name,
+			'score1': match.player1_score,
+			'score2': match.player2_score,
+			'timestamp': match.timestamp
+		} for match in matches]
+	except Tournament.DoesNotExist:
+		return JsonResponse({'success': False, 'error': 'Tournament not found'}, status=404)
+	
+	
 	# Setup Web3 and contract
 	alchemy_url = f"https://eth-sepolia.g.alchemy.com/v2/{settings.ALCHEMY_API_KEY}"
 	web3 = Web3(Web3.HTTPProvider(alchemy_url))
@@ -234,26 +247,27 @@ def register_matches(request):
 	account = web3.eth.account.from_key(private_key)
 	web3.eth.defaultAccount = account.address
 
-	# Sign transaction
-	tx = contract.functions.recordMatches(matches).build_transaction({
-		'from': account.address,
-		'gas': 2000000,  # or any estimate
-		'gasPrice': web3.eth.gas_price,
-		'nonce': web3.eth.get_transaction_count(account.address),
-	})
-	signed_tx = web3.eth.account.sign_transaction(tx, private_key)
-
-	# Send transaction
-	tx_hash = web3.eth.send_raw_transaction(signed_tx.rawTransaction)
-
-	# Wait for the transaction receipt
-	receipt = web3.eth.wait_for_transaction_receipt(tx_hash)
-
-	# Update the tournament with the transaction hash
 	try:
-		tournament = Tournament.objects.get(id=tournament_id)
+		# Sign transaction
+		tx = contract.functions.recordMatches(match_data).build_transaction({
+			'from': account.address,
+			'gas': 3000000,  # or any estimate
+			'gasPrice': web3.eth.gas_price,
+			'nonce': web3.eth.get_transaction_count(account.address),
+		})
+		signed_tx = web3.eth.account.sign_transaction(tx, private_key)
+
+		# Send transaction
+		tx_hash = web3.eth.send_raw_transaction(signed_tx.rawTransaction)
+
+		# Wait for the transaction receipt
+		receipt = web3.eth.wait_for_transaction_receipt(tx_hash)
+
+		# Store the transaction hash in the database
 		tournament.transaction_hash = receipt.transactionHash.hex()
 		tournament.save()
+
+		# Update the tournament with the transaction hash
 		return JsonResponse({'success': True, 'tx_hash': receipt.transactionHash.hex()})
-	except Tournament.DoesNotExist:
-		return JsonResponse({'success': False, 'error': 'Tournament not found'})
+	except Exception as e:
+		return JsonResponse({'success': False, 'error': str(e)}, status=500)
