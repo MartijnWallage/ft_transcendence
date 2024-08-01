@@ -59,15 +59,23 @@ class Match {
 		const cam1 = this.game.cam1;
 		const cam2 = this.game.cam2;
 	
-		// move left paddle
-		let direction = this.keys['a'] ? -1 : this.keys['d'] ? 1 : 0;
+		// Handle paddle1 (Player 1) movement
+		let direction = 0;
+		if (this.players[0].isRemote) {
+			direction = this.keys['ArrowLeft'] ? -1 : this.keys['ArrowRight'] ? 1 : 0;
+		} else {
+			direction = this.keys['a'] ? -1 : this.keys['d'] ? 1 : 0;
+		}
 		paddle1.movePaddle(direction, field);
-	
-		// move right paddle
-		direction = this.players[1].ai ? this.players[1].ai.movePaddle(paddle2, ball) :
-			this.keys['ArrowRight'] ? -1 :
-			this.keys['ArrowLeft'] ? 1 :
-			0;
+
+		// Handle paddle2 (Player 2) movement
+		if (this.players[1].ai) {
+			direction = this.players[1].ai.movePaddle(paddle2, ball);
+		} else if (this.players[1].isRemote) {
+			direction = this.keys['ArrowLeft'] ? -1 : this.keys['ArrowRight'] ? 1 : 0;
+		} else {
+			direction = this.keys['ArrowLeft'] ? -1 : this.keys['ArrowRight'] ? 1 : 0;
+		}
 		paddle2.movePaddle(direction, field);
 	
 		// move and bounce ball

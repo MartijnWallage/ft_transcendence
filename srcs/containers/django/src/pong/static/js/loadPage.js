@@ -48,6 +48,12 @@ function bindEventListeners(game) {
 	if (startUserVsUserButton) {
 		startUserVsUserButton.addEventListener('click', game.startUserVsUser.bind(game));
 	}
+
+	//added remote version to handle websocket
+	const startRemoteUserVsUserButton = document.getElementById('js-start-user-vs-user-remote-btn');
+	if (startRemoteUserVsUserButton) {
+		startRemoteUserVsUserButton.addEventListener('click', game.startUserVsUser.bind(game));
+	}
 	
 	const addPlayerBtn = document.getElementById('js-add-player-btn');
 	if (addPlayerBtn) {

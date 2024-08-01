@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 
 from pathlib import Path
 import os
+import json
 import django
 from django.utils.encoding import force_str
 django.utils.encoding.force_text = force_str
@@ -39,6 +40,8 @@ print("ALLOWED_HOSTS:", ALLOWED_HOSTS)
 # Application definition
 
 INSTALLED_APPS = [
+    # 'daphne',
+    # 'channels',
 	'pong.apps.PongConfig',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -52,7 +55,14 @@ INSTALLED_APPS = [
     'crispy_forms'
 ]
 
-
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': os.getenv('CHANNEL_LAYERS_BACKEND', 'channels_redis.core.RedisChannelLayer'),
+        'CONFIG': {
+            "hosts": json.loads(os.getenv('CHANNEL_LAYERS_CONFIG_HOSTS', '[["redis", 6379]]')),
+        },
+    },
+}
 
 # # Initialize environment variables
 
@@ -184,5 +194,6 @@ CSRF_TRUSTED_ORIGINS = [
     'https://127.0.0.1',
     'https://127.0.0.1:8443',
     'https://159.89.8.55',
-    'https://144.126.245.86'
+    'https://144.126.245.86',
+    'https://10.15.109.3:8443'
 ]

@@ -36,6 +36,9 @@ class Game {
 		this.running = false;
 		this.match = null;
 		this.tournament = null;
+
+		// WebSocket
+		this.pingpongsocket = null;
 	}
 
 	// These are the modes bound to the buttons in the menu
@@ -53,6 +56,14 @@ class Game {
 		this.match = new Match(this, [player1, player2]);
 		this.match.play();
 	}
+
+	// startRemoteUserVsUser() {
+	// 	//add websocket
+	// 	const player1 = new Player('Guest 1');
+	// 	const player2 = new Player('Guest 2');
+	// 	this.match = new Match(this, [player1, player2]);
+	// 	this.match.play();
+	// }
 
 	createTournament() {
 		const tournament = new Tournament(this);
