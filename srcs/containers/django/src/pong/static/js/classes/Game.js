@@ -15,7 +15,7 @@ class Game {
 		// Scene
 		const container = document.getElementById('threejs-container');
 		this.scene = new THREE.Scene();
-		this.renderer = new THREE.WebGLRenderer({container}, { antialias: true });
+		this.renderer = new THREE.WebGLRenderer({ antialias: true });
 		this.cam1 = new Camera;
 		this.cam2 = new Camera;
 		this.renderer.setSize(window.innerWidth, window.innerHeight);
@@ -29,13 +29,22 @@ class Game {
 		this.ball = new Ball(this.scene);
 		this.environment = new Environment(this.scene);
 		this.controls = new OrbitControls(this.cam1.camera, container);
-		this.audio = new Audio(this.cam1);
+		this.audio = null;
 
 		// Game state
 		this.scoreToWin = 1;
 		this.running = false;
 		this.match = null;
 		this.tournament = null;
+
+		this.createAudioContext = this.createAudioContext.bind(this);
+		document.addEventListener('click', this.createAudioContext);
+	}
+
+	// Create audio audio context once there is a first interaction with the website to comply with internet rules
+	createAudioContext() {
+		this.audio = new Audio(this.cam1);
+		document.removeEventListener('click', this.createAudioContext);
 	}
 
 	// These are the modes bound to the buttons in the menu

@@ -40,11 +40,11 @@ function waitForEnter(enter) {
 	});
 }
 
-function countdown(seconds, announcement) {
+function countdown(seconds) {
 	return new Promise(resolve => {
-		announcement.innerHTML = seconds;
+		textToDiv(seconds, 'announcement-l1');
 		const interval = setInterval(() => {
-			announcement.innerHTML = seconds;
+			textToDiv(seconds, 'announcement-l1');
 			seconds -= 1;
 			if (seconds < 0) {
 				clearInterval(interval);

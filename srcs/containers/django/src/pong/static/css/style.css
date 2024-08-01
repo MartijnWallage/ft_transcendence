@@ -6,7 +6,6 @@
 	height: 100%;
 	z-index: -1; /* Place behind other content */
 	/* Adjust background properties */
-	background-image: url( ../images/getty.jpg );
 	/* background-color: #33ff55; */
 	background-size: cover; /* Adjust to cover the entire screen */
 	background-position: center;
@@ -41,6 +40,20 @@
 	text-align: center;
 	opacity: 1;
 	transition: opacity 1.5s ease-out;
+}
+
+#player1-info {
+	user-select: none;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+}
+
+#player2-info {
+	user-select: none;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
 }
 
 #under-title {

@@ -18,6 +18,8 @@ class Camera {
 	}
 
 	renderMenuView(scene) {
+		const split = document.getElementById('vertical-line');
+		split.style.display = 'none';
 		this.orbitCamera();
 		const left = Math.floor( window.innerWidth * 0 );
 		const bottom = Math.floor( window.innerHeight * 0 );
