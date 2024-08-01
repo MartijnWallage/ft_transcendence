@@ -25,12 +25,11 @@ class Match {
 		const player2Name = this.players[1].name;
 
 		await window.loadPage('pong');
-		this.game.running = true;
 		console.log('Match started');
-
+		
 		const ball = this.game.ball;
 		HTMLToDiv(`${player1Name}<br>VS<br>${player2Name}`, 'announcement');
-
+		
 		const enter = document.getElementById('enter');
 		enter.style.display = 'block';
 		await waitForEnter(enter);
@@ -42,6 +41,7 @@ class Match {
 			menu.classList.add('hidden');
 		}, 1500); 
 		
+		this.game.running = true;
 		this.timestamp = Date.now();
 		ball.serve = getRandomInt(0, 2) ? 1 : -1;
 		ball.serveBall();

@@ -11,8 +11,8 @@ class Player {
 		};
 	}
 
-	setAI() {
-		this.ai = new AI();
+	setAI(game) {
+		this.ai = new AI(game);
 	}
 }
 

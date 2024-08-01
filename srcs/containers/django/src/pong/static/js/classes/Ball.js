@@ -3,6 +3,7 @@ import { getRandomInt, abs } from '../utils.js';
 
 class Ball {
 	constructor(scene) {
+		this.scene = scene;
 		this.radius = 0.3;
 		this.geometry = new THREE.SphereGeometry(this.radius);
 		this.material = new THREE.MeshStandardMaterial({
@@ -17,7 +18,7 @@ class Ball {
 		this.serve = 1;
 		this.dx = 0;
 		this.dz = 0;
-		this.speed = 0.2;
+		this.initialSpeed = 0.2;
 		scene.add(this.mesh);
 	}
 
@@ -41,7 +42,7 @@ class Ball {
 
         if (this.checkPaddleCollision(paddle)) {
             this.dz = (this.position.z - paddle.position.z) * 0.20;
-            this.dx *= (abs(this.dx) < this.speed / 1.5) ? -2 : -1.03;
+            this.dx *= (abs(this.dx) < this.initialSpeed / 1.5) ? -2 : -1.03;
             audio.playSound(audio.hit);
         }
     }
@@ -79,7 +80,7 @@ class Ball {
 		this.position.x = 0;
 		this.position.z = 0;
 		this.serve *= -1;
-		this.dx = this.speed * this.serve / 2;
+		this.dx = this.initialSpeed * this.serve / 2;
 		this.dz = getRandomInt(-7.5, 7.5) / 100;
 	}
 

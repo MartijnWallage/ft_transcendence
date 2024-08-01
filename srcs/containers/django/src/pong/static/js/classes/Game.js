@@ -32,7 +32,7 @@ class Game {
 		this.audio = new Audio(this.cam1);
 
 		// Game state
-		this.scoreToWin = 1;
+		this.scoreToWin = 6;
 		this.running = false;
 		this.match = null;
 		this.tournament = null;
@@ -42,7 +42,7 @@ class Game {
 	startSolo() {
 		const player1 = new Player('Guest');
 		const player2 = new Player('pongAI');
-		player2.setAI();
+		player2.setAI(this);
 		this.match = new Match(this, [player1, player2]);
 		this.match.play();
 	}
