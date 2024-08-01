@@ -3,7 +3,6 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 
 class PingpongConsumer(AsyncWebsocketConsumer):
     connected_players = 0
-    # players_ready_count = 0
     player_roles = {}
 
     async def connect(self):
@@ -16,8 +15,6 @@ class PingpongConsumer(AsyncWebsocketConsumer):
 
         if self.__class__.connected_players < 2:
             self.__class__.connected_players += 1
-            # self.is_first_player = self.__class__.connected_players == 1
-            # role = 'first' if self.is_first_player else 'second'
             role = 'first' if self.__class__.connected_players == 1 else 'second'
             self.__class__.player_roles[self.channel_name] = role
 
@@ -28,31 +25,6 @@ class PingpongConsumer(AsyncWebsocketConsumer):
                     'players': self.get_player_status()
                 }
             )
-
-            # await self.channel_layer.group_send(
-            #     self.room_group_name,
-            #     {
-            #         'type': 'players_ready',
-            #         'role': role
-            #     }
-            # )
-            
-            
-            # await self.channel_layer.group_send(
-            #     self.room_group_name,
-            #     {
-            #         'type': 'player_connected',
-            #         'role': 'first'
-            #     }
-            # )
-        # elif self.__class__.connected_players == 1:
-        #     await self.channel_layer.group_send(
-        #         self.room_group_name,
-        #         {
-        #             'type': 'players_ready',
-        #             'role': 'second'
-        #         }
-        #     )
         else:
             await self.close()  # No more than two players allowed
 
@@ -79,9 +51,6 @@ class PingpongConsumer(AsyncWebsocketConsumer):
             message_type = data.get('type', '')
 
             if message_type == 'initiate_remote_play':
-                # role = 'first' if self.is_first_player else 'second'
-                # role = self.__class__.player_roles.get(self.channel_name, 'unknown')
-                # self.__class__.players_ready_count += 1
                 await self.channel_layer.group_send(
                     self.room_group_name,
                     {
@@ -89,16 +58,19 @@ class PingpongConsumer(AsyncWebsocketConsumer):
                         'players': self.get_player_status()
                     }
                 )
-
             elif message_type == 'player_action':
+                # Process the player's action
+                action_data = data.get('data', {})
+                self.update_game_state(action_data)  # Update the game state
+
+                # Broadcast the updated game state to all clients
                 await self.channel_layer.group_send(
                     self.room_group_name,
                     {
-                        'type': 'player_action',
-                        'data': data.get('data', {})
+                        'type': 'game_update',
+                        'game_state': self.get_game_state()
                     }
                 )
-            
             else:
                 await self.send(text_data=json.dumps({
                     'error': f'Unsupported message type: {message_type}'
@@ -106,6 +78,37 @@ class PingpongConsumer(AsyncWebsocketConsumer):
 
         except json.JSONDecodeError:
             await self.send(text_data=json.dumps({'error': 'Invalid JSON data received'}))
+
+    # async def receive(self, text_data):
+    #     try:
+    #         data = json.loads(text_data)
+    #         message_type = data.get('type', '')
+
+    #         if message_type == 'initiate_remote_play':
+    #             await self.channel_layer.group_send(
+    #                 self.room_group_name,
+    #                 {
+    #                     'type': 'players_ready',
+    #                     'players': self.get_player_status()
+    #                 }
+    #             )
+
+    #         elif message_type == 'player_action':
+    #             await self.channel_layer.group_send(
+    #                 self.room_group_name,
+    #                 {
+    #                     'type': 'player_action',
+    #                     'data': data.get('data', {})
+    #                 }
+    #             )
+            
+    #         else:
+    #             await self.send(text_data=json.dumps({
+    #                 'error': f'Unsupported message type: {message_type}'
+    #             }))
+
+    #     except json.JSONDecodeError:
+    #         await self.send(text_data=json.dumps({'error': 'Invalid JSON data received'}))
 
 
 
@@ -115,14 +118,6 @@ class PingpongConsumer(AsyncWebsocketConsumer):
     async def player_disconnected(self, event):
         await self.send(text_data=json.dumps({'type': 'player_disconnected', 'players': event['players']}))
 
-    async def player_connected(self, event):
-        await self.send(text_data=json.dumps({'type': 'player_connected', 'role': event['role']}))
-
-    
-
-    async def start_game(self, event):
-        await self.send(text_data=json.dumps({'type': 'start_game'}))
-    
     async def player_action(self, event):
         await self.send(text_data=json.dumps({'type': 'player_action', 'data': event['data']}))
 
@@ -132,6 +127,15 @@ class PingpongConsumer(AsyncWebsocketConsumer):
 
 
 
+
+
+
+    # async def player_connected(self, event):
+    #     await self.send(text_data=json.dumps({'type': 'player_connected', 'role': event['role']}))
+
+    # async def start_game(self, event):
+    #     await self.send(text_data=json.dumps({'type': 'start_game'}))
+    
 
 
 

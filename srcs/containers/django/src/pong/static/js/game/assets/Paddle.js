@@ -36,6 +36,15 @@ class Paddle {
 		}
 	};
 
+	// Method to get position as a plain object
+    getPosition() {
+        return {
+            x: this.mesh.position.x,
+            y: this.mesh.position.y,
+            z: this.mesh.position.z
+        };
+    }
+
 	get position() {
 		return this.mesh.position;
 	}

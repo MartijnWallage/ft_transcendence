@@ -1,6 +1,6 @@
 import { gameState } from './game-state.js';
 import { startGame } from './start-end-game.js';
-import { ball } from './update.js';
+import { ball, updateLocalGameState } from './update.js';
 import { endTournament } from './tournament-end.js';
 
 
@@ -30,11 +30,6 @@ async function startGameUserVsUserremote() {
 
 
 let pingpongsocket = null;
-let is_player_ready = false;
-let is_opponent_ready = false;
-
-
-
 
 function initializeWebSocket() {
     // This message will be printed when the WebSocket is created
@@ -44,16 +39,17 @@ function initializeWebSocket() {
     pingpongsocket.onopen = function() {
         console.log('WebSocket is connected.');
 		initiateRemotePlay();
-		// sendPlayerReadyStatus();
-		// You can send a message to the server upon connection if needed
-        // pingpongsocket.send(JSON.stringify({ type: 'INIT', data: 'Some data' }));
+
     };
 
     pingpongsocket.onmessage = function(event) {
-		// const data = JSON.parse(event.data);
-        // console.log('Message from server ', event.data);
-		// handleServerMessage(data);
-		handleServerMessage(JSON.parse(event.data));
+        try {
+            const data = JSON.parse(event.data);
+            console.log('Message from server:', data);
+            handleServerMessage(data); // Ensure data is passed to handleServerMessage
+        } catch (error) {
+            console.error('Error parsing message from server:', error);
+        }
     };
 
     pingpongsocket.onclose = function(event) {
@@ -67,87 +63,51 @@ function initializeWebSocket() {
 
 
 function handleServerMessage(data) {
-    console.log('Message from server:', data);
 
     if (data.type === 'players_ready') {
         console.log('Player statuses received:', data.players);
 
-        gameState.players = data.players.map((player, index) => 
+		// Check and set game state
+        if (!Array.isArray(data.players) || data.players.length !== 2) {
+            console.error('Invalid player data received.');
+            return;
+        }
+
+        gameState.players = data.players.map((player) => 
             player.role === 'first' ? 'Player 1' : 'Player 2'
         );
 
         console.log('Current gameState.players:', gameState.players);
 
-        if (data.players.length === 2) {
+        if (data.players.length === 2 && !gameState.gameStarted) {
             console.log('Both players are ready. Starting the game.');
-            if (!gameState.gameStarted) {
-                gameState.gameStarted = true;
-                startGame(gameState.players[0], gameState.players[1], 'remote');
-            }
+			gameState.gameStarted = true;
+			startGame(gameState.players[0], gameState.players[1], 'remote');  
         } else {
             console.log('Waiting for both players to be ready...');
         }
     } else if (data.type === 'player_disconnected') {
         console.log('A player has disconnected. Current players:', data.players);
         // Handle player disconnection if needed
+    } else if (data.type === 'game_update') {
+        console.log('Game update received:', data.game_state);
+        updateLocalGameState(data.game_state); // Sync local game state
     } else {
         console.log('Unhandled message type:', data.type);
     }
 }
 
-// function handleServerMessage(data) {
-    
-// 	if (data.type === 'players_ready') {
-//         console.log('Player ready status received:', data.role);
-
-//         if (data.role === 'first') {
-//             gameState.players[0] = 'Player 1';
-//             is_player_ready = true;
-//         } else if (data.role === 'second') {
-//             gameState.players[1] = 'Player 2';
-//             is_opponent_ready = true;
-//         }
-		
-// 		// Debugging: Check the current state
-//         console.log('Current gameState.players:', gameState.players);
-
-//         // Check if both players are assigned and ready
-//         if (is_player_ready && is_opponent_ready) {
-//             console.log('Both players are ready. Starting the game.');
-//             if (!gameState.gameStarted) {  // Prevent redundant starts
-//                 gameState.gameStarted = true;
-//                 startGame(gameState.players[0], gameState.players[1], 'remote');
-//             }
-//         } else {
-//             console.log('Waiting for both players to be ready...');
-//         }
-//     // } else if (data.type === 'start_game') {
-//     //     console.log('Starting game command received from server.');
-//     //     if (!gameState.gameStarted) {  // Prevent redundant starts
-//     //         gameState.gameStarted = true;
-//     //         startGame(gameState.players[0], gameState.players[1], 'remote');
-//     //     }
-//     // }
-// 	} else {
-//         console.log('Unhandled message type:', data.type);
-//     }
-// }
 
 function initiateRemotePlay() {
     const message = { type: 'initiate_remote_play' };
     sendMessageToWebSocket(message);
 }
 
-// function initiateRemotePlay() {
-// 	// const role = is_player_ready ? 'second' : 'first'; // Assume 'first' role initially
-// 	const message = { type: 'initiate_remote_play', role: 'first' };
-// 	sendMessageToWebSocket(message);
-// }
+
 
 function players_ready() {
 	const message = { type: 'player_ready', data: {} };
 	sendMessageToWebSocket(message);
-	is_player_ready = true;
 }
 
 function sendMessageToWebSocket(message) {
@@ -253,7 +213,7 @@ function updateScoreTournament() {
 
 // export { initializeWebSocket, handleServerMessage, players_ready, addPlayer, displayPlayers, initializeTournament, displayScoreTournament, updateScoreTournament, nextGame };
 // export { initializeWebSocket, handleServerMessage, players_ready, displayPlayers, initializeTournament, displayScoreTournament, updateScoreTournament, nextGame };
-export { startGameUserVsUserremote, initiateRemotePlay, initializeWebSocket, handleServerMessage, players_ready, displayPlayers, initializeTournament, displayScoreTournament, updateScoreTournament, nextGame };
+export { sendMessageToWebSocket, startGameUserVsUserremote, initiateRemotePlay, initializeWebSocket, handleServerMessage, players_ready, displayPlayers, initializeTournament, displayScoreTournament, updateScoreTournament, nextGame };
 
 
 

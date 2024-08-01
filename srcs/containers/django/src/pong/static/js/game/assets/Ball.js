@@ -83,6 +83,22 @@ class Ball {
 		this.dz = getRandomInt(-7.5, 7.5) / 100;
 	}
 
+	// Method to get position as a plain object
+    getPosition() {
+        return {
+            x: this.position.x,
+            y: this.position.y,
+            z: this.position.z
+        };
+    }
+
+    // Method to set position from a plain object
+    setPosition(position) {
+        this.position.x = position.x;
+        this.position.y = position.y;
+        this.position.z = position.z;
+    }
+
 	get position() {
 		return this.mesh.position;
 	}

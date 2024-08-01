@@ -1,5 +1,5 @@
 import { endGame, startGameUserVsUser, startGameSolo, startTournament } from "../game/start-end-game.js";
-import { startGameUserVsUserremote } from "../game/remote.js";
+import { startGameUserVsUserremote } from "../game/websocket.js";
 import { addPlayer } from '../game/tournament.js';
 
 function fadeIn(element) {
