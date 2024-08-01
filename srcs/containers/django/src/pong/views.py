@@ -103,14 +103,18 @@ from django.db.models import Max
 
 @api_view(['GET'])
 def tournament_score(request):
-	highest_tournament = Tournament.objects.aggregate(Max('id'))['id__max']
-	tournament = get_object_or_404(Tournament, id=highest_tournament)
-	html_content = render_to_string("main/tournament_score.html", {'tournament': tournament}, request=request)
-	data = {
-		'content': html_content
-	}
-	return JsonResponse(data)
-
+    highest_tournament = Tournament.objects.aggregate(Max('id'))['id__max']
+    if highest_tournament is None:
+        # Handle the case where there are no tournaments in the database
+        html_content = render_to_string("main/tournament_score.html", {'tournament': None}, request=request)
+    else:
+        tournament = get_object_or_404(Tournament, id=highest_tournament)
+        html_content = render_to_string("main/tournament_score.html", {'tournament': tournament}, request=request)
+    
+    data = {
+        'content': html_content
+    }
+    return JsonResponse(data)
 import traceback
 
 @csrf_exempt
