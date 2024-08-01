@@ -24,38 +24,42 @@ class Ball {
 	checkPaddleCollision(paddle) {
 		const topPaddle = paddle.position.z - paddle.geometry.parameters.depth / 2;
 		const bottomPaddle = paddle.position.z + paddle.geometry.parameters.depth / 2;
-        const leftSidePaddle = paddle.position.x - paddle.geometry.parameters.width / 2;
-        const rightSidePaddle = paddle.position.x + paddle.geometry.parameters.width / 2;
+		const leftSidePaddle = paddle.position.x - paddle.geometry.parameters.width / 2;
+		const rightSidePaddle = paddle.position.x + paddle.geometry.parameters.width / 2;
 		const topBall = this.position.z - this.radius;
 		const bottomBall = this.position.z + this.radius;
-        const leftSideBall = this.position.x - this.radius;
-        const rightSideBall = this.position.x + this.radius;
+		const leftSideBall = this.position.x - this.radius;
+		const rightSideBall = this.position.x + this.radius;
 
-        return (bottomBall >= topPaddle && topBall <= bottomPaddle) &&
-            ((this.dx < 0 && leftSideBall <= rightSidePaddle && rightSideBall >= leftSidePaddle) ||
-            (this.dx > 0 && rightSideBall >= leftSidePaddle && leftSideBall <= rightSidePaddle));
+		return (bottomBall >= topPaddle && topBall <= bottomPaddle) &&
+			((this.dx < 0 && leftSideBall <= rightSidePaddle && rightSideBall >= leftSidePaddle) ||
+			(this.dx > 0 && rightSideBall >= leftSidePaddle && leftSideBall <= rightSidePaddle));
 	}
 
-    tryPaddleCollision(paddle_p1, paddle_p2, audio) {
-        const paddle = this.dx > 0 ? paddle_p2 : paddle_p1;
+	tryPaddleCollision(paddle_p1, paddle_p2, audio) {
+		const paddle = this.dx > 0 ? paddle_p2 : paddle_p1;
 
-        if (this.checkPaddleCollision(paddle)) {
-            this.dz = (this.position.z - paddle.position.z) * 0.20;
-            this.dx *= (abs(this.dx) < this.speed / 1.5) ? -2 : -1.03;
-            audio.playSound(audio.hit);
-        }
-    }
+		if (this.checkPaddleCollision(paddle)) {
+			this.dz = (this.position.z - paddle.position.z) * 0.20;
+			this.dx *= (abs(this.dx) < this.speed / 1.5) ? -2 : -1.03;
+			if (paddle === paddle_p1) {
+				audio.playSound(audio.ping);
+			} else {
+				audio.playSound(audio.pong);
+			}
+		}
+	}
 
-    checkCourtCollision(court) {
-        const topBall = this.position.z - this.radius;
-        const bottomBall = this.position.z + this.radius;
-        const halfCourt = court.geometry.parameters.depth / 2;
-        const topCourt = -halfCourt;
-        const bottomCourt = halfCourt;
-        
-        return (this.dz > 0 && bottomBall > bottomCourt)
-            || (this.dz < 0 && topBall < topCourt);
-    }
+	checkCourtCollision(court) {
+		const topBall = this.position.z - this.radius;
+		const bottomBall = this.position.z + this.radius;
+		const halfCourt = court.geometry.parameters.depth / 2;
+		const topCourt = -halfCourt;
+		const bottomCourt = halfCourt;
+		
+		return (this.dz > 0 && bottomBall > bottomCourt)
+			|| (this.dz < 0 && topBall < topCourt);
+	}
 
 	tryCourtCollision(court) {
 		if (this.checkCourtCollision(court)) {
