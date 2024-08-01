@@ -9,6 +9,7 @@ import { Environment } from './Environment.js';
 import { Camera } from './Camera.js';
 import { Audio } from './Audio.js';
 import { OrbitControls } from '../three-lib/OrbitControls.js';
+import { delay } from '../utils.js';
 
 class Game {
 	constructor() {
@@ -37,14 +38,21 @@ class Game {
 		this.match = null;
 		this.tournament = null;
 
+		console.log('Game class created');
 		this.createAudioContext = this.createAudioContext.bind(this);
-		document.addEventListener('click', this.createAudioContext);
+		document.addEventListener('click', this.createAudioContext);	
 	}
 
 	// Create audio audio context once there is a first interaction with the website to comply with internet rules
-	createAudioContext() {
+	async createAudioContext() {
 		this.audio = new Audio(this.cam1);
-		document.removeEventListener('click', this.createAudioContext);
+		document.removeEventListener('click', this.createAudioContext.bind(this));
+		await delay(500); // crappy way to wait for the audio engigne to be fully loaded.
+		this.audio.playSound(this.audio.woosh_1);
+		this.cam1.introCameraAnimation();
+		setTimeout(() => this.audio.playSound(this.audio.woosh_2),1200);
+		setTimeout(() => this.audio.playSound(this.audio.chimes),2400);
+		setTimeout(() => this.audio.playSound(this.audio.main),4000);
 	}
 
 	// These are the modes bound to the buttons in the menu

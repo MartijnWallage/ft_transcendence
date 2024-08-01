@@ -4,7 +4,6 @@ class Audio {
 	constructor(camera) {
 		this.listener = new THREE.AudioListener();
 		camera.camera.add(this.listener);
-		this.hit = this.addSound('./static/audio/hit.wav', false);
 		this.main = this.addSound('./static/audio/main.mp3', true);
 		this.ping = this.addSound('./static/audio/ping.mp3', false);
 		this.pong = this.addSound('./static/audio/pong.mp3', false);

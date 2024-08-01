@@ -45,7 +45,6 @@ function animate(stats, game) {
 		game.match.update();
 	}
 
-	game.controls.update();
 	requestAnimationFrame(animate.bind(null, stats, game));
 
 	// End the frame per second stats

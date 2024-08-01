@@ -9,6 +9,10 @@ const min = (a, b) => {
 	return a < b ? a : b;
 }
 
+function delay(ms) {
+	return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 function textToDiv(text, divID) {
 	var div = document.getElementById(divID);
 	if (!div) {
@@ -50,13 +54,14 @@ function waitForEnter(enter) {
 	});
 }
 
-function countdown(seconds) {
+function countdown(seconds, audio) {
 	return new Promise(resolve => {
 		textToDiv(seconds, 'announcement-l1');
 		const interval = setInterval(() => {
 			textToDiv(seconds, 'announcement-l1');
 			seconds -= 1;
 			if (seconds < 0) {
+				audio.playSound(audio.start);
 				clearInterval(interval);
 				resolve();
 			}
@@ -64,4 +69,4 @@ function countdown(seconds) {
 	});
 }
 
-export { getRandomInt, abs, min, textToDiv, HTMLToDiv, countdown, waitForEnter };
+export { getRandomInt, abs, min, textToDiv, delay, HTMLToDiv, countdown, waitForEnter };

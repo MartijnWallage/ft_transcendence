@@ -64,7 +64,7 @@ class Match {
 		HTMLToDiv(``, 'announcement-l1');
 		HTMLToDiv(``, 'announcement-mid');
 		HTMLToDiv(``, 'announcement-l2');
-		await countdown(2);
+		await countdown(2, this.game.audio);
 		const menu = document.getElementById('menu');
 		menu.classList.add('fade-out');
 		setTimeout(function() {
