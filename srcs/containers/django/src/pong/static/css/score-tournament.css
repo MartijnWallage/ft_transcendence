@@ -18,7 +18,7 @@ table {
 	background-color: #1215d8;
   }
 
-#transaction-info{
+#transaction-info, #no-tournament-info{
 	margin-top: 20px;
 	margin-bottom: 20px;
 	padding: 20px;
