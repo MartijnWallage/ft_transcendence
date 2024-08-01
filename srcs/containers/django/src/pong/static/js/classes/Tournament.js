@@ -179,23 +179,13 @@ class Tournament {
 		const score = game.match.score.result;
 
 		alert("Tournament Ended!");
-
-		// scoreBoardTournament();
-
-		// Example usage:
 		
 		try {
 			this.tournamentId = await this.createTournament();
 
-			for (let index = 0; index < this.players.length; index++) {
-				const player = this.players[index];
-				console.log('Adding participant:', player.name);
+			for (let player of this.players) {
 				await this.addParticipant(player.name, this.tournamentId);
 			}
-
-			// for (const player of this.players) {
-			// 	await this.addParticipant(player.name, this.tournamentId);
-			// }
 
 			console.log('Match Result:', this.matchResult);
 

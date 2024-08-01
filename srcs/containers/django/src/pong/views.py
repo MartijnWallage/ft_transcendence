@@ -178,23 +178,19 @@ def create_match(request):
 		player2_score = data.get('player2_score')
 		timestamp = data.get('timestamp')
 
-
 		# Retrieve the tournament
 		tournament = Tournament.objects.get(id=tournament_id)
 
 		# Retrieve the players
-		# player1 = Player.objects.get(name=data.get('player1'))
-		# player2 = Player.objects.get(name=data.get('player2'))
 		try:
-			player1 = Player.objects.get(name=data.get('player1'))
+			player1, created1 = Player.objects.get_or_create(name=data.get('player1'))
 		except Player.DoesNotExist:
 			return JsonResponse({'error': f'Player {player1} does not exist'}, status=400)
 
 		try:
-			player2 = Player.objects.get(name=data.get('player2'))
+			player2, created2 = Player.objects.get_or_create(name=data.get('player2'))
 		except Player.DoesNotExist:
 			return JsonResponse({'error': f'Player {player2} does not exist'}, status=400)
-
 
 		# Create the match
 		match = Match.objects.create(player1=player1, player2=player2, player1_score=player1_score, player2_score=player2_score, timestamp=timestamp)
@@ -227,13 +223,12 @@ def register_matches(request):
 		match_data = [{
 			'player1': match.player1.name,
 			'player2': match.player2.name,
-			'score1': match.player1_score,
+			'score1': match.player1_score,	
 			'score2': match.player2_score,
 			'timestamp': match.timestamp
 		} for match in matches]
 	except Tournament.DoesNotExist:
 		return JsonResponse({'success': False, 'error': 'Tournament not found'}, status=404)
-	
 	
 	# Setup Web3 and contract
 	alchemy_url = f"https://eth-sepolia.g.alchemy.com/v2/{settings.ALCHEMY_API_KEY}"
@@ -261,7 +256,7 @@ def register_matches(request):
 		tx_hash = web3.eth.send_raw_transaction(signed_tx.rawTransaction)
 
 		# Wait for the transaction receipt
-		receipt = web3.eth.wait_for_transaction_receipt(tx_hash)
+		receipt = web3.eth.wait_for_transaction_receipt(tx_hash, timeout=120)
 
 		# Store the transaction hash in the database
 		tournament.transaction_hash = receipt.transactionHash.hex()
