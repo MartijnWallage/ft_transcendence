@@ -3,6 +3,8 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 
 class PingpongConsumer(AsyncWebsocketConsumer):
     connected_players = 0
+    # players_ready_count = 0
+    player_roles = {}
 
     async def connect(self):
         self.room_group_name = 'pingpong'
@@ -11,21 +13,48 @@ class PingpongConsumer(AsyncWebsocketConsumer):
             self.channel_name
         )
         await self.accept()
-        self.__class__.connected_players += 1
-        self.is_first_player = self.__class__.connected_players == 1
-        self.is_second_player = not self.is_first_player
-        
-        if self.__class__.connected_players <= 2:
+
+        if self.__class__.connected_players < 2:
+            self.__class__.connected_players += 1
+            # self.is_first_player = self.__class__.connected_players == 1
+            # role = 'first' if self.is_first_player else 'second'
+            role = 'first' if self.__class__.connected_players == 1 else 'second'
+            self.__class__.player_roles[self.channel_name] = role
+
             await self.channel_layer.group_send(
                 self.room_group_name,
                 {
                     'type': 'players_ready',
-                    'role': 'first' if self.is_first_player else 'second'
+                    'players': self.get_player_status()
                 }
             )
+
+            # await self.channel_layer.group_send(
+            #     self.room_group_name,
+            #     {
+            #         'type': 'players_ready',
+            #         'role': role
+            #     }
+            # )
+            
+            
+            # await self.channel_layer.group_send(
+            #     self.room_group_name,
+            #     {
+            #         'type': 'player_connected',
+            #         'role': 'first'
+            #     }
+            # )
+        # elif self.__class__.connected_players == 1:
+        #     await self.channel_layer.group_send(
+        #         self.room_group_name,
+        #         {
+        #             'type': 'players_ready',
+        #             'role': 'second'
+        #         }
+        #     )
         else:
-            # If there are more than 2 players, close the connection
-            await self.close()
+            await self.close()  # No more than two players allowed
 
     async def disconnect(self, close_code):
         await self.channel_layer.group_discard(
@@ -33,80 +62,192 @@ class PingpongConsumer(AsyncWebsocketConsumer):
             self.channel_name
         )
         self.__class__.connected_players -= 1
-        # if self.is_first_player or self.is_second_player:
-        #     await self.channel_layer.group_send(
-        #         self.room_group_name,
-        #         {
-        #             'type': 'player_disconnected',
-        #             'role': 'first' if self.is_first_player else 'second'
-        #         }
-        #     )
+        if self.channel_name in self.__class__.player_roles:
+            role = self.__class__.player_roles.pop(self.channel_name)
+            await self.channel_layer.group_send(
+                self.room_group_name,
+                {
+                    'type': 'player_disconnected',
+                    'role': role,
+                    'players': self.get_player_status()
+                }
+            )
 
     async def receive(self, text_data):
         try:
             data = json.loads(text_data)
             message_type = data.get('type', '')
-            payload = data.get('data', {})
 
-            if message_type == 'player_ready':
-                role = 'first' if self.is_first_player else 'second'
-                
+            if message_type == 'initiate_remote_play':
+                # role = 'first' if self.is_first_player else 'second'
+                # role = self.__class__.player_roles.get(self.channel_name, 'unknown')
+                # self.__class__.players_ready_count += 1
                 await self.channel_layer.group_send(
                     self.room_group_name,
                     {
                         'type': 'players_ready',
-                        'role': role
+                        'players': self.get_player_status()
                     }
                 )
 
-            
             elif message_type == 'player_action':
                 await self.channel_layer.group_send(
                     self.room_group_name,
                     {
                         'type': 'player_action',
-                        'data': payload
+                        'data': data.get('data', {})
                     }
                 )
             
-            # # Add handling for 'player_ready' message type
-            # elif message_type == 'player_ready':
-            #     # Update the state or do something when a player is ready
-            #     role = 'first' if self.is_first_player else 'second'
-            #     await self.channel_layer.group_send(
-            #         self.room_group_name,
-            #         {
-            #             'type': 'players_ready',
-            #             'role': role
-            #         }
-            #     )
-
             else:
                 await self.send(text_data=json.dumps({
                     'error': f'Unsupported message type: {message_type}'
                 }))
-        
+
         except json.JSONDecodeError:
-            await self.send(text_data=json.dumps({
-                'error': 'Invalid JSON data received'
-            }))
+            await self.send(text_data=json.dumps({'error': 'Invalid JSON data received'}))
+
+
 
     async def players_ready(self, event):
-        role = event.get('role', '')
-        if role in ['first', 'second']:
-            await self.send(text_data=json.dumps({
-                'type': 'players_ready',
-                'role': role
-            }))
-        else:
-            print("Unknown or missing 'role' in event data:", event)
+        await self.send(text_data=json.dumps({'type': 'players_ready', 'players': event['players']}))
 
+    async def player_disconnected(self, event):
+        await self.send(text_data=json.dumps({'type': 'player_disconnected', 'players': event['players']}))
+
+    async def player_connected(self, event):
+        await self.send(text_data=json.dumps({'type': 'player_connected', 'role': event['role']}))
+
+    
+
+    async def start_game(self, event):
+        await self.send(text_data=json.dumps({'type': 'start_game'}))
+    
     async def player_action(self, event):
-        data = event['data']
-        await self.send(text_data=json.dumps({
-            'type': 'player_action',
-            'data': data
-        }))
+        await self.send(text_data=json.dumps({'type': 'player_action', 'data': event['data']}))
+
+    def get_player_status(self):
+        return [{'role': role, 'status': 'ready'} for role in self.__class__.player_roles.values()]
+
+
+
+
+
+
+
+# class PingpongConsumer(AsyncWebsocketConsumer):
+#     connected_players = 0
+#     # players_ready = 0
+
+#     async def connect(self):
+#         self.room_group_name = 'pingpong'
+#         await self.channel_layer.group_add(
+#             self.room_group_name,
+#             self.channel_name
+#         )
+#         await self.accept()
+#         self.__class__.connected_players += 1
+#         self.is_first_player = self.__class__.connected_players == 1
+#         self.is_second_player = not self.is_first_player
+        
+#         if self.__class__.connected_players <= 2:
+#             await self.channel_layer.group_send(
+#                 self.room_group_name,
+#                 {
+#                     'type': 'players_ready',
+#                     'role': 'first' if self.is_first_player else 'second'
+#                 }
+#             )
+#         else:
+#             # If there are more than 2 players, close the connection
+#             await self.close()
+
+#     async def disconnect(self, close_code):
+#         await self.channel_layer.group_discard(
+#             self.room_group_name,
+#             self.channel_name
+#         )
+#         self.__class__.connected_players -= 1
+#         await self.channel_layer.group_send(
+#             self.room_group_name,
+#             {
+#                 'type': 'player_disconnected',
+#             }
+#         )
+
+#     async def receive(self, text_data):
+#         try:
+#             data = json.loads(text_data)
+#             message_type = data.get('type', '')
+#             payload = data.get('data', {})
+
+#             if message_type == 'player_ready':
+#                 # self.__class__.players_ready += 1
+#                 role = 'first' if self.is_first_player else 'second'
+                
+#                 await self.channel_layer.group_send(
+#                     self.room_group_name,
+#                     {
+#                         'type': 'players_ready',
+#                         'role': role
+#                     }
+#                 )
+
+            
+#             elif message_type == 'player_action':
+#                 await self.channel_layer.group_send(
+#                     self.room_group_name,
+#                     {
+#                         'type': 'player_action',
+#                         'data': payload
+#                     }
+#                 )
+            
+#             # # Add handling for 'player_ready' message type
+#             # elif message_type == 'player_ready':
+#             #     # Update the state or do something when a player is ready
+#             #     role = 'first' if self.is_first_player else 'second'
+#             #     await self.channel_layer.group_send(
+#             #         self.room_group_name,
+#             #         {
+#             #             'type': 'players_ready',
+#             #             'role': role
+#             #         }
+#             #     )
+
+#             else:
+#                 await self.send(text_data=json.dumps({
+#                     'error': f'Unsupported message type: {message_type}'
+#                 }))
+        
+#         except json.JSONDecodeError:
+#             await self.send(text_data=json.dumps({
+#                 'error': 'Invalid JSON data received'
+#             }))
+
+#     async def players_ready(self, event):
+#         role = event.get('role', '')
+#         if role in ['first', 'second']:
+#             await self.send(text_data=json.dumps({
+#                 'type': 'players_ready',
+#                 'role': role
+#             }))
+#         else:
+#             print("Unknown or missing 'role' in event data:", event)
+
+#     async def player_connected(self, event):
+#         role = event.get('role', '')
+#         await self.send(text_data=json.dumps({
+#             'type': 'player_connected',
+#             'role': role
+#         }))
+    
+#     async def player_action(self, event):
+#         data = event['data']
+#         await self.send(text_data=json.dumps({
+#             'type': 'player_action',
+#             'data': data
+#         }))
 
 
 # class ChatConsumer(AsyncWebsocketConsumer):

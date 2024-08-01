@@ -4,6 +4,7 @@ let gameState = {
 	currentGameIndex: 0,
 	playerScores: [0, 0],
 	scoreToWin: 6,
+	gameStarted: false,
 	running: false,
 	mode: '',
 	matchResult: [],

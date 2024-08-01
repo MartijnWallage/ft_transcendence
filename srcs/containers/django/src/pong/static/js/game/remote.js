@@ -29,110 +29,120 @@ async function startGameUserVsUserremote() {
 }
 
 
-let pingpongSocket;
-let is_first_player = false;
+let pingpongsocket = null;
 let is_player_ready = false;
 let is_opponent_ready = false;
+
 
 
 
 function initializeWebSocket() {
     // This message will be printed when the WebSocket is created
 	console.log('Creating a new WebSocket connection...'); 
-	pingpongSocket = new WebSocket('wss://10.15.108.4:8443/ws/pingpongsocket/');
+	pingpongsocket = new WebSocket('wss://10.15.109.3:8443/ws/pingpongsocket/');
     
-    pingpongSocket.onopen = function(event) {
+    pingpongsocket.onopen = function() {
         console.log('WebSocket is connected.');
-		sendPlayerReadyStatus();
+		initiateRemotePlay();
+		// sendPlayerReadyStatus();
 		// You can send a message to the server upon connection if needed
-        // pingpongSocket.send(JSON.stringify({ type: 'INIT', data: 'Some data' }));
+        // pingpongsocket.send(JSON.stringify({ type: 'INIT', data: 'Some data' }));
     };
 
-    pingpongSocket.onmessage = function(event) {
-		const data = JSON.parse(event.data);
-        console.log('Message from server ', event.data);
-		handleServerMessage(data);
+    pingpongsocket.onmessage = function(event) {
+		// const data = JSON.parse(event.data);
+        // console.log('Message from server ', event.data);
+		// handleServerMessage(data);
+		handleServerMessage(JSON.parse(event.data));
     };
 
-    pingpongSocket.onclose = function(event) {
+    pingpongsocket.onclose = function(event) {
         console.log('WebSocket is closed.');
     };
 
-    pingpongSocket.onerror = function(error) {
+    pingpongsocket.onerror = function(error) {
         console.error('WebSocket error: ', error);
     };
 }
 
-// function sendPlayerInfo() {
-//     const playerName = document.getElementById('playerNameInput').value.trim();
-//     if (playerName !== '') {
-//         const message = {
-//             type: 'player_info',
-//             playerName: playerName
-//         };
-//         pingpongSocket.send(JSON.stringify(message));
-//     }
-// }
 
 function handleServerMessage(data) {
+    console.log('Message from server:', data);
+
     if (data.type === 'players_ready') {
-        // Set opponent's ready status based on the role
-        if (data.role === 'first') {
-            gameState.players[0] = 'Player 1'; // Assuming 'Player 1' is the first player
-        } else if (data.role === 'second') {
-            gameState.players[1] = 'Player 2'; // Assuming 'Player 2' is the second player
-        }
-        
-        is_opponent_ready = true;
+        console.log('Player statuses received:', data.players);
 
-        console.log('Both players are ready to start the game.');
+        gameState.players = data.players.map((player, index) => 
+            player.role === 'first' ? 'Player 1' : 'Player 2'
+        );
 
-        // Start the game if both players are ready
-        if (is_player_ready && is_opponent_ready) {
-            startGame(gameState.players[0], gameState.players[1], 'remote');
+        console.log('Current gameState.players:', gameState.players);
+
+        if (data.players.length === 2) {
+            console.log('Both players are ready. Starting the game.');
+            if (!gameState.gameStarted) {
+                gameState.gameStarted = true;
+                startGame(gameState.players[0], gameState.players[1], 'remote');
+            }
+        } else {
+            console.log('Waiting for both players to be ready...');
         }
+    } else if (data.type === 'player_disconnected') {
+        console.log('A player has disconnected. Current players:', data.players);
+        // Handle player disconnection if needed
     } else {
         console.log('Unhandled message type:', data.type);
     }
 }
 
-// function actionData(data) {
-// 	// data parameter contains the incoming message data
-// 	if (data.type === 'game_state') {
-// 		updateGameState(data.state); // Update game state based on received data
-// 	} else {
-// 		console.error('Unknown message type received:', data.type);
-// 	}
-// }
-
 // function handleServerMessage(data) {
-//     if (data.type === 'players_ready') {
+    
+// 	if (data.type === 'players_ready') {
+//         console.log('Player ready status received:', data.role);
+
 //         if (data.role === 'first') {
 //             gameState.players[0] = 'Player 1';
+//             is_player_ready = true;
 //         } else if (data.role === 'second') {
 //             gameState.players[1] = 'Player 2';
+//             is_opponent_ready = true;
 //         }
-        
-//         is_opponent_ready = true;
-//         console.log('Both players are ready to start the game.');
-        
+		
+// 		// Debugging: Check the current state
+//         console.log('Current gameState.players:', gameState.players);
+
+//         // Check if both players are assigned and ready
 //         if (is_player_ready && is_opponent_ready) {
-//             startGame(gameState.players[0], gameState.players[1], 'remote');
+//             console.log('Both players are ready. Starting the game.');
+//             if (!gameState.gameStarted) {  // Prevent redundant starts
+//                 gameState.gameStarted = true;
+//                 startGame(gameState.players[0], gameState.players[1], 'remote');
+//             }
+//         } else {
+//             console.log('Waiting for both players to be ready...');
 //         }
+//     // } else if (data.type === 'start_game') {
+//     //     console.log('Starting game command received from server.');
+//     //     if (!gameState.gameStarted) {  // Prevent redundant starts
+//     //         gameState.gameStarted = true;
+//     //         startGame(gameState.players[0], gameState.players[1], 'remote');
+//     //     }
+//     // }
+// 	} else {
+//         console.log('Unhandled message type:', data.type);
 //     }
 // }
 
-function sendPlayerReadyStatus() {
-    if (pingpongSocket && pingpongSocket.readyState === WebSocket.OPEN) {
-        const message = { type: 'player_ready', data: {} };
-        pingpongSocket.send(JSON.stringify(message));
-        console.log('Player ready status sent.');
-        is_player_ready = true;
-    } else {
-        console.error('WebSocket is not open to send messages. Retrying...');
-        setTimeout(sendPlayerReadyStatus, 1000); // Retry after 1 second
-    }
+function initiateRemotePlay() {
+    const message = { type: 'initiate_remote_play' };
+    sendMessageToWebSocket(message);
 }
+
+// function initiateRemotePlay() {
+// 	// const role = is_player_ready ? 'second' : 'first'; // Assume 'first' role initially
+// 	const message = { type: 'initiate_remote_play', role: 'first' };
+// 	sendMessageToWebSocket(message);
+// }
 
 function players_ready() {
 	const message = { type: 'player_ready', data: {} };
@@ -151,25 +161,7 @@ function sendMessageToWebSocket(message) {
 }
 
 
-// document.getElementById('continueButton').addEventListener('click', () => {
-//     // Code to handle the continue button click, e.g., sending a message to the server to start or continue the game
-// });
 
-// function addPlayer() {
-// 	const playerName = document.getElementById('playerNameInput').value.trim();
-// 	console.log(playerName);
-// 	var error = document.getElementById('error');
-// 	if (playerName === '') {
-// 		error.style.display = 'block'; 
-// 		return;
-// 	}
-// 	else {
-// 		error.style.display = 'none'; 
-// 	}
-// 	gameState.players.push(playerName);
-// 	displayPlayers();
-// 	document.getElementById('playerNameInput').value = '';
-// }
 
 function nextGame() {
 	gameState.running = true;
@@ -261,17 +253,70 @@ function updateScoreTournament() {
 
 // export { initializeWebSocket, handleServerMessage, players_ready, addPlayer, displayPlayers, initializeTournament, displayScoreTournament, updateScoreTournament, nextGame };
 // export { initializeWebSocket, handleServerMessage, players_ready, displayPlayers, initializeTournament, displayScoreTournament, updateScoreTournament, nextGame };
-export { startGameUserVsUserremote, initializeWebSocket, handleServerMessage, players_ready, displayPlayers, initializeTournament, displayScoreTournament, updateScoreTournament, nextGame };
+export { startGameUserVsUserremote, initiateRemotePlay, initializeWebSocket, handleServerMessage, players_ready, displayPlayers, initializeTournament, displayScoreTournament, updateScoreTournament, nextGame };
 
 
 
 
+// function actionData(data) {
+// 	// data parameter contains the incoming message data
+// 	if (data.type === 'game_state') {
+// 		updateGameState(data.state); // Update game state based on received data
+// 	} else {
+// 		console.error('Unknown message type received:', data.type);
+// 	}
+// }
+
+// function handleServerMessage(data) {
+//     if (data.type === 'players_ready') {
+//         if (data.role === 'first') {
+//             gameState.players[0] = 'Player 1';
+//         } else if (data.role === 'second') {
+//             gameState.players[1] = 'Player 2';
+//         }
+        
+//         is_opponent_ready = true;
+//         console.log('Both players are ready to start the game.');
+        
+//         if (is_player_ready && is_opponent_ready) {
+//             startGame(gameState.players[0], gameState.players[1], 'remote');
+//         }
+//     }
+// }
 
 
 
+// function sendPlayerInfo() {
+//     const playerName = document.getElementById('playerNameInput').value.trim();
+//     if (playerName !== '') {
+//         const message = {
+//             type: 'player_info',
+//             playerName: playerName
+//         };
+//         pingpongsocket.send(JSON.stringify(message));
+//     }
+// }
 
 
+// document.getElementById('continueButton').addEventListener('click', () => {
+//     // Code to handle the continue button click, e.g., sending a message to the server to start or continue the game
+// });
 
+// function addPlayer() {
+// 	const playerName = document.getElementById('playerNameInput').value.trim();
+// 	console.log(playerName);
+// 	var error = document.getElementById('error');
+// 	if (playerName === '') {
+// 		error.style.display = 'block'; 
+// 		return;
+// 	}
+// 	else {
+// 		error.style.display = 'none'; 
+// 	}
+// 	gameState.players.push(playerName);
+// 	displayPlayers();
+// 	document.getElementById('playerNameInput').value = '';
+// }
 
 
 
@@ -285,7 +330,7 @@ export { startGameUserVsUserremote, initializeWebSocket, handleServerMessage, pl
 
 // function initializepingpongWebSocket() {
     
-//     pingpongsocket = new WebSocket('wss://10.15.108.4:8443/ws/pingpongsocket/');
+//     pingpongsocket = new WebSocket('wss://10.15.109.3:8443/ws/pingpongsocket/');
     
 //     pingpongsocket.onopen = function(event) {
 //         console.log('WebSocket connection opened');
