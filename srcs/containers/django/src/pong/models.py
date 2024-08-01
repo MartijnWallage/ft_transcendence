@@ -22,7 +22,7 @@ class Tournament(models.Model):
 	players = models.ManyToManyField(Player, related_name='tournament_players')
 	match = models.ManyToManyField(Match, related_name='tournament_matches')
 	# winner = models.ForeignKey(Player, on_delete=models.CASCADE)
-	# hash = models.CharField(max_length=100)
+	transaction_hash = models.CharField(max_length=66, blank=True, null=True)  # Store the hash as a string
 
 	def __str__(self):
 		return self.name

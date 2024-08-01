@@ -1,22 +1,4 @@
 {% block content %}
-  <!-- <h1>Tournament Leaderboard</h1>
-    <table>
-        <thead>
-            <tr>
-                <th>Rank</th>
-                <th>Player</th>
-                <th>Score</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for player in tournament.players.all %}
-            <tr>
-                <td>{{ forloop.counter }}</td>
-                <td>{{ player.name }}</td>
-                <td>{{ player.score }}</td>
-            </tr>
-            {% endfor %}
-        </tbody> -->
   <h1>Tournament match results</h1>
   <table>
       <thead>
@@ -41,5 +23,25 @@
       </tbody>
   </table>
   <button type="button" class="btn btn-outline-light mx-1" id ="js-end-game-btn">Exit</button>
-  <button type="button" class="btn btn-outline-light mx-1" id ="js-register-blockchain">Register on Blockchain</button>
+  <!-- <button type="button" class="btn btn-outline-light mx-1" id="js-register-blockchain" 
+    {% if tournament.transaction_hash %}disabled{% endif %}>Register on Blockchain</button>
+  <div id="transaction-info">
+    {% if tournament.transaction_hash %}
+        <p>Transaction Hash: <a href="https://sepolia.etherscan.io/tx/{{ tournament.transaction_hash }}" target="_blank">{{ tournament.transaction_hash }}</a></p>
+    {% else %}
+        <p>The score has not been registered on the blockchain yet.</p>
+    {% endif %}
+</div> -->
+
+{% if tournament.transaction_hash %}
+<button type="button" class="btn btn-secondary mx-1" disabled>Registered on Blockchain</button>
+<div id="transaction-info">
+    <p>Transaction Hash: <a href="https://sepolia.etherscan.io/tx/{{ tournament.transaction_hash }}" target="_blank">{{ tournament.transaction_hash }}</a></p>
+</div>
+{% else %}
+<button type="button" class="btn btn-outline-light mx-1" id="js-register-blockchain">Register on Blockchain</button>
+<div id="transaction-info">
+    <p>The score has not been registered on the blockchain yet.</p>
+</div>
+{% endif %}
 {% endblock %}
