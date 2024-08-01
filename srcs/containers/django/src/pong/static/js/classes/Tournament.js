@@ -7,6 +7,7 @@ class Tournament {
 		this.game = game;
 		this.players = [];
 		this.matchResult = [];
+		this.tournamentId = null;
 	}
 
 	async start() {
@@ -122,7 +123,8 @@ class Tournament {
 				url: '/api/create_tournament/',
 				type: 'POST',
 				data: JSON.stringify({
-					'date': currentDate
+					'date': currentDate,
+					'transaction_hash' : null
 				}),
 				contentType: 'application/json; charset=utf-8',
 				dataType: 'json',
@@ -182,10 +184,10 @@ class Tournament {
 		// Example usage:
 		
 		try {
-			let tournamentId = await this.createTournament();
+			this.tournamentId = await this.createTournament();
 
 			for (const player of this.players) {
-				await this.addParticipant(player.name, tournamentId);
+				await this.addParticipant(player.name, this.tournamentId);
 			}
 
 			console.log('Match Result:', this.matchResult);
@@ -193,7 +195,7 @@ class Tournament {
 			for (let index = 0; index < this.matchResult.length; index++) {
 				const currentMatchResult = this.matchResult[index];
 				console.log('Match:', index, ': ', currentMatchResult);
-				await this.createMatch(tournamentId, currentMatchResult);
+				await this.createMatch(this.tournamentId, currentMatchResult);
 			}
 
 		} catch (error) {
