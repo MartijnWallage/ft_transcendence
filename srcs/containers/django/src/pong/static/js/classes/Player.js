@@ -14,6 +14,10 @@ class Player {
 	setAI(game) {
 		this.ai = new AI(game);
 	}
+
+	isAI() {
+		return this.ai !== null;
+	}
 }
 
 export { Player };

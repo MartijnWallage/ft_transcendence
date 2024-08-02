@@ -11,6 +11,10 @@ class Score {
 	}
 
 	async update() {
+		// Just for logging purposes
+		const AIPrediction = this.game.match.players[1].isAI() ? this.players[1].ai.destination : null;
+
+
 		const ball = this.game.ball;
 		const field = this.game.field;
 		const halfFieldWidth = field.geometry.parameters.width / 2;
@@ -27,6 +31,13 @@ class Score {
 		
 		this.result[scorer] += 1;
 		textToDiv(this.result[scorer], `player${scorer + 1}-score`);
+		
+		if (scorer === 0 && this.game.match.players[1].isAI()) {
+			console.log(`Score! Ball z position is ${ball.position.z}`);
+			console.log(`AI Predication was ${AIPrediction}`);
+			console.log(`Off by ${ball.position.z - AIPrediction}`);
+		}
+
 		ball.serveBall();
 		
 		if (this.result[0] === this.scoreToWin)
@@ -41,23 +52,6 @@ class Score {
 		ball.resetBall();
 		await this.displayWinMessage(`${this.players[this.winner].name} wins!`);
 	}
-
-/* 	displayWinMessage(message) {
-		textToDiv(message, 'announcement');
-		var menu = document.getElementById('menu');
-		menu.style.display = 'block';
-		menu.style.opacity = 1;
-		const btn = document.getElementById('js-next-game-btn');
-		btn.style.display = 'block';
-		return new Promise((resolve) => {
-			function onClick(event) {
-				btn.removeEventListener('click', onClick);
-				btn.style.display = 'none';
-				resolve(event); 
-			}
-			document.addEventListener('click', onClick);
-		});
-	} */
 
 	displayWinMessage(message) {
 		textToDiv(message, 'announcement');

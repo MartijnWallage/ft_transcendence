@@ -1,10 +1,9 @@
+import { BoxGeometry } from '../three-lib/three.module.js';
 import { abs } from '../utils.js';
 
 class AI {
 	constructor(game) {
 		this.game = game;
-		this.halfCourt = game.field.geometry.parameters.depth / 2;
-		this.paddleX = game.paddle2.position.x;
 		this.destination = 0;
 		this.side = 1;
         this.lastUpdateTime = 0;
@@ -37,36 +36,81 @@ class AI {
 		ball.dx = this.game.ball.dx;
 		ball.dz = this.game.ball.dz;
 
-		if (ball.dx * this.side < 0) {
-			this.destination = 0;
-		} else {
-			this.destination = this.recursiveUpdateDestination(ball);
-		}
-		console.log('AI destination:', this.destination);
+		const humanPaddle = {};
+		humanPaddle.x = this.game.paddle1.x;
+		humanPaddle.z = this.game.paddle1.z;
+
+		this.destination = this.recursiveUpdateDestination(ball, humanPaddle);
     }
 
-	recursiveUpdateDestination(ball) {
-		const distanceToPaddle = abs(ball.x - this.paddleX);
-		const ballDestination = ball.z + ball.dz / ball.dx * distanceToPaddle;
+	recursiveUpdateDestination(ball, humanPaddle) {
+		// to avoid infinite loops, ball.dz is not allowed to be 1
+		if (abs(ball.dz) >= 1) {
+			ball.dz = 0.9;
+		}
+		const halfCourt = this.game.field.geometry.parameters.depth / 2;
+		const paddleHalfDepth = this.game.paddle2.geometry.parameters.depth / 2;
+		const paddleHalfWidth = this.game.paddle2.geometry.parameters.width / 2;
+		const ballRadius = this.game.ball.geometry.parameters.radius;
+
+		const paddle = ball.dx < 0 ? humanPaddle : this.game.paddle2;
+		const paddleTop = paddle.z - paddleHalfDepth;
+		const paddleBottom = paddle.z + paddleHalfDepth;
+		const paddleSide = ball.dx < 0 ? paddle.x + paddleHalfWidth : paddle.x - paddleHalfWidth;
+		const ballSide = ball.dx < 0 ? ball.x - ballRadius : ball.x + ballRadius;
+
+		const distanceToPaddle = abs(ballSide - paddleSide);
+		const ballDestination = ball.z + ball.dz / abs(ball.dx) * distanceToPaddle;
 		
-		if (abs(ballDestination) <= this.halfCourt) {
+		// to avoid division by zero
+		if (ballDestination.dz == 0) {
 			return ballDestination;
-		} else {
-			const wall = ball.dz > 0 ? this.halfCourt : -this.halfCourt;
-			const distanceToWall = abs(wall - ball.z);
+		}
+
+		// if the ball is moving towards one of the walls, recurse
+		if (abs(ballDestination) + ballRadius > halfCourt) {
+			const wall = ball.dz > 0 ? halfCourt : -halfCourt;
+			const distanceToWall = abs(wall - ball.z) - ballRadius;
 			const timeToWall = distanceToWall / abs(ball.dz);
 			ball.x = ball.x + timeToWall * ball.dx;
-			ball.z = wall;
+			ball.z = wall < 0 ?
+				wall + ballRadius :
+				wall - ballRadius;
 			ball.dz = -ball.dz;
-			return this.recursiveUpdateDestination(ball);
+			return this.recursiveUpdateDestination(ball, humanPaddle);
 		}
+
+		// if the ball is moving towards the human paddle, recurse
+		if (ball.dx < 0) {
+			ball.z = ballDestination;
+			ball.dx = -ball.dx;
+			ball.x = paddleSide + ballRadius;
+
+			// Assume the human paddle will reach the ball
+			if (paddleTop > ballDestination) {
+				humanPaddle.z = ballDestination + paddleHalfDepth;
+				// if the human paddle is beyond the edge of the court, move it back in
+				if (paddleTop < -halfCourt) {
+					humanPaddle.z = -halfCourt + paddleHalfDepth;
+				}
+			} else if (paddleBottom < ballDestination) {
+				humanPaddle.z = ballDestination - paddleHalfDepth;
+				// if the human paddle is beyond the edge of the court, move it back in
+				if (paddleBottom > halfCourt) {
+					humanPaddle.z = halfCourt - paddleHalfDepth;
+				}
+			}
+			ball.dz = (ballDestination - humanPaddle.z) * 0.20;
+			return this.recursiveUpdateDestination(ball, humanPaddle);
+		}
+
+		// if the ball is moving towards the AI paddle, return the z destination
+		return ballDestination;
 	}
 
-	movePaddle(paddle, ball) {
-		const bottomPaddle = paddle.position.z + paddle.geometry.parameters.depth / 2;
-		const topPaddle = paddle.position.z - paddle.geometry.parameters.depth / 2;
-/* 		const bottomBall = ball.position.z + ball.radius / 2;
-		const topBall = ball.position.z - ball.radius / 2; */
+	movePaddle(paddle) {
+		const bottomPaddle = paddle.z + paddle.geometry.parameters.depth / 2;
+		const topPaddle = paddle.z - paddle.geometry.parameters.depth / 2;
 	
 		return this.destination < topPaddle ? -1 : 
 			this.destination > bottomPaddle ? 1 : 
