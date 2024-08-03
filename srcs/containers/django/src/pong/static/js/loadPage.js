@@ -1,5 +1,3 @@
-import { registerMatches } from './tournament-score-blockchain.js';
-
 function loadPageClosure(game) {
 	return async (page) => {
 		try {
@@ -74,7 +72,7 @@ function bindEventListeners(game) {
 	
 	var blockchainScore = document.getElementById('js-register-blockchain');
 	if (blockchainScore) {
-		blockchainScore.addEventListener('click', registerMatches.bind(null, game.tournament));
+		blockchainScore.addEventListener('click', game.executeBlockchainTransaction.bind(game));
 	}
 }
 

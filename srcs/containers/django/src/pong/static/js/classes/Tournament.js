@@ -158,6 +158,7 @@ class Tournament {
 				'player2' : matchResult.player2,
 				'player1_score' : matchResult.player1Score,
 				'player2_score' : matchResult.player2Score,
+				'timestamp' : matchResult.timestamp
 			}),
 			contentType: 'application/json; charset=utf-8',
 			dataType: 'json',
@@ -178,15 +179,11 @@ class Tournament {
 		const score = game.match.score.result;
 
 		alert("Tournament Ended!");
-
-		// scoreBoardTournament();
-
-		// Example usage:
 		
 		try {
 			this.tournamentId = await this.createTournament();
 
-			for (const player of this.players) {
+			for (let player of this.players) {
 				await this.addParticipant(player.name, this.tournamentId);
 			}
 
