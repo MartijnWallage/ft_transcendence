@@ -1,5 +1,4 @@
-import { BoxGeometry } from '../three-lib/three.module.js';
-import { abs } from '../utils.js';
+import { abs, getRandomInt } from '../utils.js';
 
 class AI {
 	constructor(game) {
@@ -62,8 +61,8 @@ class AI {
 		const distanceToPaddle = abs(ballSide - paddleSide);
 		const ballDestination = ball.z + ball.dz / abs(ball.dx) * distanceToPaddle;
 		
-		// to avoid division by zero
-		if (ballDestination.dz == 0) {
+		// if ball is moving towards the AI paddle, return the destination
+		if (ball.dx > 0 && abs(ballDestination) + ballRadius < halfCourt) {
 			return ballDestination;
 		}
 
@@ -88,34 +87,24 @@ class AI {
 
 			// Assume the human paddle will reach the ball
 			if (paddleTop > ballDestination) {
-				humanPaddle.z = ballDestination + paddleHalfDepth;
-				// if the human paddle is beyond the edge of the court, move it back in
-				if (paddleTop < -halfCourt) {
-					humanPaddle.z = -halfCourt + paddleHalfDepth;
-				}
+				humanPaddle.z = ballDestination + paddleHalfDepth * 0.7;
 			} else if (paddleBottom < ballDestination) {
-				humanPaddle.z = ballDestination - paddleHalfDepth;
-				// if the human paddle is beyond the edge of the court, move it back in
-				if (paddleBottom > halfCourt) {
-					humanPaddle.z = halfCourt - paddleHalfDepth;
-				}
+				humanPaddle.z = ballDestination - paddleHalfDepth * 0.7;
 			}
 			ball.dz = (ballDestination - humanPaddle.z) * 0.20;
 			return this.recursiveUpdateDestination(ball, humanPaddle);
 		}
-
-		// if the ball is moving towards the AI paddle, return the z destination
-		return ballDestination;
 	}
 
 	movePaddle(paddle) {
 		const bottomPaddle = paddle.z + paddle.geometry.parameters.depth / 2;
 		const topPaddle = paddle.z - paddle.geometry.parameters.depth / 2;
+		const edgeStrategy = getRandomInt(0, 2) ? this.game.ball.geometry.parameters.radius : 0;
 	
-		return this.destination < topPaddle ? -1 : 
-			this.destination > bottomPaddle ? 1 : 
-			0;
-	}	
+		return this.destination + edgeStrategy < topPaddle ? -1 : 
+				this.destination - edgeStrategy > bottomPaddle ? 1 : 
+				0;
+	}
 }
 
 export { AI }

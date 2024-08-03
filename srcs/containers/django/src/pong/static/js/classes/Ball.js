@@ -42,7 +42,7 @@ class Ball {
 
         if (this.checkPaddleCollision(paddle)) {
             this.dz = (this.position.z - paddle.position.z) * 0.20;
-            this.dx *= (abs(this.dx) < this.initialSpeed / 1.5) ? -2 : -1.02;
+            this.dx *= (abs(this.dx) < this.initialSpeed / 1.5) ? -2 : -1.01;
             audio.playSound(audio.hit);
         }
     }

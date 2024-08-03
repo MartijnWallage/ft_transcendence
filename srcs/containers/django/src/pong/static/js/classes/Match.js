@@ -77,6 +77,7 @@ class Match {
 	
 		const split = document.getElementById('vertical-line');
 		this.score.update();
+
 		if (this.players[1].ai) {
 			cam1.renderSingleView(this.game);
 		} else {
