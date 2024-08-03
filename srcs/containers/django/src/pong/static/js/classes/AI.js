@@ -87,11 +87,11 @@ class AI {
 
 			// Assume the human paddle will reach the ball
 			if (paddleTop > ballDestination) {
-				humanPaddle.z = ballDestination + paddleHalfDepth * 0.7;
+				humanPaddle.z = ballDestination + paddleHalfDepth;
 			} else if (paddleBottom < ballDestination) {
-				humanPaddle.z = ballDestination - paddleHalfDepth * 0.7;
+				humanPaddle.z = ballDestination - paddleHalfDepth;
 			}
-			ball.dz = (ballDestination - humanPaddle.z) * 0.20;
+			ball.dz = (ballDestination - humanPaddle.z) * this.game.ball.angleMultiplier;
 			return this.recursiveUpdateDestination(ball, humanPaddle);
 		}
 	}

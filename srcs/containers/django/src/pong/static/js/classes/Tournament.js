@@ -158,6 +158,7 @@ class Tournament {
 				'player2' : matchResult.player2,
 				'player1_score' : matchResult.player1Score,
 				'player2_score' : matchResult.player2Score,
+				'timestamp' : matchResult.timestamp
 			}),
 			contentType: 'application/json; charset=utf-8',
 			dataType: 'json',
@@ -178,15 +179,11 @@ class Tournament {
 		const score = game.match.score.result;
 
 		alert("Tournament Ended!");
-
-		// scoreBoardTournament();
-
-		// Example usage:
 		
 		try {
 			this.tournamentId = await this.createTournament();
 
-			for (const player of this.players) {
+			for (let player of this.players) {
 				await this.addParticipant(player.name, this.tournamentId);
 			}
 
@@ -205,68 +202,6 @@ class Tournament {
 		this.players = [];
 	}
 
-	// Blockchain
-
-	async registerMatches() {
-		console.log('Match Result:', this.matchResult);
-		console.log('Tournament ID:', this.tournamentId);
-		const matches = this.matchResult.map(match => ({
-			player1: match.player1,
-			player2: match.player2,
-			score1: match.player1Score,
-			score2: match.player2Score,
-			timestamp: match.timestamp || Date.now()
-		}));
-		console.log('Matches:', matches);
-		try {
-			// Send the match data to the server
-			const response = await fetch('/api/register_matches/', {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json',
-					'X-CSRFToken': getCSRFToken() // Include CSRF token for security
-				},
-				body: JSON.stringify({ matches, tournament_id: this.tournamentId })
-			});
-	
-			if (!response.ok) {
-				throw new Error('Network response was not ok');
-			}
-	
-			const result = await response.json();
-			console.log('Server response:', result);
-	
-			if (result.success) {
-				const txHash = result.tx_hash;
-				const etherscanUrl = `https://sepolia.etherscan.io/tx/${txHash}`;
-				alert(`Matches registered successfully! Transaction Hash: ${txHash}`);
-	
-				document.getElementById('transaction-info').innerHTML = 
-					`Transaction Hash: <a href="${etherscanUrl}" target="_blank">${txHash}</a>`;
-			} else {
-				alert('Error registering matches: ' + result.error);
-			}
-		} catch (error) {
-			console.error(error);
-			alert('Error registering matches.');
-		}
-	}
-	
-	// Helper function to get CSRF token for security
-	getCSRFToken() {
-		let cookieValue = null;
-		if (document.cookie && document.cookie !== '') {
-			const cookies = document.cookie.split(';');
-			for (let i = 0; i < cookies.length; i++) {
-				const cookie = cookies[i].trim();
-				if (cookie.substring(0, 10) === 'csrftoken=') {
-					cookieValue = decodeURIComponent(cookie.substring(10));
-					break;
-				}
-			}
-		}
-		return cookieValue;
-	}
 }
 
 export { Tournament };

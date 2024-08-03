@@ -1,17 +1,3 @@
-.background {
-	position: fixed;
-	top: 0;
-	left: 0;
-	width: 100%;
-	height: 100%;
-	z-index: -1; /* Place behind other content */
-	/* Adjust background properties */
-	background-image: url( ../images/getty.jpg );
-	/* background-color: #33ff55; */
-	background-size: cover; /* Adjust to cover the entire screen */
-	background-position: center;
-}
-
 #threejs-container {
 	position: absolute;
 	width: 100vw;
@@ -41,6 +27,13 @@
 	text-align: center;
 	opacity: 1;
 	transition: opacity 1.5s ease-out;
+}
+
+* {
+	user-select: none;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
 }
 
 #under-title {

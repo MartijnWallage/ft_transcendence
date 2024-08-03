@@ -40,14 +40,11 @@ function animate(stats, game) {
 	// If the game is not running, render the menu view, 
 	// Else, update the game
 	if (game.running === false) {
-		const split = document.getElementById('vertical-line');
-		split.style.display = 'none';
 		game.cam1.renderMenuView(game);
 	} else {
 		game.match.update();
 	}
 
-	game.controls.update();
 	requestAnimationFrame(animate.bind(null, stats, game));
 
 	// End the frame per second stats
