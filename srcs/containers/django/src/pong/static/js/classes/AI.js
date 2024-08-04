@@ -1,3 +1,9 @@
+/* Some possible improvements
+ * Write a function that will predict the ball's z position on the other side, given the current ball and paddle position
+ * Use this function to make decisions about where to move the paddle. Try to hit away from the human paddle
+ * Incorporate PID control to deal with errors in the prediction
+ */
+
 import { abs, getRandomInt } from '../utils.js';
 
 class AI {
@@ -6,10 +12,14 @@ class AI {
 		this.destination = 0;
 		this.side = 1;
         this.lastUpdateTime = 0;
-        this.updateInterval = 1000; // 1000 milliseconds = 1 second
+        this.updateInterval = 400; // 1000 milliseconds = 1 second
         this.init();
+		this.humanPaddle = this.game.paddle1;
+		this.AIPaddle = this.game.paddle2;
+		this.AIPaddle.dz = 1;
     }
 
+	
     // Method to initialize the interval
     init() {
         setInterval(() => this.refreshView(), this.updateInterval);
@@ -29,29 +39,21 @@ class AI {
 
     // Actual method to update the game view
     updateDestination() {
-		const ball = {};
-		ball.x = this.game.ball.position.x;
-		ball.z = this.game.ball.position.z;
-		ball.dx = this.game.ball.dx;
-		ball.dz = this.game.ball.dz;
-
-		const humanPaddle = {};
-		humanPaddle.x = this.game.paddle1.x;
-		humanPaddle.z = this.game.paddle1.z;
-
+		const ball = this.copyBall(this.game.ball);
+		const humanPaddle = this.copyPaddle(this.humanPaddle);
 		this.destination = this.recursiveUpdateDestination(ball, humanPaddle);
     }
-
+	
 	recursiveUpdateDestination(ball, humanPaddle) {
 		// to avoid infinite loops, ball.dz is not allowed to be 1
 		if (abs(ball.dz) >= 1) {
 			ball.dz = 0.9;
 		}
 		const halfCourt = this.game.field.geometry.parameters.depth / 2;
-		const paddleHalfDepth = this.game.paddle2.geometry.parameters.depth / 2;
-		const paddleHalfWidth = this.game.paddle2.geometry.parameters.width / 2;
-		const ballRadius = this.game.ball.geometry.parameters.radius;
-
+		const paddleHalfDepth = humanPaddle.depth / 2;
+		const paddleHalfWidth = humanPaddle.width / 2;
+		const ballRadius = ball.radius;
+		
 		const paddle = ball.dx < 0 ? humanPaddle : this.game.paddle2;
 		const paddleTop = paddle.z - paddleHalfDepth;
 		const paddleBottom = paddle.z + paddleHalfDepth;
@@ -73,18 +75,18 @@ class AI {
 			const timeToWall = distanceToWall / abs(ball.dz);
 			ball.x = ball.x + timeToWall * ball.dx;
 			ball.z = wall < 0 ?
-				wall + ballRadius :
-				wall - ballRadius;
+			wall + ballRadius :
+			wall - ballRadius;
 			ball.dz = -ball.dz;
 			return this.recursiveUpdateDestination(ball, humanPaddle);
 		}
-
+		
 		// if the ball is moving towards the human paddle, recurse
 		if (ball.dx < 0) {
 			ball.z = ballDestination;
 			ball.dx = -ball.dx;
 			ball.x = paddleSide + ballRadius;
-
+			
 			// Assume the human paddle will reach the ball
 			if (paddleTop > ballDestination) {
 				humanPaddle.z = ballDestination + paddleHalfDepth;
@@ -95,16 +97,50 @@ class AI {
 			return this.recursiveUpdateDestination(ball, humanPaddle);
 		}
 	}
-
+	
 	movePaddle(paddle) {
+		return this.PickfordDefense(paddle);
+	}
+			
+			
+	PickfordDefense(paddle) {
 		const bottomPaddle = paddle.z + paddle.geometry.parameters.depth / 2;
 		const topPaddle = paddle.z - paddle.geometry.parameters.depth / 2;
-		const edgeStrategy = getRandomInt(0, 2) ? this.game.ball.geometry.parameters.radius : 0;
-	
-		return this.destination + edgeStrategy < topPaddle ? -1 : 
-				this.destination - edgeStrategy > bottomPaddle ? 1 : 
-				0;
+		const edgeStrategy = this.game.ball.geometry.parameters.radius;
+		
+		if (this.AIPaddle.dz > 0 && this.destination + edgeStrategy < topPaddle) {
+			this.AIPaddle.dz = -this.AIPaddle.dz;
+		} else if (this.AIPaddle.dz < 0 && this.destination - edgeStrategy > bottomPaddle) {
+			this.AIPaddle.dz = -this.AIPaddle.dz;
+		}
+
+		return this.AIPaddle.dz;
 	}
+
+	aim() {
+		// Predict where the ball will end up when we move the paddle up, down, or stay still
+		// Choose the option that will result in the ball being farther from the human paddle
+	}
+
+	copyPaddle(paddle) {
+		const newPaddle = {};
+		newPaddle.x = paddle.x;
+		newPaddle.z = paddle.z;
+		newPaddle.width = paddle.geometry.parameters.width;
+		newPaddle.depth = paddle.geometry.parameters.depth;
+		return newPaddle;
+	}
+	
+	copyBall(ball) {
+		const newBall = {};
+		newBall.x = ball.x;
+		newBall.z = ball.z;
+		newBall.dx = ball.dx;
+		newBall.dz = ball.dz;
+		newBall.radius = ball.geometry.parameters.radius;
+		return newBall;
+	}
+
 }
 
 export { AI }

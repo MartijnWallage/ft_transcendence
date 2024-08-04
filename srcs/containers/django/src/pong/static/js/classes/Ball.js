@@ -97,6 +97,15 @@ class Ball {
 	get position() {
 		return this.mesh.position;
 	}
+
+	get x() {
+		return this.mesh.position.x;
+	}
+
+	get z() {
+		return this.mesh.position.z;
+	}
+	
 }
 
 export { Ball };

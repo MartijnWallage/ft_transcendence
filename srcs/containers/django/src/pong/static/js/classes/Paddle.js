@@ -8,9 +8,8 @@ class Paddle {
 			roughness: 0.5,
 			metalness: 0.5
 		});
-
-		const paddleOffset = court.geometry.parameters.width / 15;
-		let distanceFromCentre = court.geometry.parameters.width / 2 - paddleOffset;
+		this.offset = court.geometry.parameters.width / 15;
+		let distanceFromCentre = court.geometry.parameters.width / 2 - this.offset;
 		if (left) {
 			distanceFromCentre *= -1;
 		}
