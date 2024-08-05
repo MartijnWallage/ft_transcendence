@@ -72,7 +72,7 @@ function bindEventListeners(game) {
 	
 	var blockchainScore = document.getElementById('js-register-blockchain');
 	if (blockchainScore) {
-		blockchainScore.addEventListener('click', game.executeBlockchainTransaction.bind(game));
+		blockchainScore.addEventListener('click', game.executeBlockchain.bind(game));
 	}
 }
 

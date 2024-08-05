@@ -3,6 +3,8 @@ import { getRandomInt, abs } from '../utils.js';
 
 class Ball {
 	constructor(scene) {
+		this.audio = null;
+		this.scene = scene;
 		this.radius = 0.3;
 		this.geometry = new THREE.SphereGeometry(this.radius);
 		this.material = new THREE.MeshStandardMaterial({
@@ -17,8 +19,13 @@ class Ball {
 		this.serve = 1;
 		this.dx = 0;
 		this.dz = 0;
-		this.speed = 0.2;
+		this.initialSpeed = 0.2;
+		this.angleMultiplier = 0.2;
 		scene.add(this.mesh);
+	}
+
+	addAudio(audio) {
+		this.audio = audio;
 	}
 
 	checkPaddleCollision(paddle) {
@@ -36,16 +43,16 @@ class Ball {
 			(this.dx > 0 && rightSideBall >= leftSidePaddle && leftSideBall <= rightSidePaddle));
 	}
 
-	tryPaddleCollision(paddle_p1, paddle_p2, audio) {
+	tryPaddleCollision(paddle_p1, paddle_p2) {
 		const paddle = this.dx > 0 ? paddle_p2 : paddle_p1;
 
 		if (this.checkPaddleCollision(paddle)) {
-			this.dz = (this.position.z - paddle.position.z) * 0.20;
-			this.dx *= (abs(this.dx) < this.speed / 1.5) ? -2 : -1.03;
-			if (paddle === paddle_p1) {
-				audio.playSound(audio.ping);
-			} else {
-				audio.playSound(audio.pong);
+			this.dz = (this.position.z - paddle.position.z) * this.angleMultiplier;
+			this.dx *= (abs(this.dx) < this.initialSpeed / 1.5) ? -2 : -1.01;
+			if (this.audio && paddle === paddle_p1) {
+				this.audio.playSound(this.audio.ping);
+			} else if (this.audio) {
+				this.audio.playSound(this.audio.pong);
 			}
 		}
 	}
@@ -83,13 +90,22 @@ class Ball {
 		this.position.x = 0;
 		this.position.z = 0;
 		this.serve *= -1;
-		this.dx = this.speed * this.serve / 2;
+		this.dx = this.initialSpeed * this.serve / 2;
 		this.dz = getRandomInt(-7.5, 7.5) / 100;
 	}
 
 	get position() {
 		return this.mesh.position;
 	}
+
+	get x() {
+		return this.mesh.position.x;
+	}
+
+	get z() {
+		return this.mesh.position.z;
+	}
+	
 }
 
 export { Ball };

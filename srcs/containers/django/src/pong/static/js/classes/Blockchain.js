@@ -1,4 +1,4 @@
-class BlockchainStoring{
+class Blockchain {
 
 	constructor(tournamentId){
 		this.tournamentId = tournamentId;
@@ -58,4 +58,4 @@ class BlockchainStoring{
 	}
 }
 
-export { BlockchainStoring };
+export { Blockchain };

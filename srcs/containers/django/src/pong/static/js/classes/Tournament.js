@@ -201,6 +201,7 @@ class Tournament {
 
 		this.players = [];
 	}
+
 }
 
 export { Tournament };

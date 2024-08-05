@@ -9,7 +9,7 @@ import { Environment } from './Environment.js';
 import { Camera } from './Camera.js';
 import { Audio } from './Audio.js';
 import { OrbitControls } from '../three-lib/OrbitControls.js';
-import { BlockchainStoring } from './BlockchainStoring.js';
+import { Blockchain } from './Blockchain.js';
 import { delay } from '../utils.js';
 
 class Game {
@@ -34,7 +34,7 @@ class Game {
 		this.audio = null;
 
 		// Game state
-		this.scoreToWin = 1;
+		this.scoreToWin = 6;
 		this.running = false;
 		this.match = null;
 		this.tournament = null;
@@ -43,7 +43,7 @@ class Game {
 		this.boundCreateAudioContext = this.createAudioContext.bind(this);
 		document.addEventListener('click', this.boundCreateAudioContext);
 	}
-
+	
 	// Create audio audio context once there is a first interaction with the website to comply with internet rules
 	async createAudioContext() {
 		this.audio = new Audio(this.cam1);
@@ -54,13 +54,14 @@ class Game {
 		setTimeout(() => this.audio.playSound(this.audio.woosh_2),1200);
 		setTimeout(() => this.audio.playSound(this.audio.chimes),2400);
 		setTimeout(() => this.audio.playSound(this.audio.main),4000);
+		this.ball.addAudio(this.audio);
 	}
 
 	// These are the modes bound to the buttons in the menu
 	startSolo() {
 		const player1 = new Player('Guest');
 		const player2 = new Player('pongAI');
-		player2.setAI();
+		player2.setAI(this);
 		this.match = new Match(this, [player1, player2]);
 		this.match.play();
 	}
@@ -87,8 +88,8 @@ class Game {
 		this.renderer.setSize( window.innerWidth, window.innerHeight );
 	}
 
-	executeBlockchainTransaction() {
-		new BlockchainStoring(this.tournament.tournamentId);
+	executeBlockchain() {
+		new Blockchain(this.tournament.tournamentId);
 	}
 }
 

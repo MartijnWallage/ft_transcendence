@@ -11,8 +11,12 @@ class Player {
 		};
 	}
 
-	setAI() {
-		this.ai = new AI();
+	setAI(game) {
+		this.ai = new AI(game);
+	}
+
+	isAI() {
+		return this.ai !== null;
 	}
 }
 

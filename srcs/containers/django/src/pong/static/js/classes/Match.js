@@ -46,9 +46,8 @@ class Match {
 		const player2Name = this.players[1].name;
 
 		await window.loadPage('pong');
-		this.game.running = true;
 		console.log('Match started');
-
+		
 		const ball = this.game.ball;
 		HTMLToDiv(`${player1Name}`, 'announcement-l1');
 		HTMLToDiv(`VS`, 'announcement-mid');
@@ -71,6 +70,7 @@ class Match {
 			menu.classList.add('hidden');
 		}, 1500); 
 		
+		this.game.running = true;
 		this.timestamp = Date.now();
 		ball.serve = getRandomInt(0, 2) ? 1 : -1;
 		ball.serveBall();
@@ -90,7 +90,7 @@ class Match {
 		paddle1.movePaddle(direction, field);
 	
 		// move right paddle
-		direction = this.players[1].ai ? this.players[1].ai.movePaddle(paddle2, ball) :
+		direction = this.players[1].ai ? this.players[1].ai.movePaddle(paddle2) :
 			this.keys['ArrowRight'] ? -1 :
 			this.keys['ArrowLeft'] ? 1 :
 			0;
@@ -98,11 +98,12 @@ class Match {
 	
 		// move and bounce ball
 		ball.animateBall();
-		ball.tryPaddleCollision(paddle1, paddle2, this.game.audio);
+		ball.tryPaddleCollision(paddle1, paddle2);
 		ball.tryCourtCollision(field);
 	
 		const split = document.getElementById('vertical-line');
 		this.score.update();
+
 		if (this.players[1].ai) {
 			cam1.renderSingleView(this.game);
 		} else {

@@ -27,6 +27,7 @@ class Score {
 		
 		this.result[scorer] += 1;
 		textToDiv(this.result[scorer], `player${scorer + 1}-score`);
+		
 		ball.serveBall();
 		
 		if (this.result[0] === this.scoreToWin)
@@ -48,19 +49,19 @@ class Score {
 		
 		var menu = document.getElementById('menu');
 		menu.style.display = 'block';
-		menu.style.opacity = 1; // Ensure this matches your CSS transitions if any
+		menu.style.opacity = 1;
 		
 		const btn = document.getElementById('js-next-game-btn');
 		btn.style.display = 'block';
 		
 		return new Promise((resolve) => {
 			function onClick(event) {
-			btn.removeEventListener('click', onClick); // Remove the event listener after the click
+			btn.removeEventListener('click', onClick);
 			btn.style.display = 'none';
 			resolve(event);
 			}
 		
-			btn.addEventListener('click', onClick); // Attach the event listener to the button
+			btn.addEventListener('click', onClick);
 		});
 	}
 	

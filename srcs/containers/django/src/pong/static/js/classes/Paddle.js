@@ -8,16 +8,15 @@ class Paddle {
 			roughness: 0.5,
 			metalness: 0.5
 		});
-
-		const paddleOffset = court.geometry.parameters.width / 15;
-		let distanceFromCentre = court.geometry.parameters.width / 2 - paddleOffset;
+		this.offset = court.geometry.parameters.width / 15;
+		let distanceFromCentre = court.geometry.parameters.width / 2 - this.offset;
 		if (left) {
 			distanceFromCentre *= -1;
 		}
 		this.mesh = new THREE.Mesh(this.geometry, this.material);
 		this.mesh.position.set(distanceFromCentre, 0.9, 0);
 		scene.add(this.mesh);
-		this.speed = 0.18;
+		this.speed = 0.2;
 	}
 	
 	movePaddle(direction, field ) {
@@ -38,6 +37,14 @@ class Paddle {
 
 	get position() {
 		return this.mesh.position;
+	}
+
+	get x() {
+		return this.mesh.position.x;
+	}
+
+	get z() {
+		return this.mesh.position.z;
 	}
 }
 
