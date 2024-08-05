@@ -69,9 +69,11 @@ def login(request):
     if form.is_valid():
         user = form.get_user()
         django_login(request, user)
+        print("login worked")
         return JsonResponse({'status': 'success'})
     return JsonResponse({'status': 'error', 'errors': form.errors}, status=400)
 
+@csrf_exempt
 @api_view(['POST'])
 def logout_view(request):
     print("this post method only is called for logout request")

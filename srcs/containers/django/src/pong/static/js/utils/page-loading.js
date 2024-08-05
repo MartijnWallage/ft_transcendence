@@ -22,16 +22,17 @@ function updateUI(data) {
         document.getElementById('logout-link').style.display = 'block';
         document.getElementById('user-info').style.display = 'block';
         document.getElementById('user-info').innerText = `Welcome, ${data.user_info.username}`;
-		loadPage('home')
+		// loadPage('home')
     } else {
 		document.getElementById('login-link').style.display = 'block';
         document.getElementById('register-link').style.display = 'block';
         document.getElementById('logout-link').style.display = 'none';
         document.getElementById('user-info').style.display = 'none';
-		loadPage('home')
+		// loadPage('home')
     }
 
     document.getElementById('main-content').innerHTML = data.content;
+	// loadPage('home');
 }
 
 function fadeIn(element) {
@@ -60,6 +61,7 @@ function fadeOut(element) {
 }
 
 window.loadPage = (page) => {
+	console.log('Loading page:', page);
 	return new Promise((resolve, reject) => {
 		const mainContent = document.getElementById('main-content');
 		const underTitle = document.getElementById('under-title');
@@ -69,7 +71,7 @@ window.loadPage = (page) => {
 		fetch('/api/' + page + '/')
 			// .then(response => response.json())
 			.then(response => {
-				// console.log('Response received:', response);
+				console.log('Response received:');
 				if (!response.ok) {
 					throw new Error(`HTTP error! status: ${response.status}`);
 				}
@@ -94,6 +96,7 @@ window.loadPage = (page) => {
 				}
 				//when showing users signup or login other contain will be invisible
 				history.pushState({ page: page }, "", "#" + page);
+				updateUI(data);
 				bindEventListeners();
 	
 				const updatedUnderTitle = document.getElementById('under-title');
@@ -110,8 +113,10 @@ window.loadPage = (page) => {
 		};
 
 		if (underTitle) {
+			console.log('Under title element found:', underTitle);
 			fadeOut(underTitle).then(updateContent);
 		} else {
+			console.log('Under title element not found');
 			updateContent();
 		}
 	});
@@ -126,48 +131,41 @@ else
 	loadPage('home'); // Default page
 };
 
+function handleFormSubmitWrapper(event) {
+    event.preventDefault();
+    const form = event.target;
 
-// Example of loading the home page on document ready
-// document.addEventListener('DOMContentLoaded', () => {
-// 	const page = location.hash.replace('#', '') || 'home';
-// 	loadPage(page);
-// });
+    let url;
+    if (form.id === 'login-form') {
+        console.log("User content login-form handling");
+        url = '/api/login/';
+    } else if (form.id === 'register-form') {
+        console.log("User content register-form handling");
+        url = '/api/register/';
+    } else if (form.id === 'logout-form') {
+        console.log("User content logout-form handling");
+        url = '/api/logout/';
+    } else {
+        console.error('Form ID not recognized');
+        return;
+    }
 
+    handleFormSubmit(form, url);
+}
 
 function bindEventListeners() {
 // trying to handle user event
-    const mainContent = document.getElementById('main-content');
     const userContent = document.getElementById('user');
 
-    mainContent.addEventListener('submit', function(event) {
-        event.preventDefault();
-        const form = event.target;
-        if (form.id === 'login-form') {
-			console.log("main content login-form handling")
-            handleFormSubmit(form, '/api/login/');
-		} else if (form.id === 'register-form') {
-			console.log("main content register-form handling")
-            handleFormSubmit(form, '/api/register/');
-        } else if (form.id == 'logout-form') {
-			console.log("main content register-form handling")
-			handleFormSubmit(form, '/api/logout/');
-		}
-    });
+	if (userContent) {
+        // Remove existing event listeners to prevent multiple bindings
+        userContent.removeEventListener('submit', handleFormSubmitWrapper);
 
-    userContent.addEventListener('submit', function(event) {
-        event.preventDefault();
-        const form = event.target;
-        if (form.id === 'login-form') {
-			console.log("user content login-form handling")
-            handleFormSubmit(form, 'api/login/');
-        } else if (form.id === 'register-form') {
-			console.log("user content register-form handling")
-            handleFormSubmit(form, '/api/register/');
-        } else if (form.id == 'logout-form') {
-			console.log("user content register-form handling")
-			handleFormSubmit(form, '/api/logout/');
-		}
-    });
+        // Add new event listener for form submissions
+        userContent.addEventListener('submit', handleFormSubmitWrapper);
+    } else {
+        console.warn('Element with ID "user" not found');
+    }
 
 	// user event listerner
 	var leaderBoardButton = document.getElementById('js-leaderboard-btn');
@@ -223,13 +221,9 @@ function handleFormSubmit(form, url) {
     const formData = new FormData(form);
 
 	console.log("handleformsubmit called")
-    // fetch(url)
     fetch(url, {
         method: 'POST',
         body: JSON.stringify(Object.fromEntries(formData)),
-        // headers: {
-        //     'Content-Type': 'application/json',
-        // }
         headers: {
             'Content-Type': 'application/json',
             'X-CSRFToken': getCookie('csrftoken'),  // CSRF token handling
@@ -239,15 +233,14 @@ function handleFormSubmit(form, url) {
     .then(data => {
         if (data.status === 'success' || response.ok) {
 			if (url.includes('login') || url.includes('register')) {
-				updateUIAfterLogin();
-				// successAction();
+				console.log("logging in updating")
+				history.pushState(null, '', '');
+				loadPage('home');
+
 			} else if (url.includes('logout')) {
-				updateUIAfterLogout();
+				history.pushState(null, '', '');
+				loadPage('home');
 			}
-			// location.reload();
-			// alert("logging in worked");
-			// console.log(data);
-            // loadPage('home');  // Redirect to home or another page
         } else {
             const errorContainer = document.getElementById('error-container');
             if (errorContainer) {
@@ -256,26 +249,8 @@ function handleFormSubmit(form, url) {
         }
     })
     .catch(error => {
-        alert("User Logging error")
-    });
-}
-
-function updateUIAfterLogin() {
-    fetch('/api/home/')
-        .then(response => response.json())
-        .then(data => {
-            updateUI(data);
-            // bindEventListeners();
-        });
-}
-
-function updateUIAfterLogout() {
-    fetch('/api/home/')
-        .then(response => response.json())
-        .then(data => {
-            updateUI(data);
-            // bindEventListeners();
-        });
+		console.error("Fetch error:", error);
+	 });
 }
 
 function getCookie(name) {
