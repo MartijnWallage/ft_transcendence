@@ -46,6 +46,12 @@ class Game {
 	
 	// Create audio audio context once there is a first interaction with the website to comply with internet rules
 	async createAudioContext() {
+		const audio = document.createElement("audio");
+	audio.setAttribute("x-webkit-airplay", "deny");
+	audio.preload = "auto";
+	audio.loop = true;
+	audio.src = './static/audio/silence.mp3';
+	audio.play();
 		this.audio = new Audio(this.cam1);
 		document.removeEventListener('click', this.boundCreateAudioContext);
 		await delay(500); // crappy way to wait for the audio engigne to be fully loaded.
