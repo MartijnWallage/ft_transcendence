@@ -1,5 +1,8 @@
 function loadPageClosure(game) {
 	return async (page) => {
+		if (game.audio && page != 'pong') {
+			game.audio.playSound(game.audio.select_1);
+		}
 		try {
 			const mainContent = document.getElementById('main-content');
 			const underTitle = document.getElementById('under-title');
@@ -32,16 +35,6 @@ function loadPageClosure(game) {
 
 function bindEventListeners(game) {
 	
-	const leaderBoardButton = document.getElementById('js-leaderboard-btn');
-	if (leaderBoardButton) {
-		leaderBoardButton.addEventListener('click', showLeaderBoard);
-	}
-	
-	const leaderBoardClose = document.getElementById('js-leaderboard-close');
-	if (leaderBoardClose) {
-		leaderBoardClose.addEventListener('click', hideLeaderBoard);
-	}
-	
 	const startUserVsUserButton = document.getElementById('js-start-user-vs-user-btn');
 	if (startUserVsUserButton) {
 		startUserVsUserButton.addEventListener('click', game.startUserVsUser.bind(game));
@@ -69,34 +62,22 @@ function bindEventListeners(game) {
 	if (endGameBtn) {
 		endGameBtn.addEventListener('click', game.endGame.bind(game));
 	}
+
+	let exitBtn = document.getElementById('js-exit-btn');
+	if (endGameBtn) {
+		endGameBtn.addEventListener('click', game.endGame.bind(game));
+	}
+
+	// let replayBtn = document.getElementById('js-replay-btn');
+	// if (endGameBtn) {
+	// 	// endGameBtn.addEventListener('click', game.replayGame.bind(game));
+	// }
 	
 	var blockchainScore = document.getElementById('js-register-blockchain');
 	if (blockchainScore) {
 		blockchainScore.addEventListener('click', game.executeBlockchain.bind(game));
 	}
 
-}
-
-function showLeaderBoard() {
-	
-	const leaderBoardDiv = document.getElementById('js-leaderboard-div');
-	if (leaderBoardDiv)
-		leaderBoardDiv.style.display = 'block';
-	
-	const leaderBoardButton = document.getElementById('js-leaderboard-btn');
-	if (leaderBoardButton)
-		leaderBoardButton.style.display = 'none';
-}
-
-function hideLeaderBoard() {
-	
-	const leaderBoardDiv = document.getElementById('js-leaderboard-div');
-	if (leaderBoardDiv)
-		leaderBoardDiv.style.display = 'none';
-	
-	const leaderBoardButton = document.getElementById('js-leaderboard-btn');
-	if (leaderBoardButton)
-		leaderBoardButton.style.display = 'block';
 }
 
 function fadeIn(element) {

@@ -1,4 +1,4 @@
-import { getRandomInt, textToDiv, HTMLToDiv, countdown, waitForEnter } from '../utils.js';
+import { getRandomInt, textToDiv, HTMLToDiv, countdown, waitForEnter, displayDiv } from '../utils.js';
 import { Score } from './Score.js';
 
 class Match {
@@ -46,8 +46,8 @@ class Match {
 		const player2Name = this.players[1].name;
 
 		await window.loadPage('pong');
-		const menu = document.getElementById('menu');
-		menu.style.display = 'block';
+		
+		displayDiv('menu');
 		console.log('Match started');
 		
 		const ball = this.game.ball;
@@ -59,18 +59,13 @@ class Match {
 		textToDiv('0', 'player2-score');
 		textToDiv(player2Name, 'player2-name');
 
-		await waitForEnter(enter);
+		await waitForEnter();
+		this.game.running = true;
 		HTMLToDiv(``, 'announcement-l1');
 		HTMLToDiv(``, 'announcement-mid');
 		HTMLToDiv(``, 'announcement-l2');
-		this.game.running = true;
+
 		await countdown(3, this.game.audio);
-		menu.classList.add('fade-out');
-		setTimeout(function() {
-			menu.classList.add('hidden');
-			textToDiv('', 'announcement-l1');
-		}, 1500); 
-		
 		this.timestamp = Date.now();
 		ball.serve = getRandomInt(0, 2) ? 1 : -1;
 		ball.serveBall();

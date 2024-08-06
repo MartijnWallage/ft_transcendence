@@ -1,5 +1,6 @@
 import { Player } from './Player.js';
 import { Match } from './Match.js';
+import { displayDiv, notDisplayDiv } from '../utils.js';
 
 class Tournament {
 
@@ -13,9 +14,9 @@ class Tournament {
 	async start() {
 		const game = this.game;
 
+		game.audio.playSound(game.audio.select_2);
 		if (this.players.length < 2) {
-			var error2 = document.getElementById('error2');
-			error2.style.display = 'block'; 
+			displayDiv('error2');
 			return;
 		}
 		console.log('Starting tournament... with players:', this.players);
@@ -50,15 +51,15 @@ class Tournament {
 	}
 
 	addPlayer() {
+		this.game.audio.playSound(this.game.audio.select_1);
 		const playerName = document.getElementById('playerNameInput').value.trim();
 		console.log(playerName);
-		var error = document.getElementById('error');
 		if (playerName === '') {
-			error.style.display = 'block'; 
+			displayDiv('error');
 			return;
 		}
 		else {
-			error.style.display = 'none'; 
+			notDisplayDiv('error');
 		}
 		const newPlayer = new Player(playerName);
 		this.players.push(newPlayer);

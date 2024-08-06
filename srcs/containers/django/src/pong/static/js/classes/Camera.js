@@ -55,8 +55,7 @@ class Camera {
 	}
 
 	renderMenuView(scene) {
-		const split = document.getElementById('vertical-line');
-		split.style.display = 'none';
+		notDisplayDiv('vertical-line');
 		this.orbitCamera();
 		const left = 0;
 		const bottom = 0;

@@ -22,7 +22,7 @@ function main() {
 	};
 	document.addEventListener('DOMContentLoaded', DOMContentLoadedHandler);
 
-	// prevent to reload pong page and initiate an empty game, redirect to home instead.
+	// prevent to reload #pong page and initiate an empty game, exit to home instead.
 	window.addEventListener('load', () => {
 		const hash = window.location.hash;
 		if (hash) {  // Check if there is any hash in the URL

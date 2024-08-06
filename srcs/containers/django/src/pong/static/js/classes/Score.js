@@ -1,4 +1,4 @@
-import { textToDiv } from '../utils.js';
+import { textToDiv, displayDiv } from '../utils.js';
 
 class Score {
 	constructor(game, players) {
@@ -47,12 +47,12 @@ class Score {
 		textToDiv(winner, 'announcement-l1');
 		textToDiv('is a winner', 'announcement-mid');
 		
-		var menu = document.getElementById('menu');
-		menu.style.display = 'block';
+		displayDiv('menu');
 		menu.style.opacity = 1;
 		
-		const btn = document.getElementById('js-next-game-btn');
-		btn.style.display = 'block';
+		displayDiv('js-next-game-btn');
+		displayDiv('js-replay-btn');
+		displayDiv('js-exit-btn');
 		
 		return new Promise((resolve) => {
 			function onClick(event) {

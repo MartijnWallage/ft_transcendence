@@ -2,9 +2,8 @@
 <div id="game-controls" class="container-fluid mx-auto p-4 fixed-top text-start">
   <div id="gameButtons" class="col d-flex justify-content-end">
     <button type="button" class="btn btn-outline-light mx-1" id ="js-sound-game-btn">Sound</button>
-    <!-- <button type="button" class="btn btn-outline-light mx-1" id ="js-pause-game-btn">Pause</button> -->
-    <button type="button" class="btn btn-outline-light mx-1" id ="js-end-game-btn">Exit</button>
-    <button type="button" class="btn btn-outline-light mx-1" id ="js-end-game-btn" onclick="loadPage('tournament_score')">Score Tournament</button>
+    <button type="button" class="btn btn-outline-light mx-1" onclick="loadPage('tournament_score')">Score Tournament</button>
+    <button type="button" class="btn btn-outline-light mx-1" id ="js-end-game-btn">X</button>
   </div>
 </div>
 
@@ -15,7 +14,11 @@
     <h1 id="announcement-l2" class="display-5"></h1>
   </div>
   <div id="enter" class="text-white mt-4"></div>
-  <button type="button" class="btn btn-outline-light mx-auto" id ="js-next-game-btn" style="display: none;">Continue / next game </button>
+  <div id="gameButtons" class="d-flex justify-content-center">
+	<button type="button" class="btn btn-outline-light mx-1" id ="js-next-game-btn" style="display: none;">Continue</button>
+	<button type="button" class="btn btn-outline-light mx-1" id ="js-replay-btn" style="display: none;">Replay</button>
+	<button type="button" class="btn btn-outline-light mx-1" id ="js-exit-btn" style="display: none;">Exit</button>
+  </div>
   <div id="scoreBoard" display="none"></div>
 </div>
 
@@ -23,12 +26,12 @@
   <div class="row gx-5">
     <div id="scoreBoard" display="block"></div>
     <div id="player1-info" class="col d-flex flex-column justify-content-start">
-      <div id="player1-score" class="score text-white display-2">0</div>
+      <div id="player1-score" class="score text-white display-3">0</div>
       <div id="player1-name" class="text-white">Host</div>
       <div class="text-white">127.0.0.1</div>
     </div>
     <div id="player2-info" class="col d-flex flex-column align-items-end">
-      <div id="player2-score" class="score text-white display-2">0</div>
+      <div id="player2-score" class="score text-white display-3">0</div>
       <div id="player2-name" class="text-white">Guest</div>
       <div class="text-white">127.0.0.1</div>
     </div>

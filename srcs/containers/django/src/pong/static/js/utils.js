@@ -31,14 +31,28 @@ function HTMLToDiv(html, divID) {
 	div.innerHTML = html;
 }
 
-function waitForEnter(enter) {
+function displayDiv(div) {
+	const element = document.getElementById(div);
+	if (element) {
+		element.style.display = 'block';
+	}
+}
+
+function notDisplayDiv(div) {
+	const element = document.getElementById(div);
+	if (element) {
+		element.style.display = 'none';
+	}
+}
+
+function waitForEnter() {
 	return new Promise((resolve) => {
 		textToDiv('Press ENTER to start...', 'enter');
 		function onKeyDown(event) {
 			if (event.key === 'Enter') {
 				document.removeEventListener('keydown', onKeyDown);
 				document.removeEventListener('touchstart', onTouchStart);
-				enter.style.display = 'none';
+				notDisplayDiv('enter');
 				resolve();
 			}
 		}
@@ -46,7 +60,7 @@ function waitForEnter(enter) {
 		function onTouchStart(event) {
 			document.removeEventListener('keydown', onKeyDown);
 			document.removeEventListener('touchstart', onTouchStart);
-			enter.style.display = 'none';
+			notDisplayDiv('enter');
 			resolve();
 		}
 
@@ -64,16 +78,21 @@ function countdown(seconds, audio) {
 			textToDiv(seconds, 'announcement-l1');
 			if (seconds > 0) {
 				audio.playSound(audio.count);
-			}
-			else {
+			} else {
 				audio.playSound(audio.start);
 				clearInterval(interval);
 				setTimeout(() => {
-					resolve();
+					const menu = document.getElementById('menu');
+					menu.classList.add('fade-out');
+					setTimeout(() => {
+						menu.classList.add('hidden');
+						textToDiv('', 'announcement-l1');
+						resolve();
+					}, 1500);
 				}, 100);
 			}
 		}, 900);
 	});
 }
 
-export { getRandomInt, abs, min, textToDiv, delay, HTMLToDiv, countdown, waitForEnter };
+export { getRandomInt, abs, min, textToDiv, delay, HTMLToDiv, countdown, waitForEnter, displayDiv, notDisplayDiv };

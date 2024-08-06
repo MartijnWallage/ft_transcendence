@@ -54,17 +54,18 @@ class Game {
 		audio.play();
 		this.audio = new Audio(this.cam1);
 		document.removeEventListener('click', this.boundCreateAudioContext);
-		await delay(500); // crappy way to wait for the audio engigne to be fully loaded.
+		await delay(600); // crappy way to wait for the audio engigne to be fully loaded.
 		this.audio.playSound(this.audio.woosh_1);
 		this.cam1.introCameraAnimation();
 		setTimeout(() => this.audio.playSound(this.audio.woosh_2),1500);
-		setTimeout(() => this.audio.playSound(this.audio.chimes),3300);
-		setTimeout(() => this.audio.playSound(this.audio.main),5000);
+		setTimeout(() => this.audio.playSound(this.audio.chimes),3400);
+		setTimeout(() => this.audio.playSound(this.audio.main),4800);
 		this.ball.addAudio(this.audio);
 	}
 
 	// These are the modes bound to the buttons in the menu
 	startSolo() {
+		this.audio.playSound(this.audio.select_2);
 		const player1 = new Player('Guest');
 		const player2 = new Player('pongAI');
 		player2.setAI(this);
@@ -73,6 +74,7 @@ class Game {
 	}
 
 	startUserVsUser() {
+		this.audio.playSound(this.audio.select_2);
 		const player1 = new Player('Guest 1');
 		const player2 = new Player('Guest 2');
 		this.match = new Match(this, [player1, player2]);
@@ -86,8 +88,9 @@ class Game {
 
 	// Not sure what this function is for.
 	endGame() {
-		const redirecturi = "/#home";
-		window.location.href = redirecturi;
+		this.running = false;
+		this.ball.resetBall();
+		loadPage('game_mode');
 	}
 
 	onWindowResize() {
@@ -95,6 +98,7 @@ class Game {
 	}
 
 	executeBlockchain() {
+		this.audio.playSound(this.audio.select_1);
 		new Blockchain(this.tournament.tournamentId);
 	}
 }
