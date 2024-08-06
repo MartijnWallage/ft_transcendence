@@ -58,6 +58,23 @@ class PingpongConsumer(AsyncWebsocketConsumer):
                         'players': self.get_player_status()
                     }
                 )
+            elif message_type == 'player_action':
+                action_data = data.get('data', {})
+                await self.channel_layer.group_send(
+                    self.room_group_name,
+                    {
+                        'type': 'player_action',
+                        'data': action_data,
+                        'player': self.__class__.player_roles[self.channel_name]
+                    }
+                )
+            elif message_type == 'start_game':
+                await self.channel_layer.group_send(
+                    self.room_group_name,
+                    {
+                        'type': 'start_game'
+                    }
+                )
             # elif message_type == 'player_action':
             #     # Process the player's action
             #     action_data = data.get('data', {})
@@ -86,8 +103,16 @@ class PingpongConsumer(AsyncWebsocketConsumer):
     async def player_disconnected(self, event):
         await self.send(text_data=json.dumps({'type': 'player_disconnected', 'players': event['players']}))
 
+    
     async def player_action(self, event):
-        await self.send(text_data=json.dumps({'type': 'player_action', 'data': event['data']}))
+        await self.send(text_data=json.dumps({
+            'type': 'player_action',
+            'data': event['data'],
+            'player': event['player']
+        }))
+
+    # async def player_action(self, event):
+    #     await self.send(text_data=json.dumps({'type': 'player_action', 'data': event['data']}))
 
     # def get_player_status(self):
     #     return [{'role': role, 'status': 'ready'} for role in self.__class__.player_roles.values()]
@@ -105,8 +130,8 @@ class PingpongConsumer(AsyncWebsocketConsumer):
     # async def player_connected(self, event):
     #     await self.send(text_data=json.dumps({'type': 'player_connected', 'role': event['role']}))
 
-    # async def start_game(self, event):
-    #     await self.send(text_data=json.dumps({'type': 'start_game'}))
+    async def start_game(self, event):
+        await self.send(text_data=json.dumps({'type': 'start_game'}))
     
 
 

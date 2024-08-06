@@ -3,18 +3,18 @@ class Remote {
 		this.websocket = websocket;
 	}
 
-	// getCommand() {
-	// 	// Implement the logic to fetch the last command received via WebSocket
-	// 	// This is a placeholder implementation
-	// 	let command = 0;
-	// 	this.websocket.onmessage = (event) => {
-	// 		const message = JSON.parse(event.data);
-	// 		if (message.type === 'player_action') {
-	// 			command = message.data.command; // Assuming the command is in message.data.command
-	// 		}
-	// 	};
-	// 	return command;
-	// }
+	getCommand() {
+		// Implement the logic to fetch the last command received via WebSocket
+		// This is a placeholder implementation
+		let command = 0;
+		this.websocket.onmessage = (event) => {
+			const message = JSON.parse(event.data);
+			if (message.type === 'player_action') {
+				command = message.data.command; // Assuming the command is in message.data.command
+			}
+		};
+		return command;
+	}
 }
 
 

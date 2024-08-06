@@ -44,7 +44,11 @@ function animate(stats, game) {
 		split.style.display = 'none';
 		game.cam1.renderMenuView(game);
 	} else {
-		game.match.update();
+		if (game.match) {
+            game.match.update();
+        } else {
+            console.error('Game match is not initialized.');
+        }
 	}
 
 	game.controls.update();

@@ -49,6 +49,10 @@ class Game {
         this.websocketConnections = {}; // To store WebSocket connections for each player
         this.currentPlayerName = ''; // To track the current player
 		this.playerRoles = {}; // To store roles of players
+		 // Bind the function to ensure correct context
+		this.startRemoteUserVsUser = this.startRemoteUserVsUser.bind(this);
+		// Attach the function to the button
+        // document.getElementById('js-start-user-vs-user-remote-btn').onclick = this.startRemoteUserVsUser;
 	}
 
 	// These are the modes bound to the buttons in the menu
@@ -68,7 +72,8 @@ class Game {
 	}
 
 	async playerReady(name) {
-        this.currentPlayerName = name; // Track the current player's name
+        // this.currentPlayerName = name; // Track the current player's name
+		this.currentPlayerName = name + Object.keys(this.websocketConnections).length; // Ensure unique name
         const websocket = new WebSocket('wss://10.15.109.3:8443/ws/pingpongsocket/');
 
         websocket.onopen = () => {
@@ -101,7 +106,12 @@ class Game {
                     document.getElementById('js-player-ready-btn').style.display = 'none'; // Hide the 'Ready' button
 					document.getElementById('js-start-user-vs-user-remote-btn').style.display = 'block'; // Show the 'Continue' button
                 }
-            }
+            } else if (data.type === 'start_game') {
+				this.initializeGame();
+			} else if (data.type === 'player_action') {
+				console.log(`Player ${data.player} action:`, data.data);
+				// Handle other player actions here
+			}
         };
 
         websocket.onclose = (event) => console.log(`WebSocket connection closed for ${this.currentPlayerName}`);
@@ -115,20 +125,28 @@ class Game {
             return;
         }
 
-        const player1 = new Player('Guest 1', this.websocketConnections['Guest 1']);
-        const player2 = new Player('Guest 2', this.websocketConnections['Guest 2']);
-        
-        const match = new Match(this, [player1, player2]);
-        match.play();
+		// Notify the other player to start the game
+		const message = JSON.stringify({ type: 'start_game' });
+		Object.values(this.websocketConnections).forEach(ws => ws.send(message));
+
+        this.initializeGame();
     }
 
+	initializeGame() {
+		const player1 = new Player('Guest 1', this.websocketConnections['Guest 1']);
+		const player2 = new Player('Guest 2', this.websocketConnections['Guest 2']);
+		
+		this.match = new Match(this, [player1, player2]);
+		console.log('Match object created:', this.match); // Debugging line
+		this.running = true;  // Ensure the game is marked as running
+		this.match.play();
+	}
 
 
 	startMatch() {
         if (this.players.length === this.playerCount) {
             this.match = new Match(this, this.players);
             this.match.play();
-			this.matchStarted = true;
         }
     }
 	
@@ -138,8 +156,6 @@ class Game {
             this.match.status(gameState);
         }
     }
-	
-	
 
 	createTournament() {
 		const tournament = new Tournament(this);
@@ -156,7 +172,5 @@ class Game {
 		this.renderer.setSize( window.innerWidth, window.innerHeight );
 	}
 }
-
-
 
 export { Game };
