@@ -31,7 +31,7 @@ class Camera {
 	async introCameraAnimation() {
 		let startY = 200;
 		let endY = 0.9;
-		let duration = 4000; // Duration in milliseconds
+		let duration = 4500; // Duration in milliseconds
 		let startTime = Date.now();
 	
 		while (true) {

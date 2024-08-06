@@ -74,6 +74,7 @@ function bindEventListeners(game) {
 	if (blockchainScore) {
 		blockchainScore.addEventListener('click', game.executeBlockchain.bind(game));
 	}
+
 }
 
 function showLeaderBoard() {

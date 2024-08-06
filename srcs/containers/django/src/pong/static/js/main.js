@@ -21,6 +21,18 @@ function main() {
 		window.loadPage(page);
 	};
 	document.addEventListener('DOMContentLoaded', DOMContentLoadedHandler);
+
+	// prevent to reload pong page and initiate an empty game, redirect to home instead.
+	window.addEventListener('load', () => {
+		const hash = window.location.hash;
+		if (hash) {  // Check if there is any hash in the URL
+			if (sessionStorage.getItem('visitedHash')) {
+				window.location.href = '/';
+			} else {
+				sessionStorage.setItem('visitedHash', 'true');
+			}
+		}
+	});
 	
 	// FPS stats viewer
 	const stats = new Stats();

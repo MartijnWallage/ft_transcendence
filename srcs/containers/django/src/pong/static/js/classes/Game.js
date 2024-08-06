@@ -47,19 +47,19 @@ class Game {
 	// Create audio audio context once there is a first interaction with the website to comply with internet rules
 	async createAudioContext() {
 		const audio = document.createElement("audio");
-	audio.setAttribute("x-webkit-airplay", "deny");
-	audio.preload = "auto";
-	audio.loop = true;
-	audio.src = './static/audio/silence.mp3';
-	audio.play();
+		audio.setAttribute("x-webkit-airplay", "deny");
+		audio.preload = "auto";
+		audio.loop = true;
+		audio.src = './static/audio/silence.mp3'; //fix the ios audio not playing when the phone or ipad is switch to sielnt mode.
+		audio.play();
 		this.audio = new Audio(this.cam1);
 		document.removeEventListener('click', this.boundCreateAudioContext);
 		await delay(500); // crappy way to wait for the audio engigne to be fully loaded.
 		this.audio.playSound(this.audio.woosh_1);
 		this.cam1.introCameraAnimation();
-		setTimeout(() => this.audio.playSound(this.audio.woosh_2),1200);
-		setTimeout(() => this.audio.playSound(this.audio.chimes),2400);
-		setTimeout(() => this.audio.playSound(this.audio.main),4000);
+		setTimeout(() => this.audio.playSound(this.audio.woosh_2),1500);
+		setTimeout(() => this.audio.playSound(this.audio.chimes),3300);
+		setTimeout(() => this.audio.playSound(this.audio.main),5000);
 		this.ball.addAudio(this.audio);
 	}
 

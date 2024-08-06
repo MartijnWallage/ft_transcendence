@@ -4,10 +4,11 @@ class Audio {
 	constructor(camera) {
 		this.listener = new THREE.AudioListener();
 		camera.camera.add(this.listener);
-		this.main = this.addSound('./static/audio/main.mp3', true);
+		this.main = this.addSound('./static/audio/theme.mp3', true);
 		this.ping = this.addSound('./static/audio/ping.mp3', false);
 		this.pong = this.addSound('./static/audio/pong.mp3', false);
 		this.start = this.addSound('./static/audio/start.mp3', false);
+		this.count = this.addSound('./static/audio/count.mp3', false);
 		this.chimes = this.addSound('./static/audio/chimes.mp3', false);
 		this.woosh_1 = this.addSound('./static/audio/woosh_1.mp3', false);
 		this.woosh_2 = this.addSound('./static/audio/woosh_2.mp3', false);

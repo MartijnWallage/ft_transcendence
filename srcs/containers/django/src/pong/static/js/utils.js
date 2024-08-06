@@ -33,6 +33,7 @@ function HTMLToDiv(html, divID) {
 
 function waitForEnter(enter) {
 	return new Promise((resolve) => {
+		textToDiv('Press ENTER to start...', 'enter');
 		function onKeyDown(event) {
 			if (event.key === 'Enter') {
 				document.removeEventListener('keydown', onKeyDown);
@@ -57,15 +58,21 @@ function waitForEnter(enter) {
 function countdown(seconds, audio) {
 	return new Promise(resolve => {
 		textToDiv(seconds, 'announcement-l1');
+		audio.playSound(audio.count);
 		const interval = setInterval(() => {
-			textToDiv(seconds, 'announcement-l1');
 			seconds -= 1;
-			if (seconds < 0) {
+			textToDiv(seconds, 'announcement-l1');
+			if (seconds > 0) {
+				audio.playSound(audio.count);
+			}
+			else {
 				audio.playSound(audio.start);
 				clearInterval(interval);
-				resolve();
+				setTimeout(() => {
+					resolve();
+				}, 100);
 			}
-		}, 600);
+		}, 900);
 	});
 }
 

@@ -46,6 +46,8 @@ class Match {
 		const player2Name = this.players[1].name;
 
 		await window.loadPage('pong');
+		const menu = document.getElementById('menu');
+		menu.style.display = 'block';
 		console.log('Match started');
 		
 		const ball = this.game.ball;
@@ -57,24 +59,21 @@ class Match {
 		textToDiv('0', 'player2-score');
 		textToDiv(player2Name, 'player2-name');
 
-		const enter = document.getElementById('enter');
-		enter.style.display = 'block';
 		await waitForEnter(enter);
 		HTMLToDiv(``, 'announcement-l1');
 		HTMLToDiv(``, 'announcement-mid');
 		HTMLToDiv(``, 'announcement-l2');
-		await countdown(2, this.game.audio);
-		const menu = document.getElementById('menu');
+		this.game.running = true;
+		await countdown(3, this.game.audio);
 		menu.classList.add('fade-out');
 		setTimeout(function() {
 			menu.classList.add('hidden');
+			textToDiv('', 'announcement-l1');
 		}, 1500); 
 		
-		this.game.running = true;
 		this.timestamp = Date.now();
 		ball.serve = getRandomInt(0, 2) ? 1 : -1;
 		ball.serveBall();
-		textToDiv('', 'announcement-l1');
 	}
 
 	update() {
