@@ -38,7 +38,17 @@ class Game {
 		this.tournament = null;
 
 		// WebSocket
-		this.pingpongsocket = null;
+		// this.players = [];
+		// this.playerCount = 0;
+		// this.currentPlayerIndex = 0;
+		// this.initializedPlayers = 0;
+		// this.websocket = null; // Single WebSocket instance
+        // this.matchStarted = false;
+		this.players = []; // Array to hold player objects
+        this.readyPlayers = new Set(); // To track which players are ready
+        this.websocketConnections = {}; // To store WebSocket connections for each player
+        this.currentPlayerName = ''; // To track the current player
+		this.playerRoles = {}; // To store roles of players
 	}
 
 	// These are the modes bound to the buttons in the menu
@@ -57,13 +67,79 @@ class Game {
 		this.match.play();
 	}
 
-	// startRemoteUserVsUser() {
-	// 	//add websocket
-	// 	const player1 = new Player('Guest 1');
-	// 	const player2 = new Player('Guest 2');
-	// 	this.match = new Match(this, [player1, player2]);
-	// 	this.match.play();
-	// }
+	async playerReady(name) {
+        this.currentPlayerName = name; // Track the current player's name
+        const websocket = new WebSocket('wss://10.15.109.3:8443/ws/pingpongsocket/');
+
+        websocket.onopen = () => {
+            console.log(`WebSocket connection established for ${this.currentPlayerName}`);
+            this.websocketConnections[this.currentPlayerName] = websocket;
+            
+            websocket.send(JSON.stringify({ type: 'player_action', data: { action: 'ready' } }));
+        };
+
+        websocket.onmessage = (event) => {
+            const data = JSON.parse(event.data);
+            console.log('Received data:', data); // Add this line to see the structure of the incoming data
+
+			if (data.type === 'players_ready') {
+                this.playerRoles = data.players.reduce((roles, player, index) => {
+                    console.log(`Processing player ${index}:`, player); // Debugging line
+					roles[`Guest ${index + 1}`] = player.name;
+                    return roles;
+                }, {});
+                
+                // Update UI with player roles
+				const player1Status = document.getElementById('player1-status');
+				const player2Status = document.getElementById('player2-status');
+				
+				player1Status.innerText = `Player 1 : ${this.playerRoles['Guest 1'] || 'looking for match ......'}`;
+				player2Status.innerText = `Player 2 : ${this.playerRoles['Guest 2'] || 'looking for match ......'}`;
+            
+                // Check if both players are ready
+                if (Object.keys(this.playerRoles).length === 2) {
+                    document.getElementById('js-player-ready-btn').style.display = 'none'; // Hide the 'Ready' button
+					document.getElementById('js-start-user-vs-user-remote-btn').style.display = 'block'; // Show the 'Continue' button
+                }
+            }
+        };
+
+        websocket.onclose = (event) => console.log(`WebSocket connection closed for ${this.currentPlayerName}`);
+        websocket.onerror = (error) => console.error(`WebSocket error for ${this.currentPlayerName}:`, error);
+    }
+
+
+	startRemoteUserVsUser() {
+        if (Object.keys(this.playerRoles).length < 2) {
+            console.error('Cannot start game. Not all players are ready.');
+            return;
+        }
+
+        const player1 = new Player('Guest 1', this.websocketConnections['Guest 1']);
+        const player2 = new Player('Guest 2', this.websocketConnections['Guest 2']);
+        
+        const match = new Match(this, [player1, player2]);
+        match.play();
+    }
+
+
+
+	startMatch() {
+        if (this.players.length === this.playerCount) {
+            this.match = new Match(this, this.players);
+            this.match.play();
+			this.matchStarted = true;
+        }
+    }
+	
+	updateGameState(gameState) {
+        // Use status method to update game state
+        if (this.match) {
+            this.match.status(gameState);
+        }
+    }
+	
+	
 
 	createTournament() {
 		const tournament = new Tournament(this);
@@ -80,5 +156,7 @@ class Game {
 		this.renderer.setSize( window.innerWidth, window.innerHeight );
 	}
 }
+
+
 
 export { Game };

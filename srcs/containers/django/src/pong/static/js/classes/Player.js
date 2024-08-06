@@ -1,4 +1,5 @@
 import { AI } from './AI.js';
+import { Remote } from './Remote.js';
 
 class Player {
 	constructor(name) {
@@ -17,8 +18,8 @@ class Player {
 		this.ai = new AI();
 	}
 
-	setRemote() {
-		this.remote = new Remote();
+	setRemote(websocket) {
+		this.remote = new Remote(websocket);
 		this.isRemote = true;
 	}
 }

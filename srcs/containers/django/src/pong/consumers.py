@@ -58,19 +58,19 @@ class PingpongConsumer(AsyncWebsocketConsumer):
                         'players': self.get_player_status()
                     }
                 )
-            elif message_type == 'player_action':
-                # Process the player's action
-                action_data = data.get('data', {})
-                self.update_game_state(action_data)  # Update the game state
+            # elif message_type == 'player_action':
+            #     # Process the player's action
+            #     action_data = data.get('data', {})
+            #     self.update_game_state(action_data)  # Update the game state
 
-                # Broadcast the updated game state to all clients
-                await self.channel_layer.group_send(
-                    self.room_group_name,
-                    {
-                        'type': 'game_update',
-                        'game_state': self.get_game_state()
-                    }
-                )
+            #     # Broadcast the updated game state to all clients
+            #     await self.channel_layer.group_send(
+            #         self.room_group_name,
+            #         {
+            #             'type': 'game_update',
+            #             'game_state': self.get_game_state()
+            #         }
+            #     )
             else:
                 await self.send(text_data=json.dumps({
                     'error': f'Unsupported message type: {message_type}'
@@ -78,38 +78,6 @@ class PingpongConsumer(AsyncWebsocketConsumer):
 
         except json.JSONDecodeError:
             await self.send(text_data=json.dumps({'error': 'Invalid JSON data received'}))
-
-    # async def receive(self, text_data):
-    #     try:
-    #         data = json.loads(text_data)
-    #         message_type = data.get('type', '')
-
-    #         if message_type == 'initiate_remote_play':
-    #             await self.channel_layer.group_send(
-    #                 self.room_group_name,
-    #                 {
-    #                     'type': 'players_ready',
-    #                     'players': self.get_player_status()
-    #                 }
-    #             )
-
-    #         elif message_type == 'player_action':
-    #             await self.channel_layer.group_send(
-    #                 self.room_group_name,
-    #                 {
-    #                     'type': 'player_action',
-    #                     'data': data.get('data', {})
-    #                 }
-    #             )
-            
-    #         else:
-    #             await self.send(text_data=json.dumps({
-    #                 'error': f'Unsupported message type: {message_type}'
-    #             }))
-
-    #     except json.JSONDecodeError:
-    #         await self.send(text_data=json.dumps({'error': 'Invalid JSON data received'}))
-
 
 
     async def players_ready(self, event):
@@ -121,10 +89,14 @@ class PingpongConsumer(AsyncWebsocketConsumer):
     async def player_action(self, event):
         await self.send(text_data=json.dumps({'type': 'player_action', 'data': event['data']}))
 
+    # def get_player_status(self):
+    #     return [{'role': role, 'status': 'ready'} for role in self.__class__.player_roles.values()]
+
+
     def get_player_status(self):
-        return [{'role': role, 'status': 'ready'} for role in self.__class__.player_roles.values()]
-
-
+        # Return player status including their roles
+        return [{'name': self.__class__.player_roles.get(channel_name), 'status': 'ready'} 
+                for channel_name in self.__class__.player_roles.keys()]
 
 
 

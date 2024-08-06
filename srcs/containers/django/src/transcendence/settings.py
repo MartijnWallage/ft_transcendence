@@ -40,8 +40,6 @@ print("ALLOWED_HOSTS:", ALLOWED_HOSTS)
 # Application definition
 
 INSTALLED_APPS = [
-    # 'daphne',
-    # 'channels',
 	'pong.apps.PongConfig',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -50,7 +48,6 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    # 'pong',
     'crispy_bootstrap5',
     'crispy_forms'
 ]
