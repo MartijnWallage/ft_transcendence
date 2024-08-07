@@ -13,12 +13,15 @@ class Match {
 		this.keys = {};
 		document.addEventListener("keydown", (event) => { 
 			this.keys[event.key] = true; 
+			// this.handleLocalPlayerInput(event.key, true);
 		});
 		
 		document.addEventListener("keyup", (event) => {
 			this.keys[event.key] = false;
+			// this.handleLocalPlayerInput(event.key, false);
 		});
 	}
+
 
 	async play() {
 		const player1Name = this.players[0].name;
@@ -35,7 +38,6 @@ class Match {
 		enter.style.display = 'block';
 		await waitForEnter(enter);
 		await countdown(1, announcement);
-		// await countdown(3, announcement);
 		const menu = document.getElementById('menu');
 		menu.classList.add('fade-out');
 		setTimeout(function() {
@@ -59,24 +61,23 @@ class Match {
 		const cam1 = this.game.cam1;
 		const cam2 = this.game.cam2;
 	
-		// Handle paddle1 (Player 1) movement
-		let direction = 0;
-		if (this.players[0].isRemote) {
-			direction = this.keys['ArrowLeft'] ? -1 : this.keys['ArrowRight'] ? 1 : 0;
+		let direction1 = 0;
+		if (this.players[0].remote) {
+			direction1 = this.players[0].remote.lastCommand;
 		} else {
-			direction = this.keys['a'] ? -1 : this.keys['d'] ? 1 : 0;
+			direction1 = this.keys['a'] ? -1 : this.keys['d'] ? 1 : 0;
 		}
-		paddle1.movePaddle(direction, field);
+		paddle1.movePaddle(direction1, field);
 
-		// Handle paddle2 (Player 2) movement
+		let direction2 = 0;
 		if (this.players[1].ai) {
-			direction = this.players[1].ai.movePaddle(paddle2, ball);
-		} else if (this.players[1].isRemote) {
-			direction = this.keys['ArrowLeft'] ? -1 : this.keys['ArrowRight'] ? 1 : 0;
+			direction2 = this.players[1].ai.movePaddle(paddle2, ball);
+		} else if (this.players[1].remote) {
+			direction2 = this.players[1].remote.lastCommand;
 		} else {
-			direction = this.keys['ArrowLeft'] ? -1 : this.keys['ArrowRight'] ? 1 : 0;
+			direction2 = this.keys['ArrowLeft'] ? -1 : this.keys['ArrowRight'] ? 1 : 0;
 		}
-		paddle2.movePaddle(direction, field);
+		paddle2.movePaddle(direction2, field);
 	
 		// move and bounce ball
 		ball.animateBall();
@@ -85,7 +86,7 @@ class Match {
 	
 		const split = document.getElementById('vertical-line');
 		this.score.update();
-		if (this.players[1].ai) {
+		if (this.players[1].ai || this.players[1].remote) {
 			cam1.renderSingleView(this.game);
 		} else {
 			cam1.renderSplitView(this.game, 0);
@@ -94,5 +95,6 @@ class Match {
 		}
 	}
 }
+
 
 export { Match };

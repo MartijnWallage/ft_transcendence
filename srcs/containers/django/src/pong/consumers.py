@@ -58,7 +58,7 @@ class PingpongConsumer(AsyncWebsocketConsumer):
                         'players': self.get_player_status()
                     }
                 )
-            elif message_type == 'player_action':
+            if message_type == 'player_action':
                 action_data = data.get('data', {})
                 await self.channel_layer.group_send(
                     self.room_group_name,
@@ -122,7 +122,9 @@ class PingpongConsumer(AsyncWebsocketConsumer):
         # Return player status including their roles
         return [{'name': self.__class__.player_roles.get(channel_name), 'status': 'ready'} 
                 for channel_name in self.__class__.player_roles.keys()]
-
+    
+    async def start_game(self, event):
+        await self.send(text_data=json.dumps({'type': 'start_game'}))
 
 
 
@@ -130,8 +132,8 @@ class PingpongConsumer(AsyncWebsocketConsumer):
     # async def player_connected(self, event):
     #     await self.send(text_data=json.dumps({'type': 'player_connected', 'role': event['role']}))
 
-    async def start_game(self, event):
-        await self.send(text_data=json.dumps({'type': 'start_game'}))
+    # async def start_game(self, event):
+    #     await self.send(text_data=json.dumps({'type': 'start_game'}))
     
 
 

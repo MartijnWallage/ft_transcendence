@@ -49,28 +49,10 @@ function bindEventListeners(game) {
 		startUserVsUserButton.addEventListener('click', game.startUserVsUser.bind(game));
 	}
 
-
-	
-
-	// const playerReady = document.getElementById('js-player-ready-btn');
-	// if (playerReady) {
-	// 	const currentPlayerName = document.getElementById('player1-status').innerText.includes('Guest 1') ? 'Guest 1' : 'Guest 2';
-	// 	playerReady.addEventListener('click', () => game.playerReady(currentPlayerName));
-	// }
-
-	const playerReady = document.getElementById('js-player-ready-btn');
-	if (playerReady) {
-		// const currentPlayerName = document.getElementById('player1-status').innerText.includes('Guest 1') ? 'Guest 1' : 'Guest 2';
-		// playerReady.addEventListener('click', () => game.playerReady(currentPlayerName));
-		playerReady.addEventListener('click', () => game.playerReady());
-
-	}
-
-
 	//added remote version to handle websocket
 	const startRemoteUserVsUserButton = document.getElementById('js-start-user-vs-user-remote-btn');
 	if (startRemoteUserVsUserButton) {
-		startRemoteUserVsUserButton.addEventListener('click', () => game.startRemoteUserVsUser());
+		startRemoteUserVsUserButton.addEventListener('click', () => game.startGameUserVsUserremote.bind(game));
 	}
 	
 	const addPlayerBtn = document.getElementById('js-add-player-btn');
