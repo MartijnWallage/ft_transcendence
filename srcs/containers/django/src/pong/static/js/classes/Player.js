@@ -52,27 +52,44 @@ class Player {
 		}
 	}
 
-	handleServerMessage(message) {
-		// Handle messages received from the server
-		switch (message.type) {
-			case 'startMatch':
-				// Handle match start
-				console.log(`${this.name} match started.`);
+    handleServerMessage(message) {
+        switch (message.type) {
+            case 'players_ready':
+                // Update the player list on the page
+                this.updatePlayerList(message.players);
+                break;
+			case 'player_disconnected':
+				// Update the player list to remove the disconnected player
+				this.updatePlayerList(message.players);
 				break;
-			case 'matchResult':
-				// Handle match result
-				console.log(`${this.name} received match result.`);
-				break;
-			default:
-				console.log(`Unknown message type: ${message.type}`);
-		}
-	}
+            case 'registration_status':
+                if (message.status === 'already_registered') {
+                    this.showError('You are already registered.');
+                } else if (message.status === 'registered') {
+                    console.log(`Player ${message.player_name} successfully registered.`);
+                }
+                break;
+            default:
+                console.log(`Unknown message type: ${message.type}`);
+        }
+    }
 
-	sendMessage(message) {
-		if (this.connection && this.connection.readyState === WebSocket.OPEN) {
-			this.connection.send(JSON.stringify(message));
-		}
-	}
+	updatePlayerList(players) {
+        const playerListDiv = document.getElementById('playerList');
+        playerListDiv.innerHTML = ''; // Clear existing list
+
+        players.forEach((player, index) => {
+            const playerElement = document.createElement('p');
+            playerElement.textContent = `Player ${index + 1}: ${player.role}`;
+            playerListDiv.appendChild(playerElement);
+        });
+    }
+
+    showError(message) {
+        const errorElement = document.getElementById('error');
+        errorElement.textContent = message;
+        errorElement.style.display = 'block';
+    }
 }
 
 export { Player };

@@ -8,21 +8,72 @@ class Tournament {
 		this.players = [];
 		this.matchResult = [];
 		this.tournamentId = null;
+		this.maxPlayers = 1; // Allow only 1 remote player per webpage
+        this.isRemotePlayerAdded = false; // Track if a remote player has been added
 	}
+
+    async checkPlayerCount() {
+		return new Promise((resolve, reject) => {
+			if (this.players[0].connection) {
+				this.players[0].connection.send(JSON.stringify({ type: 'get_player_count' }));
+	
+				this.players[0].connection.onmessage = (event) => {
+					const message = JSON.parse(event.data);
+					if (message.type === 'player_count') {
+						const playerCount = message.count;
+	
+						console.log('Number of players:', playerCount);
+	
+						if (playerCount < 2) {
+							resolve({
+								success: false,
+								message: 'More than 2 players are required to start the tournament',
+							});
+						} else {
+							resolve({ success: true });
+						}
+					} else {
+						console.log(`Unknown message type: ${message.type}`);
+						reject(new Error('Unexpected message type'));
+					}
+				};
+			} else {
+				resolve({
+					success: false,
+					message: 'WebSocket connection is not open',
+				});
+			}
+		});
+	}
+	
 
 	async start() {
 		const game = this.game;
 
-		if (this.players.length < 2) {
+		// Request the server to check player count
+		const response = await this.checkPlayerCount();
+		if (!response.success) {
 			var error2 = document.getElementById('error2');
+			error2.textContent = response.message;
 			error2.style.display = 'block'; 
 			return;
 		}
+
 		console.log('Starting tournament... with players:', this.players);
+
+		// // Check if all players are connected
+		// const allPlayersConnected = this.players.every(player => player.connection && player.connection.readyState === WebSocket.OPEN);
+		// if (!allPlayersConnected) {
+		// 	var error2 = document.getElementById('error2');
+		// 	error2.textContent = 'Not all players are connected. Please wait until all players are connected.';
+		// 	error2.style.display = 'block'; 
+		// 	return;
+		// }
 
 		try {
 			await loadPage('pong');
 			let currentPlayers = [this.players[0], this.players[1]];
+			
 			for (let index = 1; index < this.players.length; index++) {
 				game.match = new Match(game, currentPlayers);
 				await game.match.play();
@@ -49,11 +100,15 @@ class Tournament {
 		}
 	}
 
-	addPlayer() {
+	async addPlayer() {
 		const playerName = document.getElementById('playerNameInput').value.trim();
+		const error = document.getElementById('error');
+		
 		console.log(playerName);
-		var error = document.getElementById('error');
+		
+
 		if (playerName === '') {
+			error.textContent = 'Please enter a valid name';
 			error.style.display = 'block'; 
 			return;
 		}
@@ -61,15 +116,30 @@ class Tournament {
 			error.style.display = 'none'; 
 		}
 
+		if (this.isRemotePlayerAdded) {
+            console.log('A remote player has already been added.');
+            return;
+        }
+
+
 		const newPlayer = new Player(playerName, true); 
 		this.players.push(newPlayer);
+		this.isRemotePlayerAdded = true;
+
 		this.displayPlayers();
-		document.getElementById('playerNameInput').value = '';
+		document.getElementById('js-add-player-btn').style.display = 'none';
+		document.getElementById('playerNameInput').style.display = 'none';
 	}
 
 	displayPlayers() {
 		const playerListDiv = document.getElementById('playerList');
 		playerListDiv.innerHTML = ''; // Clear existing list
+
+		// this.players.forEach(player => {
+        //     const playerElement = document.createElement('div');
+        //     playerElement.textContent = player.name;
+        //     playerListElement.appendChild(playerElement);
+        // });
 		this.players.forEach(player => {
 			let index = this.players.indexOf(player) + 1;
 			let name = player.name;
