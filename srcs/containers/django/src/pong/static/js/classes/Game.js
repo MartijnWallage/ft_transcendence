@@ -30,7 +30,7 @@ class Game {
 		this.paddle2 = new Paddle(this.scene, this.field, false);
 		this.ball = new Ball(this.scene);
 		this.environment = new Environment(this.scene);
-		this.controls = new OrbitControls(this.cam1.camera, container);
+		// this.controls = new OrbitControls(this.cam1.camera, container);
 		this.audio = null;
 
 		// Game state
