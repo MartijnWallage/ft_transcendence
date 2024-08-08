@@ -57,25 +57,38 @@ function bindEventListeners(game) {
 		console.log('creating tournament');
 		startTournamentBtn.addEventListener('click', game.tournament.start.bind(game.tournament));
 	}
+	
+	var blockchainScore = document.getElementById('js-register-blockchain');
+	if (blockchainScore) {
+		blockchainScore.addEventListener('click', game.executeBlockchain.bind(game));
+	}
+
+	// OPTION MENU
+	let optionBtn = document.getElementById('js-option-btn');
+	if (optionBtn) {
+		optionBtn.addEventListener('click', game.showOptionMenu.bind(game));
+	}
 
 	let endGameBtn = document.getElementById('js-end-game-btn');
 	if (endGameBtn) {
 		endGameBtn.addEventListener('click', game.endGame.bind(game));
 	}
 
-	let exitBtn = document.getElementById('js-exit-btn');
-	if (endGameBtn) {
-		endGameBtn.addEventListener('click', game.endGame.bind(game));
+	let soundBtn = document.getElementById('js-audio-btn');
+	if (soundBtn) {
+		soundBtn.addEventListener('click', game.muteAudio.bind(game));
 	}
 
-	// let replayBtn = document.getElementById('js-replay-btn');
-	// if (endGameBtn) {
-	// 	// endGameBtn.addEventListener('click', game.replayGame.bind(game));
-	// }
-	
-	var blockchainScore = document.getElementById('js-register-blockchain');
-	if (blockchainScore) {
-		blockchainScore.addEventListener('click', game.executeBlockchain.bind(game));
+	// BETWEEN MATCH
+
+	let exitBtn = document.getElementById('js-exit-btn');
+	if (exitBtn) {
+		exitBtn.addEventListener('click', game.endGame.bind(game));
+	}
+
+	let replayBtn = document.getElementById('js-replay-btn');
+	if (replayBtn) {
+			replayBtn.addEventListener('click', game.replayGame.bind(game));
 	}
 
 }

@@ -14,7 +14,7 @@ function delay(ms) {
 }
 
 function textToDiv(text, divID) {
-	var div = document.getElementById(divID);
+	const div = document.getElementById(divID);
 	if (!div) {
 		console.error(`Div: ${divID} not found`);
 		return;
@@ -23,7 +23,7 @@ function textToDiv(text, divID) {
 }
 
 function HTMLToDiv(html, divID) {
-	var div = document.getElementById(divID);
+	const div = document.getElementById(divID);
 	if (!div) {
 		console.error(`Div: ${divID} not found`);
 		return;
@@ -71,6 +71,9 @@ function waitForEnter() {
 
 function countdown(seconds, audio) {
 	return new Promise(resolve => {
+		HTMLToDiv(``, 'announcement-l1');
+		HTMLToDiv(``, 'announcement-mid');
+		HTMLToDiv(``, 'announcement-l2');
 		textToDiv(seconds, 'announcement-l1');
 		audio.playSound(audio.count);
 		const interval = setInterval(() => {
@@ -81,15 +84,7 @@ function countdown(seconds, audio) {
 			} else {
 				audio.playSound(audio.start);
 				clearInterval(interval);
-				setTimeout(() => {
-					const menu = document.getElementById('menu');
-					menu.classList.add('fade-out');
-					setTimeout(() => {
-						menu.classList.add('hidden');
-						textToDiv('', 'announcement-l1');
-						resolve();
-					}, 1500);
-				}, 100);
+				resolve();
 			}
 		}, 900);
 	});

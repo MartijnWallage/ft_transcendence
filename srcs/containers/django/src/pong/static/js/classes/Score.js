@@ -1,4 +1,4 @@
-import { textToDiv, displayDiv } from '../utils.js';
+import { textToDiv, HTMLToDiv, displayDiv, notDisplayDiv } from '../utils.js';
 
 class Score {
 	constructor(game, players) {
@@ -34,34 +34,39 @@ class Score {
 			this.winner = 0;
 		else if (this.result[1] === this.scoreToWin)
 			this.winner = 1;
-		else
+		else 
 			return;
 		
 		this.game.running = false;
 
 		ball.resetBall();
-		await this.displayWinMessage(`${this.players[this.winner].name}`);
+		await this.displayWinMessage(`${this.players[this.winner].name}`, this.game);
+		this.game.readyForNextMatch = true;
 	}
 
-	displayWinMessage(winner) {
+	displayWinMessage(winner, game) {
+		this.game.audio.playSound(this.game.audio.win);
 		textToDiv(winner, 'announcement-l1');
 		textToDiv('is a winner', 'announcement-mid');
 		
 		displayDiv('menu');
 		menu.style.opacity = 1;
 		
-		displayDiv('js-next-game-btn');
-		displayDiv('js-replay-btn');
+		if (this.game.tournament != null) {
+			displayDiv('js-next-game-btn');
+		}
+		else {
+			displayDiv('js-replay-btn');
+		}
 		displayDiv('js-exit-btn');
 		
 		return new Promise((resolve) => {
+			const winBtn = document.getElementById('winButtons');
 			function onClick(event) {
-			btn.removeEventListener('click', onClick);
-			btn.style.display = 'none';
+			winBtn.removeEventListener('click', onClick);
 			resolve(event);
 			}
-		
-			btn.addEventListener('click', onClick);
+			winBtn.addEventListener('click', onClick);
 		});
 	}
 	

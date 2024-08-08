@@ -10,7 +10,7 @@ import { Camera } from './Camera.js';
 import { Audio } from './Audio.js';
 import { OrbitControls } from '../three-lib/OrbitControls.js';
 import { Blockchain } from './Blockchain.js';
-import { delay } from '../utils.js';
+import { delay, displayDiv, notDisplayDiv, textToDiv } from '../utils.js';
 
 class Game {
 	constructor() {
@@ -34,10 +34,12 @@ class Game {
 		this.audio = null;
 
 		// Game state
-		this.scoreToWin = 6;
+		this.scoreToWin = 1;
 		this.running = false;
 		this.match = null;
 		this.tournament = null;
+		this.readyForNextMatch = false;
+		this.mode = 'nonee';
 
 		console.log('Game class created');
 		this.boundCreateAudioContext = this.createAudioContext.bind(this);
@@ -65,6 +67,7 @@ class Game {
 
 	// These are the modes bound to the buttons in the menu
 	startSolo() {
+		this.mode = 'solo';
 		this.audio.playSound(this.audio.select_2);
 		const player1 = new Player('Guest');
 		const player2 = new Player('pongAI');
@@ -74,6 +77,7 @@ class Game {
 	}
 
 	startUserVsUser() {
+		this.mode = 'UvU';
 		this.audio.playSound(this.audio.select_2);
 		const player1 = new Player('Guest 1');
 		const player2 = new Player('Guest 2');
@@ -82,19 +86,73 @@ class Game {
 	}
 
 	createTournament() {
+		this.mode = 'tournament';
 		const tournament = new Tournament(this);
 		this.tournament = tournament;
 	}
 
-	// Not sure what this function is for.
 	endGame() {
 		this.running = false;
 		this.ball.resetBall();
 		loadPage('game_mode');
 	}
 
+	replayGame() {
+		switch (this.mode) {
+			case 'solo':
+				this.startSolo();
+				break;
+			case 'UvU':
+				this.startUserVsUser();
+				break;
+			case 'tournament':
+				this.tournament();
+				break;
+		}
+	}
+
 	onWindowResize() {
 		this.renderer.setSize( window.innerWidth, window.innerHeight );
+	}
+
+	showOptionMenu() {
+		displayDiv('js-tournament_score-btn');
+		displayDiv('js-audio-btn');
+		displayDiv('js-login-btn');
+		displayDiv('js-end-game-btn');
+		textToDiv('-', 'js-option-btn');
+
+		let optionBtn = document.getElementById('js-option-btn');
+		optionBtn.removeEventListener('click', this.showOptionMenu.bind(this));
+		optionBtn.addEventListener('click', this.hideOptionMenu.bind(this));
+	}
+
+	hideOptionMenu() {
+		notDisplayDiv('js-tournament_score-btn');
+		notDisplayDiv('js-audio-btn');
+		notDisplayDiv('js-login-btn');
+		notDisplayDiv('js-end-game-btn');
+		textToDiv('=', 'js-option-btn');
+
+		let optionBtn = document.getElementById('js-option-btn');
+		optionBtn.removeEventListener('click', this.hideOptionMenu.bind(this));
+		optionBtn.addEventListener('click', this.showOptionMenu.bind(this));
+	}
+
+	muteAudio() {
+		this.audio.muteSounds();
+		textToDiv('Audio off', 'js-audio-btn');
+		let audioBtn = document.getElementById('js-audio-btn');
+		audioBtn.removeEventListener('click', this.muteAudio.bind(this));
+		audioBtn.addEventListener('click', this.unmuteAudio.bind(this));
+	}
+
+	unmuteAudio() {
+		this.audio.unmuteSounds();
+		textToDiv('Audio on', 'js-audio-btn');
+		let audioBtn = document.getElementById('js-audio-btn');
+		audioBtn.removeEventListener('click', this.unmuteAudio.bind(this));
+		audioBtn.addEventListener('click', this.muteAudio.bind(this));
 	}
 
 	executeBlockchain() {

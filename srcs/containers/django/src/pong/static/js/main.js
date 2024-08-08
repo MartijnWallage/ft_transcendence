@@ -35,19 +35,21 @@ function main() {
 	});
 	
 	// FPS stats viewer
-	const stats = new Stats();
-	stats.showPanel(0);
-	document.body.appendChild(stats.dom);
+	// const stats = new Stats();
+	// stats.showPanel(0);
+	// document.body.appendChild(stats.dom);
 	
 	window.addEventListener('resize', () => this_game.onWindowResize());
 
 	// main loop
-	requestAnimationFrame(animate.bind(null, stats, this_game));
+	// requestAnimationFrame(animate.bind(null, stats, this_game));
+	requestAnimationFrame(animate.bind(null, this_game));
 }
 
-function animate(stats, game) {
+// function animate(stats, game) {
+	function animate(game) {
 	// begin frame per second state
-	stats.begin();
+	// stats.begin();
 
 	// If the game is not running, render the menu view, 
 	// Else, update the game
@@ -57,10 +59,11 @@ function animate(stats, game) {
 		game.match.update();
 	}
 
-	requestAnimationFrame(animate.bind(null, stats, game));
+	// requestAnimationFrame(animate.bind(null, stats, this_game));
+	requestAnimationFrame(animate.bind(null, game));
 
 	// End the frame per second stats
-	stats.end(); 
+	// stats.end(); 
 }
 
 main();

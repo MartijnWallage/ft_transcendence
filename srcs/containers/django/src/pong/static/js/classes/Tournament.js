@@ -1,6 +1,6 @@
 import { Player } from './Player.js';
 import { Match } from './Match.js';
-import { displayDiv, notDisplayDiv } from '../utils.js';
+import { displayDiv, HTMLToDiv, notDisplayDiv } from '../utils.js';
 
 class Tournament {
 
@@ -36,7 +36,9 @@ class Tournament {
 				let matchResult = { player1: currentPlayers[0].name, player2: currentPlayers[1].name, player1Score: game.match.score.result[0], player2Score: game.match.score.result[1], timestamp: game.match.timestamp };
 
 				this.matchResult.push(matchResult);
-
+				while (this.game.readyForNextMatch === false) {
+					await new Promise(resolve => setTimeout(resolve, 100));
+				}
 				if (index + 1 < this.players.length) {
 					const loser = game.match.score.winner === 0 ? 1 : 0;
 					currentPlayers[loser] = this.players[index + 1];
@@ -179,7 +181,11 @@ class Tournament {
 		const game = this.game;
 		const score = game.match.score.result;
 
-		alert("Tournament Ended!");
+		HTMLToDiv(`Tournament winner`, 'announcement-l1');
+		HTMLToDiv(`is`, 'announcement-mid');
+		HTMLToDiv(`Whoever !`, 'announcement-l2');
+		notDisplayDiv('js-next-game-btn');
+		displayDiv('js-score-btn');
 		
 		try {
 			this.tournamentId = await this.createTournament();
