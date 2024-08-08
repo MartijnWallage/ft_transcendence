@@ -44,7 +44,7 @@ class Score {
 		this.game.readyForNextMatch = true;
 	}
 
-	displayWinMessage(winne) {
+	displayWinMessage(winner) {
 		this.game.audio.playSound(this.game.audio.win);
 		textToDiv(winner, 'announcement-l1');
 		textToDiv('is a winner', 'announcement-mid');
