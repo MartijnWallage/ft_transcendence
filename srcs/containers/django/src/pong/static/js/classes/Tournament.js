@@ -1,5 +1,7 @@
 import { Player } from './Player.js';
 import { Match } from './Match.js';
+import { Remote } from './Remote.js';
+
 
 class Tournament {
 

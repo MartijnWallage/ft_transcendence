@@ -56,19 +56,7 @@ class PingpongConsumer(AsyncWebsocketConsumer):
                         'players': self.get_player_status()
                     }
                 )
-            if message_type == 'check_player_count':
-                num_connected_players = len(self.__class__.connected_players)
-                await self.send(text_data=json.dumps({
-                    'type': 'player_count',
-                    'count': num_connected_players
-                }))
-            
-            elif message_type == 'join':  # Handle the 'join' message type
-            # Handle player join logic if needed
-                await self.send(text_data=json.dumps({
-                    'type': 'join_acknowledged',
-                    'message': f'Player {self.channel_name} has joined.'
-                }))
+
             
             elif message_type == 'start_tournament':
                 num_connected_players = len(self.__class__.connected_players)
@@ -82,6 +70,7 @@ class PingpongConsumer(AsyncWebsocketConsumer):
                         'type': 'start_tournament',
                         'players': self.get_player_status()
                     }))
+            
             elif message_type == 'get_player_count':
                 player_count = len(self.__class__.connected_players)
                 await self.send(text_data=json.dumps({
