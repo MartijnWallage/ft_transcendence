@@ -60,15 +60,14 @@ class Tournament {
 		else {
 			error.style.display = 'none'; 
 		}
-		const newPlayer = new Player(playerName);
+
+		const newPlayer = new Player(playerName, true); 
 		this.players.push(newPlayer);
 		this.displayPlayers();
 		document.getElementById('playerNameInput').value = '';
 	}
 
 	displayPlayers() {
-		const game = this.game;
-	
 		const playerListDiv = document.getElementById('playerList');
 		playerListDiv.innerHTML = ''; // Clear existing list
 		this.players.forEach(player => {
