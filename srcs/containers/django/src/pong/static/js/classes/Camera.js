@@ -1,4 +1,5 @@
 import * as THREE from '../three-lib/three.module.js';
+import { notDisplayDiv } from '../utils.js';
 
 class Camera {
 	constructor() {
@@ -31,7 +32,7 @@ class Camera {
 	async introCameraAnimation() {
 		let startY = 200;
 		let endY = 0.9;
-		let duration = 4000; // Duration in milliseconds
+		let duration = 4500; // Duration in milliseconds
 		let startTime = Date.now();
 	
 		while (true) {
@@ -55,8 +56,7 @@ class Camera {
 	}
 
 	renderMenuView(scene) {
-		const split = document.getElementById('vertical-line');
-		split.style.display = 'none';
+		notDisplayDiv('vertical-line');
 		this.orbitCamera();
 		const left = 0;
 		const bottom = 0;

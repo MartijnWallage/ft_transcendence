@@ -1,4 +1,4 @@
-import { getRandomInt, textToDiv, HTMLToDiv, countdown, waitForEnter } from '../utils.js';
+import { getRandomInt, textToDiv, HTMLToDiv, countdown, waitForEnter, displayDiv } from '../utils.js';
 import { Score } from './Score.js';
 
 class Match {
@@ -8,6 +8,7 @@ class Match {
 		this.running = false;
 		this.score = new Score(game, players);
 		this.timestamp = null;
+		game.readyForNextMatch = false;
 
 		//key listener
 		this.keys = {};
@@ -46,6 +47,8 @@ class Match {
 		const player2Name = this.players[1].name;
 
 		await window.loadPage('pong');
+		
+		displayDiv('menu');
 		console.log('Match started');
 		
 		const ball = this.game.ball;
@@ -57,24 +60,21 @@ class Match {
 		textToDiv('0', 'player2-score');
 		textToDiv(player2Name, 'player2-name');
 
-		const enter = document.getElementById('enter');
-		enter.style.display = 'block';
-		await waitForEnter(enter);
-		HTMLToDiv(``, 'announcement-l1');
-		HTMLToDiv(``, 'announcement-mid');
-		HTMLToDiv(``, 'announcement-l2');
-		await countdown(2, this.game.audio);
-		const menu = document.getElementById('menu');
-		menu.classList.add('fade-out');
-		setTimeout(function() {
-			menu.classList.add('hidden');
-		}, 1500); 
-		
+		await waitForEnter();
 		this.game.running = true;
+		displayDiv('game-scores');
+
+		await countdown(3, this.game.audio);
+		setTimeout(() => {
+			const menu = document.getElementById('menu');
+			menu.classList.add('fade-out');
+			setTimeout(() => {
+				menu.classList.add('hidden');
+			}, 1000);
+		}, 100);
 		this.timestamp = Date.now();
 		ball.serve = getRandomInt(0, 2) ? 1 : -1;
 		ball.serveBall();
-		textToDiv('', 'announcement-l1');
 	}
 
 	update() {
@@ -101,7 +101,6 @@ class Match {
 		ball.tryPaddleCollision(paddle1, paddle2);
 		ball.tryCourtCollision(field);
 	
-		const split = document.getElementById('vertical-line');
 		this.score.update();
 
 		if (this.players[1].ai) {
@@ -109,7 +108,7 @@ class Match {
 		} else {
 			cam1.renderSplitView(this.game, 0);
 			cam2.renderSplitView(this.game, 1);
-			split.style.display = 'block';
+			displayDiv('vertical-line');
 		}
 	}
 }

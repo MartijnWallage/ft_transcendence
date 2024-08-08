@@ -1,5 +1,8 @@
 function loadPageClosure(game) {
 	return async (page) => {
+		if (game.audio && page != 'pong') {
+			game.audio.playSound(game.audio.select_1);
+		}
 		try {
 			const mainContent = document.getElementById('main-content');
 			const underTitle = document.getElementById('under-title');
@@ -32,16 +35,6 @@ function loadPageClosure(game) {
 
 function bindEventListeners(game) {
 	
-	const leaderBoardButton = document.getElementById('js-leaderboard-btn');
-	if (leaderBoardButton) {
-		leaderBoardButton.addEventListener('click', showLeaderBoard);
-	}
-	
-	const leaderBoardClose = document.getElementById('js-leaderboard-close');
-	if (leaderBoardClose) {
-		leaderBoardClose.addEventListener('click', hideLeaderBoard);
-	}
-	
 	const startUserVsUserButton = document.getElementById('js-start-user-vs-user-btn');
 	if (startUserVsUserButton) {
 		startUserVsUserButton.addEventListener('click', game.startUserVsUser.bind(game));
@@ -64,38 +57,40 @@ function bindEventListeners(game) {
 		console.log('creating tournament');
 		startTournamentBtn.addEventListener('click', game.tournament.start.bind(game.tournament));
 	}
-
-	let endGameBtn = document.getElementById('js-end-game-btn');
-	if (endGameBtn) {
-		endGameBtn.addEventListener('click', game.endGame.bind(game));
-	}
 	
 	var blockchainScore = document.getElementById('js-register-blockchain');
 	if (blockchainScore) {
 		blockchainScore.addEventListener('click', game.executeBlockchain.bind(game));
 	}
-}
 
-function showLeaderBoard() {
-	
-	const leaderBoardDiv = document.getElementById('js-leaderboard-div');
-	if (leaderBoardDiv)
-		leaderBoardDiv.style.display = 'block';
-	
-	const leaderBoardButton = document.getElementById('js-leaderboard-btn');
-	if (leaderBoardButton)
-		leaderBoardButton.style.display = 'none';
-}
+	// OPTION MENU
+	let optionBtn = document.getElementById('js-option-btn');
+	if (optionBtn) {
+		optionBtn.addEventListener('click', game.showOptionMenu.bind(game));
+	}
 
-function hideLeaderBoard() {
-	
-	const leaderBoardDiv = document.getElementById('js-leaderboard-div');
-	if (leaderBoardDiv)
-		leaderBoardDiv.style.display = 'none';
-	
-	const leaderBoardButton = document.getElementById('js-leaderboard-btn');
-	if (leaderBoardButton)
-		leaderBoardButton.style.display = 'block';
+	let endGameBtn = document.getElementById('js-end-game-btn');
+	if (endGameBtn) {
+		endGameBtn.addEventListener('click', game.endGame.bind(game));
+	}
+
+	let soundBtn = document.getElementById('js-audio-btn');
+	if (soundBtn) {
+		soundBtn.addEventListener('click', game.muteAudio.bind(game));
+	}
+
+	// BETWEEN MATCH
+
+	let exitBtn = document.getElementById('js-exit-btn');
+	if (exitBtn) {
+		exitBtn.addEventListener('click', game.endGame.bind(game));
+	}
+
+	let replayBtn = document.getElementById('js-replay-btn');
+	if (replayBtn) {
+			replayBtn.addEventListener('click', game.replayGame.bind(game));
+	}
+
 }
 
 function fadeIn(element) {

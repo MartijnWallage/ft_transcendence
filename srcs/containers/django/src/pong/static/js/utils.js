@@ -14,7 +14,7 @@ function delay(ms) {
 }
 
 function textToDiv(text, divID) {
-	var div = document.getElementById(divID);
+	const div = document.getElementById(divID);
 	if (!div) {
 		console.error(`Div: ${divID} not found`);
 		return;
@@ -23,7 +23,7 @@ function textToDiv(text, divID) {
 }
 
 function HTMLToDiv(html, divID) {
-	var div = document.getElementById(divID);
+	const div = document.getElementById(divID);
 	if (!div) {
 		console.error(`Div: ${divID} not found`);
 		return;
@@ -31,13 +31,28 @@ function HTMLToDiv(html, divID) {
 	div.innerHTML = html;
 }
 
-function waitForEnter(enter) {
+function displayDiv(div) {
+	const element = document.getElementById(div);
+	if (element) {
+		element.style.display = 'block';
+	}
+}
+
+function notDisplayDiv(div) {
+	const element = document.getElementById(div);
+	if (element) {
+		element.style.display = 'none';
+	}
+}
+
+function waitForEnter() {
 	return new Promise((resolve) => {
+		textToDiv('Press ENTER to start...', 'enter');
 		function onKeyDown(event) {
 			if (event.key === 'Enter') {
 				document.removeEventListener('keydown', onKeyDown);
 				document.removeEventListener('touchstart', onTouchStart);
-				enter.style.display = 'none';
+				notDisplayDiv('enter');
 				resolve();
 			}
 		}
@@ -45,7 +60,7 @@ function waitForEnter(enter) {
 		function onTouchStart(event) {
 			document.removeEventListener('keydown', onKeyDown);
 			document.removeEventListener('touchstart', onTouchStart);
-			enter.style.display = 'none';
+			notDisplayDiv('enter');
 			resolve();
 		}
 
@@ -56,17 +71,23 @@ function waitForEnter(enter) {
 
 function countdown(seconds, audio) {
 	return new Promise(resolve => {
+		HTMLToDiv(``, 'announcement-l1');
+		HTMLToDiv(``, 'announcement-mid');
+		HTMLToDiv(``, 'announcement-l2');
 		textToDiv(seconds, 'announcement-l1');
+		audio.playSound(audio.count);
 		const interval = setInterval(() => {
-			textToDiv(seconds, 'announcement-l1');
 			seconds -= 1;
-			if (seconds < 0) {
+			textToDiv(seconds, 'announcement-l1');
+			if (seconds > 0) {
+				audio.playSound(audio.count);
+			} else {
 				audio.playSound(audio.start);
 				clearInterval(interval);
 				resolve();
 			}
-		}, 600);
+		}, 900);
 	});
 }
 
-export { getRandomInt, abs, min, textToDiv, delay, HTMLToDiv, countdown, waitForEnter };
+export { getRandomInt, abs, min, textToDiv, delay, HTMLToDiv, countdown, waitForEnter, displayDiv, notDisplayDiv };

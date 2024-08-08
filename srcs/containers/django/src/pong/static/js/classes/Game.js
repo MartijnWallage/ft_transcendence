@@ -10,7 +10,7 @@ import { Camera } from './Camera.js';
 import { Audio } from './Audio.js';
 import { OrbitControls } from '../three-lib/OrbitControls.js';
 import { Blockchain } from './Blockchain.js';
-import { delay } from '../utils.js';
+import { delay, displayDiv, notDisplayDiv, textToDiv } from '../utils.js';
 
 class Game {
 	constructor() {
@@ -30,14 +30,16 @@ class Game {
 		this.paddle2 = new Paddle(this.scene, this.field, false);
 		this.ball = new Ball(this.scene);
 		this.environment = new Environment(this.scene);
-		this.controls = new OrbitControls(this.cam1.camera, container);
+		// this.controls = new OrbitControls(this.cam1.camera, container);
 		this.audio = null;
 
 		// Game state
-		this.scoreToWin = 6;
+		this.scoreToWin = 2;
 		this.running = false;
 		this.match = null;
 		this.tournament = null;
+		this.readyForNextMatch = false;
+		this.mode = 'nonee';
 
 		console.log('Game class created');
 		this.boundCreateAudioContext = this.createAudioContext.bind(this);
@@ -46,19 +48,27 @@ class Game {
 	
 	// Create audio audio context once there is a first interaction with the website to comply with internet rules
 	async createAudioContext() {
+		const audio = document.createElement("audio");
+		audio.setAttribute("x-webkit-airplay", "deny");
+		audio.preload = "auto";
+		audio.loop = true;
+		audio.src = './static/audio/silence.mp3'; //fix the ios audio not playing when the phone or ipad is switch to sielnt mode.
+		audio.play();
 		this.audio = new Audio(this.cam1);
 		document.removeEventListener('click', this.boundCreateAudioContext);
-		await delay(500); // crappy way to wait for the audio engigne to be fully loaded.
+		await delay(600); // crappy way to wait for the audio engigne to be fully loaded.
 		this.audio.playSound(this.audio.woosh_1);
 		this.cam1.introCameraAnimation();
-		setTimeout(() => this.audio.playSound(this.audio.woosh_2),1200);
-		setTimeout(() => this.audio.playSound(this.audio.chimes),2400);
-		setTimeout(() => this.audio.playSound(this.audio.main),4000);
+		setTimeout(() => this.audio.playSound(this.audio.woosh_2),1500);
+		setTimeout(() => this.audio.playSound(this.audio.chimes),3400);
+		setTimeout(() => this.audio.playSound(this.audio.main),4800);
 		this.ball.addAudio(this.audio);
 	}
 
 	// These are the modes bound to the buttons in the menu
 	startSolo() {
+		this.mode = 'solo';
+		this.audio.playSound(this.audio.select_2);
 		const player1 = new Player('Guest');
 		const player2 = new Player('pongAI');
 		player2.setAI(this);
@@ -67,6 +77,8 @@ class Game {
 	}
 
 	startUserVsUser() {
+		this.mode = 'UvU';
+		this.audio.playSound(this.audio.select_2);
 		const player1 = new Player('Guest 1');
 		const player2 = new Player('Guest 2');
 		this.match = new Match(this, [player1, player2]);
@@ -74,21 +86,77 @@ class Game {
 	}
 
 	createTournament() {
+		this.mode = 'tournament';
 		const tournament = new Tournament(this);
 		this.tournament = tournament;
 	}
 
-	// Not sure what this function is for.
 	endGame() {
-		const redirecturi = "/#home";
-		window.location.href = redirecturi;
+		this.running = false;
+		this.ball.resetBall();
+		loadPage('game_mode');
+	}
+
+	replayGame() {
+		switch (this.mode) {
+			case 'solo':
+				this.startSolo();
+				break;
+			case 'UvU':
+				this.startUserVsUser();
+				break;
+			case 'tournament':
+				this.tournament();
+				break;
+		}
 	}
 
 	onWindowResize() {
 		this.renderer.setSize( window.innerWidth, window.innerHeight );
 	}
 
+	showOptionMenu() {
+		displayDiv('js-tournament_score-btn');
+		displayDiv('js-audio-btn');
+		displayDiv('js-login-btn');
+		displayDiv('js-end-game-btn');
+		textToDiv('-', 'js-option-btn');
+
+		let optionBtn = document.getElementById('js-option-btn');
+		optionBtn.removeEventListener('click', this.showOptionMenu.bind(this));
+		optionBtn.addEventListener('click', this.hideOptionMenu.bind(this));
+	}
+
+	hideOptionMenu() {
+		notDisplayDiv('js-tournament_score-btn');
+		notDisplayDiv('js-audio-btn');
+		notDisplayDiv('js-login-btn');
+		notDisplayDiv('js-end-game-btn');
+		textToDiv('=', 'js-option-btn');
+
+		let optionBtn = document.getElementById('js-option-btn');
+		optionBtn.removeEventListener('click', this.hideOptionMenu.bind(this));
+		optionBtn.addEventListener('click', this.showOptionMenu.bind(this));
+	}
+
+	muteAudio() {
+		this.audio.muteSounds();
+		textToDiv('Audio off', 'js-audio-btn');
+		let audioBtn = document.getElementById('js-audio-btn');
+		audioBtn.removeEventListener('click', this.muteAudio.bind(this));
+		audioBtn.addEventListener('click', this.unmuteAudio.bind(this));
+	}
+
+	unmuteAudio() {
+		this.audio.unmuteSounds();
+		textToDiv('Audio on', 'js-audio-btn');
+		let audioBtn = document.getElementById('js-audio-btn');
+		audioBtn.removeEventListener('click', this.unmuteAudio.bind(this));
+		audioBtn.addEventListener('click', this.muteAudio.bind(this));
+	}
+
 	executeBlockchain() {
+		this.audio.playSound(this.audio.select_1);
 		new Blockchain(this.tournament.tournamentId);
 	}
 }
