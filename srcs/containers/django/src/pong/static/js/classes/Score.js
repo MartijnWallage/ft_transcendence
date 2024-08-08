@@ -40,11 +40,11 @@ class Score {
 		this.game.running = false;
 
 		ball.resetBall();
-		await this.displayWinMessage(`${this.players[this.winner].name}`, this.game);
+		await this.displayWinMessage(`${this.players[this.winner].name}`);
 		this.game.readyForNextMatch = true;
 	}
 
-	displayWinMessage(winner, game) {
+	displayWinMessage(winne) {
 		this.game.audio.playSound(this.game.audio.win);
 		textToDiv(winner, 'announcement-l1');
 		textToDiv('is a winner', 'announcement-mid');
