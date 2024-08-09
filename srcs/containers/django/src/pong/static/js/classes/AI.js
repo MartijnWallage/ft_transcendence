@@ -37,6 +37,10 @@ class AI {
         }
     }
 
+	max(a, b, c) {
+		return a > b && a > c ? a : b > c ? b: c;
+	}
+
     // Actual method to update the game view
     updateDestination() {
 		const ball = this.copyBall(this.ball);
@@ -102,37 +106,54 @@ class AI {
 		// Predict where the ball will end up when we move the paddle up, down, or stay still
 		// Choose the option that will result in the ball being farther from the human paddle
 		const halfCourt = this.game.field.geometry.parameters.depth / 2;
-		const bottomPaddle = paddle.z + paddle.geometry.parameters.depth / 2;
-		const topPaddle = paddle.z - paddle.geometry.parameters.depth / 2;
+		const halfPaddle = paddle.geometry.parameters.depth / 2;
+		const bottomPaddle = paddle.z + halfPaddle;
+		const topPaddle = paddle.z - halfPaddle;
 
 		if (this.destination < topPaddle)
 			return -1;
 		if (this.destination > bottomPaddle)
 			return 1;
 
-		const still = this.evaluateMove(0);
-		const up = topPaddle < -halfCourt ? 0 : this.evaluateMove(-1);
-		const down = bottomPaddle > halfCourt ? 0 : this.evaluateMove(1);
+//		const upMuch = topPaddle - halfPaddle < -halfCourt ? 0 : this.evaluateMove(-halfPaddle);
+		const still = this.evaluateMove(paddle.z);
+		let up = this.evaluateMove(paddle.z - halfPaddle); 
+		let down = this.evaluateMove(paddle.z + halfPaddle);
+
+		if (up === 0)
+			this.evaluateMove(paddle.z - paddle.speed);
+		if (down === 0)
+			this.evaluateMove(paddle.z + paddle.speed);
 
 		return still >= up && still >= down ? 0:
 			up >= down ? -1:
 			1;
 	}
 
-	evaluateMove(direction)
+	evaluateMove(z)
 	{
 		const paddle = this.copyPaddle(this.AIPaddle);
+
+		const halfCourt = this.game.field.geometry.parameters.depth / 2;
+		const halfPaddle = paddle.depth / 2;
+		const bottomPaddle = paddle.z + halfPaddle;
+		const topPaddle = paddle.z - halfPaddle;
 
 		// Copy ball as currently known
 		const ball = this.copyBall(this.ball);
 		console.log('ball: ', ball)
-
+		
 		if (ball.dx > 0)
 			ball.dx *= -1;
 		ball.x = paddle.x - paddle.width / 2 - ball.radius + ball.dx;
 		ball.z = this.destination;
+		
+		paddle.z = z
 
-		paddle.z += direction * paddle.speed;
+		if (topPaddle < -halfCourt || bottomPaddle > halfCourt)
+			return 0;
+		if (ball.z + ball.radius < topPaddle || ball.z - ball.radius > bottomPaddle)
+			return 0;
 
 		ball.dz = (ball.z - paddle.z) * ball.angleMultiplier;
 		console.log('ball:', ball, ' paddle:', paddle);
