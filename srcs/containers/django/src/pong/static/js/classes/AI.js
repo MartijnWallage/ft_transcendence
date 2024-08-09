@@ -37,10 +37,6 @@ class AI {
         }
     }
 
-	max(a, b, c) {
-		return a > b && a > c ? a : b > c ? b: c;
-	}
-
     // Actual method to update the game view
     updateDestination() {
 		const ball = this.copyBall(this.ball);
@@ -75,12 +71,12 @@ class AI {
 		// if the ball is moving towards one of the walls, recurse
 		if (Math.abs(ballDestination) + ballRadius > halfCourt) {
 			const wall = ball.dz > 0 ? halfCourt : -halfCourt;
-			const distanceToWall = Math.abs(wall - ball.z) - ballRadius + Math.abs(ball.dx);
+			const distanceToWall = Math.abs(wall - ball.z) - ballRadius;
 			const timeToWall = distanceToWall / Math.abs(ball.dz);
-			ball.x = ball.x + timeToWall * ball.dx;
+			ball.x = ball.x + timeToWall * ball.dx + Math.abs(ball.dx);
 			ball.z = wall < 0 ?
-			wall + ballRadius :
-			wall - ballRadius;
+				wall + ballRadius + Math.abs(ball.dz):
+				wall - ballRadius - Math.abs(ball.dz);
 			ball.dz = -ball.dz;
 			return this.recursiveUpdateDestination(ball, humanPaddle);
 		}
@@ -89,12 +85,12 @@ class AI {
 		if (ball.dx < 0) {
 			ball.z = ballDestination;
 			ball.dx = -ball.dx;
-			ball.x = paddleSide + ballRadius;
+			ball.x = paddleSide + ballRadius - Math.abs(ball.dx);
 			
 			// Assume the human paddle will reach the ball
-			if (paddleTop > ballDestination) {
+			if (paddleTop > ballDestination + ballRadius) {
 				humanPaddle.z = ballDestination + paddleHalfDepth;
-			} else if (paddleBottom < ballDestination) {
+			} else if (paddleBottom < ballDestination - ballRadius) {
 				humanPaddle.z = ballDestination - paddleHalfDepth;
 			}
 			ball.dz = (ballDestination - humanPaddle.z) * ball.angleMultiplier;
@@ -109,21 +105,27 @@ class AI {
 		const halfPaddle = paddle.geometry.parameters.depth / 2;
 		const bottomPaddle = paddle.z + halfPaddle;
 		const topPaddle = paddle.z - halfPaddle;
+		const radius = this.game.ball.radius;
+		const topBall = this.destination - radius;
+		const bottomBall = this.destination + radius;
 
-		if (this.destination < topPaddle)
+		if (bottomBall < topPaddle)
 			return -1;
-		if (this.destination > bottomPaddle)
+		if (topBall > bottomPaddle)
 			return 1;
 
-//		const upMuch = topPaddle - halfPaddle < -halfCourt ? 0 : this.evaluateMove(-halfPaddle);
+		const maxUp = Math.min(Math.abs(topBall - bottomPaddle), Math.abs(-halfCourt - topPaddle));
+		const maxDown = Math.min(Math.abs(bottomBall - topPaddle), Math.abs(halfCourt - bottomPaddle));
 		const still = this.evaluateMove(paddle.z);
-		let up = this.evaluateMove(paddle.z - halfPaddle); 
-		let down = this.evaluateMove(paddle.z + halfPaddle);
+		let up = this.evaluateMove(paddle.z - maxUp); 
+		let down = this.evaluateMove(paddle.z + maxDown);
 
-		if (up === 0)
-			this.evaluateMove(paddle.z - paddle.speed);
-		if (down === 0)
-			this.evaluateMove(paddle.z + paddle.speed);
+		if (up < still) {
+			up = this.evaluateMove(paddle.z - paddle.speed);
+		}
+		if (down < still) {
+			down = this.evaluateMove(paddle.z + paddle.speed);
+		}
 
 		return still >= up && still >= down ? 0:
 			up >= down ? -1:
@@ -136,19 +138,18 @@ class AI {
 
 		const halfCourt = this.game.field.geometry.parameters.depth / 2;
 		const halfPaddle = paddle.depth / 2;
-		const bottomPaddle = paddle.z + halfPaddle;
-		const topPaddle = paddle.z - halfPaddle;
-
+		
 		// Copy ball as currently known
 		const ball = this.copyBall(this.ball);
-		console.log('ball: ', ball)
 		
 		if (ball.dx > 0)
 			ball.dx *= -1;
-		ball.x = paddle.x - paddle.width / 2 - ball.radius + ball.dx;
+		ball.x = paddle.x - paddle.width / 2 - ball.radius + Math.abs(ball.dx);
 		ball.z = this.destination;
 		
 		paddle.z = z
+		const bottomPaddle = paddle.z + halfPaddle;
+		const topPaddle = paddle.z - halfPaddle;
 
 		if (topPaddle < -halfCourt || bottomPaddle > halfCourt)
 			return 0;
@@ -156,14 +157,8 @@ class AI {
 			return 0;
 
 		ball.dz = (ball.z - paddle.z) * ball.angleMultiplier;
-		console.log('ball:', ball, ' paddle:', paddle);
 
-		const value = this.predictBallZ(ball);
-		console.log('Ball will end up:', value);
-		console.log('Human paddle is at:', this.humanPaddle.z);
-		console.log('Actual human paddle is at:', this.game.paddle1.z);
-
-		return Math.abs(this.humanPaddle.z - value);
+		return Math.abs(this.humanPaddle.z - this.predictBallZ(ball));
 	}
 
 	predictBallZ(ball) {
@@ -184,10 +179,10 @@ class AI {
 
 		// if the ball is moving towards one of the walls, recurse
 		const wall = ball.dz > 0 ? halfCourt : -halfCourt;
-		const distanceToWall = Math.abs(wall - ball.z) - ballRadius + Math.abs(ball.dx);
+		const distanceToWall = Math.abs(wall - ball.z) - ballRadius;
 		const timeToWall = distanceToWall / Math.abs(ball.dz);
-		ball.x = ball.x + timeToWall * ball.dx;
-		ball.z = wall < 0 ? wall + ballRadius : wall - ballRadius;
+		ball.x = ball.x + timeToWall * ball.dx + Math.abs(ball.dx);
+		ball.z = wall < 0 ? wall + ballRadius + Math.abs(ball.dz) : wall - ballRadius - Math.abs(ball.dz);
 		ball.dz = -ball.dz;
 		return this.predictBallZ(ball);
 	}
