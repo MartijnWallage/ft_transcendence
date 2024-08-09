@@ -29,6 +29,13 @@
 	transition: opacity 1.5s ease-out;
 }
 
+#main-content {
+	height: 100vh;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
 @media (max-width: 576px) {
     #gameButtons {
         flex-direction: column;
