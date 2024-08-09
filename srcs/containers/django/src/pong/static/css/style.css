@@ -1,7 +1,7 @@
 #threejs-container {
 	position: absolute;
 	width: 100vw;
-	height: 100vh;
+	height: 100dvh;
 	z-index: 0;
 }
 
@@ -30,7 +30,7 @@
 }
 
 #main-content {
-	height: 100vh;
+	height: 100dvh;
 	display: flex;
 	align-items: center;
 	justify-content: center;
