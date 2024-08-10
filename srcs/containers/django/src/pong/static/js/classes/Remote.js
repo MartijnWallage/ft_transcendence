@@ -6,6 +6,7 @@ class Remote {
     constructor(playerName) {
 		this.name = playerName;
 		this.connection = null; // WebSocket connection
+        this.players = []; // Initialize players as an empty array
     }
 
     connectToServer() {
@@ -14,14 +15,14 @@ class Remote {
 			this.connection = new WebSocket(serverUrl);
 
 			this.connection.onopen = () => {
-				console.log(`${this.name} connected to server`);
-				// this.connection.send(JSON.stringify({ type: 'join', name: this.name }));
+				console.log('WebSocket is connected.');
 			};
 
 			this.connection.onmessage = (event) => {
 				const message = JSON.parse(event.data);
 				console.log(`Received message from server:`, message);
 				this.handleServerMessage(message);
+                
 			};
 
 			this.connection.onerror = (error) => {
@@ -34,37 +35,53 @@ class Remote {
 		
 	}
 
-    handleServerMessage(message) {
-        switch (message.type) {
+    handleServerMessage(data) {
+        switch (data.type) {
             case 'players_ready':
-                // Update the player list on the page
-                this.updatePlayerList(message.players);
-                break;
-			case 'player_disconnected':
-				// Update the player list to remove the disconnected player
-				this.updatePlayerList(message.players);
-				break;
-            case 'registration_status':
-                if (message.status === 'already_registered') {
-                    this.showError('You are already registered.');
-                } else if (message.status === 'registered') {
-                    console.log(`Player ${message.player_name} successfully registered.`);
+                // Ensure the players array from the message is assigned to this.players
+                if (data.players) {
+                    this.players = data.players;
+                    this.updatePlayerList(this.players);
+
+                    // // Check if all players are ready
+                    // if (this.players.length > 0) {
+                    //     const allPlayersReady = this.players.length === this.players.length;
+                    //     if (allPlayersReady) {
+                    //         console.log('All players are ready. Transitioning to the game page.');
+                    //         loadPage('pong'); // Force transition to the game page
+                    //     }
+                    // } else {
+                    //     console.error('Received players_ready message, but no players array was provided.');
+                    // }
                 }
                 break;
+
+			case 'player_disconnected':
+				// Update the player list to remove the disconnected player
+				this.updatePlayerList(data.players);
+				break;
+
+
+
             default:
-                console.log(`Unknown message type: ${message.type}`);
+                console.log(`Unknown message type: ${data.type}`);
         }
     }
 
 	updatePlayerList(players) {
         const playerListDiv = document.getElementById('playerList');
+
+
+        // Clear existing players to avoid duplication
         playerListDiv.innerHTML = ''; // Clear existing list
 
         players.forEach((player, index) => {
+            // Add new player to the DOM
             const playerElement = document.createElement('p');
             playerElement.textContent = `Player ${index + 1}: ${player.role}`;
             playerListDiv.appendChild(playerElement);
         });
+        console.log('Updated player list:', players);
     }
 
     showError(message) {

@@ -27,6 +27,7 @@ class PingpongConsumer(AsyncWebsocketConsumer):
         else:
             await self.close() 
 
+
     async def disconnect(self, close_code):
         await self.channel_layer.group_discard(
             self.room_group_name,
@@ -56,6 +57,7 @@ class PingpongConsumer(AsyncWebsocketConsumer):
                         'players': self.get_player_status()
                     }
                 )
+            
 
             
             elif message_type == 'start_tournament':
@@ -106,10 +108,17 @@ class PingpongConsumer(AsyncWebsocketConsumer):
         await self.send(text_data=json.dumps({'type': 'player_action', 'data': event['data']}))
 
     def get_player_status(self):
-        return [{'role': role, 'status': 'ready'} for role in self.__class__.connected_players.values()]
+        return [
+            {'name': player_name, 'role': role}
+            for player_name, role in self.__class__.connected_players.items()
+        ]
 
     def update_game_state(self, action_data):
         pass
 
     def get_game_state(self):
         return {}
+    
+ 
+
+
