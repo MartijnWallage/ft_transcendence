@@ -39,7 +39,7 @@ class Game {
 		this.match = null;
 		this.tournament = null;
 		this.readyForNextMatch = false;
-		this.mode = 'nonee';
+		this.mode = 'none';
 
 		console.log('Game class created');
 		this.boundCreateAudioContext = this.createAudioContext.bind(this);

@@ -7,11 +7,6 @@ class Camera {
 		this.camera.position.set(0, 200, 0);
 		this.camera.lookAt(0, 1, 0);
 		this.rotateAngle = 0.8;
-
-		this.startY = 200;
-		this.endY = 0.9;
-		this.duration = 2000; // Duration in milliseconds
-		this.startTime = null;
 	}
 
 	calculateFovToFitObject(objectWidth, distance, aspectRatio) {
@@ -21,9 +16,8 @@ class Camera {
 	}
 
 	orbitCamera() {
-		this.rotateAngle += 0.006; // Adjust this value to change the speed of orbit
+		this.rotateAngle += 0.005; // Adjust this value to change the speed of orbit
 		const radius = 6;
-		//console.log(angle);
 		this.camera.position.x = radius * Math.cos(this.rotateAngle);
 		this.camera.position.z = radius * Math.sin(this.rotateAngle);
 		this.camera.lookAt(0, 1, 0);
