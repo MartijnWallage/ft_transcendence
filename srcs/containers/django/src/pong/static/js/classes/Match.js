@@ -113,6 +113,116 @@ class Match {
 		}
 	}
 
+	async playRemote() {
+		const player1Name = this.players[0].name;
+		const player2Name = this.players[1].name;
+	
+		await window.loadPage('pong');
+		console.log('Match started remotely');
+		
+		const ball = this.game.ball;
+		HTMLToDiv(`${player1Name}`, 'announcement-l1');
+		HTMLToDiv(`VS`, 'announcement-mid');
+		HTMLToDiv(`${player2Name}`, 'announcement-l2');
+		textToDiv('0', 'player1-score');
+		textToDiv(player1Name, 'player1-name');
+		textToDiv('0', 'player2-score');
+		textToDiv(player2Name, 'player2-name');
+	
+		const enter = document.getElementById('enter');
+		enter.style.display = 'block';
+	
+		// Notify the other player that you are ready
+		this.game.connection.send(JSON.stringify({
+			type: 'ready'
+		}));
+	
+		// Wait for both players to press enter and signal readiness
+		const otherPlayerReady = new Promise((resolve) => {
+			const onMessageHandler = (event) => {
+				const message = JSON.parse(event.data);
+				if (message.type === 'ready') {
+					resolve();
+					this.game.connection.removeEventListener('message', onMessageHandler);
+				}
+			};
+			this.game.connection.addEventListener('message', onMessageHandler);
+		});
+	
+		await Promise.all([waitForEnter(enter), otherPlayerReady]);
+	
+		HTMLToDiv(``, 'announcement-l1');
+		HTMLToDiv(``, 'announcement-mid');
+		HTMLToDiv(``, 'announcement-l2');
+		await countdown(2, this.game.audio);
+		const menu = document.getElementById('menu');
+		menu.classList.add('fade-out');
+		setTimeout(function() {
+			menu.classList.add('hidden');
+		}, 1500); 
+		
+		this.game.running = true;
+		this.timestamp = Date.now();
+	
+		// Randomly select which player serves first
+		const serveDirection = getRandomInt(0, 2) ? 1 : -1;
+	
+		// Send serve direction to the other player
+		this.game.connection.send(JSON.stringify({
+			type: 'serve',
+			serveDirection: serveDirection
+		}));
+	
+		// Wait for confirmation from the other player
+		await new Promise((resolve) => {
+			const onMessageHandler = (event) => {
+				const message = JSON.parse(event.data);
+				if (message.type === 'serve') {
+					resolve();
+					this.game.connection.removeEventListener('message', onMessageHandler);
+				}
+			};
+			this.game.connection.addEventListener('message', onMessageHandler);
+		});
+	
+		ball.serve = serveDirection;
+		ball.serveBall();
+	
+		textToDiv('', 'announcement-l1');
+	
+		// Handle game loop and synchronization with the remote player
+		while (this.game.running) {
+			// Update the game state and sync with the remote player
+			this.updateGameState();
+			await new Promise(resolve => setTimeout(resolve, 16)); // ~60 FPS
+		}
+	}
+	
+	// Example function to update game state and synchronize with remote player
+	updateGameState() {
+		// Update the local game state here (e.g., move ball, check for collisions, etc.)
+	
+		// Send the current state to the other player
+		this.game.connection.send(JSON.stringify({
+			type: 'game_state',
+			ballPosition: this.game.ball.position,
+			player1Score: this.game.score.player1,
+			player2Score: this.game.score.player2
+		}));
+	
+		// Listen for the remote player's state updates
+		const onMessageHandler = (event) => {
+			const message = JSON.parse(event.data);
+			if (message.type === 'game_state') {
+				// Update the local game state with the received data
+				this.game.ball.position = message.ballPosition;
+				this.game.score.player1 = message.player1Score;
+				this.game.score.player2 = message.player2Score;
+			}
+		};
+		this.game.connection.addEventListener('message', onMessageHandler);
+	}
+	
 	
 }
 

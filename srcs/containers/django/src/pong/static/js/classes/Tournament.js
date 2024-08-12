@@ -89,7 +89,20 @@ class Tournament {
 			return;
 		}
 	
-		console.log('Starting tournament... with players:', this.players);
+		// console.log('Starting tournament... with players:', this.players);
+
+		
+		console.log('response.playerCount', response.playerCount);
+
+		// Instead of checking local player count, we use the player count received from the server
+		if (response.playerCount < 2) {
+			console.error("Not enough players to start the tournament.");
+			return;
+		}
+
+		
+
+		// console.log('this.players.length', this.players.length);
 
 		let currentPlayers = [this.players[0], this.players[1]];
 
@@ -99,7 +112,9 @@ class Tournament {
 			// console.log('loadPage');
 			// await loadPage('pong');
 	
-			console.log('this.players.length', this.players.length);
+			
+			
+			
 			
 			for (let index = 0; index < this.players.length; index++) {
 				console.log('index', index);
@@ -107,7 +122,7 @@ class Tournament {
 				game.match = new Match(game, currentPlayers);
 				console.log('after game.match.play');
 
-				await game.match.play();
+				await game.match.playRemote();
 				console.log('game.match.play');
 
 
