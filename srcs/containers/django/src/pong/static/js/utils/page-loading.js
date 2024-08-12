@@ -10,8 +10,6 @@ document.addEventListener('DOMContentLoaded', function() {
 			updateUI(data);
 			bindEventListeners();
 		});
-
-	// window.onpopstate = (event)
 });
 
 
@@ -22,17 +20,14 @@ function updateUI(data) {
         document.getElementById('logout-link').style.display = 'block';
         document.getElementById('user-info').style.display = 'block';
         document.getElementById('user-info').innerText = `Welcome, ${data.user_info.username}`;
-		// loadPage('home')
     } else {
 		document.getElementById('login-link').style.display = 'block';
         document.getElementById('register-link').style.display = 'block';
         document.getElementById('logout-link').style.display = 'none';
         document.getElementById('user-info').style.display = 'none';
-		// loadPage('home')
     }
 
     document.getElementById('main-content').innerHTML = data.content;
-	// loadPage('home');
 }
 
 function fadeIn(element) {
@@ -69,7 +64,6 @@ window.loadPage = (page) => {
   
 		const updateContent = () => {
 		fetch('/api/' + page + '/')
-			// .then(response => response.json())
 			.then(response => {
 				console.log('Response received:');
 				if (!response.ok) {
@@ -85,6 +79,11 @@ window.loadPage = (page) => {
 					userContent.innerHTML = data.content;
 				} else if (page === 'register_user'){
 					console.log('Register called', page);
+					mainContent.style.display = 'none';
+					userContent.style.display = 'block';
+					userContent.innerHTML = data.content;
+				} else if (page === 'logout'){
+					console.log('logout called: ', page);
 					mainContent.style.display = 'none';
 					userContent.style.display = 'block';
 					userContent.innerHTML = data.content;
@@ -142,9 +141,6 @@ function handleFormSubmitWrapper(event) {
     } else if (form.id === 'register-form') {
         console.log("User content register-form handling");
         url = '/api/register/';
-    } else if (form.id === 'logout-form') {
-        console.log("User content logout-form handling");
-        url = '/api/logout/';
     } else {
         console.error('Form ID not recognized');
         return;
@@ -153,21 +149,53 @@ function handleFormSubmitWrapper(event) {
     handleFormSubmit(form, url);
 }
 
+function handleLogout() {
+    fetch('/api/logout/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken') // Ensure CSRF token is correctly fetched
+        },
+        credentials: 'include' // Important for sending cookies (including session cookies)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+			console.log('logout worked for user.');
+			showNotification('You are successfully logged out');
+            history.pushState(null, '', ''); // Redirect to home or appropriate page
+            loadPage('home'); // Reload or update page content to reflect logged-out state
+        } else {
+            console.error('Logout failed:', data);
+        }
+    })
+    .catch(error => {
+        console.error('Fetch error:', error);
+    });
+}
+
+
+function showNotification(message) {
+    const notificationElement = document.getElementById('notification');
+	if (notificationElement && message) {
+		notificationElement.innerText = message;
+		notificationElement.style.display = 'block';
+		setTimeout(() => {
+			$(notificationElement).alert('close');
+		}, 2000); // Hide after 2 seconds
+	}
+}
+
 function bindEventListeners() {
-// trying to handle user event
-    const userContent = document.getElementById('user');
+	document.getElementById('logout-link').addEventListener('click', handleLogout);
 
+	const userContent = document.getElementById('user');
 	if (userContent) {
-        // Remove existing event listeners to prevent multiple bindings
         userContent.removeEventListener('submit', handleFormSubmitWrapper);
-
-        // Add new event listener for form submissions
         userContent.addEventListener('submit', handleFormSubmitWrapper);
     } else {
         console.warn('Element with ID "user" not found');
     }
-
-	// user event listerner
 	var leaderBoardButton = document.getElementById('js-leaderboard-btn');
 	if (leaderBoardButton) {
 	  leaderBoardButton.addEventListener('click', showLeaderBoard);
@@ -227,23 +255,24 @@ function handleFormSubmit(form, url) {
         headers: {
             'Content-Type': 'application/json',
             'X-CSRFToken': getCookie('csrftoken'),  // CSRF token handling
-        }
+        },
+		credentials: 'include'
     })
     .then(response => response.json())
     .then(data => {
         if (data.status === 'success' || response.ok) {
 			if (url.includes('login') || url.includes('register')) {
-				console.log("logging in updating")
-				history.pushState(null, '', '');
-				loadPage('home');
-
-			} else if (url.includes('logout')) {
+				showNotification('You are now successfully logged in');
 				history.pushState(null, '', '');
 				loadPage('home');
 			}
         } else {
             const errorContainer = document.getElementById('error-container');
             if (errorContainer) {
+				errorContainer.style.display = 'block';
+				setTimeout(() => {
+					$(errorContainer).alert('close');
+				}, 4000); // Hide after 4 seconds
                 errorContainer.innerHTML = JSON.stringify(data);
             }
         }
