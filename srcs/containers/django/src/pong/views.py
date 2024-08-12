@@ -15,13 +15,24 @@ from rest_framework.decorators import api_view
 from django.conf import settings
 from web3 import Web3
 from web3.middleware import geth_poa_middleware
-
+from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from .serializers import RegisterSerializer
 from .models import Player, Tournament, Match
 import json
 
+@login_required
+def userinfo_view(request):
+	user_info = None
+	user_info = {
+		'username': request.user.username,
+		'email': request.user.email
+	}
+	return JsonResponse({
+		'user_info': user_info,
+		'is_logged_in': request.user.is_authenticated
+	})
 
 def index(request):
 	config_data = {

@@ -39,43 +39,79 @@ function loadPageClosure(game) {
 	};
 }
 
+// async function fetchUserInfo() {
+// 	try {
+// 	  const response = await fetch('/api/home/');
+// 	  const data = await response.json();
+// 	  if (data.user_info.is_logged_in) {
+// 		window.userInfo = data; // Store userInfo in a global variable
+// 		console.log('User info fetched:', window.userInfo);
+// 	  } else {
+// 		window.userInfo = null; // Clear userInfo if not logged in
+// 	  }
+// 	} catch (error) {
+// 	  console.error('Failed to fetch user info', error);
+// 	  window.userInfo = null; // Ensure userInfo is null on failure
+// 	}
+//   }
+
+// async function updateUI() {
+// 	await fetchUserInfo();
+// 	// console.log('User info:', window.userInfo.user_info.username);
+// 	const userStatus = window.userInfo;
+//     if (userStatus && userStatus.is_logged_in) {
+// 		console.log('User info:', userStatus.user_info.username);
+//         document.getElementById('login-link').style.display = 'none';
+//         document.getElementById('register-link').style.display = 'none';
+//         document.getElementById('logout-link').style.display = 'block';
+//         document.getElementById('user-info').style.display = 'block';
+//         document.getElementById('user-info').innerText = `Welcome, ${userStatus.user_info.username}`;
+//     } else {
+// 		document.getElementById('login-link').style.display = 'block';
+//         document.getElementById('register-link').style.display = 'block';
+//         document.getElementById('logout-link').style.display = 'none';
+//         document.getElementById('user-info').style.display = 'none';
+//     }
+// }
+
 async function fetchUserInfo() {
-	try {
-	  const response = await fetch('/api/home/');
-	  const data = await response.json();
-	  if (data.user_info.is_logged_in) {
-		window.userInfo = data; // Store userInfo in a global variable
-		console.log('User info fetched:', window.userInfo);
-	  } else {
-		window.userInfo = null; // Clear userInfo if not logged in
-	  }
-	} catch (error) {
-	  console.error('Failed to fetch user info', error);
-	  window.userInfo = null; // Ensure userInfo is null on failure
-	}
-  }
+    try {
+        const response = await fetch('/api/userinfo/');
+        // if (!response.ok) {
+        //     throw new Error(`HTTP error! Status: ${response.status}`);
+        // }
+        const data = await response.json();
+        return data.user_info; // Return user_info object directly
+    } catch (error) {
+        // console.error('Failed to fetch user info', error);
+        return null; // Return null if there's an error
+    }
+}
 
 async function updateUI() {
-	await fetchUserInfo();
-	// console.log('User info:', window.userInfo.user_info.username);
-	const userStatus = window.userInfo;
-    if (userStatus && userStatus.is_logged_in) {
-		console.log('User info:', userStatus.user_info.username);
-        document.getElementById('login-link').style.display = 'none';
-        document.getElementById('register-link').style.display = 'none';
-        document.getElementById('logout-link').style.display = 'block';
-        document.getElementById('user-info').style.display = 'block';
-        document.getElementById('user-info').innerText = `Welcome, ${userStatus.user_info.username}`;
+    const userInfo = await fetchUserInfo();
+    const loginLink = document.getElementById('login-link');
+    const registerLink = document.getElementById('register-link');
+    const logoutLink = document.getElementById('logout-link');
+    const userInfoElement = document.getElementById('user-info');
+
+    if (userInfo && userInfo.username) {
+        loginLink.style.display = 'none';
+        registerLink.style.display = 'none';
+        logoutLink.style.display = 'block';
+        userInfoElement.style.display = 'block';
+        userInfoElement.innerText = `Welcome, ${userInfo.username}`;
     } else {
-		document.getElementById('login-link').style.display = 'block';
-        document.getElementById('register-link').style.display = 'block';
-        document.getElementById('logout-link').style.display = 'none';
-        document.getElementById('user-info').style.display = 'none';
+        loginLink.style.display = 'block';
+        registerLink.style.display = 'block';
+        logoutLink.style.display = 'none';
+        userInfoElement.style.display = 'none';
     }
 }
 
 function bindUserEventListeners(userContent) {
 		
+	document.getElementById('logout-link').addEventListener('click', handleLogout);
 	if (userContent) {
         // userContent.removeEventListener('submit', handleFormSubmitWrapper);
         userContent.addEventListener('submit', handleFormSubmitWrapper);
@@ -84,7 +120,6 @@ function bindUserEventListeners(userContent) {
 }
 function bindEventListeners(game) {
 
-	document.getElementById('logout-link').addEventListener('click', handleLogout);
 
 	const startUserVsUserButton = document.getElementById('js-start-user-vs-user-btn');
 	if (startUserVsUserButton) {
@@ -168,4 +203,4 @@ function fadeOut(element) {
 		}, { once: true });
 	});
 }
-export { loadPageClosure };
+export { loadPageClosure, updateUI };

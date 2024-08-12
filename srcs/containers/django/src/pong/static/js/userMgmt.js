@@ -19,6 +19,7 @@ function handleFormSubmitWrapper(event) {
 }
 
 function handleLogout() {
+    console.log('window.loadPage during logout:', window.loadPage);
     fetch('/api/logout/', {
         method: 'POST',
         headers: {
@@ -33,7 +34,7 @@ function handleLogout() {
 			console.log('logout worked for user.');
 			showNotification('You are successfully logged out');
             history.pushState(null, '', ''); // Redirect to home or appropriate page
-			window.loadpage('game_mode');
+			window.loadPage('game_mode');
         } else {
             console.error('Logout failed:', data);
         }
@@ -59,6 +60,7 @@ function handleFormSubmit(form, url) {
     const formData = new FormData(form);
 
 	console.log("handleformsubmit called")
+    console.log('window.loadPage during logout:', window.loadPage);
     fetch(url, {
         method: 'POST',
         body: JSON.stringify(Object.fromEntries(formData)),
