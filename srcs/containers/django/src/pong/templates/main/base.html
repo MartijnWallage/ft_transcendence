@@ -15,11 +15,26 @@
       crossorigin="anonymous"/>
     <script src=" https://cdn.jsdelivr.net/npm/web3@4.11.1/dist/web3.min.js "></script>
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-	  <script type="module" src="{% static 'js/main.js' %}" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.min.js"></script>
+
+    <script type="module" src="{% static 'js/main.js' %}" defer></script>
   </head>
 
   <body>
-    <div id="threejs-container"></div>
+  <div id="threejs-container"></div>
+  <div id="error-container" class="container-fluid" style="display: none;"></div>
+  <div id="notification" class="alert alert-success alert-dismissible fade show" role="alert" style="display: none;">
+    <strong>Holy guacamole!</strong> You should check in on some of those fields below.
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div id="userButtons" class="col d-flex justify-content-end">
+    <button type="button" class="btn btn-outline-light btn-lg" id="login-link" onclick="loadPage('login_user')">Login</button>
+    <button type="button" class="btn btn-outline-light btn-lg" id="register-link" onclick="loadPage('register_user')">Sign Up</button>
+    <button type="button" class="btn btn-outline-light btn-lg" id="logout-link" style="display: none;">Logout</button>
+    <a class="nav-link ml-2" href="#" id="user-info" style="display: none;"></a>
+  </div>
 	<div id="game-controls" class="container-fluid mx-auto p-4 fixed-top d-flex text-start">
         <div id="game-controls-left" class="d-flex align-items-center">
             <span id="login-as-guest" class="text-white">Guest</span>
@@ -27,7 +42,6 @@
         <div id="gameButtons" class="col d-flex justify-content-end">
             <button type="button" class="btn btn-outline-light mx-1" id="js-tournament_score-btn" onclick="loadPage('tournament_score')" style="display: none;">Score Tournament</button>
             <button type="button" class="btn btn-outline-light mx-1" id="js-audio-btn" style="display: none;">Audio on</button>
-            <button type="button" class="btn btn-outline-light mx-1" id="js-login-btn" onclick="loadPage('login')" style="display: none;">Login</button>
             <button type="button" class="btn btn-outline-light mx-1" id="js-end-game-btn" style="display: none;">Exit</button>
             <button type="button" class="btn btn-outline-light mx-1" id="js-option-btn">=</button>
         </div>

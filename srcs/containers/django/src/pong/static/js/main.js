@@ -4,8 +4,9 @@ import { loadPageClosure } from './loadPage.js';
 
 function main() {
 
-	const this_game = new Game();
 
+
+	const this_game = new Game();
 	// Making game object available for load page
 	window.loadPage = loadPageClosure(this_game);
 
