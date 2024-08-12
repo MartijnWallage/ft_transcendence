@@ -75,6 +75,7 @@ class PingpongConsumer(AsyncWebsocketConsumer):
             
             elif message_type == 'get_player_count':
                 player_count = len(self.__class__.connected_players)
+                print(f'Sending player count: {player_count}')  # Debug print statement
                 await self.send(text_data=json.dumps({
                     'type': 'player_count',
                     'count': player_count,

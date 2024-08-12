@@ -1,54 +1,80 @@
 import { Player } from './Player.js';
 import { Match } from './Match.js';
-import { Remote } from './Remote.js';
+// import { Remote } from './Remote.js';
 
 
 class Tournament {
 
 	constructor(game) {
 		this.game = game;
-		this.players = [];
 		this.matchResult = [];
 		this.tournamentId = null;
 		this.maxPlayers = 1; // Allow only 1 remote player per webpage
         this.isRemotePlayerAdded = false; // Track if a remote player has been added
+		this.players = [];
 	}
 
 	async checkPlayerCount() {
 		return new Promise((resolve, reject) => {
-			const player = this.players[0];
+			console.log('Checking player count:', this.players);
+		
+			// Log players and their properties
+			this.players.forEach((player, index) => {
+				console.log(`Player ${index}:`, player);
+				console.log(`Player ${index} isRemote:`, player.isRemote);
+				console.log(`Player ${index} connection:`, player.connection);
+				console.log(`Player ${index} connection.connection:`, player.connection?.connection);
+			});
 			
-			if (player && player.isRemote && player.connection && player.connection.connection) {
-				player.connection.connection.send(JSON.stringify({ type: 'get_player_count' }));
+			const remotePlayer = this.players.find(player => player.isRemote);
+			
+			console.log('1. remotePlayer:', remotePlayer);
+			if (remotePlayer) {
+				console.log('2. remotePlayer.connection:', remotePlayer.connection);
+				if (remotePlayer.connection) {
+					console.log('3. remotePlayer.connection.connection:', remotePlayer.connection.connection);
+				}
+			}
 	
-				player.connection.connection.onmessage = (event) => {
+			if (remotePlayer && remotePlayer.connection && remotePlayer.connection.connection) {
+				// Set up a one-time listener for the WebSocket message
+				const onMessageHandler = (event) => {
 					const message = JSON.parse(event.data);
+	
 					if (message.type === 'player_count') {
 						const playerCount = message.count;
+						console.log('Number of players received:', playerCount);
 	
-						console.log('Number of players:', playerCount);
-	
+						// Check if there are enough players
 						if (playerCount < 2) {
 							resolve({
 								success: false,
-								message: 'More than 2 players are required to start the tournament',
+								message: 'At least 2 players are required to start the tournament.',
 							});
 						} else {
 							resolve({ success: true });
 						}
+	
+						// Clean up the event listener
+						remotePlayer.connection.connection.removeEventListener('message', onMessageHandler);
 					} else {
-						console.log(`Unknown message type: ${message.type}`);
-						reject(new Error('Unexpected message type'));
+						console.log(`Unknown message type received: ${message.type}`);
+						reject(new Error('Unexpected message type received.'));
 					}
 				};
+	
+				// Attach the listener and send the request
+				remotePlayer.connection.connection.addEventListener('message', onMessageHandler);
+				remotePlayer.connection.connection.send(JSON.stringify({ type: 'get_player_count' }));
 			} else {
 				resolve({
 					success: false,
-					message: 'WebSocket connection is not open or player is not remote.',
+					message: 'WebSocket connection is not established or no remote player found.',
 				});
 			}
 		});
 	}
+	
 	
 
 	async start() {
@@ -64,19 +90,28 @@ class Tournament {
 		}
 	
 		console.log('Starting tournament... with players:', this.players);
-	
-		const playerCount = response.playerCount;
-	
+
+		let currentPlayers = [this.players[0], this.players[1]];
+
 		try {
 			// Load the game page only after all players are ready
-			await loadPage('pong');
-			let currentPlayers = [this.players[0], this.players[1]];
-	
 			
-			// for (let index = 1; index < this.players.length; index++) {
-			for (let index = 1; index < playerCount; index++) {
+			// console.log('loadPage');
+			// await loadPage('pong');
+	
+			console.log('this.players.length', this.players.length);
+			
+			for (let index = 0; index < this.players.length; index++) {
+				console.log('index', index);
+				console.log('before game.match.play');
 				game.match = new Match(game, currentPlayers);
+				console.log('after game.match.play');
+
 				await game.match.play();
+				console.log('game.match.play');
+
+
+				// Wait for match results
 				while (game.match.score.winner === null) {
 					await new Promise(resolve => setTimeout(resolve, 100));
 				}
@@ -110,86 +145,7 @@ class Tournament {
 	}
 	
 
-	
 
-	// async start() {
-	// 	const game = this.game;
-	
-	// 	// Request the server to check player count
-	// 	const response = await this.checkPlayerCount();
-	// 	if (!response.success) {
-	// 		var error2 = document.getElementById('error2');
-	// 		error2.textContent = response.message;
-	// 		error2.style.display = 'block'; 
-	// 		return;
-	// 	}
-	
-	// 	console.log('Starting tournament... with players:', this.players);
-	
-	// 	// Synchronize player data with the server
-	// 	// await this.updatePlayersFromServer();
-	
-	// 	try {
-	// 		await loadPage('pong');
-	// 		let currentPlayers = [this.players[0], this.players[1]];
-	
-	// 		for (let index = 1; index < this.players.length; index++) {
-	// 			game.match = new Match(game, currentPlayers);
-	// 			await game.match.play();
-	// 			while (game.match.score.winner === null) {
-	// 				await new Promise(resolve => setTimeout(resolve, 100));
-	// 			}
-	// 			console.log('Match winner:', game.match.score.winner);
-	// 			console.log('Match Result:', game.match.score.result);
-				
-	// 			let matchResult = { 
-	// 				player1: currentPlayers[0].name, 
-	// 				player2: currentPlayers[1].name, 
-	// 				player1Score: game.match.score.result[0], 
-	// 				player2Score: game.match.score.result[1], 
-	// 				timestamp: game.match.timestamp 
-	// 			};
-	
-	// 			this.matchResult.push(matchResult);
-	
-	// 			if (index + 1 < this.players.length) {
-	// 				const loser = game.match.score.winner === 0 ? 1 : 0;
-	// 				currentPlayers[loser] = this.players[index + 1];
-	// 				console.log(`New player names after match ${index}: ${currentPlayers[0].name} vs ${currentPlayers[1].name}`);
-	// 			}
-	// 		}
-	// 		// Ensure that match results are available before ending the tournament
-	// 		if (this.matchResult.length > 0) {
-	// 			this.endTournament(); // Call endTournament only if match results are available
-	// 		}
-	// 	} catch (error) {
-	// 		console.error('Error starting game:', error);
-	// 	}
-	// }
-	
-	// async updatePlayersFromServer() {
-	// 	return new Promise((resolve, reject) => {
-	// 		// Request the server to send the updated player list
-	// 		const request = { type: 'get_players' };
-	// 		this.players.forEach(player => {
-	// 			if (player.isRemote && player.connection && player.connection.connection) {
-	// 				player.connection.connection.send(JSON.stringify(request));
-	// 				player.connection.connection.onmessage = (event) => {
-	// 					const message = JSON.parse(event.data);
-	// 					if (message.type === 'player_list') {
-	// 						// Update the local player list based on the server response
-	// 						this.players = message.players.map(playerData => new Player(playerData.name, playerData.isRemote));
-	// 						console.log('Updated players from server:', this.players);
-	// 						resolve();
-	// 					} else {
-	// 						console.log(`Unknown message type: ${message.type}`);
-	// 						reject(new Error('Unexpected message type'));
-	// 					}
-	// 				};
-	// 			}
-	// 		});
-	// 	});
-	// }
 	
 
 	async addPlayer() {
@@ -221,6 +177,9 @@ class Tournament {
 		this.displayPlayers();
 		document.getElementById('js-add-player-btn').style.display = 'none';
 		document.getElementById('playerNameInput').style.display = 'none';
+
+		// Wait for WebSocket connection to be established
+		await new Promise(resolve => setTimeout(resolve, 1000)); // Adjust timeout as needed
 	}
 
 	displayPlayers() {

@@ -2,17 +2,18 @@ import { AI } from './AI.js';
 import { Remote } from './Remote.js';
 
 
+
+
 class Player {
 	constructor(name, isRemote = false) {
 		this.name = name;
 		this.ai = null;
 		this.isRemote = isRemote;
-		// this.connection = null; // WebSocket connection for remote player
+		this.connection = isRemote ? new Remote(name) : null;
 		
-		if (isRemote) {
-			this.connection = new Remote(this.name); // Pass the name to Remote
-			this.connection.connectToServer(); // Connect to the server
-		}
+		if (this.connection) {
+            this.connection.connectToServer();
+        }
 		
 		this.stats = {
 			wins: 0,
