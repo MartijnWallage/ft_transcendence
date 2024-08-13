@@ -1,4 +1,6 @@
 Django== 4.1 #Django framework
+# Django== 4.2.10 #Django framework
+
 psycopg2== 2.9.9 #PostgreSQL adapter for Python
 web3		  # Ethereum
 # psycopg2-binary==2.9.9

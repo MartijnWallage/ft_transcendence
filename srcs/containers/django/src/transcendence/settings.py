@@ -38,6 +38,7 @@ ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS", "").split(" ")
 # Application definition
 
 INSTALLED_APPS = [
+    'channels',
 	'pong.apps.PongConfig',
     'django.contrib.admin',
     'django.contrib.auth',

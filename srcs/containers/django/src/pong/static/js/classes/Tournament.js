@@ -5,36 +5,38 @@ import { Match } from './Match.js';
 
 class Tournament {
 
-	constructor(game) {
+	constructor(game, remote) {
 		this.game = game;
+		this.remote = remote; // Add this line to store the Remote instance
 		this.matchResult = [];
 		this.tournamentId = null;
 		this.maxPlayers = 1; // Allow only 1 remote player per webpage
         this.isRemotePlayerAdded = false; // Track if a remote player has been added
 		this.players = [];
+		this.connection = null; // Initialize WebSocket connection
 	}
 
 	async checkPlayerCount() {
 		return new Promise((resolve, reject) => {
 			console.log('Checking player count:', this.players);
 		
-			// Log players and their properties
-			this.players.forEach((player, index) => {
-				console.log(`Player ${index}:`, player);
-				console.log(`Player ${index} isRemote:`, player.isRemote);
-				console.log(`Player ${index} connection:`, player.connection);
-				console.log(`Player ${index} connection.connection:`, player.connection?.connection);
-			});
+			// // Log players and their properties
+			// this.players.forEach((player, index) => {
+			// 	console.log(`Player ${index}:`, player);
+			// 	console.log(`Player ${index} isRemote:`, player.isRemote);
+			// 	console.log(`Player ${index} connection:`, player.connection);
+			// 	console.log(`Player ${index} connection.connection:`, player.connection?.connection);
+			// });
 			
 			const remotePlayer = this.players.find(player => player.isRemote);
 			
-			console.log('1. remotePlayer:', remotePlayer);
-			if (remotePlayer) {
-				console.log('2. remotePlayer.connection:', remotePlayer.connection);
-				if (remotePlayer.connection) {
-					console.log('3. remotePlayer.connection.connection:', remotePlayer.connection.connection);
-				}
-			}
+			// console.log('1. remotePlayer:', remotePlayer);
+			// if (remotePlayer) {
+			// 	console.log('2. remotePlayer.connection:', remotePlayer.connection);
+			// 	if (remotePlayer.connection) {
+			// 		console.log('3. remotePlayer.connection.connection:', remotePlayer.connection.connection);
+			// 	}
+			// }
 	
 			if (remotePlayer && remotePlayer.connection && remotePlayer.connection.connection) {
 				// Set up a one-time listener for the WebSocket message
@@ -52,7 +54,10 @@ class Tournament {
 								message: 'At least 2 players are required to start the tournament.',
 							});
 						} else {
-							resolve({ success: true });
+							resolve({ 
+								success: true,
+								playerCount // Include playerCount here
+							});
 						}
 	
 						// Clean up the event listener
@@ -79,7 +84,7 @@ class Tournament {
 
 	async start() {
 		const game = this.game;
-	
+		
 		// Request the server to check player count
 		const response = await this.checkPlayerCount();
 		if (!response.success) {
@@ -91,8 +96,14 @@ class Tournament {
 	
 		// console.log('Starting tournament... with players:', this.players);
 
-		
+		//from server side
 		console.log('response.playerCount', response.playerCount);
+		//from client side
+		console.log('this.players.length', this.players.length);
+
+		console.log('response.players', response.players);
+
+
 
 		// Instead of checking local player count, we use the player count received from the server
 		if (response.playerCount < 2) {
@@ -109,8 +120,8 @@ class Tournament {
 		try {
 			// Load the game page only after all players are ready
 			
-			// console.log('loadPage');
-			// await loadPage('pong');
+			await loadPage('pong');
+			console.log('loadPage');
 	
 			
 			
@@ -166,35 +177,70 @@ class Tournament {
 	async addPlayer() {
 		const playerName = document.getElementById('playerNameInput').value.trim();
 		const error = document.getElementById('error');
-		
-		console.log(playerName);
-		
-
+	
 		if (playerName === '') {
 			error.textContent = 'Please enter a valid name';
 			error.style.display = 'block'; 
 			return;
 		}
-		else {
-			error.style.display = 'none'; 
+		error.style.display = 'none'; 
+	
+		if (this.isRemotePlayerAdded && this.players.length > 0) {
+			// Validate player name with the server if a remote player has already been added
+			try {
+				const isValid = await this.validatePlayerNameWithServer(playerName);
+				if (!isValid) {
+					error.textContent = 'Player name is already taken or invalid';
+					error.style.display = 'block'; 
+					return;
+				}
+				error.style.display = 'none'; 
+			} catch (error) {
+				console.error('Error validating player name:', error);
+				return;
+			}
 		}
-
-		if (this.isRemotePlayerAdded) {
-            console.log('A remote player has already been added.');
-            return;
-        }
-
-
+	
 		const newPlayer = new Player(playerName, true); 
 		this.players.push(newPlayer);
 		this.isRemotePlayerAdded = true;
-
+	
 		this.displayPlayers();
 		document.getElementById('js-add-player-btn').style.display = 'none';
 		document.getElementById('playerNameInput').style.display = 'none';
-
+	
 		// Wait for WebSocket connection to be established
 		await new Promise(resolve => setTimeout(resolve, 1000)); // Adjust timeout as needed
+	}
+
+	// Function to validate player name with the server
+	async validatePlayerNameWithServer(playerName) {
+		return new Promise((resolve, reject) => {
+			// Assuming you have a WebSocket connection `this.connection`
+			if (!this.connection || this.connection.readyState !== WebSocket.OPEN) {
+				console.error('WebSocket is not connected or not open.');
+				reject('WebSocket is not connected');
+				return;
+			}
+
+			// Create a message to validate the player name
+			const validationMessage = JSON.stringify({ type: 'validate_player', name: playerName });
+			console.log('Sending validation message:', validationMessage);
+        	this.connection.send(validationMessage);
+			// Set up an event listener for the response
+			const handleResponse = (event) => {
+				const message = JSON.parse(event.data);
+				if (message.type === 'validation_response') {
+					resolve(message.valid);
+					this.connection.removeEventListener('message', handleResponse);
+				}
+			};
+			this.connection.addEventListener('message', handleResponse);
+			
+
+			// Send the validation message
+			this.connection.send(validationMessage);
+		});
 	}
 
 	displayPlayers() {
