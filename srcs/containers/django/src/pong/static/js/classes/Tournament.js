@@ -101,7 +101,7 @@ class Tournament {
 		//from client side
 		console.log('this.players.length', this.players.length);
 
-		console.log('response.players', response.players);
+		// console.log('response.players', response.players);
 
 
 
@@ -119,16 +119,10 @@ class Tournament {
 
 		try {
 			// Load the game page only after all players are ready
-			
 			await loadPage('pong');
 			console.log('loadPage');
-	
-			
-			
-			
 			
 			for (let index = 0; index < this.players.length; index++) {
-				console.log('index', index);
 				console.log('before game.match.play');
 				game.match = new Match(game, currentPlayers);
 				console.log('after game.match.play');

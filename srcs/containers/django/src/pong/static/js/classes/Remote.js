@@ -1,6 +1,9 @@
+// import { Tournament } from './Tournament.js';
+
 class Remote {
-    constructor(playerName) {
+    constructor(playerName, tournament) {
         this.name = playerName;
+        this.Tournament = tournament; // Make sure Tournament is set here
         this.connection = null;
         this.players = [];
         this.game = null;
@@ -16,7 +19,7 @@ class Remote {
 
         // this.nameMapping = {};
 
-
+        // this.tournament = tournament;
         // Ensure `startTournamentHandler` is defined here
         this.startTournamentHandler = this.startTournamentHandler.bind(this);
     }
@@ -51,50 +54,50 @@ class Remote {
     handleServerMessage(data) {
         switch (data.type) {
             case 'player_connected':
-                if (data.players && Array.isArray(data.players)) {
-                    console.log('Player statuses received:', data.players);
-
-                    this.players = data.players.map(player => ({
-                        name: player.name,
-                        displayName: player.name,
-                        role: player.role,
-                        isRemote: true,
-                        connection: this.getRemoteConnection(player.name),
-                        stats: {}
-                    }));
-
-                    console.log('this.players', this.players);
-                    console.log('player => player.name', player => player.name);
-                    //what players type
-                    console.log('this.name', this.name);
-
-
-                    // Assign the current player based on some unique criteria
-                    const currentPlayer = this.players.find(player => player.name === this.name);
-                    if (currentPlayer) {
-                        this.setCurrentPlayerName(currentPlayer.name);
-                    } else {
-                        console.error(`Current player with name ${this.name} not found in the players list.`);
-                    }
-
-                    this.updatePlayerList(this.players);
-                    this.setupTournamentButton();
-                } else {
-                    console.error('Received player_connected message but data.players is not an array:', data.players);
-                }
+                this.handlePlayerConnected(data.players);
                 break;
 
             case 'player_disconnected':
-                if (data.players && Array.isArray(data.players)) {
-                    this.players = data.players;
-                    this.updatePlayerList(this.players);
-                } else {
-                    console.error('Received player_disconnected message but data.players is not an array:', data.players);
-                }
+                this.handlePlayerDisconnected(data.players);
                 break;
 
             default:
                 console.log(`Unknown message type: ${data.type}`);
+        }
+    }
+
+    handlePlayerConnected(players) {
+        if (Array.isArray(players)) {
+            console.log('Player statuses received:', players);
+    
+            if (players.length > 16) {
+                this.showError('Cannot join, room is full.');
+                return;
+            }
+    
+            this.players = players.map(player => ({
+                name: player.name,
+                displayName: player.name,
+                role: player.role,
+                isRemote: true,
+                connection: this.getRemoteConnection(player.name),
+                stats: {}
+            }));
+    
+            this.updatePlayerList(this.players);
+            this.setCurrentPlayerName(this.name);
+            this.setupTournamentButton();
+        } else {
+            console.error('Received player_connected message but data.players is not an array:', players);
+        }
+    }
+
+    handlePlayerDisconnected(players) {
+        if (Array.isArray(players)) {
+            this.players = players;
+            this.updatePlayerList(this.players);
+        } else {
+            console.error('Received player_disconnected message but data.players is not an array:', players);
         }
     }
     
@@ -175,10 +178,11 @@ class Remote {
     }
 
 
-    // Defined as a class method
+    // Check if Tournament is set
     startTournamentHandler() {
+        console.log('Tournament:', this.Tournament); // Debugging line
         if (this.Tournament) {
-            this.Tournament.start();
+            this.Tournament.playRemote();
         } else {
             console.error('Tournament is not initialized.');
         }
