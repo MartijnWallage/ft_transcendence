@@ -5,8 +5,8 @@ from rest_framework import serializers
 
 class RegisterSerializer(serializers.ModelSerializer):
     # required must be True
-    password1 = serializers.CharField(write_only=True, required=False)
-    password2 = serializers.CharField(write_only=True, required=False, label='Confirm password')
+    password1 = serializers.CharField(write_only=True, required=True)
+    password2 = serializers.CharField(write_only=True, required=True, label='Confirm password')
 
     class Meta:
         model = User
@@ -19,6 +19,8 @@ class RegisterSerializer(serializers.ModelSerializer):
 
         if password1 != password2:
             raise serializers.ValidationError("Passwords do not match.")
+        # if len(password1) < 8:
+        #     raise serializers.ValidationError("Passwords is too short")
 
         return data
 

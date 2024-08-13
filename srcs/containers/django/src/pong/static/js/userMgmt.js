@@ -1,4 +1,10 @@
-import { loadPageClosure } from './loadPage.js';
+// error container visibility
+// login and signup button near 3 dots at the top (my suggestion)
+// Logout and profile should be displayed if username is clicked. (I will finish profile this week)
+
+let isUserLoggedIn = false;
+
+
 function handleFormSubmitWrapper(event) {
     event.preventDefault();
     const form = event.target;
@@ -26,14 +32,15 @@ function handleLogout() {
             'Content-Type': 'application/json',
             'X-CSRFToken': getCookie('csrftoken')
         },
-        credentials: 'include' // Important for sending cookies (including session cookies)
+        credentials: 'include'
     })
     .then(response => response.json())
     .then(data => {
         if (data.status === 'success') {
 			console.log('logout worked for user.');
 			showNotification('You are successfully logged out');
-            history.pushState(null, '', ''); // Redirect to home or appropriate page
+            history.pushState(null, '', '');
+            isUserLoggedIn = false;
 			window.loadPage('game_mode');
         } else {
             console.error('Logout failed:', data);
@@ -56,6 +63,23 @@ function showNotification(message) {
 	}
 }
 
+
+async function fetchUserInfo() {
+    if (isUserLoggedIn) {
+        try {
+            const response = await fetch('/api/userinfo/');
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            const data = await response.json();
+            return data.user_info; // Return user_info object directly
+        } catch (error) {
+            console.error('Failed to fetch user info', error);
+            return null; // Return null if there's an error
+        }
+    }
+}
+
 function handleFormSubmit(form, url) {
     const formData = new FormData(form);
 
@@ -72,22 +96,26 @@ function handleFormSubmit(form, url) {
     })
     .then(response => response.json())
     .then(data => {
-        if (data.status === 'success' || response.ok) {
+        if (data.status === 'success') {
 			if (url.includes('login') || url.includes('register')) {
 				showNotification('You are now successfully logged in');
 				history.pushState(null, '', '');
-				// window.UserInfo = data.user_info;
+                isUserLoggedIn = true;
 				window.loadPage('game_mode'); // Reload or update page content to reflect logged-out state
 
 			}
         } else {
+            // alert('Username or Password Incorrect.');
             const errorContainer = document.getElementById('error-container');
             if (errorContainer) {
 				errorContainer.style.display = 'block';
-				setTimeout(() => {
-					$(errorContainer).alert('close');
-				}, 4000); // Hide after 4 seconds
-                errorContainer.innerHTML = JSON.stringify(data);
+                errorContainer.innerHTML = 'Usrname or Password Invalid';
+                showNotification("Invalid User or Password");
+                // errorContainer.innerHTML = JSON.stringify(data.errors);
+				// setTimeout(() => {
+				// 	$(errorContainer).alert = 'close';
+				// }, 4000); // Hide after 4 seconds
+                // this is bootstrap js which I have included in base.html to show alert only for 4 seconds
             }
         }
     })
@@ -111,4 +139,4 @@ function getCookie(name) {
     return cookieValue;
 }
 
-export { handleFormSubmitWrapper, handleLogout }
+export { handleFormSubmitWrapper, handleLogout, fetchUserInfo }

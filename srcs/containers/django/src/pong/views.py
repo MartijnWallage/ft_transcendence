@@ -42,19 +42,20 @@ def index(request):
 	}
 	return render(request, 'main/base.html', config_data)
 
+
 @api_view(['GET'])
 def home_view(request):
 	# Collect user information and login status
-	user_info = None
-	if request.user.is_authenticated:
-		user_info = {
-			'username': request.user.username,
-			'email': request.user.email
-		}
+	# user_info = None
+	# if request.user.is_authenticated:
+	# 	user_info = {
+	# 		'username': request.user.username,
+	# 		'email': request.user.email
+	# 	}
 	
 	data = {
-		'is_logged_in': request.user.is_authenticated,
-		'user_info': user_info,
+	# 	'is_logged_in': request.user.is_authenticated,
+	# 	'user_info': user_info,
 		'content': render_to_string("main/home.html", request=request)
 	}
 	return JsonResponse(data)
@@ -106,16 +107,16 @@ def logout_view(request):
 
 @api_view(['GET'])	
 def game_mode_view(request):
-	user_info = None
-	if request.user.is_authenticated:
-		user_info = {
-			'username': request.user.username,
-			'email': request.user.email
-		}
+	# user_info = None
+	# if request.user.is_authenticated:
+	# 	user_info = {
+	# 		'username': request.user.username,
+	# 		'email': request.user.email
+	# 	}
 	
 	data = {
-		'is_logged_in': request.user.is_authenticated,
-		'user_info': user_info,
+	# 	'is_logged_in': request.user.is_authenticated,
+	# 	'user_info': user_info,
 		'content': render_to_string("main/game_mode.html", request=request)
 	}
 	return JsonResponse(data)

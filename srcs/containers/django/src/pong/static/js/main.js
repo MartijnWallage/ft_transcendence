@@ -19,8 +19,7 @@ function main() {
 	// Load homepage when document is ready
 	const DOMContentLoadedHandler = async function() {
 		const page = location.hash.replace('#', '') || 'home';
-		await window.loadPage(page);
-		// await updateUI();
+		await window.loadPage(page); // await is added to properly handle the updateUI function
 	};
 	document.addEventListener('DOMContentLoaded', DOMContentLoadedHandler);
 
