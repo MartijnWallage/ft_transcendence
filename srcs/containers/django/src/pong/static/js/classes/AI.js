@@ -12,7 +12,7 @@ class AI {
 		this.destination = 0;
 		this.side = 1;
         this.lastUpdateTime = 0;
-        this.updateInterval = 400; // 1000 milliseconds = 1 second
+        this.updateInterval = 1000; // 1000 milliseconds = 1 second
         this.init();
 		this.humanPaddle = this.game.paddle1;
 		this.AIPaddle = this.game.paddle2;
@@ -43,12 +43,25 @@ class AI {
 		const humanPaddle = this.copyPaddle(this.humanPaddle);
 		this.destination = this.recursiveUpdateDestination(ball, humanPaddle);
     }
-	
-	recursiveUpdateDestination(ball, humanPaddle) {
+
+	computeBallZ(ball) {
 		// to avoid infinite loops, ball.dz is not allowed to be 1
 		if (abs(ball.dz) >= 1) {
 			ball.dz = 0.9;
 		}
+		const paddle = ball.dx < 0 ? this.game.paddle1 : this.game.paddle2;
+		const paddleHalfWidth = paddle.geometry.parameters.width / 2;
+		const ballRadius = ball.radius;
+		
+		const paddleSide = ball.dx < 0 ? paddle.x + paddleHalfWidth : paddle.x - paddleHalfWidth;
+		const ballSide = ball.dx < 0 ? ball.x - ballRadius : ball.x + ballRadius;
+
+		const distanceToPaddle = abs(ballSide - paddleSide) + abs(ball.dx); // + abs(ball.dz) because the ball never hits the paddle precisely
+		const ballDestination = ball.z + ball.dz / abs(ball.dx) * distanceToPaddle;
+		return ballDestination;
+	}
+	
+	recursiveUpdateDestination(ball, humanPaddle) {
 		const halfCourt = this.game.field.geometry.parameters.depth / 2;
 		const paddleHalfDepth = humanPaddle.depth / 2;
 		const paddleHalfWidth = humanPaddle.width / 2;
@@ -58,10 +71,8 @@ class AI {
 		const paddleTop = paddle.z - paddleHalfDepth;
 		const paddleBottom = paddle.z + paddleHalfDepth;
 		const paddleSide = ball.dx < 0 ? paddle.x + paddleHalfWidth : paddle.x - paddleHalfWidth;
-		const ballSide = ball.dx < 0 ? ball.x - ballRadius : ball.x + ballRadius;
 
-		const distanceToPaddle = abs(ballSide - paddleSide);
-		const ballDestination = ball.z + ball.dz / abs(ball.dx) * distanceToPaddle;
+		const ballDestination = this.computeBallZ(ball);
 		
 		// if ball is moving towards the AI paddle, return the destination
 		if (ball.dx > 0 && abs(ballDestination) + ballRadius < halfCourt) {
@@ -71,9 +82,9 @@ class AI {
 		// if the ball is moving towards one of the walls, recurse
 		if (abs(ballDestination) + ballRadius > halfCourt) {
 			const wall = ball.dz > 0 ? halfCourt : -halfCourt;
-			const distanceToWall = abs(wall - ball.z) - ballRadius;
+			const distanceToWall = abs(wall - ball.z) - ballRadius + abs(ball.dz); // + abs(ball.dz) because the ball never hits the wall precisely
 			const timeToWall = distanceToWall / abs(ball.dz);
-			ball.x = ball.x + timeToWall * ball.dx;
+			ball.x = ball.x + timeToWall * ball.dx + ball.dx;
 			ball.z = wall < 0 ?
 			wall + ballRadius :
 			wall - ballRadius;
@@ -84,8 +95,8 @@ class AI {
 		// if the ball is moving towards the human paddle, recurse
 		if (ball.dx < 0) {
 			ball.z = ballDestination;
+			ball.x = paddleSide + ballRadius + ball.dx;
 			ball.dx = -ball.dx;
-			ball.x = paddleSide + ballRadius;
 			
 			// Assume the human paddle will reach the ball
 			if (paddleTop > ballDestination) {
