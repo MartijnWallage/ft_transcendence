@@ -15,19 +15,29 @@
       crossorigin="anonymous"/>
     <script src=" https://cdn.jsdelivr.net/npm/web3@4.11.1/dist/web3.min.js "></script>
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-	  <script type="module" src="{% static 'js/main.js' %}" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.min.js"></script>
+
+    <script type="module" src="{% static 'js/main.js' %}" defer></script>
   </head>
 
   <body>
-    <div id="threejs-container"></div>
-	<div id="login-as-guest" class="fixed-top text-white m-4 p-2" style="text-align: right;">/Guest</div>
-	<div id="gameButtons" class="fixed-top p-4 d-flex align-items-start">
-      <button type="button" class="btn btn-outline-light mx-1" id="js-option-btn">=</button>
-      <button type="button" class="btn btn-outline-light mx-1" id="js-tournament_score-btn" onclick="loadPage('tournament_score')" style="display: none;">Score Tournament</button>
-      <button type="button" class="btn btn-outline-light mx-1" id="js-audio-btn" style="display: none;">Audio on</button>
-      <button type="button" class="btn btn-outline-light mx-1" id="js-login-btn" onclick="loadPage('login')" style="display: none;">Login</button>
-      <button type="button" class="btn btn-outline-light mx-1" id="js-end-game-btn" style="display: none;">Exit</button>
-    </div>
+  <div id="threejs-container"></div>
+  <div id="notification" class="alert alert-success fixed-bottom alert-dismissible fade show" role="alert" style="display: none;">
+    <strong>Holy guacamole!</strong> You should check in on some of those fields above.
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+
+  <div id="user-info" class="nav-link fixed-top text-white m-4 p-2" style="text-align: right;">/Guest</div>
+  <div id="gameButtons" class="fixed-top p-4 d-flex align-items-start">
+	<button type="button" class="btn btn-outline-light mx-1" id="js-option-btn">=</button>
+	<button type="button" class="btn btn-outline-light mx-1" id="js-login-btn" onclick="loadPage('login_user')">Login</button>
+	<button type="button" class="btn btn-outline-light mx-1" id="js-logout-btn" style="display: none;">Logout</button>
+	<button type="button" class="btn btn-outline-light mx-1" id="js-tournament_score-btn" onclick="loadPage('tournament_score')" style="display: none;">Score Tournament</button>
+	<button type="button" class="btn btn-outline-light mx-1" id="js-audio-btn" style="display: none;">Audio on</button>
+	<button type="button" class="btn btn-outline-light mx-1" id="js-end-game-btn" style="display: none;">Exit</button>
+  </div>
     <div id="vertical-line" style="display: none;"></div>
     <div id="web-app">
       <div id="main-content" class="container-fluid"></div></div>

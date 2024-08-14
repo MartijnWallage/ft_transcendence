@@ -1,5 +1,8 @@
+import { handleFormSubmitWrapper, handleLogout, fetchUserInfo } from './userMgmt.js';
+
 function loadPageClosure(game) {
 	return async (page) => {
+		console.log("loading page :", page);
 		if (game.audio && page != 'pong') {
 			game.audio.playSound(game.audio.select_1);
 		}
@@ -24,6 +27,9 @@ function loadPageClosure(game) {
 			if (updatedUnderTitle) {
 				await fadeIn(updatedUnderTitle);
 			}
+			await updateUI();
+			console.log('Page UI updated:', page);
+			bindUserEventListeners(mainContent);
 			bindEventListeners(game);
 			
 		} catch (error) {
@@ -33,8 +39,34 @@ function loadPageClosure(game) {
 	};
 }
 
+async function updateUI() {
+    const userInfo = await fetchUserInfo();
+    const loginLink = document.getElementById('js-login-btn');
+    const logoutLink = document.getElementById('js-logout-btn');
+    const userInfoElement = document.getElementById('user-info');
+
+    if (userInfo && userInfo.username) {
+        loginLink.style.display = 'none';
+        logoutLink.style.display = 'block';
+        userInfoElement.innerText = `Online as : ${userInfo.username}`;
+    } else {
+        loginLink.style.display = 'block';
+        logoutLink.style.display = 'none';
+    }
+}
+
+function bindUserEventListeners(userContent) {
+		
+	document.getElementById('js-logout-btn').addEventListener('click', handleLogout);
+	if (userContent) {
+        // userContent.removeEventListener('submit', handleFormSubmitWrapper);
+        userContent.addEventListener('submit', handleFormSubmitWrapper);
+    }
+
+}
 function bindEventListeners(game) {
-	
+
+
 	const startUserVsUserButton = document.getElementById('js-start-user-vs-user-btn');
 	if (startUserVsUserButton) {
 		startUserVsUserButton.addEventListener('click', game.startUserVsUser.bind(game));
@@ -117,4 +149,4 @@ function fadeOut(element) {
 		}, { once: true });
 	});
 }
-export { loadPageClosure };
+export { loadPageClosure, updateUI };

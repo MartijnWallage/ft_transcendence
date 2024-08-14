@@ -1,11 +1,12 @@
 import Stats from './three-lib/stats.module.js'
 import { Game } from './classes/Game.js';
-import { loadPageClosure } from './loadPage.js';
+import { loadPageClosure, updateUI } from './loadPage.js';
 
 function main() {
 
-	const this_game = new Game();
 
+
+	const this_game = new Game();
 	// Making game object available for load page
 	window.loadPage = loadPageClosure(this_game);
 
@@ -16,9 +17,9 @@ function main() {
 	};
 	
 	// Load homepage when document is ready
-	const DOMContentLoadedHandler = function() {
+	const DOMContentLoadedHandler = async function() {
 		const page = location.hash.replace('#', '') || 'home';
-		window.loadPage(page);
+		await window.loadPage(page); // await is added to properly handle the updateUI function
 	};
 	document.addEventListener('DOMContentLoaded', DOMContentLoadedHandler);
 
