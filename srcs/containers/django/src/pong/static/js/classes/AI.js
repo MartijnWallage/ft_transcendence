@@ -41,10 +41,11 @@ class AI {
     updateDestination() {
 		const ball = this.copyBall(this.game.ball);
 		const humanPaddle = this.copyPaddle(this.humanPaddle);
-		this.destination = this.recursiveUpdateDestination(ball, humanPaddle);
+		if (abs(ball.dx) > 0)
+			this.destination = this.recursiveUpdateDestination(ball, humanPaddle);
     }
 
-	computeBallZ(ball) {
+	computeBallStraightLine(ball) {
 		// to avoid infinite loops, ball.dz is not allowed to be 1
 		if (abs(ball.dz) >= 1) {
 			ball.dz = 0.9;
@@ -60,9 +61,39 @@ class AI {
 		const ballDestination = ball.z + ball.dz / abs(ball.dx) * distanceToPaddle;
 		return ballDestination;
 	}
+
+	computeNextBallZ(ball) {
+		const halfCourt = this.game.field.geometry.parameters.depth / 2;
+		const ballZ = this.computeBallStraightLine(ball);
+		// if ball is moving towards a paddle, return the destination
+		if (abs(ballZ) + ball.radius < halfCourt) {
+			return ballZ;
+		}
+
+		// if the ball is moving towards one of the walls, recurse
+		if (abs(ballZ) + ball.radius > halfCourt) {
+			const wall = ball.dz > 0 ? halfCourt : -halfCourt;
+			const distanceToWall = abs(wall - ball.z) - ball.radius + abs(ball.dz); // + abs(ball.dz) because the ball never hits the wall precisely
+			const timeToWall = distanceToWall / abs(ball.dz);
+			ball.x = ball.x + timeToWall * ball.dx + ball.dx;
+			ball.z = wall < 0 ?
+				wall + ball.radius :
+				wall - ball.radius;
+			ball.dz = -ball.dz;
+			return this.computeNextBallZ(ball);
+		}
+	}
+
 	
 	recursiveUpdateDestination(ball, humanPaddle) {
-		const halfCourt = this.game.field.geometry.parameters.depth / 2;
+		const ballDestination = this.computeNextBallZ(ball);
+		
+		// if ball is moving towards the AI paddle, return the destination
+		if (ball.dx > 0) {
+			return ballDestination;
+		}
+		
+		// if the ball is moving towards the human paddle, recurse
 		const paddleHalfDepth = humanPaddle.depth / 2;
 		const paddleHalfWidth = humanPaddle.width / 2;
 		const ballRadius = ball.radius;
@@ -71,42 +102,18 @@ class AI {
 		const paddleTop = paddle.z - paddleHalfDepth;
 		const paddleBottom = paddle.z + paddleHalfDepth;
 		const paddleSide = ball.dx < 0 ? paddle.x + paddleHalfWidth : paddle.x - paddleHalfWidth;
-
-		const ballDestination = this.computeBallZ(ball);
-		
-		// if ball is moving towards the AI paddle, return the destination
-		if (ball.dx > 0 && abs(ballDestination) + ballRadius < halfCourt) {
-			return ballDestination;
-		}
-
-		// if the ball is moving towards one of the walls, recurse
-		if (abs(ballDestination) + ballRadius > halfCourt) {
-			const wall = ball.dz > 0 ? halfCourt : -halfCourt;
-			const distanceToWall = abs(wall - ball.z) - ballRadius + abs(ball.dz); // + abs(ball.dz) because the ball never hits the wall precisely
-			const timeToWall = distanceToWall / abs(ball.dz);
-			ball.x = ball.x + timeToWall * ball.dx + ball.dx;
-			ball.z = wall < 0 ?
-			wall + ballRadius :
-			wall - ballRadius;
-			ball.dz = -ball.dz;
-			return this.recursiveUpdateDestination(ball, humanPaddle);
-		}
-		
-		// if the ball is moving towards the human paddle, recurse
-		if (ball.dx < 0) {
-			ball.z = ballDestination;
-			ball.x = paddleSide + ballRadius + ball.dx;
-			ball.dx = -ball.dx;
+		ball.z = ballDestination;
+		ball.x = paddleSide + ballRadius + ball.dx;
+		ball.dx = -ball.dx;
 			
-			// Assume the human paddle will reach the ball
-			if (paddleTop > ballDestination) {
-				humanPaddle.z = ballDestination + paddleHalfDepth;
-			} else if (paddleBottom < ballDestination) {
-				humanPaddle.z = ballDestination - paddleHalfDepth;
-			}
-			ball.dz = (ballDestination - humanPaddle.z) * this.game.ball.angleMultiplier;
-			return this.recursiveUpdateDestination(ball, humanPaddle);
+		// Assume the human paddle will reach the ball
+		if (paddleTop > ballDestination) {
+			humanPaddle.z = ballDestination + paddleHalfDepth;
+		} else if (paddleBottom < ballDestination) {
+			humanPaddle.z = ballDestination - paddleHalfDepth;
 		}
+		ball.dz = (ballDestination - humanPaddle.z) * this.game.ball.angleMultiplier;
+		return this.recursiveUpdateDestination(ball, humanPaddle);
 	}
 	
 	movePaddle(paddle) {
