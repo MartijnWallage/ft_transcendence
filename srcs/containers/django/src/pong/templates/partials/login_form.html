@@ -1,0 +1,18 @@
+
+{% load crispy_forms_tags %}
+<div id="menu" class="container-md mx-auto p-5">
+    <h2 class="text-white">Login</h2>
+    <form id="login-form" method="post">
+        {% csrf_token %}
+        {{ form|crispy }}
+		<div id="error-container" class="text-white"></div>
+        <div class="mt-3">
+            <button type="submit" class="btn btn-outline-light mx-1">Login</button>
+            <button type="button" class="btn btn-link" href="#register" onclick="loadPage('register_user')">Sign Up</button>
+        </div>
+    </form>
+</div>
+
+
+
+

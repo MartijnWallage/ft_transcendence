@@ -133,6 +133,12 @@ h1 {
 	color: white;
 }
 
+.form-label,
+.form-text,
+.btn-link {
+	color: white !important;
+}
+
 
 @font-face {
 	font-family: 'Bitfont';
