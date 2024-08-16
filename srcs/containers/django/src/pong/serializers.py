@@ -26,7 +26,6 @@ class RegisterSerializer(serializers.ModelSerializer):
 
         return data
 
-
     def create(self, validated_data):
         print("Create method called with:", validated_data)
         avatar = validated_data.pop('avatar', None)
@@ -40,3 +39,26 @@ class RegisterSerializer(serializers.ModelSerializer):
         # if 'avatar' in validated_data:
         #     UserProfile.objects.create(user=user, avatar=validated_data['avatar'])
         return user
+
+
+class UpdateUserSerializer(serializers.ModelSerializer):
+    # required must be True
+    password = serializers.CharField(write_only=True, required=True)
+    avatar = serializers.ImageField(required=False)
+
+    class Meta:
+        model = User
+        fields = ['username', 'email', 'password', 'avatar']
+
+    def update(self, instance, validated_data):
+        print("Validation data received:", validated_data)
+
+        if 'password' in validated_data and validated_data['password']:
+            instance.set_password(validated_data['password'])
+        if 'avatar' in validated_data:
+            # instance.avatar = validated_data['avatar']
+            profile, created = UserProfile.objects.get_or_create(user=instance)
+            profile.avatar = validated_data['avatar']
+            profile.save()
+        return super().update(instance, validated_data)
+        

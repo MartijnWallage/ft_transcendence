@@ -16,6 +16,9 @@ function handleFormSubmitWrapper(event) {
     } else if (form.id === 'register-form') {
         console.log("User content register-form handling");
         url = '/api/register/';
+    } else if (form.id === 'update-profile-form') {
+        console.log("User content register-form handling");
+        url = '/api/update-profile/';
     } else {
         console.error('Form ID not recognized');
         return;
@@ -84,13 +87,10 @@ function handleFormSubmit(form, url) {
     const formData = new FormData(form);
 
 	console.log("handleformsubmit called")
-    console.log('window.loadPage during logout:', window.loadPage);
     fetch(url, {
         method: 'POST',
-        // body: JSON.stringify(Object.fromEntries(formData)),
         body: formData,
         headers: {
-            // 'Content-Type': 'application/json',
             'X-CSRFToken': getCookie('csrftoken'),
         },
 		credentials: 'include'
@@ -98,13 +98,11 @@ function handleFormSubmit(form, url) {
     .then(response => response.json())
     .then(data => {
         if (data.status === 'success') {
-			if (url.includes('login') || url.includes('register')) {
-				showNotification('You are now successfully logged in');
-				history.pushState(null, '', '');
-                isUserLoggedIn = true;
-				window.loadPage('game_mode'); // Reload or update page content to reflect logged-out state
+            showNotification('You are now successfully logged in');
+            history.pushState(null, '', '');
+            isUserLoggedIn = true;
+            window.loadPage('game_mode'); // Reload or update page content to reflect logged-out state
 
-			}
         } else {
             // alert('Username or Password Incorrect.');
             const errorContainer = document.getElementById('error-container');

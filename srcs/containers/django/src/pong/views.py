@@ -7,18 +7,19 @@
 # # Create your views here.
 
 from django.shortcuts import render, redirect, get_object_or_404
-from .forms import RegisterForm, LoginForm
+from .forms import RegisterForm, LoginForm, UpdateUserForm
 from django.contrib.auth import login as django_login, logout, authenticate
 from django.http import JsonResponse
 from django.template.loader import render_to_string
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, parser_classes
+from rest_framework.parsers import MultiPartParser, FormParser
 from django.conf import settings
 from web3 import Web3
 from web3.middleware import geth_poa_middleware
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-from .serializers import RegisterSerializer
+from .serializers import RegisterSerializer, UpdateUserSerializer
 from .models import Player, Tournament, Match, UserProfile
 import json
 
@@ -74,6 +75,13 @@ def load_page_reg(request):
     content = render_to_string('partials/register_form.html', {'form': form}, request)
     return JsonResponse({'content': content})
 
+@api_view(['GET'])
+def load_page_update(request):
+    print("Update user form serving")
+    form = UpdateUserForm()
+    content = render_to_string('partials/update_profile.html', {'form': form}, request)
+    return JsonResponse({'content': content})
+
 # @csrf_exempt
 @api_view(['POST'])
 def register(request):
@@ -83,6 +91,16 @@ def register(request):
         user = serializer.save()
         django_login(request, user)
         return JsonResponse({'status': 'success'}, status=201)
+    return JsonResponse(serializer.errors, status=400)
+
+@api_view(['POST'])
+@parser_classes([MultiPartParser, FormParser])
+@login_required
+def update_profile(request):
+    serializer = UpdateUserSerializer(request.user, data=request.data, partial=True)
+    if serializer.is_valid():
+        serializer.save()
+        return JsonResponse({'status': 'success'})
     return JsonResponse(serializer.errors, status=400)
 
 # @csrf_exempt

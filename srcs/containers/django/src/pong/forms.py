@@ -25,3 +25,23 @@ class RegisterForm(UserCreationForm):
             if 'avatar' in self.files:
                 UserProfile.objects.create(user=user, avatar=self.files['avatar'])
         return user
+
+class UpdateUserForm(forms.ModelForm):
+    username = forms.CharField(max_length=254, widget=forms.TextInput(attrs={'class': 'form-control'}))
+    email = forms.EmailField(required=True, widget=forms.EmailInput(attrs={'class': 'form-control'}))
+    avatar = forms.ImageField(required=False, widget=forms.FileInput(attrs={'class': 'form-control'}))
+
+    class Meta:
+        model = User
+        fields = ('username', 'email', 'avatar')
+
+    def save(self, commit=True):
+        user = super(UpdateUserForm, self).save(commit=False)
+        user.email = self.cleaned_data['email']
+        if commit:
+            user.save()
+            if 'avatar' in self.files:
+                profile, created = UserProfile.objects.get_or_create(user=user)
+                profile.avatar = self.files['avatar']
+                profile.save()
+        return user

@@ -26,6 +26,8 @@ urlpatterns = [
     path('api/register/', views.register, name='api-register'),
     path('api/login/', views.login, name='api-login'),
     path('api/userinfo/', views.userinfo_view, name='userinfo'),
+    path('api/update-profile/', views.update_profile, name='userinfo'),
+    path('api/update-profile-page/', views.load_page_update, name='userinfo'),
     
 	# path('api/pong_solo/', views.pong_solo_view, name='api_pong_solo'),
 	# path('api/pong_tournament/', views.pong_tournament_view, name='api_pong_tournament'),
