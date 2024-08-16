@@ -9,6 +9,7 @@ crispy-bootstrap5 # To integrate Bootstrap 5 with Django forms
 # crispy-forms
 django-crispy-forms
 djangorestframework
+pillow # to upload image
 markdown       # Markdown support for the browsable API.
 django-filter  # Filtering support
 django-environ # To read environment variables

@@ -186,3 +186,8 @@ CSRF_TRUSTED_ORIGINS = [
     'https://159.89.8.55',
     'https://144.126.245.86'
 ]
+
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+# to upload avatar for the user

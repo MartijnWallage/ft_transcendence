@@ -45,6 +45,7 @@ async function updateUI() {
     const registerLink = document.getElementById('register-link');
     const logoutLink = document.getElementById('logout-link');
     const userInfoElement = document.getElementById('user-info');
+    const userAvatar = document.getElementById('user-avatar');
 
     if (userInfo && userInfo.username) {
         loginLink.style.display = 'none';
@@ -52,13 +53,22 @@ async function updateUI() {
         logoutLink.style.display = 'block';
         userInfoElement.style.display = 'block';
         userInfoElement.innerText = `Welcome, ${userInfo.username}`;
+        
+        if (userInfo.avatar_url) {
+            userAvatar.style.display = 'block';
+            userAvatar.src = userInfo.avatar_url;
+        } else {
+            userAvatar.style.display = 'none';
+        }
     } else {
         loginLink.style.display = 'block';
         registerLink.style.display = 'block';
         logoutLink.style.display = 'none';
         userInfoElement.style.display = 'none';
+        userAvatar.style.display = 'none';
     }
 }
+
 
 function bindUserEventListeners(userContent) {
 		
@@ -69,6 +79,8 @@ function bindUserEventListeners(userContent) {
     }
 
 }
+
+
 function bindEventListeners(game) {
 
 

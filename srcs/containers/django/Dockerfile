@@ -29,6 +29,8 @@ RUN pip install --upgrade pip && pip install -r requirements.txt;
 RUN mkdir -p $APP_HOME
 RUN mkdir $APP_HOME/static
 
+# Create the media directory to be able to upload avatars
+
 COPY tools/docker-entrypoint.sh /docker-entrypoint.sh
 RUN chmod +x /docker-entrypoint.sh
 
@@ -40,5 +42,8 @@ COPY src/ .
 RUN echo 'myuser ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 # Set the user for subsequent instructions
 USER myuser
+# RUN mkdir -p $APP_HOME/media/ \
+#     && chown -R myuser:mygroup $APP_HOME/media/ \
+#     && chmod -R 755 $APP_HOME/media/
 
 CMD ["/docker-entrypoint.sh"]
