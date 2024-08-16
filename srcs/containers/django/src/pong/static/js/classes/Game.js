@@ -40,7 +40,7 @@ class Game {
 		this.tournament = null;
 		this.readyForNextMatch = false;
 		this.mode = 'none';
-		this.loggedIn = false;
+		this.loggedUser = 'Guest';
 
 		console.log('Game class created');
 		this.boundCreateAudioContext = this.createAudioContext.bind(this);
@@ -70,7 +70,7 @@ class Game {
 	startSolo() {
 		this.mode = 'solo';
 		this.audio.playSound(this.audio.select_2);
-		const player1 = new Player('Guest');
+		const player1 = new Player(this.loggedUser);
 		const player2 = new Player('pongAI');
 		player2.setAI(this);
 		this.match = new Match(this, [player1, player2]);
@@ -80,7 +80,7 @@ class Game {
 	startUserVsUser() {
 		this.mode = 'UvU';
 		this.audio.playSound(this.audio.select_2);
-		const player1 = new Player('Guest 1');
+		const player1 = new Player(this.loggedUser);
 		const player2 = new Player('Guest 2');
 		this.match = new Match(this, [player1, player2]);
 		this.match.play();
@@ -119,7 +119,12 @@ class Game {
 	showOptionMenu() {
 		displayDiv('js-tournament_score-btn');
 		displayDiv('js-audio-btn');
-		displayDiv('js-login-btn');
+		if (this.loggedUser === 'Guest') {
+			displayDiv('js-login-btn');
+		}
+		else {
+			displayDiv('js-logout-btn');
+		}
 		displayDiv('js-end-game-btn');
 		textToDiv('-', 'js-option-btn');
 
@@ -132,6 +137,7 @@ class Game {
 		notDisplayDiv('js-tournament_score-btn');
 		notDisplayDiv('js-audio-btn');
 		notDisplayDiv('js-login-btn');
+		notDisplayDiv('js-logout-btn');
 		notDisplayDiv('js-end-game-btn');
 		textToDiv('=', 'js-option-btn');
 
