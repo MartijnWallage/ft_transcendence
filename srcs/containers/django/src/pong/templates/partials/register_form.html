@@ -1,0 +1,14 @@
+{% load crispy_forms_tags %}
+
+<div id="menu" class="container-md mx-auto p-5">
+    <h2 class="text-white ">Register</h2>
+    <form id="register-form" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form|crispy }}
+		<div id="error-container" class="text-white"></div>
+        <div class="mt-3">
+            <button type="submit" class="btn btn-outline-light mx-1">Sign Up</button>
+            <button type="button" class="btn btn-link" onclick="loadPage('login_user')">Back to Login</button>
+        </div>
+    </form>
+</div>

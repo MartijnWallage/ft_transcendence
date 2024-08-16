@@ -1,6 +1,8 @@
 #!/bin/bash
 set -e
 
+sudo mkdir -p $APP_HOME/media/ && sudo chown -R myuser:mygroup $APP_HOME/media/ && sudo chmod -R 755 $APP_HOME/media/
+
 echo "Waiting for database to be ready..."
 retries=5
 # Uses nc (netcat) to check 
