@@ -27,7 +27,7 @@ function loadPageClosure(game) {
 			if (updatedUnderTitle) {
 				await fadeIn(updatedUnderTitle);
 			}
-			await updateUI();
+			await updateUI(game);
 			console.log('Page UI updated:', page);
 			bindUserEventListeners(mainContent);
 			bindEventListeners(game);
@@ -39,29 +39,17 @@ function loadPageClosure(game) {
 	};
 }
 
-async function updateUI() {
+async function updateUI(game) {
     const userInfo = await fetchUserInfo();
-    const loginLink = document.getElementById('js-login-btn');
-    const logoutLink = document.getElementById('js-logout-btn');
-    const userInfoElement = document.getElementById('user-info');
+    const userInfoElement = document.getElementById('user-name');
     const userAvatar = document.getElementById('user-avatar');
 
     if (userInfo && userInfo.username) {
-        loginLink.style.display = 'none';
-        logoutLink.style.display = 'block';
         userInfoElement.innerText = `Welcome, ${userInfo.username}`;
-        
+        game.loggedUser = userInfo.username;
         if (userInfo.avatar_url) {
-            userAvatar.style.display = 'block';
             userAvatar.src = userInfo.avatar_url;
-        } else {
-            userAvatar.style.display = 'none';
         }
-    } else {
-        loginLink.style.display = 'block';
-        logoutLink.style.display = 'none';
-        userInfoElement.style.display = 'none';
-        userAvatar.style.display = 'none';
     }
 }
 
@@ -69,6 +57,7 @@ async function updateUI() {
 function bindUserEventListeners(userContent) {
 		
 	document.getElementById('js-logout-btn').addEventListener('click', handleLogout);
+	document.getElementById('user-name').addEventListener('click', handleFormSubmitWrapper);
 	if (userContent) {
         // userContent.removeEventListener('submit', handleFormSubmitWrapper);
         userContent.addEventListener('submit', handleFormSubmitWrapper);

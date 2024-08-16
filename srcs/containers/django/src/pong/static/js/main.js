@@ -23,6 +23,14 @@ function main() {
 	};
 	document.addEventListener('DOMContentLoaded', DOMContentLoadedHandler);
 
+	function isMobileDevice() {
+		return /Mobi|Android/i.test(navigator.userAgent);
+	}
+	
+	if (isMobileDevice()) {
+		document.body.classList.add('mobile-device');
+	}
+
 	// prevent to reload #pong page and initiate an empty game, exit to home instead.
 	window.addEventListener('load', () => {
 		const hash = window.location.hash;
