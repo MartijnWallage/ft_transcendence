@@ -1,5 +1,4 @@
 services:
-
   django:
     container_name: django
     build:
@@ -16,9 +15,11 @@ services:
     depends_on:
       - postgressql
     restart: on-failure # always # Restart containers on system boot and in case of failures
+    volumes:
+      - media:/home/app/web/media  # Mount the media volume
 
   postgressql:
-    container_name : postgressql
+    container_name: postgressql
     build:
       context: containers/postgressql
       dockerfile: Dockerfile
@@ -47,22 +48,8 @@ services:
     restart: on-failure #always
     depends_on:
       - django
-    # volumes:
-    #   - static:/static/
-      #- media:/media/
-
-  # blockchain:
-  #   container_name: blockchain
-  #   build:
-  #     context: containers/blockchain
-  #     dockerfile: Dockerfile
-  #   env_file: 
-  #     - .env
-  #   networks:
-  #     - ts-network
-  #   ports:
-  #     - "8545:8545"
-  #   restart: on-failure # always
+    volumes:
+      - media:/app/web/media/
 
 networks:
   ts-network:
@@ -70,5 +57,4 @@ networks:
 
 volumes:
   database:
-
-
+  media:  # Define the media volume

@@ -44,16 +44,27 @@ async function updateUI() {
     const loginLink = document.getElementById('js-login-btn');
     const logoutLink = document.getElementById('js-logout-btn');
     const userInfoElement = document.getElementById('user-info');
+    const userAvatar = document.getElementById('user-avatar');
 
     if (userInfo && userInfo.username) {
         loginLink.style.display = 'none';
         logoutLink.style.display = 'block';
-        userInfoElement.innerText = `Online as : ${userInfo.username}`;
+        userInfoElement.innerText = `Welcome, ${userInfo.username}`;
+        
+        if (userInfo.avatar_url) {
+            userAvatar.style.display = 'block';
+            userAvatar.src = userInfo.avatar_url;
+        } else {
+            userAvatar.style.display = 'none';
+        }
     } else {
         loginLink.style.display = 'block';
         logoutLink.style.display = 'none';
+        userInfoElement.style.display = 'none';
+        userAvatar.style.display = 'none';
     }
 }
+
 
 function bindUserEventListeners(userContent) {
 		
@@ -64,6 +75,8 @@ function bindUserEventListeners(userContent) {
     }
 
 }
+
+
 function bindEventListeners(game) {
 
 

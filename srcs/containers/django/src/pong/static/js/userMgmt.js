@@ -87,9 +87,10 @@ function handleFormSubmit(form, url) {
     console.log('window.loadPage during logout:', window.loadPage);
     fetch(url, {
         method: 'POST',
-        body: JSON.stringify(Object.fromEntries(formData)),
+        // body: JSON.stringify(Object.fromEntries(formData)),
+        body: formData,
         headers: {
-            'Content-Type': 'application/json',
+            // 'Content-Type': 'application/json',
             'X-CSRFToken': getCookie('csrftoken'),
         },
 		credentials: 'include'
@@ -107,15 +108,34 @@ function handleFormSubmit(form, url) {
         } else {
             // alert('Username or Password Incorrect.');
             const errorContainer = document.getElementById('error-container');
+            // if (errorContainer) {
+			// 	errorContainer.style.display = 'block';
+            //     errorContainer.innerHTML = 'Usrname or Password Invalid';
+            //     showNotification("Invalid User or Password");
+            //     // errorContainer.innerHTML = JSON.stringify(data.errors);
+			// 	// setTimeout(() => {
+			// 	// 	$(errorContainer).alert = 'close';
+			// 	// }, 4000); // Hide after 4 seconds
+            //     // this is bootstrap js which I have included in base.html to show alert only for 4 seconds
+            // }
             if (errorContainer) {
-				errorContainer.style.display = 'block';
-                errorContainer.innerHTML = 'Usrname or Password Invalid';
+                // Clear previous messages
+                errorContainer.style.display = 'block';
+                errorContainer.innerHTML = ''; // Clear any previous messages
+
+                // Extract and display error messages
+                if (data.errors && data.errors.__all__) {
+                    data.errors.__all__.forEach(error => {
+                        const errorMessage = document.createElement('div');
+                        errorMessage.textContent = error;
+                        errorMessage.classList.add('alert', 'alert-danger');
+                        errorContainer.appendChild(errorMessage);
+                    });
+                } else {
+                    errorContainer.innerHTML = 'An unknown error occurred. Please try again.';
+                }
+                
                 showNotification("Invalid User or Password");
-                // errorContainer.innerHTML = JSON.stringify(data.errors);
-				// setTimeout(() => {
-				// 	$(errorContainer).alert = 'close';
-				// }, 4000); // Hide after 4 seconds
-                // this is bootstrap js which I have included in base.html to show alert only for 4 seconds
             }
         }
     })
