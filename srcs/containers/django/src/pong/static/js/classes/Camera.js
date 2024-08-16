@@ -4,21 +4,20 @@ import { notDisplayDiv } from '../utils.js';
 class Camera {
 	constructor() {
 		this.camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 1000);
-		// this.camera.position.set(0, 0.9, 0);
 		this.camera.position.set(0, 200, 0);
 		this.camera.lookAt(0, 1, 0);
 		this.rotateAngle = 0.8;
+	}
 
-		this.startY = 200;
-		this.endY = 0.9;
-		this.duration = 2000; // Duration in milliseconds
-		this.startTime = null;
+	calculateFovToFitObject(objectWidth, distance, aspectRatio) {
+		const fov = 2 * Math.atan((objectWidth / aspectRatio) / (2 * distance)) * (180 / Math.PI);
+		this.camera.fov = fov;
+		this.camera.updateProjectionMatrix();
 	}
 
 	orbitCamera() {
-		this.rotateAngle += 0.006; // Adjust this value to change the speed of orbit
+		this.rotateAngle += 0.005; // Adjust this value to change the speed of orbit
 		const radius = 6;
-		//console.log(angle);
 		this.camera.position.x = radius * Math.cos(this.rotateAngle);
 		this.camera.position.z = radius * Math.sin(this.rotateAngle);
 		this.camera.lookAt(0, 1, 0);
@@ -71,12 +70,20 @@ class Camera {
 	}
 
 	renderSingleView(scene) {
-		this.camera.position.set(-14, 14, 0);
-		this.camera.lookAt(0, 1, 0);
 		const left = 0;
 		const bottom = 0;
 		const width = window.innerWidth;
 		const height = window.innerHeight;
+		this.camera.position.set(-14, 14, 0);
+		if (width < height){
+			const objectWidth = 13;
+			const cameraDistance = this.camera.position.distanceTo(new THREE.Vector3(-12, 0, 0));
+			this.calculateFovToFitObject(objectWidth, cameraDistance, width / height);
+		}
+		else {
+			this.camera.fov = 50;
+		}
+		this.camera.lookAt(0, -0.5, 0);
 		scene.renderer.setViewport( left, bottom, width, height );
 		scene.renderer.setScissor( left, bottom, width, height );
 		scene.renderer.setScissorTest(true);
@@ -86,14 +93,23 @@ class Camera {
 	}
 
 	renderSplitView(scene, position) {
-		const x = position === 0 ? -14 : 14;
-		this.camera.position.set(x, 14, 0);
-		this.camera.lookAt(0, 1, 0);
 		const offset = position === 0 ? 0 : 0.5;
+		const x = position === 0 ? -14 : 14;
+		const dx = position === 0 ? -12 : 12;
 		const left = Math.floor( window.innerWidth * offset);
 		const bottom = 0;
 		const width = Math.floor( window.innerWidth * 0.5 );
 		const height = window.innerHeight;
+		if (width < height){
+			const objectWidth = 13;
+			const cameraDistance = this.camera.position.distanceTo(new THREE.Vector3(dx, 0, 0));
+			this.calculateFovToFitObject(objectWidth, cameraDistance, width / height);
+		}
+		else {
+			this.camera.fov = 50;
+		}
+		this.camera.position.set(x, 14, 0);
+		this.camera.lookAt(0, -0.5, 0);
 		scene.renderer.setViewport( left, bottom, width, height );
 		scene.renderer.setScissor( left, bottom, width, height );
 		scene.renderer.setScissorTest(true);
