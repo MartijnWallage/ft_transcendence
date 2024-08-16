@@ -21,6 +21,7 @@ class Ball {
 		this.dz = 0;
 		this.initialSpeed = 0.2;
 		this.angleMultiplier = 0.2;
+		this.accelerate = 1.01;
 		scene.add(this.mesh);
 	}
 
@@ -48,7 +49,7 @@ class Ball {
 
 		if (this.checkPaddleCollision(paddle)) {
 			this.dz = (this.position.z - paddle.position.z) * this.angleMultiplier;
-			this.dx *= (abs(this.dx) < this.initialSpeed / 1.5) ? -2 : -1.01;
+			this.dx *= (abs(this.dx) < this.initialSpeed / 1.5) ? -2 : -this.accelerate;
 			if (this.audio && paddle === paddle_p1) {
 				this.audio.playSound(this.audio.ping);
 			} else if (this.audio) {
