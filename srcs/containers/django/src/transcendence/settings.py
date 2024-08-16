@@ -181,6 +181,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Cross-Site Request Forgery (CSRF) protection mechanism has blocked a request, so it just opend 
 CSRF_TRUSTED_ORIGINS = [
     'https://localhost',
+    'https://localhost:8443',
     'https://127.0.0.1',
     'https://127.0.0.1:8443',
     'https://159.89.8.55',
