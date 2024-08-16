@@ -40,6 +40,7 @@ class Game {
 		this.tournament = null;
 		this.readyForNextMatch = false;
 		this.mode = 'none';
+		this.loggedIn = false;
 
 		console.log('Game class created');
 		this.boundCreateAudioContext = this.createAudioContext.bind(this);
