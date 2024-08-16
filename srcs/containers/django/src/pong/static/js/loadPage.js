@@ -41,17 +41,14 @@ function loadPageClosure(game) {
 
 async function updateUI() {
     const userInfo = await fetchUserInfo();
-    const loginLink = document.getElementById('login-link');
-    const registerLink = document.getElementById('register-link');
-    const logoutLink = document.getElementById('logout-link');
+    const loginLink = document.getElementById('js-login-btn');
+    const logoutLink = document.getElementById('js-logout-btn');
     const userInfoElement = document.getElementById('user-info');
     const userAvatar = document.getElementById('user-avatar');
 
     if (userInfo && userInfo.username) {
         loginLink.style.display = 'none';
-        registerLink.style.display = 'none';
         logoutLink.style.display = 'block';
-        userInfoElement.style.display = 'block';
         userInfoElement.innerText = `Welcome, ${userInfo.username}`;
         
         if (userInfo.avatar_url) {
@@ -62,7 +59,6 @@ async function updateUI() {
         }
     } else {
         loginLink.style.display = 'block';
-        registerLink.style.display = 'block';
         logoutLink.style.display = 'none';
         userInfoElement.style.display = 'none';
         userAvatar.style.display = 'none';
@@ -72,7 +68,7 @@ async function updateUI() {
 
 function bindUserEventListeners(userContent) {
 		
-	document.getElementById('logout-link').addEventListener('click', handleLogout);
+	document.getElementById('js-logout-btn').addEventListener('click', handleLogout);
 	if (userContent) {
         // userContent.removeEventListener('submit', handleFormSubmitWrapper);
         userContent.addEventListener('submit', handleFormSubmitWrapper);

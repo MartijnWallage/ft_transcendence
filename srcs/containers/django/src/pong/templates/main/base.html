@@ -5,7 +5,7 @@
     <meta charset="utf-8" />
     <title>transcendence</title>
     <meta name="viewport"
-      content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
+      content="width=device-width, initial-scale=1, shrink-to-fit=no, user-scalable=no"/>
     <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'css/score-tournament.css' %}">
     <link rel="shortcut icon" type="image/png" href="{% static 'images/favicon.png' %}" >
@@ -22,32 +22,24 @@
 
   <body>
   <div id="threejs-container"></div>
-  <div id="error-container" class="container-fluid mx-auto p-4 fixed-top d-flex text-start" style="display: none;"></div>
-  <div id="notification" class="alert alert-success alert-dismissible fade show" role="alert" style="display: none;">
-    <strong>Holy guacamole!</strong> You should check in on some of those fields below.
+  <div id="notification" class="alert alert-success fixed-bottom alert-dismissible fade show" role="alert" style="display: none;">
+    <strong>Holy guacamole!</strong> You should check in on some of those fields above.
     <button type="button" class="close" data-dismiss="alert" aria-label="Close">
       <span aria-hidden="true">&times;</span>
     </button>
   </div>
-  <div id="userButtons" class="col d-flex justify-content-end">
-    <img id="user-avatar" src="" alt="User Avatar" style="width: 50px; height: 50px; border-radius: 50%; display: none;">
-    <button type="button" class="btn btn-outline-light btn-lg" id="login-link" onclick="loadPage('login_user')">Login</button>
-    <button type="button" class="btn btn-outline-light btn-lg" id="register-link" onclick="loadPage('register_user')">Sign Up</button>
-    <button type="button" class="btn btn-outline-light btn-lg" id="logout-link" style="display: none;">Logout</button>
-    <a class="nav-link ml-2" href="#" id="user-info" style="display: none;"></a>
+
+  <div id="user-info" class="nav-link fixed-top text-white m-4 p-2" style="text-align: right;">/Guest</div>
+  <div id="gameButtons" class="fixed-top p-4 d-flex align-items-start">
+	<button type="button" class="btn btn-outline-light mx-1" id="js-option-btn">=</button>
+  <img id="user-avatar" src="" alt="User Avatar" style="width: 50px; height: 50px; border-radius: 50%; display: none;">
+	<button type="button" class="btn btn-outline-light mx-1" id="js-login-btn" onclick="loadPage('login_user')">Login</button>
+	<button type="button" class="btn btn-outline-light mx-1" id="js-logout-btn" style="display: none;">Logout</button>
+	<button type="button" class="btn btn-outline-light mx-1" id="js-tournament_score-btn" onclick="loadPage('tournament_score')" style="display: none;">Score Tournament</button>
+	<button type="button" class="btn btn-outline-light mx-1" id="js-audio-btn" style="display: none;">Audio on</button>
+	<button type="button" class="btn btn-outline-light mx-1" id="js-end-game-btn" style="display: none;">Exit</button>
   </div>
-	<div id="game-controls" class="container-fluid mx-auto p-4 fixed-top d-flex text-start">
-        <div id="game-controls-left" class="d-flex align-items-center">
-            <span id="login-as-guest" class="text-white">Guest</span>
-        </div>
-        <div id="gameButtons" class="col d-flex justify-content-end">
-            <button type="button" class="btn btn-outline-light mx-1" id="js-tournament_score-btn" onclick="loadPage('tournament_score')" style="display: none;">Score Tournament</button>
-            <button type="button" class="btn btn-outline-light mx-1" id="js-audio-btn" style="display: none;">Audio on</button>
-            <button type="button" class="btn btn-outline-light mx-1" id="js-end-game-btn" style="display: none;">Exit</button>
-            <button type="button" class="btn btn-outline-light mx-1" id="js-option-btn">=</button>
-        </div>
-    </div>
-     <div id="vertical-line" style="display: none;"></div>
+    <div id="vertical-line" style="display: none;"></div>
     <div id="web-app">
       <div id="main-content" class="container-fluid"></div></div>
     </div>

@@ -1,7 +1,7 @@
 #threejs-container {
 	position: absolute;
 	width: 100vw;
-	height: 100vh;
+	height: 100dvh;
 	z-index: 0;
 }
 
@@ -24,10 +24,48 @@
 	border-top: 1px solid rgba(255, 255, 255, 0.5);
 	border-left: 1px solid rgba(255, 255, 255, 0.5);
 	backdrop-filter: blur(5px);
-	text-align: center;
+	/* text-align: center; */
 	opacity: 1;
 	transition: opacity 1.5s ease-out;
 }
+
+#main-content {
+	height: 100vh;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+@media (max-width: 576px) {
+    #gameButtons {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    #gameButtons button {
+        margin-bottom: 10px;
+    }
+
+	h1 {
+		font-size: 1.4rem !important;
+	}
+
+	#menu {
+		padding: 2rem !important;
+	}
+
+}
+
+@media (max-width: 576px) {
+	#tournament-mode {
+		display: none;
+	}
+	
+	#local-mode {
+		display: none;
+	}
+}
+
 
 * {
 	user-select: none;
@@ -68,7 +106,7 @@ body {
 	display: flex;
 	justify-content: center;
 	align-items: center;
-	height: 100vh;
+	height: 100dvh;
 }
 
 h2, h3, h4, h5, h6 {
@@ -93,6 +131,12 @@ h1 {
 .score {
 	font-family: 'Bitfont', sans-serif;
 	color: white;
+}
+
+.form-label,
+.form-text,
+.btn-link {
+	color: white !important;
 }
 
 
