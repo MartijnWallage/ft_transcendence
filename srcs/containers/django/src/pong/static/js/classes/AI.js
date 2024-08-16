@@ -127,15 +127,10 @@ class AI {
 		const bestPaddlePosition = ball.z - (desiredDz / ball.angleMultiplier);
 
 		const halfCourt = this.game.field.geometry.parameters.depth / 2;
-		if (bestPaddlePosition - halfPaddle < -halfCourt || bestPaddlePosition + halfPaddle > halfCourt ||
+		if (bestPaddlePosition - halfPaddle < -halfCourt ||
+			bestPaddlePosition + halfPaddle > halfCourt ||
 			abs(ball.z - bestPaddlePosition) > halfPaddle + ball.radius) {
-			console.log('Cannot aim for the corner');
 			return ball.z;
-		}
-		if (aim < 0) {
-			console.log('Aiming for the upper corner');
-		} else {
-			console.log('Aiming for the lower corner');
 		}
 		return bestPaddlePosition;
 	}
