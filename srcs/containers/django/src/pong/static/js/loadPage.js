@@ -1,3 +1,5 @@
+
+
 function loadPageClosure(game) {
 	return async (page) => {
 		try {
@@ -21,6 +23,8 @@ function loadPageClosure(game) {
 			if (updatedUnderTitle) {
 				await fadeIn(updatedUnderTitle);
 			}
+			// Wait for the tournament to be created before binding event listeners
+			// await game.createTournament();  
 			bindEventListeners(game);
 			
 		} catch (error) {
@@ -47,12 +51,12 @@ function bindEventListeners(game) {
 		startUserVsUserButton.addEventListener('click', game.startUserVsUser.bind(game));
 	}
 	
-	const addPlayerBtn = document.getElementById('js-add-player-btn');
-	if (addPlayerBtn) {
-		game.createTournament();
-		console.log('adding player');
-		addPlayerBtn.addEventListener('click', game.tournament.addPlayer.bind(game.tournament));
-	}
+	// const addPlayerBtn = document.getElementById('js-add-player-btn');
+	// if (addPlayerBtn) {
+	// 	game.createTournament();
+	// 	console.log('adding player');
+	// 	addPlayerBtn.addEventListener('click', game.tournament.addPlayer.bind(game.tournament));
+	// }
 	
 	const gameSoloBtn = document.getElementById('js-start-game-solo-btn');
 	if (gameSoloBtn) {
@@ -61,8 +65,9 @@ function bindEventListeners(game) {
 	
 	let startTournamentBtn = document.getElementById('js-start-tournament-btn');
 	if (startTournamentBtn) {
+		game.createTournament();
 		console.log('creating tournament');
-		startTournamentBtn.addEventListener('click', game.tournament.start.bind(game.tournament));
+		startTournamentBtn.addEventListener('click', game.tournament.startTournamentHandler.bind(game.tournament));
 	}
 
 	let endGameBtn = document.getElementById('js-end-game-btn');

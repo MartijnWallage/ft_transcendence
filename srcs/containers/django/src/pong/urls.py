@@ -25,5 +25,5 @@ urlpatterns = [
 	# path('api/pong_tournament/', views.pong_tournament_view, name='api_pong_tournament'),
 	# path('api/pong_two_player_local/', views.pong_two_player_local_view, name='api_pong_two_player_local'),
 	# path('api/pong_two_player_online/', views.pong_two_player_online_view, name='api_pong_two_player_online'),
-
+	
 ]

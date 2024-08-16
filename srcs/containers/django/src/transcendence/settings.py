@@ -38,7 +38,6 @@ ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS", "").split(" ")
 # Application definition
 
 INSTALLED_APPS = [
-    'channels',
 	'pong.apps.PongConfig',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -191,5 +190,5 @@ CSRF_TRUSTED_ORIGINS = [
     'https://127.0.0.1:8443',
     'https://159.89.8.55',
     'https://144.126.245.86',
-    'https://10.15.109.3:8443'
+    'https://10.15.203.3:8443'
 ]

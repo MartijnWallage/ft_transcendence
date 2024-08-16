@@ -12,6 +12,7 @@ import { OrbitControls } from '../three-lib/OrbitControls.js';
 import { Blockchain } from './Blockchain.js';
 import { delay } from '../utils.js';
 
+
 class Game {
 	constructor() {
 		// Scene
@@ -73,10 +74,22 @@ class Game {
 		this.match.play();
 	}
 
-	createTournament() {
-		const tournament = new Tournament(this);
+
+
+	async createTournament() {
+		const tournament = new Tournament(this.players);
 		this.tournament = tournament;
 	}
+
+	// async createTournament() {
+    //     try {
+    //         // const players = await this.fetchPlayers();
+    //         this.tournament = new Tournament(this.players);
+    //         console.log('Tournament created:', this.tournament);
+    //     } catch (error) {
+    //         console.error('Error creating tournament:', error);
+    //     }
+    // }
 
 	// Not sure what this function is for.
 	endGame() {
@@ -91,6 +104,7 @@ class Game {
 	executeBlockchain() {
 		new Blockchain(this.tournament.tournamentId);
 	}
+
 }
 
 export { Game };

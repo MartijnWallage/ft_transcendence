@@ -1,5 +1,6 @@
 import Stats from './three-lib/stats.module.js'
 import { Game } from './classes/Game.js';
+
 import { loadPageClosure } from './loadPage.js';
 
 function main() {
@@ -16,9 +17,17 @@ function main() {
 	};
 	
 	// Load homepage when document is ready
-	const DOMContentLoadedHandler = function() {
+	const DOMContentLoadedHandler = async function() {
 		const page = location.hash.replace('#', '') || 'home';
 		window.loadPage(page);
+
+		// // Create the tournament once the page is loaded
+        // try {
+        //     await this_game.createTournament();
+        //     console.log('Tournament successfully created.');
+        // } catch (error) {
+        //     console.error('Error creating tournament:', error);
+        // }
 	};
 	document.addEventListener('DOMContentLoaded', DOMContentLoadedHandler);
 	

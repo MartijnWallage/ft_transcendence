@@ -1,8 +1,15 @@
 import { getRandomInt, textToDiv, HTMLToDiv, countdown, waitForEnter } from '../utils.js';
 import { Score } from './Score.js';
+// import { Tournament } from './Tournament.js';
+// import { Game } from './Game.js';
 
 class Match {
 		constructor(game, players) {
+		
+		
+		if (!game || !players) {
+			throw new Error('Game or players are not provided.');
+		}
 		this.game = game;
 		this.players = players;
 		this.running = false;
@@ -193,13 +200,13 @@ class Match {
 		// Handle game loop and synchronization with the remote player
 		while (this.game.running) {
 			// Update the game state and sync with the remote player
-			this.updateGameState();
+			this.remoteupdate();
 			await new Promise(resolve => setTimeout(resolve, 16)); // ~60 FPS
 		}
 	}
 	
 	// Example function to update game state and synchronize with remote player
-	updateGameState() {
+	remoteupdate() {
 		// Update the local game state here (e.g., move ball, check for collisions, etc.)
 	
 		// Send the current state to the other player

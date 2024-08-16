@@ -266,3 +266,5 @@ def register_matches(request):
 		return JsonResponse({'success': True, 'tx_hash': receipt.transactionHash.hex()})
 	except Exception as e:
 		return JsonResponse({'success': False, 'error': str(e)}, status=500)
+	
+
