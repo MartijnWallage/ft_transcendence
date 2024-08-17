@@ -85,7 +85,7 @@ def load_page_reg(request):
 @api_view(['GET'])
 def load_page_update(request):
     print("Update user form serving")
-    form = UpdateUserForm()
+    form = UpdateUserForm(initial={'username': request.user.username, 'email': request.user.email})
     content = render_to_string('partials/update_profile.html', {'form': form}, request)
     return JsonResponse({'content': content})
 

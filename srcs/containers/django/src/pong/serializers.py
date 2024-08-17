@@ -48,16 +48,16 @@ class UpdateUserSerializer(serializers.ModelSerializer):
     # required must be True
     # password = serializers.CharField(write_only=True, required=True)
     avatar = serializers.ImageField(required=False)
+    username = serializers.CharField(read_only=True)
 
     class Meta:
         model = User
         fields = ['username', 'email', 'avatar']
+        # read_only_fields = ['username']
 
     def update(self, instance, validated_data):
         print("Validation data received:", validated_data)
 
-        # if 'password' in validated_data and validated_data['password']:
-        #     instance.set_password(validated_data['password'])
         if 'avatar' in validated_data:
             # instance.avatar = validated_data['avatar']
             profile, created = UserProfile.objects.get_or_create(user=instance)

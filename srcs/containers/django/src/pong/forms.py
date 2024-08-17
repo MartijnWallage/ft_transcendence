@@ -27,7 +27,7 @@ class RegisterForm(UserCreationForm):
         return user
 
 class UpdateUserForm(forms.ModelForm):
-    username = forms.CharField(required=True, max_length=254, widget=forms.TextInput(attrs={'class': 'form-control'}))
+    username = forms.CharField(required=True, max_length=254, widget=forms.TextInput(attrs={'class': 'form-control', 'readonly': 'readonly'}))
     email = forms.EmailField(required=True, widget=forms.EmailInput(attrs={'class': 'form-control'}))
     avatar = forms.ImageField(required=False, widget=forms.FileInput(attrs={'class': 'form-control'}))
 
