@@ -95,6 +95,10 @@ async function updateUI(game) {
         if (userInfo.avatar_url) {
             userAvatar.src = userInfo.avatar_url;
         }
+    } else if (!isUserLoggedIn) {
+        game.loggedUser = 'Guest';
+        userInfoElement.innerText = 'Guest';
+        userAvatar.src = 'static/images/guest.png';
     }
 }
 
