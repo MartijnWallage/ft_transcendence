@@ -7,7 +7,7 @@
 # # Create your views here.
 
 from django.shortcuts import render, redirect, get_object_or_404
-from .forms import RegisterForm, LoginForm, UpdateUserForm
+from .forms import RegisterForm, LoginForm, UpdateUserForm, CustomPasswordChangeForm
 from django.contrib.auth import login as django_login, logout, authenticate
 from django.http import JsonResponse
 from django.template.loader import render_to_string
@@ -19,7 +19,7 @@ from web3.middleware import geth_poa_middleware
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-from .serializers import RegisterSerializer, UpdateUserSerializer
+from .serializers import RegisterSerializer, UpdateUserSerializer, ChangePasswordSerializer
 from .models import Player, Tournament, Match, UserProfile
 import json
 
@@ -62,6 +62,13 @@ def home_view(request):
     return JsonResponse(data)
 
 @api_view(['GET'])
+def dashboard_view(request):
+    data = {
+        'content': render_to_string("partials/dashboard.html", request=request)
+    }
+    return JsonResponse(data)
+
+@api_view(['GET'])
 def load_page(request):
     print("login form serving")
     form = LoginForm()
@@ -80,6 +87,14 @@ def load_page_update(request):
     print("Update user form serving")
     form = UpdateUserForm()
     content = render_to_string('partials/update_profile.html', {'form': form}, request)
+    return JsonResponse({'content': content})
+
+
+@api_view(['GET'])
+def load_password_update(request):
+    print("Update user form serving")
+    form = CustomPasswordChangeForm(user=request.user)
+    content = render_to_string('partials/update_password.html', {'form': form}, request)
     return JsonResponse({'content': content})
 
 # @csrf_exempt
@@ -102,6 +117,17 @@ def update_profile(request):
         serializer.save()
         return JsonResponse({'status': 'success'})
     return JsonResponse(serializer.errors, status=400)
+
+
+@api_view(['POST'])
+@login_required
+def change_password(request):
+    serializer = ChangePasswordSerializer(data=request.data, context={'request': request})
+    if serializer.is_valid():
+        serializer.save()
+        return JsonResponse({'status': 'success'})
+    return JsonResponse(serializer.errors, status=400)
+
 
 # @csrf_exempt
 @api_view(['POST'])

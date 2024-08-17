@@ -5,6 +5,21 @@
 let isUserLoggedIn = false;
 
 
+function bindUserEventListeners(userContent) {
+	
+    // const user_status = document.getElementById('user-name');
+	// if (isUserLoggedIn) {
+    //     console.log('Event is binded to call dashboard');
+	// 	document.getElementById('user-name').addEventListener('click', () => window.loadPage('dashboard'));
+	// }
+    document.getElementById('js-logout-btn').addEventListener('click', handleLogout);
+	if (userContent) {
+        // userContent.removeEventListener('submit', handleFormSubmitWrapper);
+        userContent.addEventListener('submit', handleFormSubmitWrapper);
+    }
+
+}
+
 function handleFormSubmitWrapper(event) {
     event.preventDefault();
     const form = event.target;
@@ -17,8 +32,11 @@ function handleFormSubmitWrapper(event) {
         console.log("User content register-form handling");
         url = '/api/register/';
     } else if (form.id === 'update-profile-form') {
-        console.log("User content register-form handling");
+        console.log("User content register-form handling");window.loadPage('dashboard')
         url = '/api/update-profile/';
+    } else if (form.id === 'update-password-form') {
+        console.log("User content Password Change handling");
+        url = '/api/update-password/';
     } else {
         console.error('Form ID not recognized');
         return;
@@ -65,6 +83,21 @@ function showNotification(message) {
 		}, 2000); // Hide after 2 seconds
 	}
 }
+
+async function updateUI(game) {
+    const userInfo = await fetchUserInfo();
+    const userInfoElement = document.getElementById('user-name');
+    const userAvatar = document.getElementById('user-avatar');
+
+    if (userInfo && userInfo.username) {
+        userInfoElement.innerText = `Welcome, ${userInfo.username}`;
+        game.loggedUser = userInfo.username;
+        if (userInfo.avatar_url) {
+            userAvatar.src = userInfo.avatar_url;
+        }
+    }
+}
+
 
 
 async function fetchUserInfo() {
@@ -157,4 +190,4 @@ function getCookie(name) {
     return cookieValue;
 }
 
-export { handleFormSubmitWrapper, handleLogout, fetchUserInfo }
+export { handleLogout, bindUserEventListeners, updateUI }

@@ -1,0 +1,17 @@
+{% block content %}
+<div id="dash-menu" class="container-md mx-auto p-5">
+  <h1 class="my-4 display-5">DASHBOARD</h1>
+  <div id="dashboard-view" class="container my-3 px-4">
+    <div class="row gx-5">
+      <div class="col d-flex justify-content-end">
+        <button type="button" class="btn btn-outline-light btn-lg" 
+                href="#passwordchange" onclick="loadPage('update-password-page')">Change Password</button>
+      </div>
+      <div class="col d-flex justify-content-start">
+        <button type="button" class="btn btn-outline-light btn-lg"
+                href="#infochange" onclick="loadPage('update-profile-page')">Change Info</button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
