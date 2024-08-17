@@ -16,7 +16,7 @@ class Paddle {
 		this.mesh = new THREE.Mesh(this.geometry, this.material);
 		this.mesh.position.set(distanceFromCentre, 0.9, 0);
 		scene.add(this.mesh);
-		this.speed = 0.2;
+		this.speed = 0.17; // was 0.2
 	}
 	
 	movePaddle(direction, field ) {
