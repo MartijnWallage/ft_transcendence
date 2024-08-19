@@ -99,7 +99,7 @@ function bindEventListeners(game) {
 	// OPTION MENU
 	let optionBtn = document.getElementById('js-option-btn');
 	if (optionBtn) {
-		optionBtn.addEventListener('click', game.showOptionMenu.bind(game));
+		optionBtn.addEventListener('click', game.viewOptionMenu.bind(game));
 	}
 
 	let endGameBtn = document.getElementById('js-end-game-btn');
