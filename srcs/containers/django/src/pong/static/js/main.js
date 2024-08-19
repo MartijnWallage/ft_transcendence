@@ -20,14 +20,6 @@ function main() {
 	const DOMContentLoadedHandler = async function() {
 		const page = location.hash.replace('#', '') || 'home';
 		window.loadPage(page);
-
-		// // Create the tournament once the page is loaded
-        // try {
-        //     await this_game.createTournament();
-        //     console.log('Tournament successfully created.');
-        // } catch (error) {
-        //     console.error('Error creating tournament:', error);
-        // }
 	};
 	document.addEventListener('DOMContentLoaded', DOMContentLoadedHandler);
 	
@@ -50,8 +42,13 @@ function animate(stats, game) {
 	// Else, update the game
 	if (game.running === false) {
 		game.cam1.renderMenuView(game);
-	} else {
-		game.match.update();
+	} 
+
+	//fix something to update remoteupdate()
+	else {
+		// game.match.update(); 
+		
+		game.match.remoteupdate(); 
 	}
 
 	requestAnimationFrame(animate.bind(null, stats, game));

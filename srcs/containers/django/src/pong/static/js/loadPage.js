@@ -23,9 +23,13 @@ function loadPageClosure(game) {
 			if (updatedUnderTitle) {
 				await fadeIn(updatedUnderTitle);
 			}
-			// Wait for the tournament to be created before binding event listeners
-			// await game.createTournament();  
+
 			bindEventListeners(game);
+			// if (game && typeof bindEventListeners === 'function') {
+            //     bindEventListeners(game);
+            // } else {
+            //     console.warn('Game or bindEventListeners is not properly initialized.');
+            // }
 			
 		} catch (error) {
 			console.error('Error loading page:', error);

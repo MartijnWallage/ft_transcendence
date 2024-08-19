@@ -39,6 +39,8 @@ class Game {
 		this.running = false;
 		this.match = null;
 		this.tournament = null;
+		this.players = [];
+		// this.tournamentCreated = false;
 
 		console.log('Game class created');
 		this.boundCreateAudioContext = this.createAudioContext.bind(this);
@@ -75,21 +77,12 @@ class Game {
 	}
 
 
+	// Create and start a tournament
+    async createTournament() {
+		this.tournament = new Tournament(this.players);
+		console.log('Tournament created:', this.tournament);
+    }
 
-	async createTournament() {
-		const tournament = new Tournament(this.players);
-		this.tournament = tournament;
-	}
-
-	// async createTournament() {
-    //     try {
-    //         // const players = await this.fetchPlayers();
-    //         this.tournament = new Tournament(this.players);
-    //         console.log('Tournament created:', this.tournament);
-    //     } catch (error) {
-    //         console.error('Error creating tournament:', error);
-    //     }
-    // }
 
 	// Not sure what this function is for.
 	endGame() {

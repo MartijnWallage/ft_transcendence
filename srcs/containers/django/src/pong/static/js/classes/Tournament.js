@@ -34,10 +34,16 @@ class Tournament {
 
         this.connection.onerror = (error) => {
             console.error(`${this.name} WebSocket error:`, error);
+			
+			
         };
 
-        this.connection.onclose = () => {
-            console.log(`${this.name} disconnected from server`);
+        this.connection.onclose = (event) => {
+            console.error('WebSocket closed:', event);
+			// Add more detailed information
+			console.log('Code:', event.code);
+			console.log('Reason:', event.reason);
+			console.log('Was Clean:', event.wasClean);
         };
     }
 
@@ -50,40 +56,163 @@ class Tournament {
             case 'player_disconnected':
                 this.handlePlayerDisconnected(data.players);
                 break;
-            
-            case 'start_tournament':
-                this.startremoteGame();
-                break;
 
-			// case 'player_count':  // New case for player_count
-			// 	this.handlePlayerCount(data.count);
-			// 	break;
+			case 'load_page':
+				this.handleLoadPage(data.player);
+				break;
+			
+			case 'enter_pressed':
+				this.enterPressed(data.player);
+				break;
+			
+
+
 
             default:
                 console.log(`Unknown message type: ${data.type}`);
         }
     }
 
+	enterPressed(playerName) {
+		console.log(`${playerName} is ready`);
+	
+		// Update the UI to reflect that the player is ready
+		const playerReadyDiv = document.getElementById(`${playerName}-ready`);
+		if (playerReadyDiv) {
+			playerReadyDiv.textContent = `${playerName} is ready!`;
+			playerReadyDiv.style.color = 'green'; // Change color or style to indicate readiness
+		} else {
+			console.error(`Element for ${playerName} readiness not found`);
+		}
+	
+		// Notify the server or the other player that this player is ready
+		if (this.connection) {
+			this.connection.send(JSON.stringify({
+				type: 'enter_pressed',
+				player: playerName
+			}));
+		}
+	}
 
-    startremoteGame() {
-        // Ensure `this.game` is initialized
-        if (!this.game) {
-            console.error('Game is not initialized.');
-            return;
-        }
-    
-        // Ensure `this.game.match` is properly set up
-        try {
-            this.game.match = new Match(this.game, this.players); // Ensure `this.players` is correctly set up
-            this.game.match.playRemote().then(() => {
-                console.log('Game match started successfully.');
-            }).catch(error => {
-                console.error('Error starting game match:', error);
-            });
-        } catch (error) {
-            console.error('Error initializing match:', error);
-        }
-    }
+// 	handleLoadPage(playerName) {
+// 		console.log('handleLoadPage called with playerName:', playerName);
+// 		console.log('Current player name:', this.currentPlayerName);
+		
+// 		if (this.currentPlayerName) {
+// 			console.log('Loading page for:', this.currentPlayerNam);
+			
+// 			// Trigger page load for this player
+// 			window.loadPage('pong').then(() => {
+// 				console.log('Page loaded successfully');
+				
+// 				// Notify the server that this player has loaded the page
+// 				if (this.connection.readyState === WebSocket.OPEN) {
+// 					this.connection.send(JSON.stringify({
+// 						type: 'page_loaded',
+// 						player: this.currentPlayerName
+// 					}));
+// 				} else {
+// 					console.error('WebSocket is not open. Current state:', this.connection.readyState);
+// 				}
+// 			}).catch(error => {
+// 				console.error('Error loading page:', error);
+// 			});
+// 		} else {
+// 			console.error('Current player name is not set. Cannot load page.');
+// 	}
+
+// }
+	
+
+	// handleLoadPage(playerName) {
+	// 	console.log('handleLoadPage called with playerName:', playerName);
+	// 	console.log('Current player name:', this.currentPlayerName);
+		
+	// 	// Check if the current player name is set
+	// 	if (this.currentPlayerName) {
+	// 		console.log('Loading page for:', this.currentPlayerName);
+			
+	// 		// Trigger page load for this player
+	// 		window.loadPage('pong').then(() => {
+	// 			console.log('Page loaded successfully');
+
+	// 			// Function to send the message if the WebSocket is open
+	// 			const sendPageLoadedMessage = () => {
+	// 				if (this.connection.readyState === WebSocket.OPEN) {
+	// 					this.connection.send(JSON.stringify({
+	// 						type: 'page_loaded',
+	// 						player: this.currentPlayerName
+	// 					}));
+	// 				} else {
+	// 					console.error('WebSocket is not open. Current state:', this.connection.readyState);
+	// 					// Retry after 1 second if WebSocket is not open
+	// 					setTimeout(sendPageLoadedMessage, 1000);
+	// 				}
+	// 			};
+
+	// 			// Start the first check
+	// 			sendPageLoadedMessage();
+				
+	// 		}).catch(error => {
+	// 			console.error('Error loading page:', error);
+	// 		});
+	// 	} else {
+	// 		console.error('Current player name is not set. Cannot load page.');
+	// 	}
+	// }
+
+	handleLoadPage(playerName) {
+		console.log('handleLoadPage called with playerName:', playerName);
+		console.log('Current player name:', this.currentPlayerName);
+	
+		if (this.currentPlayerName) {
+			console.log('Loading page for:', this.currentPlayerName);
+	
+			window.loadPage('pong').then(() => {
+				console.log('Page loaded successfully');
+				this.sendPageLoadedMessage();
+			}).catch(error => {
+				console.error('Error loading page:', error);
+			});
+		} else {
+			console.error('Current player name is not set. Cannot load page.');
+		}
+	}
+	
+	sendPageLoadedMessage() {
+		if (this.connection.readyState === WebSocket.OPEN) {
+			this.connection.send(JSON.stringify({
+				type: 'load_page',
+				player: this.currentPlayerName
+			}));
+		} else {
+			console.error('WebSocket is not open. Current state:', this.connection.readyState);
+		}
+	}
+
+	// sendPageLoadedMessage(retries = 5, delay = 1000) {
+	// 	const sendMessage = () => {
+	// 		if (this.connection.readyState === WebSocket.OPEN) {
+	// 			this.connection.send(JSON.stringify({
+	// 				type: 'page_loaded',
+	// 				player: this.currentPlayerName
+	// 			}));
+	// 			console.log('Message sent');
+	// 		} else if (retries > 0) {
+	// 			console.error('WebSocket is not open. Current state:', this.connection.readyState);
+	// 			// Retry after a delay
+	// 			setTimeout(() => {
+	// 				sendMessage(retries - 1, delay);
+	// 			}, delay);
+	// 		} else {
+	// 			console.error('Failed to send message after multiple attempts.');
+	// 		}
+	// 	};
+	
+	// 	sendMessage();
+	// }
+
+
 
     handlePlayerConnected(players) {
 		console.log('handlePlayerConnected:', players);
@@ -154,14 +283,15 @@ class Tournament {
     }
 
 
-    setCurrentPlayerName(name) {
-		console.log('Setting current player name to:', name);
-		if (name === undefined || name === null) {
+	setCurrentPlayerName(name) {
+		if (name && typeof name === 'string') {
+			console.log('Setting current player name to:', name);
+			this.currentPlayerName = name;
+			console.log('currentPlayerName:', this.currentPlayerName);
+			this.setupTournamentButton(); // Ensure setupTournamentButton is called after setting current player name
+		} else {
 			console.error('Invalid name received:', name);
 		}
-		this.currentPlayerName = name;
-		console.log('currentPlayerName:', this.currentPlayerName);
-		this.setupTournamentButton(); // Ensure setupTournamentButton is called after setting current player name
 	}
 
     refreshCurrentPlayer() {
@@ -205,11 +335,11 @@ class Tournament {
 
     async startTournamentHandler() {
         try {
-            const response = await this.checkPlayerCount();
-            if (!response.success) {
-                console.error('Error fetching player count:', response.message);
-                return;
-            }
+            // const response = await this.checkPlayerCount();
+            // if (!response.success) {
+            //     console.error('Error fetching player count:', response.message);
+            //     return;
+            // }
 
             let currentPlayers = [this.players[0], this.players[1]];
 
@@ -217,16 +347,36 @@ class Tournament {
                 console.error('Players must be instances of Player class.');
                 return;
             }
-
+            console.log('this.game:', this.game);
             console.log('Current Players:', currentPlayers);
 
-            await loadPage('pong');
-            console.log('loadPage');
+            console.log('this.connection:', this.connection);
+
+            // await loadPage('pong');
+            // console.log('loadPage');
 
             try {
-                this.game.match = new Match(this.game, currentPlayers);
-                await this.game.match.playRemote();
-                console.log('game.match.playRemote');
+				this.game.connection = this.connection;
+                // this.game.match = new Match(this.game, currentPlayers, this.connection);
+                const match = new Match(this.game, currentPlayers, this.connection);
+
+
+                // this.game.match = this.connection;
+                console.log('before: game.match.playRemote');
+
+				await match.playRemote();
+				// await this.game.match.playRemote();
+
+                console.log('after: game.match.playRemote');
+
+
+
+
+
+
+
+
+
 
                 while (this.game.match.score.winner === null) {
                     await new Promise(resolve => setTimeout(resolve, 100));
@@ -368,8 +518,39 @@ class Tournament {
 		this.players = [];
 	}
 
+	// Tournament Score Database
+	getCurrentDateISO() {
+		const now = new Date();
+		return now.toISOString();  // Format ISO 8601
+	}
+	
+	async createMatch(tournamentId, matchResult) {
+		console.log('Creating Match...');
+		$.ajax({
+			url: '/api/create_match/',
+			type: 'POST',
+			data: JSON.stringify({
+				'tournament_id': tournamentId,
+				'player1' : matchResult.player1,
+				'player2' : matchResult.player2,
+				'player1_score' : matchResult.player1Score,
+				'player2_score' : matchResult.player2Score,
+				'timestamp' : matchResult.timestamp
+			}),
+			contentType: 'application/json; charset=utf-8',
+			dataType: 'json',
+	
+			success: function(response) {
+				console.log('Match created successfully:', response);
+			},
+			error: function(error) {
+				console.error('Error creating match:', error);
+			}
+		});
+	}
+}
 
-
+export { Tournament };
 
 
 
@@ -387,23 +568,23 @@ class Tournament {
 
 		
 	// 	// Request the server to check player count
-	// 	const response = await this.checkPlayerCount();
-	// 	if (!response.success) {
-	// 		const error2 = document.getElementById('error2');
-	// 		error2.textContent = response.message;
-	// 		error2.style.display = 'block';
-	// 		return;
-	// 	}
+	// 	// const response = await this.checkPlayerCount();
+	// 	// if (!response.success) {
+	// 	// 	const error2 = document.getElementById('error2');
+	// 	// 	error2.textContent = response.message;
+	// 	// 	error2.style.display = 'block';
+	// 	// 	return;
+	// 	// }
 	
 
-	// 	//from server side
-	// 	console.log('response.playerCount', response.players);
+	// 	// //from server side
+	// 	// console.log('response.playerCount', response.players);
 
-	// 	//from client side
-	// 	console.log('this.players.length', this.players.length);
+	// 	// //from client side
+	// 	// console.log('this.players.length', this.players.length);
 
-	// 	console.log('response.player1', response.players[0]);
-	// 	console.log('response.player1', response.players[1]);
+	// 	// console.log('response.player1', response.players[0]);
+	// 	// console.log('response.player1', response.players[1]);
 
 	// 	let currentPlayers = [this.players[0], this.players[1]];
 		
@@ -475,34 +656,34 @@ class Tournament {
 	// 	catch {}
 	// }
 	
-	checkPlayerCount() {
-		return new Promise((resolve, reject) => {
-			if (!this.connection || this.connection.readyState !== WebSocket.OPEN) {
-				console.error('WebSocket connection is not open.');
-				reject({ success: false, message: 'WebSocket connection is not open' });
-				return;
-			}
+	// checkPlayerCount() {
+	// 	return new Promise((resolve, reject) => {
+	// 		if (!this.connection || this.connection.readyState !== WebSocket.OPEN) {
+	// 			console.error('WebSocket connection is not open.');
+	// 			reject({ success: false, message: 'WebSocket connection is not open' });
+	// 			return;
+	// 		}
 	
-			// Send a request to get the player count
-			const requestMessage = JSON.stringify({ type: 'get_player_count' });
-			this.connection.send(requestMessage);
+	// 		// Send a request to get the player count
+	// 		const requestMessage = JSON.stringify({ type: 'get_player_count' });
+	// 		this.connection.send(requestMessage);
 	
-			// Handle the server's response
-			const handleResponse = (event) => {
-				const message = JSON.parse(event.data);
-				if (message.type === 'player_count_response') {
-					// Return the player count to the caller
-					resolve({ success: true, count: message.count });
-					this.connection.removeEventListener('message', handleResponse);
-				} else {
-					console.error('Unexpected message type:', message.type);
-					reject({ success: false, message: 'Unexpected message type' });
-				}
-			};
+	// 		// Handle the server's response
+	// 		const handleResponse = (event) => {
+	// 			const message = JSON.parse(event.data);
+	// 			if (message.type === 'player_count_response') {
+	// 				// Return the player count to the caller
+	// 				resolve({ success: true, count: message.count });
+	// 				this.connection.removeEventListener('message', handleResponse);
+	// 			} else {
+	// 				console.error('Unexpected message type:', message.type);
+	// 				reject({ success: false, message: 'Unexpected message type' });
+	// 			}
+	// 		};
 	
-			this.connection.addEventListener('message', handleResponse);
-		});
-	}
+	// 		this.connection.addEventListener('message', handleResponse);
+	// 	});
+	// }
 	
 	
 
@@ -597,89 +778,45 @@ class Tournament {
 	// 	await new Promise(resolve => setTimeout(resolve, 1000)); // Adjust timeout as needed
 	// }
 
-	async validatePlayerNameWithServer(playerName) {
-		return new Promise((resolve, reject) => {
-			if (!this.remote) {
-				console.error('WebSocket is not connected or not open.');
-				reject('WebSocket is not connected');
-				return;
-			}
+	// async validatePlayerNameWithServer(playerName) {
+	// 	return new Promise((resolve, reject) => {
+	// 		if (!this.remote) {
+	// 			console.error('WebSocket is not connected or not open.');
+	// 			reject('WebSocket is not connected');
+	// 			return;
+	// 		}
 
-			const validationMessage = JSON.stringify({ type: 'validate_player', name: playerName });
-			console.log('Sending validation message:', validationMessage);
+	// 		const validationMessage = JSON.stringify({ type: 'validate_player', name: playerName });
+	// 		console.log('Sending validation message:', validationMessage);
 
-			const handleResponse = (event) => {
-				const message = JSON.parse(event.data);
-				if (message.type === 'validation_response') {
-					resolve(message.valid);
-					this.remote.connection.connection.removeEventListener('message', handleResponse);
-				}
-			};
+	// 		const handleResponse = (event) => {
+	// 			const message = JSON.parse(event.data);
+	// 			if (message.type === 'validation_response') {
+	// 				resolve(message.valid);
+	// 				this.remote.connection.connection.removeEventListener('message', handleResponse);
+	// 			}
+	// 		};
 
-			this.remote.connection.connection.addEventListener('message', handleResponse);
-			this.remote.connection.connection.send(validationMessage);
-		});
-	}
+	// 		this.remote.connection.connection.addEventListener('message', handleResponse);
+	// 		this.remote.connection.connection.send(validationMessage);
+	// 	});
+	// }
 
-	displayPlayers() {
-		const playerListDiv = document.getElementById('playerList');
-		playerListDiv.innerHTML = ''; // Clear existing list
+	// displayPlayers() {
+	// 	const playerListDiv = document.getElementById('playerList');
+	// 	playerListDiv.innerHTML = ''; // Clear existing list
 
-		// this.players.forEach(player => {
-        //     const playerElement = document.createElement('div');
-        //     playerElement.textContent = player.name;
-        //     playerListElement.appendChild(playerElement);
-        // });
-		this.players.forEach(player => {
-			let index = this.players.indexOf(player) + 1;
-			let name = player.name;
-			const playerElement = document.createElement('p');
-			playerElement.textContent = `Player ${index}: ${name}`;
-			playerListDiv.appendChild(playerElement);
-		});
-	}
+	// 	// this.players.forEach(player => {
+    //     //     const playerElement = document.createElement('div');
+    //     //     playerElement.textContent = player.name;
+    //     //     playerListElement.appendChild(playerElement);
+    //     // });
+	// 	this.players.forEach(player => {
+	// 		let index = this.players.indexOf(player) + 1;
+	// 		let name = player.name;
+	// 		const playerElement = document.createElement('p');
+	// 		playerElement.textContent = `Player ${index}: ${name}`;
+	// 		playerListDiv.appendChild(playerElement);
+	// 	});
+	// }
 
-	// Tournament Score Database
-
-	getCurrentDateISO() {
-		const now = new Date();
-		return now.toISOString();  // Format ISO 8601
-	}
-	
-	
-	
-	
-
-
-
-	
-	
-	async createMatch(tournamentId, matchResult) {
-		console.log('Creating Match...');
-		$.ajax({
-			url: '/api/create_match/',
-			type: 'POST',
-			data: JSON.stringify({
-				'tournament_id': tournamentId,
-				'player1' : matchResult.player1,
-				'player2' : matchResult.player2,
-				'player1_score' : matchResult.player1Score,
-				'player2_score' : matchResult.player2Score,
-				'timestamp' : matchResult.timestamp
-			}),
-			contentType: 'application/json; charset=utf-8',
-			dataType: 'json',
-	
-			success: function(response) {
-				console.log('Match created successfully:', response);
-			},
-			error: function(error) {
-				console.error('Error creating match:', error);
-			}
-		});
-	}
-
-	
-}
-
-export { Tournament };
