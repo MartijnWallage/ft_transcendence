@@ -17,11 +17,60 @@ from django.conf import settings
 from web3 import Web3
 from web3.middleware import geth_poa_middleware
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-from .serializers import RegisterSerializer, UpdateUserSerializer, ChangePasswordSerializer
-from .models import Player, Tournament, Match, UserProfile
+from .serializers import RegisterSerializer, UpdateUserSerializer, ChangePasswordSerializer, FriendShipSerializer
+from .models import Player, Tournament, Match, UserProfile, Friendship
 import json
+
+
+@api_view(['POST'])
+@login_required
+def add_friend(request):
+    print(request.data)
+    friend_username = request.data.get('friend_username')
+    print('add friend method called with friend', friend_username)
+    try:
+        friend = User.objects.get(username=friend_username)
+        if friend == request.user:
+            return JsonResponse({"status": "error", "message": "You cannot add yourself as friend!"}, status=400)
+
+        friendship, created = Friendship.objects.get_or_create(user=request.user, friend=friend)
+
+        if created:
+            return JsonResponse({"status": "success", "message": "Friend request sent"})
+        else:
+            if friendship.accepted:
+                return JsonResponse({"status": "error", "message": "You are already friends"}, status=400)
+            else:
+                return JsonResponse({"status": "error", "message": "Friendship already exists"}, status=400)
+    except User.DoesNotExist:
+        return JsonResponse({"status": "error", "message": "User not found"}, status=400)
+
+
+
+@api_view(['GET'])
+@login_required
+def list_friends(request):
+    friends = Friendship.objects.filter(user=request.user, accepted=True)
+    serializer = FriendShipSerializer(friends, many=True)
+    print(serializer.data)
+    return JsonResponse(serializer.data)
+
+@api_view(['POST'])
+@login_required
+def accept_friend(request, friendship_id):
+    try:
+        friendship = Friendship.objects.get(id=friendship_id, friend=request.user)
+        if friendship.accepted:
+            return JsonResponse({"status": "error", "message": "Friendship already exists"}, status=400)
+        friendship.accepted = True
+        friendship.save()
+        return JsonResponse({"status": "success", "message": "Friend request accepted"})
+    except Friendship.DoesNotExist:
+        return JsonResponse({"status": "error", "message": "Friend request doesn't exists"}, status=400)
+
 
 @login_required
 def userinfo_view(request):
@@ -148,7 +197,7 @@ def logout_view(request):
     logout(request)
     return JsonResponse({'status': 'success'})
 
-
+@login_required(login_url='/api/login_user/')
 @api_view(['GET'])	
 def game_mode_view(request):
     data = {

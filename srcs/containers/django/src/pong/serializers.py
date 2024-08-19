@@ -4,7 +4,18 @@ from django.contrib.auth.password_validation import validate_password
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.models import User
 from rest_framework import serializers
-from .models import UserProfile
+from .models import UserProfile, Friendship
+
+class FriendShipSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Friendship
+        fields = ['user', 'friend', 'created', 'accepted']
+
+
+class UserProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserProfile
+        fields = ['avatar', 'online_status']
 
 class RegisterSerializer(serializers.ModelSerializer):
     # required must be True
@@ -96,3 +107,5 @@ class ChangePasswordSerializer(serializers.Serializer):
 
         update_session_auth_hash(self.context['request'], user)
         return user
+    
+

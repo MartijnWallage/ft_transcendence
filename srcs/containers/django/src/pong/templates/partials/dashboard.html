@@ -10,6 +10,45 @@
       <div class="col d-flex justify-content-start">
         <button type="button" class="btn btn-outline-light btn-lg"
                 href="#infochange" onclick="loadPage('update-profile-page')">Change Info</button>
+        
+            <!-- New Friends Section -->
+            <div id="friends-section" class="fixed-right p-4 d-flex flex-column align-items-start" style="width: 300px; height: 100%; background-color: #333; color: white; overflow-y: auto;">
+              <h5 class="text-white">Friends</h5>
+              
+              <!-- Friend Requests -->
+              <div id="friend-requests" class="mb-4">
+                <h6>Friend Requests</h6>
+                <ul id="friend-request-list" class="list-unstyled">
+                  <!-- Friend requests will be dynamically populated here -->
+                </ul>
+              </div>
+              
+              <!-- Online Friends -->
+              <div id="online-friends" class="mb-4">
+                <h6>Online Friends</h6>
+                <ul id="online-friends-list" class="list-unstyled">
+                  <!-- Online friends will be dynamically populated here -->
+                </ul>
+              </div>
+              
+              <!-- All Friends -->
+              <div id="all_friends">
+                <h6>All Friends</h6>
+                <ul id="all-friends-list" class="list-unstyled">
+                  <!-- All friends will be dynamically populated here -->
+                </ul>
+              </div>
+
+              <!-- Add Friend Form -->
+              <form id="add-friend-form" class="mt-4">
+                <div class="input-group">
+                  <input type="text" name="friend_username" class="form-control" placeholder="Enter username" aria-label="Enter username">
+                  <div class="input-group-append">
+                    <button class="btn btn-success" type="submit">Add</button>
+                  </div>
+                </div>
+              </form>
+            </div>
       </div>
     </div>
   </div>

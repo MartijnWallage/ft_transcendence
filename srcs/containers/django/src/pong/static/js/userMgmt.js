@@ -37,6 +37,12 @@ function handleFormSubmitWrapper(event) {
     } else if (form.id === 'update-password-form') {
         console.log("User content Password Change handling");
         url = '/api/update-password/';
+    } else if (form.id === 'add-friend-form') {
+        console.log("User content adding friend");
+        url = '/api/add-friend/';
+    } else if (form.id === 'friend-request-form') {
+        console.log("User content friend request handling");
+        url = '/api/handle-friend-request/';
     } else {
         console.error('Form ID not recognized');
         return;
@@ -70,6 +76,84 @@ function handleLogout() {
     .catch(error => {
         console.error('Fetch error:', error);
     });
+}
+
+function updateFriendList(data) {
+    // fetch('/api/friends')
+    //     .then(response => response.json())
+    //     .then(data => {
+            const allFriendsList = document.getElementById('all-friends-list');
+            const onlineFriendsList = document.getElementById('online-friends-list');
+
+            allFriendsList.innerHTML = '';
+            onlineFriendsList.innerHTML = '';
+            console.log(data);
+            data.all_friends.forEach(friend => {
+                console.log('looging through friends list');
+                const listItem = document.createElement('li');
+                listItem.textContent = friend.username;
+                allFriendsList.appendChild(listItem);
+
+                if (friend.online_status) {
+                    const onlineItem = document.createElement('li');
+                    onlineItem.textContent = friend.username;
+                    onlineFriendsList.appendChild(onlineItem);
+                }
+            });
+        // })
+        // .catch(error => console.error("Error updating friend list:", error));
+}
+
+
+function updateFriendRequestList(data) {
+    // fetch('/api/friend-requests/')
+    //     .then(response => response.json())
+    //     .then(data => {
+            const friendRequestList = document.getElementById('friend-request-list');
+            friendRequestList.innerHTML = '';
+
+            data.requests.forEach(request => {
+                const listItem = document.createElement('li');
+                listItem.textContent = request.username;
+                // You can add buttons for accepting/rejecting friend requests
+                const acceptButton = document.createElement('button');
+                acceptButton.textContent = 'Accept';
+                acceptButton.classList.add('btn', 'btn-success', 'btn-sm');
+                acceptButton.onclick = () => handleFriendRequest(request.id, 'accept');
+
+                const rejectButton = document.createElement('button');
+                rejectButton.textContent = 'Reject';
+                rejectButton.classList.add('btn', 'btn-danger', 'btn-sm');
+                rejectButton.onclick = () => handleFriendRequest(request.id, 'reject');
+
+                listItem.appendChild(acceptButton);
+                listItem.appendChild(rejectButton);
+                friendRequestList.appendChild(listItem);
+            });
+        // })
+        // .catch(error => console.error("Error updating friend request list:", error));
+}
+
+function handleFriendRequest(requestID, action) {
+    fetch(`/api/handle-friend-request/${requestId}/`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken'),
+        },
+        body: JSON.stringify({ action: action }),
+        credentials: 'include'
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            updateFriendRequestList(data);
+            updateFriendList(data);
+        } else {
+            showNotification("Error handling friend request");
+        }
+    })
+    .catch(error => console.error("Error handling friend request:", error));
 }
 
 
@@ -135,30 +219,27 @@ function handleFormSubmit(form, url) {
     .then(response => response.json())
     .then(data => {
         if (data.status === 'success') {
-            showNotification('You are now successfully logged in');
+            showNotification('Form Action Success');
             history.pushState(null, '', '');
-            isUserLoggedIn = true;
-            window.loadPage('game_mode'); // Reload or update page content to reflect logged-out state
+
+            if (form.id === 'login-form' || form.id === 'register-form') {
+                isUserLoggedIn = true;
+                window.loadPage('game_mode');
+            } else if (form.id === 'update-profile-form' || form.id === 'update-password-form') {
+                window.loadPage('dashboard');
+            } else if (form.id === 'add-friend-form') {
+                console.log('update friend list call from add friend form');
+                updateFriendList(data);
+            } else if (form.id === 'friend-request-form') {
+                updateFriendRequestList(data);
+            }
 
         } else {
-            // alert('Username or Password Incorrect.');
             const errorContainer = document.getElementById('error-container');
-            // if (errorContainer) {
-			// 	errorContainer.style.display = 'block';
-            //     errorContainer.innerHTML = 'Usrname or Password Invalid';
-            //     showNotification("Invalid User or Password");
-            //     // errorContainer.innerHTML = JSON.stringify(data.errors);
-			// 	// setTimeout(() => {
-			// 	// 	$(errorContainer).alert = 'close';
-			// 	// }, 4000); // Hide after 4 seconds
-            //     // this is bootstrap js which I have included in base.html to show alert only for 4 seconds
-            // }
             if (errorContainer) {
-                // Clear previous messages
                 errorContainer.style.display = 'block';
-                errorContainer.innerHTML = ''; // Clear any previous messages
+                errorContainer.innerHTML = '';
 
-                // Extract and display error messages
                 if (data.errors && data.errors.__all__) {
                     data.errors.__all__.forEach(error => {
                         const errorMessage = document.createElement('div');
