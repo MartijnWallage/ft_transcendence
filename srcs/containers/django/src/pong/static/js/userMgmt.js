@@ -5,6 +5,21 @@
 let isUserLoggedIn = false;
 
 
+function bindUserEventListeners(userContent) {
+	
+    // const user_status = document.getElementById('user-name');
+	// if (isUserLoggedIn) {
+    //     console.log('Event is binded to call dashboard');
+	// 	document.getElementById('user-name').addEventListener('click', () => window.loadPage('dashboard'));
+	// }
+    document.getElementById('js-logout-btn').addEventListener('click', handleLogout);
+	if (userContent) {
+        // userContent.removeEventListener('submit', handleFormSubmitWrapper);
+        userContent.addEventListener('submit', handleFormSubmitWrapper);
+    }
+
+}
+
 function handleFormSubmitWrapper(event) {
     event.preventDefault();
     const form = event.target;
@@ -16,6 +31,12 @@ function handleFormSubmitWrapper(event) {
     } else if (form.id === 'register-form') {
         console.log("User content register-form handling");
         url = '/api/register/';
+    } else if (form.id === 'update-profile-form') {
+        console.log("User content register-form handling");window.loadPage('dashboard')
+        url = '/api/update-profile/';
+    } else if (form.id === 'update-password-form') {
+        console.log("User content Password Change handling");
+        url = '/api/update-password/';
     } else {
         console.error('Form ID not recognized');
         return;
@@ -63,6 +84,25 @@ function showNotification(message) {
 	}
 }
 
+async function updateUI(game) {
+    const userInfo = await fetchUserInfo();
+    const userInfoElement = document.getElementById('user-name');
+    const userAvatar = document.getElementById('user-avatar');
+
+    if (userInfo && userInfo.username) {
+        userInfoElement.innerText = `Welcome, ${userInfo.username}`;
+        game.loggedUser = userInfo.username;
+        if (userInfo.avatar_url) {
+            userAvatar.src = userInfo.avatar_url;
+        }
+    } else if (!isUserLoggedIn) {
+        game.loggedUser = 'Guest';
+        userInfoElement.innerText = 'Guest';
+        userAvatar.src = 'static/images/guest.png';
+    }
+}
+
+
 
 async function fetchUserInfo() {
     if (isUserLoggedIn) {
@@ -84,13 +124,10 @@ function handleFormSubmit(form, url) {
     const formData = new FormData(form);
 
 	console.log("handleformsubmit called")
-    console.log('window.loadPage during logout:', window.loadPage);
     fetch(url, {
         method: 'POST',
-        // body: JSON.stringify(Object.fromEntries(formData)),
         body: formData,
         headers: {
-            // 'Content-Type': 'application/json',
             'X-CSRFToken': getCookie('csrftoken'),
         },
 		credentials: 'include'
@@ -98,13 +135,11 @@ function handleFormSubmit(form, url) {
     .then(response => response.json())
     .then(data => {
         if (data.status === 'success') {
-			if (url.includes('login') || url.includes('register')) {
-				showNotification('You are now successfully logged in');
-				history.pushState(null, '', '');
-                isUserLoggedIn = true;
-				window.loadPage('game_mode'); // Reload or update page content to reflect logged-out state
+            showNotification('You are now successfully logged in');
+            history.pushState(null, '', '');
+            isUserLoggedIn = true;
+            window.loadPage('game_mode'); // Reload or update page content to reflect logged-out state
 
-			}
         } else {
             // alert('Username or Password Incorrect.');
             const errorContainer = document.getElementById('error-container');
@@ -159,4 +194,4 @@ function getCookie(name) {
     return cookieValue;
 }
 
-export { handleFormSubmitWrapper, handleLogout, fetchUserInfo }
+export { handleLogout, bindUserEventListeners, updateUI }

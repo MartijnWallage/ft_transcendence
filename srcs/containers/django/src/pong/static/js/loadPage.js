@@ -1,4 +1,5 @@
-import { handleFormSubmitWrapper, handleLogout, fetchUserInfo } from './userMgmt.js';
+import { updateUI, bindUserEventListeners} from './userMgmt.js';
+
 
 function loadPageClosure(game) {
 	return async (page) => {
@@ -39,30 +40,6 @@ function loadPageClosure(game) {
 	};
 }
 
-async function updateUI(game) {
-    const userInfo = await fetchUserInfo();
-    const userInfoElement = document.getElementById('user-name');
-    const userAvatar = document.getElementById('user-avatar');
-
-    if (userInfo && userInfo.username) {
-        userInfoElement.innerText = `Welcome, ${userInfo.username}`;
-        game.loggedUser = userInfo.username;
-        if (userInfo.avatar_url) {
-            userAvatar.src = userInfo.avatar_url;
-        }
-    }
-}
-
-
-function bindUserEventListeners(userContent) {
-		
-	document.getElementById('js-logout-btn').addEventListener('click', handleLogout);
-	if (userContent) {
-        // userContent.removeEventListener('submit', handleFormSubmitWrapper);
-        userContent.addEventListener('submit', handleFormSubmitWrapper);
-    }
-
-}
 
 
 function bindEventListeners(game) {

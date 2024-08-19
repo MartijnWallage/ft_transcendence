@@ -1,0 +1,15 @@
+{% load crispy_forms_tags %}
+<div id="menu" class="container-md mx-auto p-5">
+    <h2 class="my-4 display-5">Update Profile</h1>
+    <div id="profile-update" class="container">
+        <form id="update-profile-form" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ form|crispy }}
+            <div class="mt-3">
+                <button type="submit" class="btn btn-primary">Update Profile</button>
+                <button type="button" class="btn btn-link" href="#changepassword" onclick="loadPage('update-password-page')">Change Password</button>
+            </div>
+        </form>
+        <div id="error-container"></div>
+    </div>
+</div>

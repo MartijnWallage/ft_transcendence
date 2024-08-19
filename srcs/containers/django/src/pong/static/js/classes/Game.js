@@ -124,6 +124,7 @@ class Game {
 		}
 		else {
 			displayDiv('js-logout-btn');
+			displayDiv('profile-changer');
 		}
 		displayDiv('js-end-game-btn');
 		textToDiv('-', 'js-option-btn');
