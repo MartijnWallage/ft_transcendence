@@ -6,16 +6,19 @@ from django.contrib.auth.models import User
 from rest_framework import serializers
 from .models import UserProfile, Friendship
 
-class FriendShipSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Friendship
-        fields = ['user', 'friend', 'created', 'accepted']
-
 
 class UserProfileSerializer(serializers.ModelSerializer):
+    username = serializers.CharField(source='user.username', read_only=True)
     class Meta:
         model = UserProfile
-        fields = ['avatar', 'online_status']
+        fields = ['username', 'avatar', 'online_status']
+
+class FriendShipSerializer(serializers.ModelSerializer):
+    friend_profile = UserProfileSerializer(source='friend.userprofile', read_only=True)
+    friend_username = serializers.CharField(source='friend.user.username', read_only=True)
+    class Meta:
+        model = Friendship
+        fields = ['id', 'friend_username', 'user', 'friend', 'created', 'accepted', 'friend_profile']
 
 class RegisterSerializer(serializers.ModelSerializer):
     # required must be True

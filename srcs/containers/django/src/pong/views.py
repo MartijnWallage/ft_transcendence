@@ -20,10 +20,20 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-from .serializers import RegisterSerializer, UpdateUserSerializer, ChangePasswordSerializer, FriendShipSerializer
+from .serializers import RegisterSerializer, UpdateUserSerializer, ChangePasswordSerializer, FriendShipSerializer, UserProfileSerializer
 from .models import Player, Tournament, Match, UserProfile, Friendship
 import json
 
+
+@api_view(['GET'])
+@login_required
+def suggested_friends(request):
+    # Retrieve all users except the current user
+    all_users = User.objects.exclude(id=request.user.id)
+    print("all users", all_users)
+    serializer = UserProfileSerializer(UserProfile.objects.filter(user__in=all_users), many=True)
+    print('from serializer', serializer.data)
+    return JsonResponse({"suggested_friends": serializer.data})
 
 @api_view(['POST'])
 @login_required
@@ -33,6 +43,7 @@ def add_friend(request):
     print('add friend method called with friend', friend_username)
     try:
         friend = User.objects.get(username=friend_username)
+        print('friend', friend)
         if friend == request.user:
             return JsonResponse({"status": "error", "message": "You cannot add yourself as friend!"}, status=400)
 
@@ -54,15 +65,18 @@ def add_friend(request):
 @login_required
 def list_friends(request):
     friends = Friendship.objects.filter(user=request.user, accepted=True)
+    print('friends', friends)
     serializer = FriendShipSerializer(friends, many=True)
-    print(serializer.data)
-    return JsonResponse(serializer.data)
+    print('list friends called for user', request.user)
+    print('all_friends', serializer.data)
+    return JsonResponse({"all_friends": serializer.data})
 
 @api_view(['POST'])
 @login_required
 def accept_friend(request, friendship_id):
     try:
         friendship = Friendship.objects.get(id=friendship_id, friend=request.user)
+        print('friendship', friendship)
         if friendship.accepted:
             return JsonResponse({"status": "error", "message": "Friendship already exists"}, status=400)
         friendship.accepted = True
@@ -70,6 +84,22 @@ def accept_friend(request, friendship_id):
         return JsonResponse({"status": "success", "message": "Friend request accepted"})
     except Friendship.DoesNotExist:
         return JsonResponse({"status": "error", "message": "Friend request doesn't exists"}, status=400)
+
+
+@api_view(['GET'])
+@login_required
+def friend_requests(request):
+    # Retrieve all pending friend requests where the current user is the friend
+    requests = Friendship.objects.filter(friend=request.user, accepted=False)
+    print('requests', requests)
+    pending_requests = [request for request in requests]
+
+    print('pending requests', pending_requests)
+
+    # Serialize the requests
+    serializer = UserProfileSerializer(UserProfile.objects.filter(user__in=[r.user for r in pending_requests]), many=True)
+
+    return JsonResponse({"requests": serializer.data})
 
 
 @login_required
@@ -197,7 +227,7 @@ def logout_view(request):
     logout(request)
     return JsonResponse({'status': 'success'})
 
-@login_required(login_url='/api/login_user/')
+# @login_required(login_url='/api/login_user/')
 @api_view(['GET'])	
 def game_mode_view(request):
     data = {
@@ -205,6 +235,7 @@ def game_mode_view(request):
     }
     return JsonResponse(data)
 
+@login_required(login_url='/api/login_user/')
 @api_view(['GET'])
 def two_player_view(request):
     data = {
@@ -212,6 +243,7 @@ def two_player_view(request):
     }
     return JsonResponse(data)
 
+@login_required(login_url='/api/login_user/')
 @api_view(['GET'])
 def two_player_local_view(request):
     data = {
@@ -226,6 +258,7 @@ def two_player_online_view(request):
     }
     return JsonResponse(data)
 
+@login_required(login_url='/api/login_user/')
 @api_view(['GET'])
 def tournament_view(request):
     data = {

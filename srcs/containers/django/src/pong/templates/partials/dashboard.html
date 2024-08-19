@@ -1,56 +1,67 @@
 {% block content %}
 <div id="dash-menu" class="container-md mx-auto p-5">
-  <h2 class="my-4 display-5">Dashboard</h1>
-  <div id="dashboard-view" class="container my-3 px-4">
-    <div class="row gx-5">
-      <div class="col d-flex justify-content-end">
-        <button type="button" class="btn btn-outline-light btn-lg" 
-                href="#passwordchange" onclick="loadPage('update-password-page')">Change Password</button>
-      </div>
-      <div class="col d-flex justify-content-start">
-        <button type="button" class="btn btn-outline-light btn-lg"
-                href="#infochange" onclick="loadPage('update-profile-page')">Change Info</button>
-        
-            <!-- New Friends Section -->
-            <div id="friends-section" class="fixed-right p-4 d-flex flex-column align-items-start" style="width: 300px; height: 100%; background-color: #333; color: white; overflow-y: auto;">
-              <h5 class="text-white">Friends</h5>
-              
-              <!-- Friend Requests -->
-              <div id="friend-requests" class="mb-4">
-                <h6>Friend Requests</h6>
-                <ul id="friend-request-list" class="list-unstyled">
-                  <!-- Friend requests will be dynamically populated here -->
-                </ul>
-              </div>
-              
-              <!-- Online Friends -->
-              <div id="online-friends" class="mb-4">
-                <h6>Online Friends</h6>
-                <ul id="online-friends-list" class="list-unstyled">
-                  <!-- Online friends will be dynamically populated here -->
-                </ul>
-              </div>
-              
-              <!-- All Friends -->
-              <div id="all_friends">
-                <h6>All Friends</h6>
-                <ul id="all-friends-list" class="list-unstyled">
-                  <!-- All friends will be dynamically populated here -->
-                </ul>
-              </div>
+  <h2 class="my-4 display-5">Dashboard</h2>
 
-              <!-- Add Friend Form -->
-              <form id="add-friend-form" class="mt-4">
-                <div class="input-group">
-                  <input type="text" name="friend_username" class="form-control" placeholder="Enter username" aria-label="Enter username">
-                  <div class="input-group-append">
-                    <button class="btn btn-success" type="submit">Add</button>
-                  </div>
-                </div>
-              </form>
-            </div>
+  <div id="dashboard-view" class="container my-3 px-4">
+      <div class="row gx-5">
+          <!-- Buttons for Profile and Password -->
+          <div class="col d-flex justify-content-end">
+              <button type="button" class="btn btn-outline-light btn-lg" 
+                      onclick="loadPage('update-password-page')">Change Password</button>
+          </div>
+          <div class="col d-flex justify-content-start">
+              <button type="button" class="btn btn-outline-light btn-lg"
+                      onclick="loadPage('update-profile-page')">Change Info</button>
+          </div>
       </div>
-    </div>
+  </div>
+
+  <button type="button" class="btn btn-primary mb-3" id="update-friend-list-btn">Update Friend List</button>
+  <!-- Friends Section -->
+  <div id="friends-section" class="p-4 d-flex flex-column align-items-start bg-dark text-white" style="width: 100%; max-width: 350px; border-radius: 10px; overflow-y: auto;">
+      <h4>Friends</h4>
+      
+      <div id="suggested-friends" class="mb-4">
+        <h5>Suggested Friends</h5>
+        <ul id="suggested-friends-list" class="list-group">
+            <!-- Suggested friends will be dynamically populated here -->
+        </ul>
+      </div>
+      <!-- Add Friend Form -->
+      <div id="add-friend-container" class="my-3">
+          <form id="add-friend-form">
+              <div class="input-group">
+                  <input type="text" id="friend-username" name="friend_username" class="form-control" placeholder="Enter username" aria-label="Enter username">
+                  <button class="btn btn-success" type="submit">Add</button>
+              </div>
+          </form>
+      </div>
+      
+      <!-- Friend Requests -->
+      <div id="friend-requests" class="mb-4">
+          <h5>Friend Requests</h5>
+          <ul id="friend-request-list" class="list-group">
+              <!-- Friend requests will be dynamically populated here -->
+          </ul>
+      </div>
+
+      <!-- Online Friends -->
+      <div id="online-friends" class="mb-4">
+          <h5>Online Friends</h5>
+          <ul id="online-friends-list" class="list-group">
+              <!-- Online friends will be dynamically populated here -->
+          </ul>
+      </div>
+
+      <!-- All Friends -->
+      <div id="all-friends">
+          <h5>All Friends</h5>
+          <ul id="all-friends-list" class="list-group">
+              <!-- All friends will be dynamically populated here -->
+          </ul>
+      </div>
   </div>
 </div>
+
+
 {% endblock %}

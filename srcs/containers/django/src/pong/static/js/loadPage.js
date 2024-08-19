@@ -30,7 +30,7 @@ function loadPageClosure(game) {
 			}
 			await updateUI(game);
 			console.log('Page UI updated:', page);
-			bindUserEventListeners(mainContent);
+			bindUserEventListeners(mainContent, page);
 			bindEventListeners(game);
 			
 		} catch (error) {

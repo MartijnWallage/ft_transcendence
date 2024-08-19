@@ -5,13 +5,20 @@
 let isUserLoggedIn = false;
 
 
-function bindUserEventListeners(userContent) {
+function bindUserEventListeners(userContent, page) {
 	
     // const user_status = document.getElementById('user-name');
 	// if (isUserLoggedIn) {
     //     console.log('Event is binded to call dashboard');
 	// 	document.getElementById('user-name').addEventListener('click', () => window.loadPage('dashboard'));
 	// }
+
+    if (page === 'dashboard') {
+        console.log('Event is binded to call dashboard');
+        updateSuggestedFriends();
+        updateFriendList();
+        updateFriendRequestList();
+    }
     document.getElementById('js-logout-btn').addEventListener('click', handleLogout);
 	if (userContent) {
         // userContent.removeEventListener('submit', handleFormSubmitWrapper);
@@ -32,7 +39,7 @@ function handleFormSubmitWrapper(event) {
         console.log("User content register-form handling");
         url = '/api/register/';
     } else if (form.id === 'update-profile-form') {
-        console.log("User content register-form handling");window.loadPage('dashboard')
+        console.log("User content register-form handling");
         url = '/api/update-profile/';
     } else if (form.id === 'update-password-form') {
         console.log("User content Password Change handling");
@@ -78,16 +85,42 @@ function handleLogout() {
     });
 }
 
-function updateFriendList(data) {
-    // fetch('/api/friends')
-    //     .then(response => response.json())
-    //     .then(data => {
+function updateSuggestedFriends() {
+    fetch('/api/suggested-friends/')
+        .then(response => response.json())
+        .then(data => {
+            const suggestedFriendsList = document.getElementById('suggested-friends-list');
+            suggestedFriendsList.innerHTML = '';
+            
+            data.suggested_friends.forEach(user => {
+                console.log('logging through suggested friends list', user);
+                const listItem = document.createElement('li');
+                listItem.className = 'list-group-item d-flex justify-content-between align-items-center';
+                listItem.textContent = user.username;
+
+                // Add button to send friend request
+                const addButton = document.createElement('button');
+                addButton.textContent = 'Add Friend';
+                addButton.className = 'btn btn-success btn-sm';
+                addButton.onclick = () => sendFriendRequest(user.username);
+
+                listItem.appendChild(addButton);
+                suggestedFriendsList.appendChild(listItem);
+            });
+        })
+        .catch(error => console.error("Error updating suggested friends:", error));
+}
+
+function updateFriendList() {
+    fetch('/api/list-friends/')
+        .then(response => response.json())
+        .then(data => {
             const allFriendsList = document.getElementById('all-friends-list');
             const onlineFriendsList = document.getElementById('online-friends-list');
 
             allFriendsList.innerHTML = '';
             onlineFriendsList.innerHTML = '';
-            console.log(data);
+            console.log('this is data-> ', data);
             data.all_friends.forEach(friend => {
                 console.log('looging through friends list');
                 const listItem = document.createElement('li');
@@ -100,19 +133,21 @@ function updateFriendList(data) {
                     onlineFriendsList.appendChild(onlineItem);
                 }
             });
-        // })
-        // .catch(error => console.error("Error updating friend list:", error));
+        })
+        .catch(error => console.error("Error updating friend list:", error));
 }
 
 
-function updateFriendRequestList(data) {
-    // fetch('/api/friend-requests/')
-    //     .then(response => response.json())
-    //     .then(data => {
+function updateFriendRequestList() {
+    fetch('/api/friend-requests/')
+        .then(response => response.json())
+        .then(data => {
+            console.log('this is data-> ', data);
             const friendRequestList = document.getElementById('friend-request-list');
             friendRequestList.innerHTML = '';
 
             data.requests.forEach(request => {
+                console.log('looging through friend request list', request);
                 const listItem = document.createElement('li');
                 listItem.textContent = request.username;
                 // You can add buttons for accepting/rejecting friend requests
@@ -130,12 +165,13 @@ function updateFriendRequestList(data) {
                 listItem.appendChild(rejectButton);
                 friendRequestList.appendChild(listItem);
             });
-        // })
-        // .catch(error => console.error("Error updating friend request list:", error));
+        })
+        .catch(error => console.error("Error updating friend request list:", error));
 }
 
 function handleFriendRequest(requestID, action) {
-    fetch(`/api/handle-friend-request/${requestId}/`, {
+    console.log('handleFriendRequest:', requestID, action);
+    fetch(`/api/handle-friend-request/${requestID}/`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -147,8 +183,8 @@ function handleFriendRequest(requestID, action) {
     .then(response => response.json())
     .then(data => {
         if (data.status === 'success') {
-            updateFriendRequestList(data);
-            updateFriendList(data);
+            updateFriendRequestList();
+            updateFriendList();
         } else {
             showNotification("Error handling friend request");
         }
@@ -229,9 +265,9 @@ function handleFormSubmit(form, url) {
                 window.loadPage('dashboard');
             } else if (form.id === 'add-friend-form') {
                 console.log('update friend list call from add friend form');
-                updateFriendList(data);
+                updateFriendList();
             } else if (form.id === 'friend-request-form') {
-                updateFriendRequestList(data);
+                updateFriendRequestList();
             }
 
         } else {

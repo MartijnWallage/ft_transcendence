@@ -15,6 +15,9 @@ class Friendship(models.Model):
       created = models.DateTimeField(auto_now_add=True)
       accepted = models.BooleanField(default=False)
 
+      class Meta:
+        unique_together = ('user', 'friend')
+        
       def __str__(self):
         return f"{self.user.username} is friends with {self.friend.username}"
 
