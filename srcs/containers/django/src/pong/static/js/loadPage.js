@@ -73,6 +73,20 @@ function bindEventListeners(game) {
 		blockchainScore.addEventListener('click', game.executeBlockchain.bind(game));
 	}
 
+	// BETWEEN MATCH
+
+	let exitBtn = document.getElementById('js-exit-btn');
+	if (exitBtn) {
+		exitBtn.addEventListener('click', game.endGame.bind(game));
+	}
+
+	let replayBtn = document.getElementById('js-replay-btn');
+	if (replayBtn) {
+			replayBtn.addEventListener('click', game.replayGame.bind(game));
+	}
+}
+
+function bindMenuEventListeners(game){
 	// OPTION MENU
 	let optionBtn = document.getElementById('js-option-btn');
 	if (optionBtn) {
@@ -89,18 +103,13 @@ function bindEventListeners(game) {
 		soundBtn.addEventListener('click', game.muteAudio.bind(game));
 	}
 
-	// BETWEEN MATCH
-
-	let exitBtn = document.getElementById('js-exit-btn');
-	if (exitBtn) {
-		exitBtn.addEventListener('click', game.endGame.bind(game));
-	}
-
-	let replayBtn = document.getElementById('js-replay-btn');
-	if (replayBtn) {
-			replayBtn.addEventListener('click', game.replayGame.bind(game));
-	}
-
+	document.getElementById('user-name').addEventListener('click', function() {
+		loadPage('dashboard');
+	});
+	
+	document.getElementById('user-avatar').addEventListener('click', function() {
+		loadPage('dashboard');
+	});
 }
 
 function fadeIn(element) {
@@ -127,4 +136,4 @@ function fadeOut(element) {
 		}, { once: true });
 	});
 }
-export { loadPageClosure, updateUI };
+export { loadPageClosure, updateUI, bindMenuEventListeners };
