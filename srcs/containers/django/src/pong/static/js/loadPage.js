@@ -1,5 +1,5 @@
 import { updateUI, bindUserEventListeners} from './userMgmt.js';
-import { showMatches } from './match-history.js';
+import { showMatches, showMatchDetails } from './match-history.js';
 
 function loadPageClosure(game) {
 	return async (page) => {
@@ -22,6 +22,7 @@ function loadPageClosure(game) {
 			
 			const data = await response.json();
 			mainContent.innerHTML = data.content;
+			console.log('LOG: Page content loaded:', page);
 			history.pushState({ page: page }, "", "#" + page);
 			
 			const updatedUnderTitle = document.getElementById('under-title');
@@ -128,24 +129,34 @@ function bindMenuEventListeners(game){
 }
 
 function dropDownEventListeners() {
-	var dropdown1v1 = document.getElementById('dropdown-1v1');
-	if (dropdown1v1) {
-		dropdown1v1.addEventListener('click', showMatches('1v1'));
-            // loadPage('match_history');
-		
-	}
-	var dropdownTournament = document.getElementById('dropdown-tournament');
-	if (dropdownTournament) {
-		dropdownTournament.addEventListener('click', showMatches('tournament'));
-            // loadPage('match_history');
-    }
-	
+    console.log("LOG: dropDownEventListeners");
 
-	var dropdownVsAI = document.getElementById('dropdown-vs-ai');
-	if (dropdownVsAI) {
-		dropdownVsAI.addEventListener('click', showMatches('vsAI'));
+    var dropdown1v1 = document.getElementById('dropdown-1v1');
+    if (dropdown1v1) {
+        dropdown1v1.addEventListener('click', (event) => {
+            event.preventDefault(); // Prevent default link behavior
+            showMatches('1v1');
             // loadPage('match_history');
-	}
+        });
+    }
+
+    var dropdownTournament = document.getElementById('dropdown-tournament');
+    if (dropdownTournament) {
+        dropdownTournament.addEventListener('click', (event) => {
+            event.preventDefault();
+            showMatches('tournament');
+            // loadPage('match_history');
+        });
+    }
+
+    var dropdownVsAI = document.getElementById('dropdown-vs-ai');
+    if (dropdownVsAI) {
+        dropdownVsAI.addEventListener('click', (event) => {
+            event.preventDefault();
+            showMatches('vsAI');
+            // loadPage('match_history');
+        });
+    }
 }
 
 function fadeIn(element) {

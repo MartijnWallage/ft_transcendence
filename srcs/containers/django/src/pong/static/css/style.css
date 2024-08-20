@@ -195,3 +195,7 @@ h1 {
 	margin-right: auto;
 }
 
+
+.modal {
+	z-index: 1050; /* Ensure this value is higher than your menu's z-index */
+  }

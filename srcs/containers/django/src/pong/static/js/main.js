@@ -9,12 +9,14 @@ function main() {
 
 	// Popstate event listener
 	window.onpopstate = function (event) {
+		console.log('popstate event');
 		const page = event.state ? event.state.page : 'home';
 		window.loadPage(page);
 	};
 	
 	// Load homepage when document is ready
 	const DOMContentLoadedHandler = async function() {
+		console.log('DOMContentLoaded event');
 		const page = location.hash.replace('#', '') || 'home';
 		await window.loadPage(page); // await is added to properly handle the updateUI function
 	};
@@ -29,16 +31,17 @@ function main() {
 	}
 
 	// prevent to reload #pong page and initiate an empty game, exit to home instead.
-	// window.addEventListener('load', () => {
-	// 	const hash = window.location.hash;
-	// 	if (hash) {  // Check if there is any hash in the URL
-	// 		if (sessionStorage.getItem('visitedHash')) {
-	// 			window.location.href = '/';
-	// 		} else {
-	// 			sessionStorage.setItem('visitedHash', 'true');
-	// 		}
-	// 	}
-	// });
+	window.addEventListener('load', () => {
+		console.log('load event');
+		const hash = window.location.hash;
+		if (hash) {  // Check if there is any hash in the URL
+			if (sessionStorage.getItem('visitedHash')) {
+				window.location.href = '/';
+			} else {
+				sessionStorage.setItem('visitedHash', 'true');
+			}
+		}
+	});
 
 	bindMenuEventListeners(this_game);
 	window.addEventListener('resize', () => this_game.onWindowResize());

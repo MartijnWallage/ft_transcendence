@@ -15,6 +15,31 @@ const matchData = {
 	]
 };
 
+function showMatchDetails(matchId, mode) {
+	console.log("LOG: showMatchDetails");
+	const match = matchData[mode].find(m => m.id === matchId);
+	const modalOpponent = document.getElementById('modalOpponent');
+	const modalDate = document.getElementById('modalDate');
+	const modalScore = document.getElementById('modalScore');
+	const modalEvents = document.getElementById('modalEvents');
+
+	// Populate modal with match details
+	modalOpponent.textContent = `Opponent: ${match.opponent}`;
+	modalDate.textContent = `Date: ${match.date}`;
+	modalScore.textContent = match.score;
+
+	// Clear existing events
+	modalEvents.innerHTML = '';
+
+	// Add match events
+	match.details.events.forEach(event => {
+		const eventItem = document.createElement('li');
+		eventItem.classList.add('list-group-item');
+		eventItem.textContent = event;
+		modalEvents.appendChild(eventItem);
+	});
+}
+
 function showMatches(mode) {
 	console.log("showMatches");
 	console.log("mode: ", mode);
@@ -39,7 +64,9 @@ function showMatches(mode) {
 		const row = document.createElement('tr');
 		row.setAttribute('data-bs-toggle', 'modal');
 		row.setAttribute('data-bs-target', '#matchDetailModal');
-		row.setAttribute('onclick', `showMatchDetails(${match.id}, '${mode}')`);
+        row.addEventListener('click', () => {
+            showMatchDetails(match.id, mode);
+        });
 		row.innerHTML = `
 			<th scope="row">${match.id}</th>
 			<td>${match.date}</td>
@@ -48,31 +75,6 @@ function showMatches(mode) {
 			<td><span class="badge ${match.resultClass}">${match.result}</span></td>
 		`;
 		tableBody.appendChild(row);
-	});
-}
-
-function showMatchDetails(matchId, mode) {
-	console.log("LOG: showMatchDetails");
-	const match = matchData[mode].find(m => m.id === matchId);
-	const modalOpponent = document.getElementById('modalOpponent');
-	const modalDate = document.getElementById('modalDate');
-	const modalScore = document.getElementById('modalScore');
-	const modalEvents = document.getElementById('modalEvents');
-
-	// Populate modal with match details
-	modalOpponent.textContent = `Opponent: ${match.opponent}`;
-	modalDate.textContent = `Date: ${match.date}`;
-	modalScore.textContent = match.score;
-
-	// Clear existing events
-	modalEvents.innerHTML = '';
-
-	// Add match events
-	match.details.events.forEach(event => {
-		const eventItem = document.createElement('li');
-		eventItem.classList.add('list-group-item');
-		eventItem.textContent = event;
-		modalEvents.appendChild(eventItem);
 	});
 }
 
