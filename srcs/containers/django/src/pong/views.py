@@ -358,3 +358,11 @@ def register_matches(request):
         return JsonResponse({'success': True, 'tx_hash': receipt.transactionHash.hex()})
     except Exception as e:
         return JsonResponse({'success': False, 'error': str(e)}, status=500)
+    
+
+@api_view(['GET'])
+def match_history(request):
+    data = {
+        'content': render_to_string("main/match_history.html", request=request)
+    }
+    return JsonResponse(data)

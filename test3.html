@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Player Match History</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-5">
+        <!-- Mode Selection -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>Player Match History</h2>
+            <div class="dropdown">
+                <button class="btn btn-primary dropdown-toggle" type="button" id="modeDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                    Select Mode
+                </button>
+                <ul class="dropdown-menu" aria-labelledby="modeDropdown">
+                    <li><a class="dropdown-item" href="#" onclick="showMatches('1v1')">1 vs 1</a></li>
+                    <li><a class="dropdown-item" href="#" onclick="showMatches('vsAI')">Player vs AI</a></li>
+                    <li><a class="dropdown-item" href="#" onclick="showMatches('tournament')">Tournament</a></li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="card shadow-lg">
+            <div class="card-header bg-primary text-white">
+                <h3 class="text-center" id="matchTitle">1 vs 1 Matches</h3>
+            </div>
+            <div class="card-body">
+                <table class="table table-hover">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>#</th>
+                            <th>Date</th>
+                            <th>Opponent</th>
+                            <th>Score</th>
+                            <th>Result</th>
+                        </tr>
+                    </thead>
+                    <tbody id="matchTableBody">
+                        <!-- Default: 1 vs 1 matches -->
+                        <tr>
+                            <th scope="row">1</th>
+                            <td>2023-08-12</td>
+                            <td>Player B</td>
+                            <td>3-2</td>
+                            <td><span class="badge bg-success">Win</span></td>
+                        </tr>
+                        <tr>
+                            <th scope="row">2</th>
+                            <td>2023-08-10</td>
+                            <td>Player C</td>
+                            <td>1-1</td>
+                            <td><span class="badge bg-secondary">Draw</span></td>
+                        </tr>
+                        <tr>
+                            <th scope="row">3</th>
+                            <td>2023-08-08</td>
+                            <td>Player D</td>
+                            <td>0-2</td>
+                            <td><span class="badge bg-danger">Loss</span></td>
+                        </tr>
+                        <!-- Add more rows as needed -->
+                    </tbody>
+                </table>
+            </div>
+            <div class="card-footer text-muted text-center">
+                Last updated: 2023-08-12
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Custom JS to handle mode selection -->
+    <script>
+        const matchData = {
+            "1v1": [
+                { id: 1, date: "2023-08-12", opponent: "Player B", score: "3-2", result: "Win", resultClass: "bg-success" },
+                { id: 2, date: "2023-08-10", opponent: "Player C", score: "1-1", result: "Draw", resultClass: "bg-secondary" },
+                { id: 3, date: "2023-08-08", opponent: "Player D", score: "0-2", result: "Loss", resultClass: "bg-danger" }
+            ],
+            "vsAI": [
+                { id: 1, date: "2023-08-15", opponent: "AI Bot", score: "4-0", result: "Win", resultClass: "bg-success" },
+                { id: 2, date: "2023-08-13", opponent: "AI Bot", score: "2-3", result: "Loss", resultClass: "bg-danger" }
+            ],
+            "tournament": [
+                { id: 1, date: "2023-08-18", opponent: "Team Alpha", score: "2-1", result: "Win", resultClass: "bg-success" },
+                { id: 2, date: "2023-08-17", opponent: "Team Beta", score: "2-2", result: "Draw", resultClass: "bg-secondary" },
+                { id: 3, date: "2023-08-16", opponent: "Team Gamma", score: "1-3", result: "Loss", resultClass: "bg-danger" }
+            ]
+        };
+
+        function showMatches(mode) {
+            const tableBody = document.getElementById('matchTableBody');
+            const matchTitle = document.getElementById('matchTitle');
+            const matches = matchData[mode];
+
+            // Clear existing rows
+            tableBody.innerHTML = '';
+
+            // Update the title
+            if (mode === '1v1') {
+                matchTitle.textContent = '1 vs 1 Matches';
+            } else if (mode === 'vsAI') {
+                matchTitle.textContent = 'Player vs AI Matches';
+            } else if (mode === 'tournament') {
+                matchTitle.textContent = 'Tournament Matches';
+            }
+
+            // Populate the table with the selected mode's matches
+            matches.forEach(match => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <th scope="row">${match.id}</th>
+                    <td>${match.date}</td>
+                    <td>${match.opponent}</td>
+                    <td>${match.score}</td>
+                    <td><span class="badge ${match.resultClass}">${match.result}</span></td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+
+        // Default view (1 vs 1 matches)
+        showMatches('1v1');
+    </script>
+</body>
+</html>

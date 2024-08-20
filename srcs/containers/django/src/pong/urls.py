@@ -21,7 +21,8 @@ urlpatterns = [
 	path('api/create_match/', views.create_match, name='create_match'),
 	path('api/contract_address/', views.get_contract_address, name='get_contract_address'),
 	path('api/register_matches/', views.register_matches, name='register_matches'),
-	
+	path('api/match_history/', views.match_history, name='match_history'),
+
 	path('api/register_user/', views.load_page_reg, name='load_page'),
 	path('api/login_user/', views.load_page, name='load_page_login'),
     path('api/register/', views.register, name='api-register'),
