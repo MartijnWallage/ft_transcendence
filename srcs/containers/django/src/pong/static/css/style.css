@@ -133,7 +133,7 @@ p {
 
 h1 {
 	font-family: 'Yapari', sans-serif;
-	color: rgb(255, 255, 255);
+	color: rgb(255, 255, 255) !important;
 }
 
 .font-weight-semi-bold {
