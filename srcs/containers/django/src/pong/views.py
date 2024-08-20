@@ -73,9 +73,15 @@ def list_friends(request):
 
 @api_view(['POST'])
 @login_required
-def accept_friend(request, friendship_id):
+def accept_friend(request, request_id):
+    friendships = Friendship.objects.filter(id=request_id)
+    for friendship in friendships:
+        print(f"ID: {friendship.id}, User: {friendship.user.username}, Friend: {friendship.friend.username}, Accepted: {friendship.accepted}")
+
     try:
-        friendship = Friendship.objects.get(id=friendship_id, friend=request.user)
+        print(f"Request ID: {request_id}")
+        print(f"Logged-in User: {request.user}")
+        friendship = Friendship.objects.get(id=request_id, friend=request.user)
         print('friendship', friendship)
         if friendship.accepted:
             return JsonResponse({"status": "error", "message": "Friendship already exists"}, status=400)

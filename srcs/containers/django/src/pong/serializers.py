@@ -8,14 +8,16 @@ from .models import UserProfile, Friendship
 
 
 class UserProfileSerializer(serializers.ModelSerializer):
+    id = serializers.IntegerField(source='pk', read_only=True)
     username = serializers.CharField(source='user.username', read_only=True)
     class Meta:
         model = UserProfile
-        fields = ['username', 'avatar', 'online_status']
+        fields = ['id', 'username', 'avatar', 'online_status']
 
 class FriendShipSerializer(serializers.ModelSerializer):
     friend_profile = UserProfileSerializer(source='friend.userprofile', read_only=True)
     friend_username = serializers.CharField(source='friend.user.username', read_only=True)
+    id = serializers.IntegerField(source='pk')
     class Meta:
         model = Friendship
         fields = ['id', 'friend_username', 'user', 'friend', 'created', 'accepted', 'friend_profile']

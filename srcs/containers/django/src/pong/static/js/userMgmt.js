@@ -93,10 +93,14 @@ function updateSuggestedFriends() {
             suggestedFriendsList.innerHTML = '';
             
             data.suggested_friends.forEach(user => {
-                console.log('logging through suggested friends list', user);
+                console.log('suggested friends list', user);
                 const listItem = document.createElement('li');
                 listItem.className = 'list-group-item d-flex justify-content-between align-items-center';
+                // listItem.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-center');
                 listItem.textContent = user.username;
+                // const usernameElement = document.createElement('span');
+                // usernameElement.textContent = user.username;
+                console.log('this is username', user.username);
 
                 // Add button to send friend request
                 const addButton = document.createElement('button');
@@ -122,8 +126,9 @@ function updateFriendList() {
             onlineFriendsList.innerHTML = '';
             console.log('this is data-> ', data);
             data.all_friends.forEach(friend => {
-                console.log('looging through friends list');
+                console.log('looging through friends list', friend);
                 const listItem = document.createElement('li');
+                console.log('friend: ', friend.username);
                 listItem.textContent = friend.username;
                 allFriendsList.appendChild(listItem);
 
@@ -171,6 +176,7 @@ function updateFriendRequestList() {
 
 function handleFriendRequest(requestID, action) {
     console.log('handleFriendRequest:', requestID, action);
+    // requestID = 0;
     fetch(`/api/handle-friend-request/${requestID}/`, {
         method: 'POST',
         headers: {
