@@ -34,7 +34,7 @@ urlpatterns = [
 	path('api/logout/', views.logout_view, name='logout'),
     
 
-	path('api/handle-friend-request/<int:request_id>/', views.accept_friend, name='friendrequest'),
+	path('api/handle-friend-request/', views.accept_friend, name='friendrequest'),
     path('api/add-friend/', views.add_friend, name='add_friend'),
     path('api/list-friends/', views.list_friends, name='list_friends'),
 	path('api/friend-requests/', views.friend_requests, name='friend_requests'),

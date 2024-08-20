@@ -125,16 +125,42 @@ function updateFriendList() {
             allFriendsList.innerHTML = '';
             onlineFriendsList.innerHTML = '';
             console.log('this is data-> ', data);
-            data.all_friends.forEach(friend => {
-                console.log('looging through friends list', friend);
+            data.friends.forEach(friend => {
                 const listItem = document.createElement('li');
-                console.log('friend: ', friend.username);
-                listItem.textContent = friend.username;
+                listItem.className = 'list-group-item d-flex justify-content-between align-items-center';
+                
+                const usernameSpan = document.createElement('span');
+                usernameSpan.textContent = friend.username;
+                listItem.appendChild(usernameSpan);
+
+                const avatarImg = document.createElement('img');
+                avatarImg.src = friend.avatar || 'static/images/guest.png'; 
+                avatarImg.alt = `${friend.username}'s avatar`;
+                avatarImg.className = 'avatar-img'; 
+                listItem.appendChild(avatarImg);
+
                 allFriendsList.appendChild(listItem);
 
                 if (friend.online_status) {
                     const onlineItem = document.createElement('li');
-                    onlineItem.textContent = friend.username;
+                    onlineItem.className = 'list-group-item d-flex justify-content-between align-items-center';
+                    
+                    const onlineUsernameSpan = document.createElement('span');
+                    onlineUsernameSpan.textContent = friend.username;
+                    onlineItem.appendChild(onlineUsernameSpan);
+
+                    const avatarImg = document.createElement('img');
+                    avatarImg.src = friend.avatar || 'static/images/guest.png'; 
+                    avatarImg.alt = `${friend.username}'s avatar`;
+                    avatarImg.className = 'avatar-img'; 
+                    avatarImg.classList.add('online');
+                    onlineItem.appendChild(avatarImg);
+                    
+                    const onlineStatusSpan = document.createElement('span');
+                    onlineStatusSpan.textContent = 'Online';
+                    onlineStatusSpan.className = 'online-status online'; 
+                    onlineItem.appendChild(onlineStatusSpan);
+
                     onlineFriendsList.appendChild(onlineItem);
                 }
             });
@@ -159,12 +185,12 @@ function updateFriendRequestList() {
                 const acceptButton = document.createElement('button');
                 acceptButton.textContent = 'Accept';
                 acceptButton.classList.add('btn', 'btn-success', 'btn-sm');
-                acceptButton.onclick = () => handleFriendRequest(request.id, 'accept');
+                acceptButton.onclick = () => handleFriendRequest(request.username ,'accept');
 
                 const rejectButton = document.createElement('button');
                 rejectButton.textContent = 'Reject';
                 rejectButton.classList.add('btn', 'btn-danger', 'btn-sm');
-                rejectButton.onclick = () => handleFriendRequest(request.id, 'reject');
+                rejectButton.onclick = () => handleFriendRequest(request.username, 'reject');
 
                 listItem.appendChild(acceptButton);
                 listItem.appendChild(rejectButton);
@@ -174,16 +200,14 @@ function updateFriendRequestList() {
         .catch(error => console.error("Error updating friend request list:", error));
 }
 
-function handleFriendRequest(requestID, action) {
-    console.log('handleFriendRequest:', requestID, action);
-    // requestID = 0;
-    fetch(`/api/handle-friend-request/${requestID}/`, {
+function handleFriendRequest(username, action) {
+    fetch(`/api/handle-friend-request/`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
             'X-CSRFToken': getCookie('csrftoken'),
         },
-        body: JSON.stringify({ action: action }),
+        body: JSON.stringify({ action: action, friend_username: username }),
         credentials: 'include'
     })
     .then(response => response.json())

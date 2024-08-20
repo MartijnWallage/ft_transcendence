@@ -22,17 +22,21 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from .serializers import RegisterSerializer, UpdateUserSerializer, ChangePasswordSerializer, FriendShipSerializer, UserProfileSerializer
 from .models import Player, Tournament, Match, UserProfile, Friendship
+from django.db.models import Q
 import json
 
 
 @api_view(['GET'])
 @login_required
 def suggested_friends(request):
-    # Retrieve all users except the current user
     all_users = User.objects.exclude(id=request.user.id)
-    print("all users", all_users)
-    serializer = UserProfileSerializer(UserProfile.objects.filter(user__in=all_users), many=True)
-    print('from serializer', serializer.data)
+    friend_ids = Friendship.objects.filter(
+        Q(user=request.user) | Q(friend=request.user),
+        accepted=True
+    ).values_list('user', 'friend')
+    friends_ids = set([user_id for sublist in friend_ids for user_id in sublist])
+    suggested_users = all_users.exclude(id__in=friends_ids)  
+    serializer = UserProfileSerializer(UserProfile.objects.filter(user__in=suggested_users), many=True)
     return JsonResponse({"suggested_friends": serializer.data})
 
 @api_view(['POST'])
@@ -64,30 +68,50 @@ def add_friend(request):
 @api_view(['GET'])
 @login_required
 def list_friends(request):
-    friends = Friendship.objects.filter(user=request.user, accepted=True)
-    print('friends', friends)
-    serializer = FriendShipSerializer(friends, many=True)
-    print('list friends called for user', request.user)
-    print('all_friends', serializer.data)
-    return JsonResponse({"all_friends": serializer.data})
+    friendships = Friendship.objects.filter(
+        (Q(user=request.user) | Q(friend=request.user)) & Q(accepted=True)
+    )
+    
+    serializer = FriendShipSerializer(friendships, many=True)
+    print(serializer.data)
+    
+    friends_list = []
+    seen_usernames = set()
+    for item in serializer.data:
+        if item['user_username'] == request.user.username:
+            friend_profile = item['friend_profile']
+        else:
+            friend_profile = item['user_profile']
+        
+        if friend_profile['username'] != request.user.username:
+            if friend_profile['username'] not in seen_usernames:
+                friends_list.append({
+                    'username': friend_profile['username'],
+                    'avatar': friend_profile['avatar'],
+                    'online_status': friend_profile['online_status']
+                })
+                seen_usernames.add(friend_profile['username'])
+    return JsonResponse({"friends": friends_list})
 
 @api_view(['POST'])
 @login_required
-def accept_friend(request, request_id):
-    friendships = Friendship.objects.filter(id=request_id)
-    for friendship in friendships:
-        print(f"ID: {friendship.id}, User: {friendship.user.username}, Friend: {friendship.friend.username}, Accepted: {friendship.accepted}")
+def accept_friend(request):
+
+    friend_username = request.data.get('friend_username')
+    requesting_user = User.objects.get(username=friend_username)
+    action = request.data.get('action')
 
     try:
-        print(f"Request ID: {request_id}")
-        print(f"Logged-in User: {request.user}")
-        friendship = Friendship.objects.get(id=request_id, friend=request.user)
-        print('friendship', friendship)
-        if friendship.accepted:
-            return JsonResponse({"status": "error", "message": "Friendship already exists"}, status=400)
-        friendship.accepted = True
-        friendship.save()
-        return JsonResponse({"status": "success", "message": "Friend request accepted"})
+        friendship = Friendship.objects.get(user=requesting_user, friend=request.user)
+        if action == "accept":
+            if friendship.accepted:
+                return JsonResponse({"status": "error", "message": "Friendship already exists"}, status=400)
+            friendship.accepted = True
+            friendship.save()
+            return JsonResponse({"status": "success", "message": "Friend request accepted"})
+        elif action == "reject":
+            friendship.delete()
+            return JsonResponse({"status": "success", "message": "Friend request deleted"})
     except Friendship.DoesNotExist:
         return JsonResponse({"status": "error", "message": "Friend request doesn't exists"}, status=400)
 

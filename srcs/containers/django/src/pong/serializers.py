@@ -17,10 +17,12 @@ class UserProfileSerializer(serializers.ModelSerializer):
 class FriendShipSerializer(serializers.ModelSerializer):
     friend_profile = UserProfileSerializer(source='friend.userprofile', read_only=True)
     friend_username = serializers.CharField(source='friend.user.username', read_only=True)
+    user_profile = UserProfileSerializer(source='user.userprofile', read_only=True)
+    user_username = serializers.CharField(source='user.username', read_only=True)
     id = serializers.IntegerField(source='pk')
     class Meta:
         model = Friendship
-        fields = ['id', 'friend_username', 'user', 'friend', 'created', 'accepted', 'friend_profile']
+        fields = ['id', 'friend_username', 'user_username', 'user', 'friend', 'created', 'accepted', 'friend_profile', 'user_profile']
 
 class RegisterSerializer(serializers.ModelSerializer):
     # required must be True
