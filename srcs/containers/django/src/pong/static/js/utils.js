@@ -34,10 +34,16 @@ function HTMLToDiv(html, divID) {
 function waitForEnter(enter) {
 	return new Promise((resolve) => {
 		function onKeyDown(event) {
+
+
 			if (event.key === 'Enter') {
 				document.removeEventListener('keydown', onKeyDown);
 				document.removeEventListener('touchstart', onTouchStart);
-				enter.style.display = 'none';
+				if (enter) {
+					enter.style.display = 'none';
+				} else {
+					console.error('Enter element is null');
+				}
 				resolve();
 			}
 		}
@@ -45,28 +51,42 @@ function waitForEnter(enter) {
 		function onTouchStart(event) {
 			document.removeEventListener('keydown', onKeyDown);
 			document.removeEventListener('touchstart', onTouchStart);
-			enter.style.display = 'none';
+			if (enter) {
+				enter.style.display = 'none';
+			} else {
+				console.error('Enter element is null');
+			}
 			resolve();
 		}
 
 		document.addEventListener('keydown', onKeyDown);
 		document.addEventListener('touchstart', onTouchStart);
+
 	});
 }
 
 function countdown(seconds, audio) {
-	return new Promise(resolve => {
-		textToDiv(seconds, 'announcement-l1');
-		const interval = setInterval(() => {
-			textToDiv(seconds, 'announcement-l1');
-			seconds -= 1;
-			if (seconds < 0) {
-				audio.playSound(audio.start);
-				clearInterval(interval);
-				resolve();
-			}
-		}, 600);
-	});
+    return new Promise(resolve => {
+        textToDiv(seconds, 'announcement-l1');
+        const interval = setInterval(() => {
+            textToDiv(seconds, 'announcement-l1');
+            seconds -= 1;
+            if (seconds < 0) {
+                if (audio) {
+                    if (typeof audio.playSound === 'function') {
+                        audio.playSound(audio.start);
+                    } else {
+                        console.error('audio.playSound is not a function');
+                    }
+                } else {
+                    console.error('audio is not defined');
+                }
+                clearInterval(interval);
+                resolve();
+            }
+        }, 600);
+    });
 }
+
 
 export { getRandomInt, abs, min, textToDiv, delay, HTMLToDiv, countdown, waitForEnter };

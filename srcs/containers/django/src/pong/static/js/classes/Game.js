@@ -30,6 +30,11 @@ class Game {
 		this.paddle1 = new Paddle(this.scene, this.field, true);
 		this.paddle2 = new Paddle(this.scene, this.field, false);
 		this.ball = new Ball(this.scene);
+		if (!this.ball)
+			console.log("Ball wasn't created");
+		else
+			console.log("Ball was created");
+
 		this.environment = new Environment(this.scene);
 		this.controls = new OrbitControls(this.cam1.camera, container);
 		this.audio = null;
@@ -47,17 +52,33 @@ class Game {
 		document.addEventListener('click', this.boundCreateAudioContext);
 	}
 	
-	// Create audio audio context once there is a first interaction with the website to comply with internet rules
+	// // Create audio audio context once there is a first interaction with the website to comply with internet rules
+	// async createAudioContext() {
+	// 	this.audio = new Audio(this.cam1);
+	// 	document.removeEventListener('click', this.boundCreateAudioContext);
+	// 	await delay(500); // crappy way to wait for the audio engigne to be fully loaded.
+	// 	this.audio.playSound(this.audio.woosh_1);
+	// 	this.cam1.introCameraAnimation();
+	// 	setTimeout(() => this.audio.playSound(this.audio.woosh_2),1200);
+	// 	setTimeout(() => this.audio.playSound(this.audio.chimes),2400);
+	// 	setTimeout(() => this.audio.playSound(this.audio.main),4000);
+	// 	this.ball.addAudio(this.audio);
+	// }
 	async createAudioContext() {
+		console.log('Creating audio context...');
 		this.audio = new Audio(this.cam1);
 		document.removeEventListener('click', this.boundCreateAudioContext);
-		await delay(500); // crappy way to wait for the audio engigne to be fully loaded.
+		await delay(500);
+
+		console.log('Audio initialized');
 		this.audio.playSound(this.audio.woosh_1);
 		this.cam1.introCameraAnimation();
-		setTimeout(() => this.audio.playSound(this.audio.woosh_2),1200);
-		setTimeout(() => this.audio.playSound(this.audio.chimes),2400);
-		setTimeout(() => this.audio.playSound(this.audio.main),4000);
+		setTimeout(() => this.audio.playSound(this.audio.woosh_2), 1200);
+		setTimeout(() => this.audio.playSound(this.audio.chimes), 2400);
+		setTimeout(() => this.audio.playSound(this.audio.main), 4000);
 		this.ball.addAudio(this.audio);
+		
+		
 	}
 
 	// These are the modes bound to the buttons in the menu

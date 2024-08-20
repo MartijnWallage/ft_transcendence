@@ -1,7 +1,5 @@
 import { getRandomInt, textToDiv, HTMLToDiv, countdown, waitForEnter } from '../utils.js';
 import { Score } from './Score.js';
-// import { Tournament } from './Tournament.js';
-// import { Game } from './Game.js';
 
 class Match {
 		constructor(game, players, connection) {
@@ -47,8 +45,83 @@ class Match {
 			this.keys['d'] = false;
 		});
 		console.log('Match instance created');
+
+		// this.enterElement = document.getElementById('enter');
+        // if (!this.enterElement) {
+        //     console.error('Enter element not found');
+        //     return;
+        // }
+        // this.enterElement.style.display = 'block';
+        // console.log('Enter element is now visible');
+
 	}
 
+	// Initialize DOM elements related to the match
+	async initializeDOMElements() {
+        const retryInterval = 500; // Time between retries in milliseconds
+        const maxRetries = 10; // Maximum number of retries
+        let retryCount = 0;
+
+        while (retryCount < maxRetries) {
+            try {
+                const player1Name = this.players[0].name;
+                const player2Name = this.players[1].name;
+
+                HTMLToDiv(player1Name, 'announcement-l1');
+                HTMLToDiv('VS', 'announcement-mid');
+                HTMLToDiv(player2Name, 'announcement-l2');
+                textToDiv('0', 'player1-score');
+                textToDiv(player1Name, 'player1-name');
+                textToDiv('0', 'player2-score');
+                textToDiv(player2Name, 'player2-name');
+
+                const enter = document.getElementById('enter');
+                if (enter) {
+                    enter.style.display = 'block';
+                    console.log('Enter element is now visible');
+                    return; // Exit loop if successful
+                } else {
+                    throw new Error('Enter element not found');
+                }
+            } catch (error) {
+                console.error(error.message);
+                retryCount++;
+                await new Promise(resolve => setTimeout(resolve, retryInterval));
+            }
+        }
+
+        console.error('Failed to initialize DOM elements after retries');
+    }
+
+	// Initialize DOM elements for a different state with retry mechanism
+    async initializeDOMElements2() {
+        const retryInterval = 500; // Time between retries in milliseconds
+        const maxRetries = 10; // Maximum number of retries
+        let retryCount = 0;
+
+        while (retryCount < maxRetries) {
+            try {
+                HTMLToDiv('', 'announcement-l1');
+                HTMLToDiv('', 'announcement-mid');
+                HTMLToDiv('', 'announcement-l2');
+
+                const enter = document.getElementById('enter');
+                if (enter) {
+                    enter.style.display = 'block';
+                    console.log('Enter element is now visible in initializeDOMElements2');
+                    return; // Exit loop if successful
+                } else {
+                    throw new Error('Enter element not found');
+                }
+            } catch (error) {
+                console.error(error.message);
+                retryCount++;
+                await new Promise(resolve => setTimeout(resolve, retryInterval));
+            }
+        }
+
+        console.error('Failed to initialize DOM elements 2 after retries');
+    }
 	// async play() {
 	// 	const player1Name = this.players[0].name;
 	// 	const player2Name = this.players[1].name;
@@ -122,6 +195,14 @@ class Match {
 	// }
 
 	async playRemote() {
+
+		// Verify the game object and properties
+		console.log('Match this.game:', this.game);
+		console.log('Match this.game.tournament:', this.game ? this.game.tournament : 'Game is undefined');
+		
+		const ball = this.game && this.game.tournament ? this.game.tournament.ball : null;
+		console.log('Match ball:', ball ? 'Ball is defined' : 'Ball is undefined');
+		
 		const player1Name = this.players[0].name;
 		const player2Name = this.players[1].name;
 		console.log('player1Name:', player1Name);
@@ -144,73 +225,68 @@ class Match {
 			console.error('No valid WebSocket connection found');
 		}
 
-		// Wait for both players to be instructed to load the page
-		const loadPagePromise = new Promise((resolve) => {
-			const onMessageHandler = (event) => {
-				console.log('Message received:', event.data);
-				const message = JSON.parse(event.data);
-				if (message.type === 'load_page') {
-					console.log('Received load_page message');
-					resolve();
-					this.connection.removeEventListener('message', onMessageHandler);
-				}
-			};
-			this.connection.addEventListener('message', onMessageHandler);
-		});
+		this.initializeDOMElements();
+
+		// Wait for audio to be initialized
+		// if (!this.game.audio) {
+		// 	console.error('0.Audio has not been initialized');
+		// 	return;
+		// }
 
 		console.log('Waiting for load_page message');
-		await loadPagePromise;  // Wait until the other player also loads the page
+		// await new Promise(resolve => setTimeout(resolve, 1000));
+
 		console.log('Received load_page message, now loading page');
 		// await window.loadPage('pong');
 		// here loadPage should be displayed in player 2
 		console.log('Match started remotely');
 
-		const ball = this.game.ball;
-
 		
-		
-		
-		console.log('Waiting for load_page message');
-		await loadPagePromise;
-
-		setTimeout(() => {
-			const announcementL1 = document.getElementById('announcement-l1');
-			if (announcementL1) {
-				HTMLToDiv(`${player1Name}`, 'announcement-l1');
-				HTMLToDiv('VS', 'announcement-mid');
-				HTMLToDiv(`${player2Name}`, 'announcement-l2');
-				textToDiv('0', 'player1-score');
-				textToDiv(player1Name, 'player1-name');
-				textToDiv('0', 'player2-score');
-				textToDiv(player2Name, 'player2-name');
-			} else {
-				console.error('Announcement elements not found');
-			}
-		}, 3000);
-
-
-	
-	
-
-		setTimeout(() => {
-			const enter = document.getElementById('enter');
-			if (!enter) {
-				console.error('Enter element not found');
-				return;
-			}
-			enter.style.display = 'block';
-			console.log('Enter element is now visible');
-			
-		}, 1000);  // 3-second delay
-
 		console.log('setting up Enter');
 
-		// Wait for the local player to press enter
-		await waitForEnter(enter);
-		// setTimeout(() => {
-		// 	waitForEnter(enter);
+		// Retry mechanism for finding the "Enter" element
+		const retryInterval = 500; // Time between retries in milliseconds
+		const maxRetries = 10; // Maximum number of retries
+		let retryCount = 0;
+		let enterElement = null;
+
+		while (retryCount < maxRetries) {
+			enterElement = document.getElementById('enter');
+			if (enterElement) {
+				console.log('Enter element found');
+				break;
+			}
+
+			retryCount++;
+			console.error(`Enter element not found, retrying (${retryCount}/${maxRetries})...`);
+			await new Promise(resolve => setTimeout(resolve, retryInterval));
+		}
+
+		if (enterElement) {
+			await waitForEnter(enterElement);
 			
-		// }, 3000);
+			// Add a 3-second delay after Enter is clicked
+			await new Promise(resolve => setTimeout(resolve, 3000));
+		} else {
+			console.error('Enter element not found after retries');
+			return;
+		}
+
+		console.log('Enter was clicked');
+
+		// const enterElement = document.getElementById('enter');
+		// if (enterElement) {
+		// 	console.log('Enter element found');
+		// 	await waitForEnter(enterElement);
+		// } else {
+		// 	console.error('Enter element not found');
+		// }
+
+		
+		console.log('Enter was clicked');
+		
+		// Wait for 3 seconds before proceeding
+		// await new Promise(resolve => setTimeout(resolve, 3000));
 
 		// Notify the server that Player 1 has pressed "enter"
 		if (this.connection) {
@@ -222,42 +298,39 @@ class Match {
 			console.error('No valid WebSocket connection found');
 		}
 
-		// Player 2 receives the update that Player 1 pressed "enter"
-		const enterAcknowledged = new Promise((resolve) => {
-			const onMessageHandler = (event) => {
-				console.log('Message received:', event.data);
-				const message = JSON.parse(event.data);
-				if (message.type === 'enter_acknowledged' && message.player === this.players[1].name) {
-					console.log(`Player 2 is ready after Player 1 pressed enter`);
-					resolve();
-					this.connection.removeEventListener('message', onMessageHandler);
-				}
-			};
-			this.connection.addEventListener('message', onMessageHandler);
-		});
-
-		// Wait for the server to acknowledge that Player 2 is ready
-		await enterAcknowledged;
-	
+		console.log('before : this.startMatch');
+		await this.startMatch(); 
+		console.log('after : this.startMatch');
+	}
 
 
+	async startMatch() {
 
+		// if (!this.game.audio) {
+		// 	console.error('1.Audio has not been initialized');
+		// 	return;
+		// }
+		// Log the game object and its properties
+		console.log('Game object:', this.game);
+		console.log('Game object:', this.game.tournament);
 
-		console.log('000000000');
+		console.log('Game ball:', this.game.tournament ? this.game.tournament.ball : 'Game object is undefined');
 
+		const ball = this.game && this.game.tournament ? this.game.tournament.ball : null;
+		
 
+		if (!ball) {
+			console.error('Ball is not defined in game.');
+			return;
+		}
 
+		this.initializeDOMElements2();
 
+		// HTMLToDiv(``, 'announcement-l1');
+		// HTMLToDiv(``, 'announcement-mid');
+		// HTMLToDiv(``, 'announcement-l2');
 
-
-
-
-
-
-
-		HTMLToDiv(``, 'announcement-l1');
-		HTMLToDiv(``, 'announcement-mid');
-		HTMLToDiv(``, 'announcement-l2');
+		//I should fix music later
 		await countdown(2, this.game.audio);
 
 
@@ -283,18 +356,24 @@ class Match {
 	
 		console.log('111111111');
 		// Wait for confirmation from the other player
-		await new Promise((resolve) => {
-			const onMessageHandler = (event) => {
-				const message = JSON.parse(event.data);
-				if (message.type === 'serve') {
-					resolve();
-					this.connection.removeEventListener('message', onMessageHandler);
-				}
-			};
-			this.connection.addEventListener('message', onMessageHandler);
-		});
+		// await new Promise((resolve) => {
+		// 	const onMessageHandler = (event) => {
+		// 		console.log('121212121');
+		// 		const message = JSON.parse(event.data);
+		// 		if (message.type === 'serve') {
+		// 			resolve();
+		// 			this.connection.removeEventListener('message', onMessageHandler);
+		// 		} else {
+		// 			console.log('131313131');
+		// 		}
+		// 	};
+		// 	this.connection.addEventListener('message', onMessageHandler);
+		// });
+
+		console.log('2222222222');
 	
 		ball.serve = serveDirection;
+		console.log('232333232323');
 		ball.serveBall();
 	
 		textToDiv('', 'announcement-l1');

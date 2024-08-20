@@ -167,10 +167,20 @@ class PingpongConsumer(AsyncWebsocketConsumer):
             # Log the error or handle it as needed
             print(f"Error sending load_page message: {str(e)}")
 
-    async def enterPressed(self, event):
-        # Send load page message to clients
+    async def enter_pressed(self, event):
+        # Broadcast the 'enter_pressed' event to all players
+        await self.channel_layer.group_send(
+            self.room_group_name,
+            {
+                'type': 'enter_acknowledged',
+                'player': event['player']
+            }
+        )
+
+    async def enter_acknowledged(self, event):
+        # Handle the 'enter_acknowledged' message
         await self.send(text_data=json.dumps({
-            'type': 'ready',
+            'type': 'enter_acknowledged',
             'player': event['player']
         }))
     
