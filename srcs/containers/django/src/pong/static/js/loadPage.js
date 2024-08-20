@@ -1,5 +1,5 @@
 import { updateUI, bindUserEventListeners} from './userMgmt.js';
-
+import { showMatches } from './match-history.js';
 
 function loadPageClosure(game) {
 	return async (page) => {
@@ -32,6 +32,9 @@ function loadPageClosure(game) {
 			console.log('Page UI updated:', page);
 			bindUserEventListeners(mainContent);
 			bindEventListeners(game);
+			if (page === 'match_history') {
+				dropDownEventListeners();
+			}
 			
 		} catch (error) {
 			console.error('Error loading page:', error);
@@ -82,7 +85,7 @@ function bindEventListeners(game) {
 
 	let replayBtn = document.getElementById('js-replay-btn');
 	if (replayBtn) {
-			replayBtn.addEventListener('click', game.replayGame.bind(game));
+		replayBtn.addEventListener('click', game.replayGame.bind(game));
 	}
 }
 
@@ -110,6 +113,39 @@ function bindMenuEventListeners(game){
 	document.getElementById('user-avatar').addEventListener('click', function() {
 		loadPage('dashboard');
 	});
+
+
+	// Match History
+
+    var matchHistory = document.getElementById('match-history-btn');
+    if (matchHistory) {
+        matchHistory.addEventListener('click', function() {
+            loadPage('match_history');
+		
+        });
+    }
+
+}
+
+function dropDownEventListeners() {
+	var dropdown1v1 = document.getElementById('dropdown-1v1');
+	if (dropdown1v1) {
+		dropdown1v1.addEventListener('click', showMatches('1v1'));
+            // loadPage('match_history');
+		
+	}
+	var dropdownTournament = document.getElementById('dropdown-tournament');
+	if (dropdownTournament) {
+		dropdownTournament.addEventListener('click', showMatches('tournament'));
+            // loadPage('match_history');
+    }
+	
+
+	var dropdownVsAI = document.getElementById('dropdown-vs-ai');
+	if (dropdownVsAI) {
+		dropdownVsAI.addEventListener('click', showMatches('vsAI'));
+            // loadPage('match_history');
+	}
 }
 
 function fadeIn(element) {

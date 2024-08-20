@@ -17,6 +17,7 @@ const matchData = {
 
 function showMatches(mode) {
 	console.log("showMatches");
+	console.log("mode: ", mode);
 	const tableBody = document.getElementById('matchTableBody');
 	const matchTitle = document.getElementById('matchTitle');
 	const matches = matchData[mode];
@@ -51,6 +52,7 @@ function showMatches(mode) {
 }
 
 function showMatchDetails(matchId, mode) {
+	console.log("LOG: showMatchDetails");
 	const match = matchData[mode].find(m => m.id === matchId);
 	const modalOpponent = document.getElementById('modalOpponent');
 	const modalDate = document.getElementById('modalDate');
@@ -73,3 +75,5 @@ function showMatchDetails(matchId, mode) {
 		modalEvents.appendChild(eventItem);
 	});
 }
+
+export { showMatches, showMatchDetails };
