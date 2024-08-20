@@ -29,19 +29,20 @@
     </button>
   </div>
 
-  <div id="user-info" class="fixed-top d-flex justify-content-end align-items-center m-4 p-2" style="text-align: right;">
-    <div id="user-name" class="text-white pr-2">Guest</div>
-    <img id="user-avatar" src="{% static 'images/guest.png' %}" alt="User Avatar" style="width: 40px; height: 40px; border-radius: 25%;">
-  </div>
-  <div id="gameButtons" class="fixed-top p-4 d-flex align-items-start">
-	<button type="button" class="btn btn-outline-light mx-1" id="js-option-btn">=</button>
-	<button type="button" class="btn btn-outline-light mx-1" id="js-login-btn" onclick="loadPage('login_user')" style="display: none;">Login</button>
-	<button type="button" class="btn btn-outline-light mx-1" id="js-logout-btn" style="display: none;">Logout</button>
-  <button type="button" class="btn btn-outline-light mx-1" id="profile-changer" onclick="loadPage('dashboard')" style="display: none;">Update Profile</button>
-	<button type="button" class="btn btn-outline-light mx-1" id="js-tournament_score-btn" onclick="loadPage('tournament_score')" style="display: none;">Score Tournament</button>
-	<button type="button" class="btn btn-outline-light mx-1" id="js-audio-btn" style="display: none;">Audio on</button>
-	<button type="button" class="btn btn-outline-light mx-1" id="js-end-game-btn" style="display: none;">Exit</button>
-  </div>
+  <div id="header" class="fixed-top d-flex justify-content-between align-items-center p-4">
+    <div id="gameButtons" class="d-flex align-items-start">
+        <button type="button" class="btn btn-outline-light mx-1" id="js-option-btn">=</button>
+        <button type="button" class="btn btn-outline-light mx-1" id="js-login-btn" onclick="loadPage('login_user')" style="display: none;">Login</button>
+        <button type="button" class="btn btn-outline-light mx-1" id="js-logout-btn" style="display: none;">Logout</button>
+        <button type="button" class="btn btn-outline-light mx-1" id="js-tournament_score-btn" onclick="loadPage('tournament_score')" style="display: none;">Score Tournament</button>
+        <button type="button" class="btn btn-outline-light mx-1" id="js-audio-btn" style="display: none;">Audio on</button>
+        <button type="button" class="btn btn-outline-light mx-1" id="js-end-game-btn" style="display: none;">Exit</button>
+    </div>
+    <div id="user-info" class="d-flex align-items-center">
+        <div id="user-name" class="text-white pr-2" style="cursor: pointer;">Guest</div>
+        <img id="user-avatar" src="{% static 'images/guest.png' %}" alt="User Avatar" style="width: 40px; height: 40px; border-radius: 25%; cursor: pointer;">
+    </div>
+</div>
     <div id="vertical-line" style="display: none;"></div>
     <div id="web-app">
       <div id="main-content" class="container-fluid"></div></div>

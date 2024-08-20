@@ -30,7 +30,6 @@ class Game {
 		this.paddle2 = new Paddle(this.scene, this.field, false);
 		this.ball = new Ball(this.scene);
 		this.environment = new Environment(this.scene);
-		// this.controls = new OrbitControls(this.cam1.camera, container);
 		this.audio = null;
 
 		// Game state
@@ -39,6 +38,7 @@ class Game {
 		this.match = null;
 		this.tournament = null;
 		this.readyForNextMatch = false;
+		this.isOptionMenuVisible = false;
 		this.mode = 'none';
 		this.loggedUser = 'Guest';
 
@@ -116,51 +116,44 @@ class Game {
 		this.renderer.setSize( window.innerWidth, window.innerHeight );
 	}
 
-	showOptionMenu() {
-		displayDiv('js-tournament_score-btn');
-		displayDiv('js-audio-btn');
-		if (this.loggedUser === 'Guest') {
-			displayDiv('js-login-btn');
+	viewOptionMenu() {
+		console.log('viewOptionMenu');
+		console.log(this.isOptionMenuVisible);
+		if (this.isOptionMenuVisible === false) {
+			console.log('displaying option menu');
+			displayDiv('js-tournament_score-btn');
+			displayDiv('js-audio-btn');
+			if (this.loggedUser === 'Guest') {
+				displayDiv('js-login-btn');
+			}
+			else {
+				displayDiv('js-logout-btn');
+			}
+			displayDiv('js-end-game-btn');
+			textToDiv('-', 'js-option-btn');
+			this.isOptionMenuVisible = true;
 		}
 		else {
-			displayDiv('js-logout-btn');
-			displayDiv('profile-changer');
+			console.log('hiding option menu');
+			notDisplayDiv('js-tournament_score-btn');
+			notDisplayDiv('js-audio-btn');
+			notDisplayDiv('js-login-btn');
+			notDisplayDiv('js-logout-btn');
+			notDisplayDiv('js-end-game-btn');
+			textToDiv('=', 'js-option-btn');
+			this.isOptionMenuVisible = false;
 		}
-		displayDiv('js-end-game-btn');
-		textToDiv('-', 'js-option-btn');
-
-		let optionBtn = document.getElementById('js-option-btn');
-		optionBtn.removeEventListener('click', this.showOptionMenu.bind(this));
-		optionBtn.addEventListener('click', this.hideOptionMenu.bind(this));
 	}
-
-	hideOptionMenu() {
-		notDisplayDiv('js-tournament_score-btn');
-		notDisplayDiv('js-audio-btn');
-		notDisplayDiv('js-login-btn');
-		notDisplayDiv('js-logout-btn');
-		notDisplayDiv('js-end-game-btn');
-		textToDiv('=', 'js-option-btn');
-
-		let optionBtn = document.getElementById('js-option-btn');
-		optionBtn.removeEventListener('click', this.hideOptionMenu.bind(this));
-		optionBtn.addEventListener('click', this.showOptionMenu.bind(this));
-	}
-
+	
 	muteAudio() {
-		this.audio.muteSounds();
-		textToDiv('Audio off', 'js-audio-btn');
-		let audioBtn = document.getElementById('js-audio-btn');
-		audioBtn.removeEventListener('click', this.muteAudio.bind(this));
-		audioBtn.addEventListener('click', this.unmuteAudio.bind(this));
-	}
-
-	unmuteAudio() {
-		this.audio.unmuteSounds();
-		textToDiv('Audio on', 'js-audio-btn');
-		let audioBtn = document.getElementById('js-audio-btn');
-		audioBtn.removeEventListener('click', this.unmuteAudio.bind(this));
-		audioBtn.addEventListener('click', this.muteAudio.bind(this));
+		if (this.audio.mute === false) {
+			this.audio.muteSounds();
+			textToDiv('Audio off', 'js-audio-btn');
+		}
+		else {
+			this.audio.unmuteSounds();
+			textToDiv('Audio on', 'js-audio-btn');
+		}
 	}
 
 	executeBlockchain() {
