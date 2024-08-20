@@ -103,7 +103,7 @@
 
     function initializepingpongWebSocket() {
         
-        pingpongsocket = new WebSocket('wss://10.15.109.3:8443/ws/pingpongsocket/');
+        pingpongsocket = new WebSocket('wss://10.15.203.3:8443/ws/pingpongsocket/');
         
         pingpongsocket.onopen = function(event) {
             console.log('WebSocket connection opened');
@@ -360,7 +360,7 @@
         // WebSocket allows for efficient, bidirectional communication, 
         // making it suitable for applications like chat rooms, live updates, and multiplayer games
 
-        let chatSocket = new WebSocket('wss://10.15.109.3:8443/ws/chatsocket/');
+        let chatSocket = new WebSocket('wss://10.15.203.3:8443/ws/chatsocket/');
 
         // When a message is received from the chatSocket server
         // the onmessage event handler is triggered.
