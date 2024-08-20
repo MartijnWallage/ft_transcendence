@@ -82,6 +82,10 @@
 	-ms-user-select: none;
 }
 
+#user-name, #user-avatar {
+	cursor: pointer;
+}
+
 #under-title {
 	opacity: 1;
 	transition: opacity 1.5s ease;

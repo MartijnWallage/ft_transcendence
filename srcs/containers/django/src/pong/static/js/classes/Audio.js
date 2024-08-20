@@ -5,6 +5,7 @@ class Audio {
 		this.listener = new THREE.AudioListener();
 		camera.camera.add(this.listener);
 		this.audioObjects = [];
+		this.mute = false;
 		this.win = this. addSound('./static/audio/win.mp3', false);
 		this.main = this.addSound('./static/audio/theme.mp3', true);
 		this.ping = this.addSound('./static/audio/ping.mp3', false);
@@ -40,12 +41,14 @@ class Audio {
 	muteSounds() {
 		this.audioObjects.forEach(audio => {
 			audio.setVolume(0);
+			this.mute = true;
 		});
 	}
 
 	unmuteSounds() {
 		this.audioObjects.forEach(audio => {
 			audio.setVolume(1.0);
+			this.mute = false;
 		});
 	}
 }
