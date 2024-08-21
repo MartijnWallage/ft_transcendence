@@ -1,11 +1,10 @@
-import json
 from collections import deque
 from channels.generic.websocket import AsyncWebsocketConsumer
+import json
 
 class PongConsumer(AsyncWebsocketConsumer):
 
     players = deque()  # Deque to store players' information
-    player_role = 'A'
     
     async def connect(self):
         # Assign the room group name to share state between two players
@@ -16,6 +15,12 @@ class PongConsumer(AsyncWebsocketConsumer):
             self.room_group_name,
             self.channel_name
         )
+
+        # Determine player role based on the number of connected players
+        if len(self.players) % 2 == 0:
+            self.player_role = 'A'
+        else:
+            self.player_role = 'B'
 
         await self.accept()
 
@@ -46,9 +51,6 @@ class PongConsumer(AsyncWebsocketConsumer):
                 'channel_name': self.channel_name
             }
             self.players.append(player_info)
-
-            # Alternate player role for the next connection
-            self.player_role = 'B' if self.player_role == 'A' else 'A'
 
             # Broadcast the updated player list to everyone
             await self.broadcast_player_list()
@@ -82,19 +84,13 @@ class PongConsumer(AsyncWebsocketConsumer):
                 }
             )
 
-    async def player_connected(self, event):
-        # Send the connected status to WebSocket
+    async def player_info(self, event):
+        # Send the player's data to WebSocket
         await self.send(text_data=json.dumps({
             'type': 'player_connected',
             'player': event['player'],
-            'player_role': event['player_role']
-        }))
-
-    async def player_ready(self, event):
-        # Send the ready status to WebSocket
-        await self.send(text_data=json.dumps({
-            'type': 'player_ready',
-            'player': event['player']
+            'player_role': event['player_role'],
+            'ready': event['ready']
         }))
 
     async def game_state(self, event):
@@ -110,9 +106,8 @@ class PongConsumer(AsyncWebsocketConsumer):
             'type': 'start',
         }))
 
-
     async def broadcast_player_list(self):
-    # Broadcast each player's data separately to everyone in the group
+        # Broadcast each player's data separately to everyone in the group
         for player in self.players:
             await self.channel_layer.group_send(
                 self.room_group_name,
@@ -123,12 +118,3 @@ class PongConsumer(AsyncWebsocketConsumer):
                     'ready': player['ready']
                 }
             )
-
-    async def player_info(self, event):
-    # Send the player's data to WebSocket
-        await self.send(text_data=json.dumps({
-            'type': 'player_info',
-            'player': event['player'],
-            'player_role': event['player_role'],
-            'ready': event['ready']
-        }))
