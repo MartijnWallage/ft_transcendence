@@ -88,16 +88,26 @@ class Game {
 		this.match.play();
 	}
 
-	startVsOnline() {
+	async startVsOnline() {
 		this.mode = 'vsOnline';
 		this.audio.playSound(this.audio.select_2);
 		const player1 = new Player(this.loggedUser);
 		const socket = this.socket;
-		let player2 = null;
-	
+		
 		// Create a promise to wait for player2
 		const player2Promise = new Promise((resolve, reject) => {
-			socket.onmessage = function(e) {
+			let player2 = null;
+	
+			// WebSocket open handler
+			socket.onopen = () => {
+				socket.send(JSON.stringify({
+					'type': 'connected',
+					'player': player1.name,
+				}));
+			};
+	
+			// WebSocket message handler
+			socket.onmessage = (e) => {
 				const data = JSON.parse(e.data);
 	
 				if (data.type === 'player_connected') {
@@ -106,36 +116,45 @@ class Game {
 					} else if (data.player !== this.loggedUser) {
 						player2 = new Player(data.player);
 						console.log('Player ' + data.player + ' connected as player ' + data.player_role);
-						resolve(player2);  // Resolve the promise when player2 is created
 					}
 				}
 	
 				if (data.type === 'player_ready') {
 					// Handle player ready status
 					console.log('Player ' + data.player + ' is ready');
-				}
 	
-				// if (data.type === 'game_state') {
-				//  Update the game state
-				//  updateGameState(data.state);
+					// Resolve the promise if both players are ready
+					if (player1.online_role && player2) {
+						resolve({ player1, player2 });
+					}
 				}
+			};
+	
+			// WebSocket error handler
+			socket.onerror = (error) => {
+				reject(new Error('WebSocket error: ' + error.message));
+			};
+	
+			// WebSocket close handler
+			socket.onclose = () => {
+				if (!player2) {
+					reject(new Error('WebSocket connection closed before player2 connected'));
+				}
+			};
 		});
 	
-		socket.onopen = function(e) {
-			socket.send(JSON.stringify({
-				'type': 'connected',
-				'player': player1.name,
-			}));
-		};
+		try {
+			// Wait for both players to be ready
+			const { player1, player2 } = await player2Promise;
 	
-		// Use the promise to wait for player2 and then start the match
-		player2Promise.then((player2) => {
+			// Initialize and start the match
 			this.match = new Match(this, [player1, player2]);
 			this.match.play();
-		}).catch((error) => {
-			console.error('Error waiting for player2:', error);
-		});
-	}
+		} catch (error) {
+			// Handle errors (e.g., WebSocket errors or player2 not connected)
+			console.error('Error starting the match:', error);
+		}
+	}	
 
 	createTournament() {
 		this.mode = 'tournament';
