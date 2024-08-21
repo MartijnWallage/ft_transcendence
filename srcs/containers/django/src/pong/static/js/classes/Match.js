@@ -142,18 +142,22 @@ class Match {
 	}
 	
 	sendGameState(socket) {
-		// Construct the data to be sent
-		const gameState = {
-			type: 'game_update',
-			paddle_position: {
-				'A': this.game.paddle1.getPosition(), // Assuming getPosition() returns {x, z}
-				'B': this.game.paddle2.getPosition()
-			},
-			ball_position: this.game.ball.getPosition() // Assuming getPosition() returns {x, z}
-		};
-
-		// Send the game state to the server
-		socket.send(JSON.stringify(gameState));
+		if (socket.readyState === WebSocket.OPEN) {
+			// Construct the game state data
+			const gameState = {
+				type: 'game_update',
+				paddle_position: {
+					'A': this.game.paddle1.getPosition(), // Assuming getPosition() returns {x, z}
+					'B': this.game.paddle2.getPosition()
+				},
+				ball_position: this.game.ball.getPosition() // Assuming getPosition() returns {x, z}
+			};
+	
+			// Send the game state to the server
+			socket.send(JSON.stringify(gameState));
+		} else {
+			console.error('WebSocket is not open. Ready state:', socket.readyState);
+		}
 	}
 }
 
