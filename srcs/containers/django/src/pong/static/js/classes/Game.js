@@ -158,7 +158,7 @@ class Game {
 			checkPlayer2();
 			const interval = setInterval(() => {
 				checkPlayer2();
-			}, 100); // Check every 100ms
+			}, 5); // Check every 100ms
 	
 			// WebSocket error handler
 			socket.onerror = (error) => {
