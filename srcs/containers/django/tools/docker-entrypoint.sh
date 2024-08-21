@@ -3,6 +3,7 @@ set -e
 
 sudo mkdir -p $APP_HOME/media/ && sudo chown -R myuser:mygroup $APP_HOME/media/ && sudo chmod -R 755 $APP_HOME/media/
 
+echo "creating ssl keys..."
 sudo mkdir -p /tmp/daphne/ssl
 openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
         -keyout /tmp/daphne/ssl/daphne.key \
