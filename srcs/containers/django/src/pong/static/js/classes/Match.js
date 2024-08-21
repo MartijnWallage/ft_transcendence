@@ -46,6 +46,7 @@ class Match {
 	}
 
 	updateReceivedData() {
+		console.log()
         if (this.game.socket_data.type === 'game_state') {
             const state = this.game.socket_data.state;
 

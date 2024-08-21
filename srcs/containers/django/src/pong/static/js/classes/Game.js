@@ -91,34 +91,57 @@ class Game {
 		this.match.play();
 	}
 
+	initSocket() {
+        if (this.socket) {
+            this.socket.close(); // Close existing connection if it exists
+        }
+
+        this.socket = new WebSocket('wss://' + window.location.host + '/ws/pong/');
+
+        this.socket.onopen = () => {
+            console.log('WebSocket connection opened');
+				socket.send(JSON.stringify({
+					'type': 'connected',
+					'player': player1.name,
+				}));
+        };
+
+        this.socket.onclose = (event) => {
+            console.log('WebSocket closed', event);
+            this.handleReconnection();
+        };
+
+        this.socket.onerror = (error) => {
+            console.error('WebSocket error', error);
+        };
+
+        this.socket.onmessage = (e) => {
+			this.socket_data = JSON.parse(e.data);
+			console.log('Received message:', this.socket_data);
+        };
+    }
+
+	handleReconnection() {
+        // Attempt to reconnect
+        setTimeout(() => {
+            console.log('Reconnecting...');
+            this.initSocket();
+        }, this.reconnectInterval);
+    }
+
 	async startVsOnline() {
 		this.mode = 'vsOnline';
 		this.audio.playSound(this.audio.select_2);
 		const player1 = new Player(this.loggedUser);
-		if (this.socket === null) {
-			this.socket = new WebSocket('wss://' + window.location.host + '/ws/pong/');
-		}
+		this.initSocket();
+
 		const socket = this.socket;
 		
 		let player2 = null;
 		// Create a promise to wait for player2
 		const player2Promise = new Promise((resolve, reject) => {
 			console.log('starting promise');
-	
-			// WebSocket open handler
-			socket.onopen = () => {
-				console.log('WebSocket connection opened');
-				socket.send(JSON.stringify({
-					'type': 'connected',
-					'player': player1.name,
-				}));
-			};
-	
-			// WebSocket message handler
-			socket.onmessage = (e) => {
-				this.socket_data = JSON.parse(e.data);
-				console.log('Received message:', this.socket_data);
-	
+			while (this.socket_data === null) {
 				if (this.socket_data.type === 'player_connected') {
 					if (this.socket_data.player === this.loggedUser) {
 						player1.online_role = this.socket_data.player_role;
@@ -129,19 +152,7 @@ class Game {
 						resolve({ player1, player2 });
 					}
 				}
-			};
-	
-			// WebSocket error handler
-			socket.onerror = (error) => {
-				reject(new Error('WebSocket error: ' + error.message));
-			};
-	
-			// WebSocket close handler
-			socket.onclose = () => {
-				if (!player2) {
-					reject(new Error('WebSocket connection closed before player2 connected'));
-				}
-			};
+			}
 		});
 	
 		try {
