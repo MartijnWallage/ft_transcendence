@@ -144,9 +144,11 @@ class Game {
 					if (this.socket_data.player === this.loggedUser) {
 						player1.online_role = this.socket_data.player_role;
 						console.log('local role assigned to ' + this.socket_data.player_role);
+						this.socket_data = null;
 					} else if (this.socket_data.player !== this.loggedUser) {
 						const player2 = new Player(this.socket_data.player);
 						console.log('player 2 created');
+						this.socket_data = null;
 						resolve({ player1, player2 });
 					}
 				}

@@ -76,7 +76,11 @@ class PongConsumer(AsyncWebsocketConsumer):
                 self.room_group_name,
                 {
                     'type': 'game_state',
-                    'state': data.get('state')
+                    'state': {
+                        'paddle_A': self.game_state.get('paddle_A', None),
+                        'paddle_B': self.game_state.get('paddle_B', None),
+                        'ball': self.game_state.get('ball', None)
+                    }
                 }
             )
 
@@ -91,13 +95,14 @@ class PongConsumer(AsyncWebsocketConsumer):
 
     async def game_state(self, event):
         # Send the game state to WebSocket
+        state = event.get('state', {})
         await self.send(text_data=json.dumps({
-            'type': 'game_state',
-            'state': {
-                'paddle_A': event['state'].get('paddle_A', None),
-                'paddle_B': event['state'].get('paddle_B', None),
-                'ball': event['state'].get('ball', None)
-            }
+        'type': 'game_state',
+        'state': {
+            'paddle_A': state.get('paddle_A', None),
+            'paddle_B': state.get('paddle_B', None),
+            'ball': state.get('ball', None)
+        }
         }))
 
     async def broadcast_player_list(self):
