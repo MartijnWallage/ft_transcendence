@@ -27,22 +27,20 @@ class PongConsumer(AsyncWebsocketConsumer):
     async def receive(self, text_data):
         # Receive message from WebSocket
         data = json.loads(text_data)
-        message_type = data['type']
+        message_type = data.get('type')
 
         if message_type == 'connected':
-            # Broadcast the ready status
+            # Broadcast the connected status
             await self.channel_layer.group_send(
                 self.room_group_name,
                 {
                     'type': 'player_connected',
-                    'player': data['player'],
+                    'player': data.get('player'),
                     'player_role': self.player_counter,
                 }
             )
-            if self.player_counter == 'A':
-                self.player_counter = 'B'
-            else:
-                self.player_counter = 'A'
+            # Alternate player role
+            self.player_counter = 'B' if self.player_counter == 'A' else 'A'
 
         elif message_type == 'ready':
             # Broadcast the ready status
@@ -50,7 +48,7 @@ class PongConsumer(AsyncWebsocketConsumer):
                 self.room_group_name,
                 {
                     'type': 'player_ready',
-                    'player': data['player'],
+                    'player': data.get('player'),
                 }
             )
             
@@ -60,9 +58,17 @@ class PongConsumer(AsyncWebsocketConsumer):
                 self.room_group_name,
                 {
                     'type': 'game_state',
-                    'state': data['state']
+                    'state': data.get('state')
                 }
             )
+
+    async def player_connected(self, event):
+        # Send the connected status to WebSocket
+        await self.send(text_data=json.dumps({
+            'type': 'player_connected',
+            'player': event['player'],
+            'player_role': event['player_role']
+        }))
 
     async def player_ready(self, event):
         # Send the ready status to WebSocket
