@@ -91,7 +91,7 @@ class Game {
 		this.match.play();
 	}
 
-	initSocket() {
+	initSocket(player1) {
         if (this.socket) {
             this.socket.close(); // Close existing connection if it exists
         }
@@ -133,7 +133,7 @@ class Game {
 		this.mode = 'vsOnline';
 		this.audio.playSound(this.audio.select_2);
 		const player1 = new Player(this.loggedUser);
-		this.initSocket();
+		this.initSocket(player1);
 
 		const socket = this.socket;
 		
@@ -142,7 +142,7 @@ class Game {
 		const player2Promise = new Promise((resolve, reject) => {
 			console.log('starting promise');
 			while (1) {
-				if (this.socket_data.type === 'player_connected') {
+				if (this.socket_data != null && this.socket_data.type === 'player_connected') {
 					if (this.socket_data.player === this.loggedUser) {
 						player1.online_role = this.socket_data.player_role;
 						console.log('local role assigned to ' + this.socket_data.player_role);
