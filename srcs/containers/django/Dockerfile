@@ -41,7 +41,8 @@ COPY src/ .
 
 RUN echo 'myuser ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 # Set the user for subsequent instructions
-USER myuser
+# USER myuser
+USER root
 # RUN mkdir -p $APP_HOME/media/ \
 #     && chown -R myuser:mygroup $APP_HOME/media/ \
 #     && chmod -R 755 $APP_HOME/media/
