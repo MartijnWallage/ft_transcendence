@@ -15,6 +15,7 @@ class AI {
         this.updateInterval = 1000; // 1000 milliseconds = 1 second
         this.init();
 		this.humanPaddle = this.game.paddle1;
+//		this.game.paddle2.speed *= 0.5; // For setting difficulty level
 		this.AIPaddle = this.game.paddle2;
 		this.AIPaddle.dz = 1; // for PickfordDefense AI paddle moves up and down with the ball prediction as middle
 		const halfCourt = this.game.field.geometry.parameters.depth / 2;
@@ -31,7 +32,7 @@ class AI {
 
     // Method to refresh the AI's view of the game
     refreshView() {
-		if (!this.game.running) {
+		if (!this.game.running || this.game.ball.dx == 0) {
 			return;
 		}
         const currentTime = Date.now();
@@ -39,16 +40,13 @@ class AI {
             this.lastUpdateTime = currentTime;
 			const ball = this.copyBall(this.game.ball);
 			const humanPaddle = this.copyPaddle(this.humanPaddle);
-			if (abs(ball.dx) > 0) {
-				this.predictionBallZ = this.updateDestination(ball, humanPaddle);
-				let aim = getRandomInt(0, 1) ? this.aimUpper : this.aimLower;
-				this.bestPaddlePosition = this.findPaddlePosition(ball, aim);
-			}
+			this.predictionBallZ = this.updateDestination(ball, humanPaddle);
+			let aim = humanPaddle.z > 0 ? this.aimUpper : this.aimLower;
+			this.bestPaddlePosition = this.findPaddlePosition(ball, aim);
         }
     }
 
 	computeBallStraightLine(ball) {
-		// to avoid infinite loops, ball.dz is not allowed to be 1
 		const paddle = ball.dx < 0 ? this.game.paddle1 : this.game.paddle2;
 		const paddleHalfWidth = paddle.geometry.parameters.width / 2;
 		const ballRadius = ball.radius;
@@ -74,8 +72,8 @@ class AI {
 		const timeToWall = distanceToWall / abs(ball.dz);
 		ball.x = ball.x + timeToWall * ball.dx + ball.dx;
 		ball.z = wall < 0 ?
-			wall + ball.radius :
-			wall - ball.radius;
+			wall + ball.radius + ball.dz:
+			wall - ball.radius + ball.dz;
 		ball.dz = -ball.dz;
 		return this.computeNextBallZ(ball);
 	}
