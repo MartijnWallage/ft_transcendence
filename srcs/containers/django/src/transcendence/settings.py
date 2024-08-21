@@ -49,7 +49,7 @@ INSTALLED_APPS = [
     'rest_framework',
     # 'pong',
     'crispy_bootstrap5',
-    'crispy_forms'
+    'crispy_forms',
     'channels',
 ]
 
