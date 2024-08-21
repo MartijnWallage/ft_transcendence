@@ -49,9 +49,10 @@ class Match {
 		if (this.game.socket_data && this.game.socket_data.type === 'game_state') {
 			const state = this.game.socket_data.state;
 			console.log('Received game state:', state);
-	
-			// Determine the player's role
-			const myRole = this.game.playerRole;  // Assuming you store the role in this.game.playerRole
+
+			const player1 = this.game.match.players[0]; // Assuming player1 is always the logged-in user
+        	const myRole = player1.online_role;
+
 			console.log('My role:', myRole);
 			// Update the other player's paddle position only
 			if (myRole === 'A' && state.paddle_B !== undefined) {
