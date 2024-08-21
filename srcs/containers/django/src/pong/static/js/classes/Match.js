@@ -46,9 +46,9 @@ class Match {
 	}
 
 	updateReceivedData() {
-		console.log()
-        if (this.game.socket_data.type === 'game_state') {
+        if (this.socket_data && this.game.socket_data.type === 'game_state') {
             const state = this.game.socket_data.state;
+			console.log('Received game state:', state);
 
             // Update paddles and ball positions
             if (state.paddle_A) {
