@@ -6,7 +6,7 @@ sudo mkdir -p $APP_HOME/media/ && sudo chown -R myuser:mygroup $APP_HOME/media/ 
 echo "creating ssl folder..."
 sudo mkdir -p /tmp/daphne/ssl
 echo "creating ssl keys..."
-openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
+sudo openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
         -keyout /tmp/daphne/ssl/daphne.key \
         -out /tmp/daphne/ssl/daphne.crt \
         -subj "/C=DE/L=Berlin/O=42Berlin/CN=nginx" 
