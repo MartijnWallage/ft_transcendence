@@ -42,6 +42,8 @@ class Game {
 		this.mode = 'none';
 		this.loggedUser = 'Guest';
 
+		this.socket = new WebSocket('wss://' + window.location.host + '/ws/pong/');
+
 		console.log('Game class created');
 		this.boundCreateAudioContext = this.createAudioContext.bind(this);
 		document.addEventListener('click', this.boundCreateAudioContext);
@@ -90,18 +92,28 @@ class Game {
 		this.mode = 'vsOnline';
 		this.audio.playSound(this.audio.select_2);
 		const player1 = new Player(this.loggedUser);
-		const socket = new WebSocket('wss://' + window.location.host + '/ws/pong/');
+		const socket = this.socket;
+		var player2 = null;
 
 		socket.onopen = function(e) {
 			socket.send(JSON.stringify({
-				'type': 'ready',
-				'player': player1.name
+				'type': 'connected',
+				'player': player1.name,
 			}));
 		};
 
 		socket.onmessage = function(e) {
 			const data = JSON.parse(e.data);
 			
+			if (data.type === 'player_connected') {
+				if (data.player === this.loggedUser) {
+					player1.online_role = data.player_role;
+				}
+				else if (data.player !== this.loggedUser) {
+					player2 = new Player(data.player);
+				console.log('Player ' + data.player + ' connected as player ' + data.player_role);
+			}
+
 			if (data.type === 'player_ready') {
 				// Handle player ready status
 				console.log('Player ' + data.player + ' is ready');
@@ -110,13 +122,15 @@ class Game {
 			// if (data.type === 'game_state') {
 			// 	// Update the game state
 			// 	updateGameState(data.state);
-			// }
+			}
 		};
 
-		
-		// const player2 = new Player('Guest 2');
-		// this.match = new Match(this, [player1, player2]);
-		// this.match.play();
+		while (player2 === null) {
+			(void 0);
+		}
+
+		this.match = new Match(this, [player1, player2]);
+		this.match.play();
 	}
 
 	createTournament() {

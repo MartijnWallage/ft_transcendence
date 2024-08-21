@@ -4,6 +4,7 @@ class Player {
 	constructor(name) {
 		this.name = name;
 		this.ai = null;
+		this.online_role = null;
 
 		this.stats = {
 			wins: 0,

@@ -2,6 +2,9 @@ import json
 from channels.generic.websocket import AsyncWebsocketConsumer
 
 class PongConsumer(AsyncWebsocketConsumer):
+
+    player_counter = 'A'
+    
     async def connect(self):
         # Assign the room group name to share state between two players
         self.room_group_name = 'pong_game'
@@ -26,7 +29,22 @@ class PongConsumer(AsyncWebsocketConsumer):
         data = json.loads(text_data)
         message_type = data['type']
 
-        if message_type == 'ready':
+        if message_type == 'connected':
+            # Broadcast the ready status
+            await self.channel_layer.group_send(
+                self.room_group_name,
+                {
+                    'type': 'player_connected',
+                    'player': data['player'],
+                    'player_role': self.player_counter,
+                }
+            )
+            if self.player_counter == 'A':
+                self.player_counter = 'B'
+            else:
+                self.player_counter = 'A'
+
+        elif message_type == 'ready':
             # Broadcast the ready status
             await self.channel_layer.group_send(
                 self.room_group_name,
@@ -35,6 +53,7 @@ class PongConsumer(AsyncWebsocketConsumer):
                     'player': data['player'],
                 }
             )
+            
         elif message_type == 'game_update':
             # Broadcast the game state to the group
             await self.channel_layer.group_send(
