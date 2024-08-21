@@ -12,7 +12,7 @@ class PongConsumer(AsyncWebsocketConsumer):
     }
     
     async def connect(self):
-        # Assign the room group name to share state between two players
+        # Assign the room group name to share state between players
         self.room_group_name = 'pong_game'
 
         # Join room group
@@ -71,21 +71,12 @@ class PongConsumer(AsyncWebsocketConsumer):
             await self.broadcast_player_list()
 
         elif message_type == 'game_update':
-            # Broadcast the game state to the group
-            await self.channel_layer.group_send(
-                self.room_group_name,
-                {
-                    'type': 'game_state',
-                    'state': data.get('state')
-                }
-            )
-        
-        elif message_type == 'game_update':
             # Update the game state based on the player's role
+            paddle_position = data.get('paddle_position', {})
             if self.player_role == 'A':
-                self.game_state['paddle_A'] = data.get('paddle_position', self.game_state['paddle_A'])
+                self.game_state['paddle_A'] = paddle_position
             else:
-                self.game_state['paddle_B'] = data.get('paddle_position', self.game_state['paddle_B'])
+                self.game_state['paddle_B'] = paddle_position
 
             # Update the ball position (this can be done by any player or a game loop on the server)
             if 'ball_position' in data:
@@ -110,13 +101,13 @@ class PongConsumer(AsyncWebsocketConsumer):
         }))
 
     async def game_state(self, event):
-    # Send the game state to WebSocket
+        # Send the game state to WebSocket
         await self.send(text_data=json.dumps({
             'type': 'game_state',
             'state': {
-                'paddle_A': event.get('paddle_A', None),
-                'paddle_B': event.get('paddle_B', None),
-                'ball': event.get('ball', None)
+                'paddle_A': event['state'].get('paddle_A', None),
+                'paddle_B': event['state'].get('paddle_B', None),
+                'ball': event['state'].get('ball', None)
             }
         }))
 
