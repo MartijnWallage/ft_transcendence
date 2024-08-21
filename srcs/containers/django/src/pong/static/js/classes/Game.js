@@ -93,44 +93,48 @@ class Game {
 		this.audio.playSound(this.audio.select_2);
 		const player1 = new Player(this.loggedUser);
 		const socket = this.socket;
-		var player2 = null;
-
+		let player2 = null;
+	
+		// Create a promise to wait for player2
+		const player2Promise = new Promise((resolve, reject) => {
+			socket.onmessage = function(e) {
+				const data = JSON.parse(e.data);
+	
+				if (data.type === 'player_connected') {
+					if (data.player === this.loggedUser) {
+						player1.online_role = data.player_role;
+					} else if (data.player !== this.loggedUser) {
+						player2 = new Player(data.player);
+						console.log('Player ' + data.player + ' connected as player ' + data.player_role);
+						resolve(player2);  // Resolve the promise when player2 is created
+					}
+				}
+	
+				if (data.type === 'player_ready') {
+					// Handle player ready status
+					console.log('Player ' + data.player + ' is ready');
+				}
+	
+				// if (data.type === 'game_state') {
+				//  Update the game state
+				//  updateGameState(data.state);
+				}
+		});
+	
 		socket.onopen = function(e) {
 			socket.send(JSON.stringify({
 				'type': 'connected',
 				'player': player1.name,
 			}));
 		};
-
-		socket.onmessage = function(e) {
-			const data = JSON.parse(e.data);
-			
-			if (data.type === 'player_connected') {
-				if (data.player === this.loggedUser) {
-					player1.online_role = data.player_role;
-				}
-				else if (data.player !== this.loggedUser) {
-					player2 = new Player(data.player);
-				console.log('Player ' + data.player + ' connected as player ' + data.player_role);
-			}
-
-			if (data.type === 'player_ready') {
-				// Handle player ready status
-				console.log('Player ' + data.player + ' is ready');
-			}
-
-			// if (data.type === 'game_state') {
-			// 	// Update the game state
-			// 	updateGameState(data.state);
-			}
-		};
-
-		while (player2 === null) {
-			(void 0);
-		}
-
-		this.match = new Match(this, [player1, player2]);
-		this.match.play();
+	
+		// Use the promise to wait for player2 and then start the match
+		player2Promise.then((player2) => {
+			this.match = new Match(this, [player1, player2]);
+			this.match.play();
+		}).catch((error) => {
+			console.error('Error waiting for player2:', error);
+		});
 	}
 
 	createTournament() {
