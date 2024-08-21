@@ -45,9 +45,9 @@ class Match {
 		console.log('Match instance created');
 	}
 
-	updateReceivedData(game) {
-        if (game.socket_data.type === 'game_state') {
-            const state = game.socket_data.state;
+	updateReceivedData() {
+        if (this.game.socket_data.type === 'game_state') {
+            const state = this.game.socket_data.state;
 
             // Update paddles and ball positions
             if (state.paddle_A) {
@@ -107,7 +107,7 @@ class Match {
 		const cam2 = this.game.cam2;
 		const socket = this.game.socket;
 
-		updateReceivedData(this.game);
+		updateReceivedData();
 	
 		// move left paddle
 		let direction = this.keys['a'] ? -1 : this.keys['d'] ? 1 : 0;
