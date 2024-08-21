@@ -109,6 +109,7 @@ class Match {
 		const socket = this.game.socket;
 
 		
+		this.updateReceivedData();
 		// move left paddle
 		let direction = this.keys['a'] ? -1 : this.keys['d'] ? 1 : 0;
 		paddle1.movePaddle(direction, field);
@@ -125,7 +126,6 @@ class Match {
 			ball.tryPaddleCollision(paddle1, paddle2);
 			ball.tryCourtCollision(field);
 			
-		this.updateReceivedData();
 		this.score.update();
 
 		if (this.players[1].ai) {
