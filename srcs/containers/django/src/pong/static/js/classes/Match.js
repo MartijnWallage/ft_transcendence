@@ -46,7 +46,7 @@ class Match {
 	}
 
 	updateReceivedData() {
-        if (this.socket_data && this.game.socket_data.type === 'game_state') {
+        if (this.game.socket_data && this.game.socket_data.type === 'game_state') {
             const state = this.game.socket_data.state;
 			console.log('Received game state:', state);
 
@@ -108,24 +108,24 @@ class Match {
 		const cam2 = this.game.cam2;
 		const socket = this.game.socket;
 
-		this.updateReceivedData();
-	
+		
 		// move left paddle
 		let direction = this.keys['a'] ? -1 : this.keys['d'] ? 1 : 0;
 		paddle1.movePaddle(direction, field);
-	
+		
 		// move right paddle
 		direction = this.players[1].ai ? this.players[1].ai.movePaddle(paddle2) :
 			this.keys['ArrowRight'] ? -1 :
 			this.keys['ArrowLeft'] ? 1 :
 			0;
-		paddle2.movePaddle(direction, field);
-	
-		// move and bounce ball
-		ball.animateBall();
-		ball.tryPaddleCollision(paddle1, paddle2);
-		ball.tryCourtCollision(field);
-	
+			paddle2.movePaddle(direction, field);
+			
+			// move and bounce ball
+			ball.animateBall();
+			ball.tryPaddleCollision(paddle1, paddle2);
+			ball.tryCourtCollision(field);
+			
+		this.updateReceivedData();
 		this.score.update();
 
 		if (this.players[1].ai) {
