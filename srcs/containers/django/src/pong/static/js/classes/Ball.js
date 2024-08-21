@@ -95,6 +95,18 @@ class Ball {
 		this.dz = getRandomInt(-7.5, 7.5) / 100;
 	}
 
+	setPosition(position) {
+        this.mesh.position.x = position.x;
+        this.mesh.position.z = position.z;
+    }
+
+    getPosition() {
+        return {
+            x: this.mesh.position.x,
+            z: this.mesh.position.z
+        };
+    }
+
 	get position() {
 		return this.mesh.position;
 	}

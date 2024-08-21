@@ -5,6 +5,11 @@ import json
 class PongConsumer(AsyncWebsocketConsumer):
 
     players = deque()  # Deque to store players' information
+    game_state = {
+        'paddle_A': {'x': 0, 'y': 0},
+        'paddle_B': {'x': 0, 'y': 0},
+        'ball': {'x': 0, 'y': 0}
+    }
     
     async def connect(self):
         # Assign the room group name to share state between two players
@@ -72,6 +77,26 @@ class PongConsumer(AsyncWebsocketConsumer):
                 {
                     'type': 'game_state',
                     'state': data.get('state')
+                }
+            )
+        
+        elif message_type == 'game_update':
+            # Update the game state based on the player's role
+            if self.player_role == 'A':
+                self.game_state['paddle_A'] = data.get('paddle_position', self.game_state['paddle_A'])
+            else:
+                self.game_state['paddle_B'] = data.get('paddle_position', self.game_state['paddle_B'])
+
+            # Update the ball position (this can be done by any player or a game loop on the server)
+            if 'ball_position' in data:
+                self.game_state['ball'] = data['ball_position']
+
+            # Broadcast the updated game state to all players
+            await self.channel_layer.group_send(
+                self.room_group_name,
+                {
+                    'type': 'game_state',
+                    'state': self.game_state
                 }
             )
 

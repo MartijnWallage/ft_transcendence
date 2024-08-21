@@ -10,6 +10,10 @@ class Match {
 		this.timestamp = null;
 		game.readyForNextMatch = false;
 
+		// Initialize WebSocket connection
+		this.socket = game.socket;
+		this.setupSocketListeners();
+		
 		//key listener
 		this.keys = {};
 		document.addEventListener("keydown", (event) => { 
@@ -40,6 +44,33 @@ class Match {
 			this.keys['d'] = false;
 		});
 		console.log('Match instance created');
+	}
+
+	setupSocketListeners() {
+		this.socket.onmessage = (e) => {
+			const data = JSON.parse(e.data);
+	
+			if (data.type === 'game_state') {
+				const state = data.state;
+	
+				// Update paddles and ball positions based on the player's role
+				if (this.game.playerRole === 'A') {
+					// Player A: update only player B's paddle and the ball
+					if (state.paddle_B) {
+						this.game.paddle2.setPosition(state.paddle_B);
+					}
+				} else if (this.game.playerRole === 'B') {
+					// Player B: update only player A's paddle and the ball
+					if (state.paddle_A) {
+						this.game.paddle1.setPosition(state.paddle_A);
+					}
+				}
+				
+				if (state.ball) {
+					this.game.ball.setPosition(state.ball);
+				}
+			}
+		};
 	}
 
 	async play(game) {
@@ -84,6 +115,7 @@ class Match {
 		const ball = this.game.ball;
 		const cam1 = this.game.cam1;
 		const cam2 = this.game.cam2;
+		const socket = this.game.socket;
 	
 		// move left paddle
 		let direction = this.keys['a'] ? -1 : this.keys['d'] ? 1 : 0;
@@ -110,6 +142,24 @@ class Match {
 			cam2.renderSplitView(this.game, 1);
 			displayDiv('vertical-line');
 		}
+
+		// Send updated game state to the server
+		this.sendGameState(socket);
+	}
+	
+	sendGameState(socket) {
+		// Construct the data to be sent
+		const gameState = {
+			type: 'game_update',
+			paddle_position: {
+				'A': this.game.paddle1.getPosition(), // Assuming getPosition() returns {x, z}
+				'B': this.game.paddle2.getPosition()
+			},
+			ball_position: this.game.ball.getPosition() // Assuming getPosition() returns {x, z}
+		};
+
+		// Send the game state to the server
+		socket.send(JSON.stringify(gameState));
 	}
 }
 
