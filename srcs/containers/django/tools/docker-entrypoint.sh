@@ -3,6 +3,13 @@ set -e
 
 sudo mkdir -p $APP_HOME/media/ && sudo chown -R myuser:mygroup $APP_HOME/media/ && sudo chmod -R 755 $APP_HOME/media/
 
+sudo mkdir -p /tmp/daphne/ssl
+openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
+        -keyout /tmp/daphne/ssl/daphne.key \
+        -out /tmp/daphne/ssl/daphne.crt \
+        -subj "/C=DE/L=Berlin/O=42Berlin/CN=nginx" \
+        > /dev/null 2>&1
+
 echo "Waiting for database to be ready..."
 retries=5
 # Uses nc (netcat) to check 
@@ -33,6 +40,6 @@ sudo python3 manage.py makemigrations pong
 python3 manage.py makemigrations
 python3 manage.py migrate
 
-gunicorn transcendence.asgi:application --bind 0.0.0.0:8000
 
+exec daphne -b 0.0.0.0 -e ssl:8443:privateKey=/tmp/daphne/ssl/daphne.key:certKey=/tmp/daphne/ssl/daphne.crt transcendence.asgi:application
 # python3 manage.py runserver 0.0.0.0:8000
