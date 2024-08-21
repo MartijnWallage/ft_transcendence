@@ -107,7 +107,7 @@ class Match {
 		const cam2 = this.game.cam2;
 		const socket = this.game.socket;
 
-		updateReceivedData();
+		this.updateReceivedData();
 	
 		// move left paddle
 		let direction = this.keys['a'] ? -1 : this.keys['d'] ? 1 : 0;
