@@ -160,6 +160,7 @@ class Match {
 		};
 
 		// Send the game state to the server
+		console.log('socket = ' , socket);
 		socket.send(JSON.stringify(gameState));
 	}
 }
