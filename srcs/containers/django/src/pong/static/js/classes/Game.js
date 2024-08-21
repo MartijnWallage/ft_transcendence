@@ -98,9 +98,9 @@ class Game {
 		}
 		const socket = this.socket;
 		
+		let player2 = null;
 		// Create a promise to wait for player2
 		const player2Promise = new Promise((resolve, reject) => {
-			let player2 = null;
 			console.log('starting promise');
 	
 			// WebSocket open handler
