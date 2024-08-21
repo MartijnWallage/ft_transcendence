@@ -11,6 +11,11 @@ sudo openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
         -out /tmp/daphne/ssl/daphne.crt \
         -subj "/C=DE/L=Berlin/O=42Berlin/CN=nginx" 
 
+sudo chmod 700 /tmp/daphne/ssl
+sudo chmod 600 /tmp/daphne/ssl/daphne.key
+sudo chmod 600 /tmp/daphne/ssl/daphne.crt
+
+
 echo "Waiting for database to be ready..."
 retries=5
 # Uses nc (netcat) to check 
