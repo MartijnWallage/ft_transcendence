@@ -110,10 +110,14 @@ class PongConsumer(AsyncWebsocketConsumer):
         }))
 
     async def game_state(self, event):
-        # Send the game state to WebSocket
+    # Send the game state to WebSocket
         await self.send(text_data=json.dumps({
             'type': 'game_state',
-            'state': event['state']
+            'state': {
+                'paddle_A': event.get('paddle_A', None),
+                'paddle_B': event.get('paddle_B', None),
+                'ball': event.get('ball', None)
+            }
         }))
 
     async def broadcast_player_list(self):
