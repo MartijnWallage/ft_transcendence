@@ -3,8 +3,8 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 import json
 
 class PongConsumer(AsyncWebsocketConsumer):
-
-    players = deque()  # Deque to store players' information
+    # Shared across all instances if needed; otherwise, move to instance variables
+    players = deque()
     game_state = {
         'paddle_A': {'x': 0, 'y': 0},
         'paddle_B': {'x': 0, 'y': 0},
@@ -71,16 +71,22 @@ class PongConsumer(AsyncWebsocketConsumer):
             await self.broadcast_player_list()
 
         elif message_type == 'game_update':
-            # Broadcast the game state to the group
+            # Update the game state
+            if self.player_role == 'A':
+                self.game_state['paddle_A'] = data.get('paddle_position', self.game_state['paddle_A'])
+            elif self.player_role == 'B':
+                self.game_state['paddle_B'] = data.get('paddle_position', self.game_state['paddle_B'])
+
+            # Update ball position if included
+            if 'ball_position' in data:
+                self.game_state['ball'] = data['ball_position']
+
+            # Broadcast the updated game state to the group
             await self.channel_layer.group_send(
                 self.room_group_name,
                 {
                     'type': 'game_state',
-                    'state': {
-                        'paddle_A': self.game_state.get('paddle_A', None),
-                        'paddle_B': self.game_state.get('paddle_B', None),
-                        'ball': self.game_state.get('ball', None)
-                    }
+                    'state': self.game_state  # No need to reassemble it here, just send the updated state
                 }
             )
 
@@ -97,12 +103,12 @@ class PongConsumer(AsyncWebsocketConsumer):
         # Send the game state to WebSocket
         state = event.get('state', {})
         await self.send(text_data=json.dumps({
-        'type': 'game_state',
-        'state': {
-            'paddle_A': state.get('paddle_A', None),
-            'paddle_B': state.get('paddle_B', None),
-            'ball': state.get('ball', None)
-        }
+            'type': 'game_state',
+            'state': {
+                'paddle_A': state.get('paddle_A', None),
+                'paddle_B': state.get('paddle_B', None),
+                'ball': state.get('ball', None)
+            }
         }))
 
     async def broadcast_player_list(self):
