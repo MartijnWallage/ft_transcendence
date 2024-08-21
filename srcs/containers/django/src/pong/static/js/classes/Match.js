@@ -52,7 +52,7 @@ class Match {
 	
 			// Determine the player's role
 			const myRole = this.game.playerRole;  // Assuming you store the role in this.game.playerRole
-	
+			console.log('My role:', myRole);
 			// Update the other player's paddle position only
 			if (myRole === 'A' && state.paddle_B !== undefined) {
 				this.game.paddle2.position.z = state.paddle_B;

@@ -111,7 +111,8 @@ class PongConsumer(AsyncWebsocketConsumer):
             'state': {
                 'paddle_A': state.get('paddle_A', None),
                 'paddle_B': state.get('paddle_B', None),
-                'ball': state.get('ball', None)
+                'ball_x': state.get('ball_x', None),
+                'ball_z': state.get('ball_z', None),
             }
         }))
 
