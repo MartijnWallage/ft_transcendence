@@ -51,6 +51,7 @@ class Match {
 			const data = JSON.parse(e.data);
 	
 			if (data.type === 'game_state') {
+				console.log('Received game state:', data);
 				const state = data.state;
 	
 				// Update paddles and ball positions based on the player's role
