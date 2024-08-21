@@ -134,40 +134,55 @@ class Game {
 		this.audio.playSound(this.audio.select_2);
 		const player1 = new Player(this.loggedUser);
 		this.initSocket(player1);
-
+	
 		const socket = this.socket;
-		
-		let player2 = null;
-		// Create a promise to wait for player2
+	
+		// Create a promise to handle player2 connection
 		const player2Promise = new Promise((resolve, reject) => {
-			console.log('starting promise');
-			while (1) {
+			const checkPlayer2 = () => {
 				if (this.socket_data && this.socket_data.type === 'player_connected') {
 					if (this.socket_data.player === this.loggedUser) {
 						player1.online_role = this.socket_data.player_role;
 						console.log('local role assigned to ' + this.socket_data.player_role);
 					} else if (this.socket_data.player !== this.loggedUser) {
-						player2 = new Player(this.socket_data.player);
+						const player2 = new Player(this.socket_data.player);
 						console.log('player 2 created');
 						resolve({ player1, player2 });
 					}
 				}
-			}
+			};
+	
+			// Check for player2 connection initially and periodically
+			checkPlayer2();
+			const interval = setInterval(() => {
+				checkPlayer2();
+			}, 100); // Check every 100ms
+	
+			// WebSocket error handler
+			socket.onerror = (error) => {
+				clearInterval(interval);
+				reject(new Error('WebSocket error: ' + error.message));
+			};
+	
+			// WebSocket close handler
+			socket.onclose = () => {
+				clearInterval(interval);
+				reject(new Error('WebSocket connection closed before player2 connected'));
+			};
 		});
 	
 		try {
 			// Wait for both players to be ready
 			const { player1, player2 } = await player2Promise;
 	
-// add a more stable way to make sure the game start with the right amount of players
-
+			// Add a more stable way to make sure the game starts with the right amount of players
 			this.match = new Match(this, [player1, player2]);
 			this.match.play(this);
 		} catch (error) {
 			// Handle errors (e.g., WebSocket errors or player2 not connected)
 			console.error('Error starting the match:', error);
 		}
-	}	
+	}
 
 	createTournament() {
 		this.mode = 'tournament';
