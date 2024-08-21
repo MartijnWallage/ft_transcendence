@@ -52,10 +52,10 @@ class Match {
 
             // Update paddles and ball positions
             if (state.paddle_A) {
-                this.game.paddle1.position.x = state.paddle_A;
+                this.game.paddle1.position.z = state.paddle_A;
             }
             if (state.paddle_B) {
-                this.game.paddle2.position.x = state.paddle_B;
+                this.game.paddle2.position.z = state.paddle_B;
             }
             if (state.ball_x && state.ball_z) {
                 this.game.ball.position.x = state.ball_x;
