@@ -45,11 +45,11 @@ function notDisplayDiv(div) {
 	}
 }
 
-function waitForEnter() {
+function waitForEnter(game) {
 	return new Promise((resolve) => {
 		textToDiv('Press ENTER to start...', 'enter');
 		function onKeyDown(event) {
-			if (event.key === 'Enter') {
+			if (event.key === 'Enter' || game.mode === 'vsOnline') {
 				document.removeEventListener('keydown', onKeyDown);
 				document.removeEventListener('touchstart', onTouchStart);
 				notDisplayDiv('enter');

@@ -42,7 +42,7 @@ class Match {
 		console.log('Match instance created');
 	}
 
-	async play() {
+	async play(game) {
 		const player1Name = this.players[0].name;
 		const player2Name = this.players[1].name;
 
@@ -60,7 +60,7 @@ class Match {
 		textToDiv('0', 'player2-score');
 		textToDiv(player2Name, 'player2-name');
 
-		await waitForEnter();
+		await waitForEnter(game);
 		this.game.running = true;
 		displayDiv('game-scores');
 

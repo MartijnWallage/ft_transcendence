@@ -146,14 +146,10 @@ class Game {
 			// Wait for both players to be ready
 			const { player1, player2 } = await player2Promise;
 	
-			// Initialize and start the match
-			// socket.send(JSON.stringify({
-			// 	'type': 'ready',
-			// 	'player': player1.name,
-			// }));
+// add a more stable way to make sure the game start with the right amount of players
 
 			this.match = new Match(this, [player1, player2]);
-			this.match.play();
+			this.match.play(this);
 		} catch (error) {
 			// Handle errors (e.g., WebSocket errors or player2 not connected)
 			console.error('Error starting the match:', error);

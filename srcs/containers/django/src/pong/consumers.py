@@ -62,15 +62,6 @@ class PongConsumer(AsyncWebsocketConsumer):
                     player['ready'] = True
                     break
 
-            # Check if all players are ready
-            if all(player['ready'] for player in self.players):
-                await self.channel_layer.group_send(
-                    self.room_group_name,
-                    {
-                        'type': 'game_start',
-                    }
-                )
-
             # Broadcast the updated player list to everyone
             await self.broadcast_player_list()
 
@@ -98,12 +89,6 @@ class PongConsumer(AsyncWebsocketConsumer):
         await self.send(text_data=json.dumps({
             'type': 'game_state',
             'state': event['state']
-        }))
-
-    async def game_start(self, event):
-        # Send the game start signal to WebSocket
-        await self.send(text_data=json.dumps({
-            'type': 'start',
         }))
 
     async def broadcast_player_list(self):
