@@ -90,7 +90,7 @@ class Game {
 		this.mode = 'vsOnline';
 		this.audio.playSound(this.audio.select_2);
 		const player1 = new Player(this.loggedUser);
-		const socket = new WebSocket('ws://' + window.location.host + '/ws/pong/');
+		const socket = new WebSocket('wss://' + window.location.host + '/ws/pong/');
 
 		socket.onopen = function(e) {
 			socket.send(JSON.stringify({
