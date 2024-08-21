@@ -12,7 +12,6 @@ class Match {
 
 		// Initialize WebSocket connection
 		this.socket = game.socket;
-		this.setupSocketListeners();
 		
 		//key listener
 		this.keys = {};
@@ -46,26 +45,23 @@ class Match {
 		console.log('Match instance created');
 	}
 
-	setupSocketListeners() {
-        this.socket.onmessage = (e) => {
-            const data = JSON.parse(e.data);
+	updateReceivedData(game) {
+        if (game.socket_data.type === 'game_state') {
+            const state = game.socket_data.state;
 
-            if (data.type === 'game_state') {
-                const state = data.state;
-
-                // Update paddles and ball positions
-                if (state.paddle_A) {
-                    this.game.paddle1.setPosition(state.paddle_A);
-                }
-                if (state.paddle_B) {
-                    this.game.paddle2.setPosition(state.paddle_B);
-                }
-                if (state.ball) {
-                    this.game.ball.setPosition(state.ball);
-                }
+            // Update paddles and ball positions
+            if (state.paddle_A) {
+                this.game.paddle1.setPosition(state.paddle_A);
             }
-        };
-    }
+            if (state.paddle_B) {
+                this.game.paddle2.setPosition(state.paddle_B);
+            }
+            if (state.ball) {
+                this.game.ball.setPosition(state.ball);
+            }
+        }
+    };
+
 
 	async play(game) {
 		const player1Name = this.players[0].name;
@@ -110,6 +106,8 @@ class Match {
 		const cam1 = this.game.cam1;
 		const cam2 = this.game.cam2;
 		const socket = this.game.socket;
+
+		updateReceivedData(this.game);
 	
 		// move left paddle
 		let direction = this.keys['a'] ? -1 : this.keys['d'] ? 1 : 0;
@@ -142,23 +140,23 @@ class Match {
 	}
 	
 	sendGameState(socket) {
-		if (socket.readyState === WebSocket.OPEN) {
-			// Construct the game state data
-			const gameState = {
-				type: 'game_update',
-				paddle_position: {
-					'A': this.game.paddle1.getPosition(), // Assuming getPosition() returns {x, z}
-					'B': this.game.paddle2.getPosition()
-				},
-				ball_position: this.game.ball.getPosition() // Assuming getPosition() returns {x, z}
-			};
-	
-			// Send the game state to the server
-			socket.send(JSON.stringify(gameState));
-		} else {
-			console.error('WebSocket is not open. Ready state:', socket.readyState);
-		}
-	}
+    if (socket.readyState === WebSocket.OPEN) {
+        // Construct the game state data
+        const gameState = {
+            type: 'game_update',
+            paddle_position: {
+                'A': this.game.paddle1.getPosition(), // Assuming getPosition() returns {x, z}
+                'B': this.game.paddle2.getPosition()
+            },
+            ball_position: this.game.ball.getPosition() // Assuming getPosition() returns {x, z}
+        };
+
+        // Send the game state to the server
+        socket.send(JSON.stringify(gameState));
+    } else {
+        console.error('WebSocket is not open. Ready state:', socket.readyState);
+    }
+}
 }
 
 export { Match };

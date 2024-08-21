@@ -41,7 +41,9 @@ class Game {
 		this.isOptionMenuVisible = false;
 		this.mode = 'none';
 		this.loggedUser = 'Guest';
+
 		this.socket = null;
+		this.socket_data = null;
 
 		// this.socket = new WebSocket('wss://' + window.location.host + '/ws/pong/');
 
@@ -114,15 +116,15 @@ class Game {
 	
 			// WebSocket message handler
 			socket.onmessage = (e) => {
-				const data = JSON.parse(e.data);
-				console.log('Received message:', data);
+				this.socket_data = JSON.parse(e.this.socket_data);
+				console.log('Received message:', this.socket_data);
 	
-				if (data.type === 'player_connected') {
-					if (data.player === this.loggedUser) {
-						player1.online_role = data.player_role;
-						console.log('local role assigned to ' + data.player_role);
-					} else if (data.player !== this.loggedUser) {
-						player2 = new Player(data.player);
+				if (this.socket_data.type === 'player_connected') {
+					if (this.socket_data.player === this.loggedUser) {
+						player1.online_role = this.socket_data.player_role;
+						console.log('local role assigned to ' + this.socket_data.player_role);
+					} else if (this.socket_data.player !== this.loggedUser) {
+						player2 = new Player(this.socket_data.player);
 						console.log('player 2 created');
 						resolve({ player1, player2 });
 					}
