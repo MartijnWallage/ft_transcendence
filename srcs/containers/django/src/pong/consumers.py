@@ -6,9 +6,10 @@ class PongConsumer(AsyncWebsocketConsumer):
     # Shared across all instances if needed; otherwise, move to instance variables
     players = deque()
     game_data = {
-        'paddle_A': {'x': 0, 'y': 0},
-        'paddle_B': {'x': 0, 'y': 0},
-        'ball': {'x': 0, 'y': 0}
+        'paddle_A': 0,
+        'paddle_B': 0,
+        'ball_x': 0,
+        'ball_z': 0,
     }
     
     async def connect(self):
@@ -72,23 +73,26 @@ class PongConsumer(AsyncWebsocketConsumer):
 
         elif message_type == 'game_update':
             # Update the game state
-            if self.player_role == 'A':
-                self.game_data['paddle_A'] = data.get('paddle_position', self.game_data['paddle_A'])
-            elif self.player_role == 'B':
-                self.game_data['paddle_B'] = data.get('paddle_position', self.game_data['paddle_B'])
-
-            # Update ball position if included
-            if 'ball_position' in data:
-                self.game_data['ball'] = data['ball_position']
+            if 'paddle_A' in data:
+                self.game_data['paddle_A'] = data['paddle_A']
+            if 'paddle_B' in data:
+                self.game_data['paddle_B'] = data['paddle_B']
+            
+            # Update ball position
+            if 'ball_x' in data:
+                self.game_data['ball_x'] = data['ball_x']
+            if 'ball_z' in data:
+                self.game_data['ball_z'] = data['ball_z']
 
             # Broadcast the updated game state to the group
             await self.channel_layer.group_send(
                 self.room_group_name,
                 {
                     'type': 'game_state',
-                    'state': self.game_data # No need to reassemble it here, just send the updated state
+                    'state': self.game_data
                 }
             )
+
 
     async def player_info(self, event):
         # Send the player's data to WebSocket

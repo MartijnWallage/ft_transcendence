@@ -52,13 +52,14 @@ class Match {
 
             // Update paddles and ball positions
             if (state.paddle_A) {
-                this.game.paddle1.setPosition(state.paddle_A);
+                this.game.paddle1.position.x = state.paddle_A;
             }
             if (state.paddle_B) {
-                this.game.paddle2.setPosition(state.paddle_B);
+                this.game.paddle2.position.x = state.paddle_B;
             }
-            if (state.ball) {
-                this.game.ball.setPosition(state.ball);
+            if (state.ball_x && state.ball_z) {
+                this.game.ball.position.x = state.ball_x;
+				this.game.ball.position.z = state.ball_z;
             }
         }
     };
@@ -109,6 +110,7 @@ class Match {
 		const socket = this.game.socket;
 
 		
+		this.sendGameState(socket);
 		this.updateReceivedData();
 		// move left paddle
 		let direction = this.keys['a'] ? -1 : this.keys['d'] ? 1 : 0;
@@ -137,7 +139,6 @@ class Match {
 		}
 
 		// Send updated game state to the server
-		this.sendGameState(socket);
 	}
 	
 	sendGameState(socket) {
@@ -145,11 +146,10 @@ class Match {
         // Construct the game state data
         const gameState = {
             type: 'game_update',
-            paddle_position: {
-                'A': this.game.paddle1.getPosition(), // Assuming getPosition() returns {x, z}
-                'B': this.game.paddle2.getPosition()
-            },
-            ball_position: this.game.ball.getPosition() // Assuming getPosition() returns {x, z}
+            paddle_A: this.game.paddle1.mesh.position.z,
+			paddle_B: this.game.paddle2.mesh.position.z,
+            ball_x: this.game.ball.mesh.position.x, // Assuming getPosition() returns {x, z}
+			ball_z: this.game.ball.mesh.position.z,
         };
 
         // Send the game state to the server
