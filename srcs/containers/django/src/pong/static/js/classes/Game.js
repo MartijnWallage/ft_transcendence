@@ -41,6 +41,7 @@ class Game {
 		this.isOptionMenuVisible = false;
 		this.mode = 'none';
 		this.loggedUser = 'Guest';
+		this.socket = null;
 
 		// this.socket = new WebSocket('wss://' + window.location.host + '/ws/pong/');
 
@@ -92,14 +93,19 @@ class Game {
 		this.mode = 'vsOnline';
 		this.audio.playSound(this.audio.select_2);
 		const player1 = new Player(this.loggedUser);
-		const socket = new WebSocket('wss://' + window.location.host + '/ws/pong/');
+		if (this.socket === null) {
+			this.socket = new WebSocket('wss://' + window.location.host + '/ws/pong/');
+		}
+		const socket = this.socket;
 		
 		// Create a promise to wait for player2
 		const player2Promise = new Promise((resolve, reject) => {
 			let player2 = null;
+			console.log('starting promise');
 	
 			// WebSocket open handler
 			socket.onopen = () => {
+				console.log('WebSocket connection opened');
 				socket.send(JSON.stringify({
 					'type': 'connected',
 					'player': player1.name,
@@ -109,6 +115,7 @@ class Game {
 			// WebSocket message handler
 			socket.onmessage = (e) => {
 				const data = JSON.parse(e.data);
+				console.log('Received message:', data);
 	
 				if (data.type === 'player_connected') {
 					if (data.player === this.loggedUser) {
