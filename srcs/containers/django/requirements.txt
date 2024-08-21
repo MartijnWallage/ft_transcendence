@@ -4,6 +4,8 @@ web3		  # Ethereum
 # psycopg2-binary==2.9.9
 gunicorn==21.2.0
 django_postgres_extensions== 0.9.3
+channels==4.0.0
+channels-redis==4.2.0
 whitenoise # for serving static files
 crispy-bootstrap5 # To integrate Bootstrap 5 with Django forms
 # crispy-forms

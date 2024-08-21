@@ -51,6 +51,15 @@ services:
     volumes:
       - media:/app/web/media/
 
+  redis:
+    image: redis:latest  # Use the official Redis image
+    ports:
+      - "6380:6379"  # Expose the port to the host if necessary
+    networks:
+      - ts-network
+    environment:
+      - REDIS_BIND=0.0.0.0
+
 networks:
   ts-network:
     driver: bridge

@@ -86,6 +86,39 @@ class Game {
 		this.match.play();
 	}
 
+	startVsOnline() {
+		this.mode = 'vsOnline';
+		this.audio.playSound(this.audio.select_2);
+		const player1 = new Player(this.loggedUser);
+		const socket = new WebSocket('ws://' + window.location.host + '/ws/pong/');
+
+		socket.onopen = function(e) {
+			socket.send(JSON.stringify({
+				'type': 'ready',
+				'player': player1.name
+			}));
+		};
+
+		socket.onmessage = function(e) {
+			const data = JSON.parse(e.data);
+			
+			if (data.type === 'player_ready') {
+				// Handle player ready status
+				console.log('Player ' + data.player + ' is ready');
+			}
+
+			// if (data.type === 'game_state') {
+			// 	// Update the game state
+			// 	updateGameState(data.state);
+			// }
+		};
+
+		
+		// const player2 = new Player('Guest 2');
+		// this.match = new Match(this, [player1, player2]);
+		// this.match.play();
+	}
+
 	createTournament() {
 		this.mode = 'tournament';
 		const tournament = new Tournament(this);
