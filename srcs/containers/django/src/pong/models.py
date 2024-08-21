@@ -1,15 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
 
-class UserProfile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-    avatar = models.ImageField(upload_to='avatars/', null=True, blank=True)
-
-    def __str__(self):
-        return self.user.username
-
-# Create your models here.
-
 class Player(models.Model):
 	name = models.CharField(max_length=100)
 
@@ -36,4 +27,12 @@ class Tournament(models.Model):
 	def __str__(self):
 		return self.date
 
+class UserProfile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    avatar = models.ImageField(upload_to='avatars/', null=True, blank=True)
+    # matchvs1 = models.ManyToManyField(Match, related_name='vs1_matches')
+    # matchvsAI = models.ManyToManyField(Match, related_name='vsAI_matches')
+    # tournament = models.ManyToManyField(Tournament, related_name='tournament_matches')
 
+    def __str__(self):
+        return self.user.username

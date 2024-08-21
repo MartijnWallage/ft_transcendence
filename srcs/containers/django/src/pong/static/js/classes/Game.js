@@ -79,8 +79,6 @@ class Game {
 
 	registerInDatabase() {
 		console.log('registerInDatabase');
-		// this.createPlayer(this.match.players[0].name);
-		// this.createPlayer(this.match.players[1].name);
 		this.createMatch();
 	}
 
