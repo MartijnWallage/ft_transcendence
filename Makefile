@@ -25,7 +25,7 @@ build:
 
 cloud:
 	git fetch origin
-	git reset --hard origin/dev
+	git reset --hard origin/cloud
 	@${COMPOSE_CMD} up --build
 
 down:
