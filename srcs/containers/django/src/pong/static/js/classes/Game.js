@@ -142,7 +142,7 @@ class Game {
 		const player2Promise = new Promise((resolve, reject) => {
 			console.log('starting promise');
 			while (1) {
-				if (this.socket_data != null && this.socket_data.type === 'player_connected') {
+				if (this.socket_data && this.socket_data.type === 'player_connected') {
 					if (this.socket_data.player === this.loggedUser) {
 						player1.online_role = this.socket_data.player_role;
 						console.log('local role assigned to ' + this.socket_data.player_role);
