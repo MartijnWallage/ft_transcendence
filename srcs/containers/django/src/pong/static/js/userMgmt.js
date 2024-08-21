@@ -45,31 +45,43 @@ function handleFormSubmitWrapper(event) {
     handleFormSubmit(form, url);
 }
 
+// Handle browser/tab close
+window.addEventListener('beforeunload', () => {
+    if (isUserLoggedIn === true) {
+        navigator.sendBeacon('/api/logout/', JSON.stringify({
+            csrfmiddlewaretoken: getCookie('csrftoken')
+        }));
+    }
+});
+
+
 function handleLogout() {
-    console.log('window.loadPage during logout:', window.loadPage);
-    fetch('/api/logout/', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRFToken': getCookie('csrftoken')
-        },
-        credentials: 'include'
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.status === 'success') {
-			console.log('logout worked for user.');
-			showNotification('You are successfully logged out');
-            history.pushState(null, '', '');
-            isUserLoggedIn = false;
-			// window.loadPage('game_mode');
-        } else {
-            console.error('Logout failed:', data);
-        }
-    })
-    .catch(error => {
-        console.error('Fetch error:', error);
-    });
+    if (isUserLoggedIn === true) {
+        console.log('window.loadPage during logout:', window.loadPage);
+        fetch('/api/logout/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            credentials: 'include'
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                console.log('logout worked for user.');
+                showNotification('You are successfully logged out');
+                history.pushState(null, '', '');
+                isUserLoggedIn = false;
+                window.loadPage('game_mode');
+            } else {
+                console.error('Logout failed:', data);
+            }
+        })
+        .catch(error => {
+            console.error('Fetch error:', error);
+        });
+    }
 }
 
 function updateSuggestedFriends() {

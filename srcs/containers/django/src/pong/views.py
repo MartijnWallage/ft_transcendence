@@ -47,7 +47,6 @@ def add_friend(request):
     print('add friend method called with friend', friend_username)
     try:
         friend = User.objects.get(username=friend_username)
-        print('friend', friend)
         if friend == request.user:
             return JsonResponse({"status": "error", "message": "You cannot add yourself as friend!"}, status=400)
 
@@ -73,8 +72,7 @@ def list_friends(request):
     )
     
     serializer = FriendShipSerializer(friendships, many=True)
-    print(serializer.data)
-    
+    print('list friend called')
     friends_list = []
     seen_usernames = set()
     for item in serializer.data:
@@ -100,7 +98,7 @@ def accept_friend(request):
     friend_username = request.data.get('friend_username')
     requesting_user = User.objects.get(username=friend_username)
     action = request.data.get('action')
-
+    print('accepting friend request')
     try:
         friendship = Friendship.objects.get(user=requesting_user, friend=request.user)
         if action == "accept":
@@ -119,14 +117,11 @@ def accept_friend(request):
 @api_view(['GET'])
 @login_required
 def friend_requests(request):
-    # Retrieve all pending friend requests where the current user is the friend
     requests = Friendship.objects.filter(friend=request.user, accepted=False)
-    print('requests', requests)
     pending_requests = [request for request in requests]
 
     print('pending requests', pending_requests)
 
-    # Serialize the requests
     serializer = UserProfileSerializer(UserProfile.objects.filter(user__in=[r.user for r in pending_requests]), many=True)
 
     return JsonResponse({"requests": serializer.data})
@@ -143,8 +138,7 @@ def userinfo_view(request):
     try:
         user_profile = UserProfile.objects.get(user=request.user)
         user_info['avatar_url'] = user_profile.avatar.url if user_profile.avatar else None
-        print("this is avatar url:   ")
-        print(user_info["avatar_url"])
+        print("this is avatar url:   ", user_info["avatar_url"])
     except UserProfile.DoesNotExist:
         print('user doesnot exists')
         pass
@@ -225,6 +219,7 @@ def register(request):
 @parser_classes([MultiPartParser, FormParser])
 @login_required(login_url='/api/login_user/')
 def update_profile(request):
+    print('update profile called')
     serializer = UpdateUserSerializer(request.user, data=request.data, partial=True)
     if serializer.is_valid():
         serializer.save()
@@ -235,6 +230,7 @@ def update_profile(request):
 @api_view(['POST'])
 @login_required(login_url='/api/login_user/')
 def change_password(request):
+    print('change password called')
     serializer = ChangePasswordSerializer(data=request.data, context={'request': request})
     if serializer.is_valid():
         serializer.save()

@@ -42,7 +42,7 @@ function loadPageClosure(game) {
 
 const IdleTimerModule = (() => {
 	let idleTime = 0;
-	const maxIdleTime = 0.5 * 60 * 1000;
+	const maxIdleTime = 5 * 60 * 1000;
 
 	const resetIdleTimer = () => {
 		clearTimeout(idleTime);
