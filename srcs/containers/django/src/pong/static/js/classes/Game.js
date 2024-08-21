@@ -42,7 +42,7 @@ class Game {
 		this.mode = 'none';
 		this.loggedUser = 'Guest';
 
-		this.socket = new WebSocket('wss://' + window.location.host + '/ws/pong/');
+		// this.socket = new WebSocket('wss://' + window.location.host + '/ws/pong/');
 
 		console.log('Game class created');
 		this.boundCreateAudioContext = this.createAudioContext.bind(this);
@@ -92,7 +92,7 @@ class Game {
 		this.mode = 'vsOnline';
 		this.audio.playSound(this.audio.select_2);
 		const player1 = new Player(this.loggedUser);
-		const socket = this.socket;
+		const socket = new WebSocket('wss://' + window.location.host + '/ws/pong/');
 		
 		// Create a promise to wait for player2
 		const player2Promise = new Promise((resolve, reject) => {
