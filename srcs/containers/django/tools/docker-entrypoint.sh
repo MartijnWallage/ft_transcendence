@@ -33,5 +33,6 @@ sudo python3 manage.py makemigrations pong
 python3 manage.py makemigrations
 python3 manage.py migrate
 
-gunicorn transcendence.asgi:application --host 0.0.0.0 --port 8000
+gunicorn transcendence.ssgi:application --bind 0.0.0.0:8000
+
 # python3 manage.py runserver 0.0.0.0:8000
