@@ -52,7 +52,6 @@ class AI {
 			const ball = this.copyBall(this.game.ball);
 			const humanPaddle = this.copyPaddle(this.humanPaddle);
 			this.predictionBallZ = this.simulateBall(ball, humanPaddle);
-			// this.updateDestination(ball, humanPaddle) + ball.dz; // + ball.dz because the ball never hits the paddle precisely
 			let aim = humanPaddle.z > 0 ? this.aimUpper : this.aimLower;
 			this.bestPaddlePosition = this.findPaddlePosition(ball, aim);
 			this.mesh.position.set(this.AIPaddle.x - this.AIPaddle.geometry.parameters.width / 2, 0.7, this.predictionBallZ);
@@ -117,7 +116,6 @@ class AI {
 		}
 		return bestPaddlePosition;
 	}
-		
 
 	movePaddle(paddle) {
 		let aim = this.predictionBallZ;
