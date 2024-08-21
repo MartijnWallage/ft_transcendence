@@ -90,10 +90,10 @@ class Tournament {
 		return now.toISOString();  // Format ISO 8601
 	}
 	
-	async addParticipant(playerName, tournamentId) {
+	async addParticipantInTournament(playerName, tournamentId) {
 		console.log('Adding participant:', playerName);
 		$.ajax({
-			url: '/api/add_participant/',
+			url: '/api/add_participant_to_tournament/',
 			type: 'POST',
 	
 			data: JSON.stringify({
@@ -150,10 +150,10 @@ class Tournament {
 		});
 	}
 	
-	async createMatch(tournamentId, matchResult) {
+	async createMatchInTournament(tournamentId, matchResult, mode) {
 		console.log('Creating Match...');
 		$.ajax({
-			url: '/api/create_match/',
+			url: '/api/create_match_in_tournament/',
 			type: 'POST',
 			data: JSON.stringify({
 				'tournament_id': tournamentId,
@@ -161,7 +161,8 @@ class Tournament {
 				'player2' : matchResult.player2,
 				'player1_score' : matchResult.player1Score,
 				'player2_score' : matchResult.player2Score,
-				'timestamp' : matchResult.timestamp
+				'timestamp' : matchResult.timestamp,
+				'mode': mode
 			}),
 			contentType: 'application/json; charset=utf-8',
 			dataType: 'json',
@@ -191,7 +192,8 @@ class Tournament {
 			this.tournamentId = await this.createTournament();
 
 			for (let player of this.players) {
-				await this.addParticipant(player.name, this.tournamentId);
+				await this.game.createPlayer(player.name);
+				await this.addParticipantInTournament(player.name, this.tournamentId);
 			}
 
 			console.log('Match Result:', this.matchResult);
@@ -199,7 +201,7 @@ class Tournament {
 			for (let index = 0; index < this.matchResult.length; index++) {
 				const currentMatchResult = this.matchResult[index];
 				console.log('Match:', index, ': ', currentMatchResult);
-				await this.createMatch(this.tournamentId, currentMatchResult);
+				await this.createMatchInTournament(this.tournamentId, currentMatchResult, 'tournament');
 			}
 
 		} catch (error) {

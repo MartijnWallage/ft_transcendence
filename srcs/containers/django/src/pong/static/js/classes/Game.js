@@ -33,7 +33,7 @@ class Game {
 		this.audio = null;
 
 		// Game state
-		this.scoreToWin = 6;
+		this.scoreToWin = 1;
 		this.running = false;
 		this.match = null;
 		this.tournament = null;
@@ -75,6 +75,63 @@ class Game {
 		player2.setAI(this);
 		this.match = new Match(this, [player1, player2]);
 		this.match.play();
+	}
+
+	registerInDatabase() {
+		console.log('registerInDatabase');
+		// this.createPlayer(this.match.players[0].name);
+		// this.createPlayer(this.match.players[1].name);
+		this.createMatch();
+	}
+
+	async createPlayer(playerName) {
+		console.log('Create player in database:', playerName);
+		$.ajax({
+			url: '/api/create_player/',
+			type: 'POST',
+	
+			data: JSON.stringify({
+				'player_name': playerName
+			}),
+	
+			contentType: 'application/json; charset=utf-8',
+	
+			dataType: 'json',
+	
+			success: function(response) {
+				console.log('Participant added:', response);
+			},
+	
+			error: function(error) {
+				console.log('Error addParicipant:', error);
+			}
+	
+		});
+	}
+
+	async createMatch() {
+		console.log('Creating Match...');
+		$.ajax({
+			url: '/api/create_match/',
+			type: 'POST',
+			data: JSON.stringify({
+				'player1' : this.match.players[0].name,
+				'player2' : this.match.players[1].name,
+				'player1_score' : this.match.score.result[0],
+				'player2_score' : this.match.score.result[1],
+				'timestamp' : this.match.timestamp,
+				'mode': this.mode
+			}),
+			contentType: 'application/json; charset=utf-8',
+			dataType: 'json',
+	
+			success: function(response) {
+				console.log('Match created successfully:', response);
+			},
+			error: function(error) {
+				console.error('Error creating match:', error);
+			}
+		});
 	}
 
 	startUserVsUser() {

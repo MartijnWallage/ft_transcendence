@@ -22,6 +22,7 @@ from django.views.decorators.csrf import csrf_exempt
 from .serializers import RegisterSerializer, UpdateUserSerializer, ChangePasswordSerializer
 from .models import Player, Tournament, Match, UserProfile
 import json
+from django.db.models import Max
 
 @login_required
 def userinfo_view(request):
@@ -191,7 +192,12 @@ def pong(request):
     }
     return JsonResponse(data)
 
-from django.db.models import Max
+@api_view(['GET'])
+def match_history(request):
+    data = {
+        'content': render_to_string("main/match_history.html", request=request)
+    }
+    return JsonResponse(data)
 
 
 @api_view(['GET'])
@@ -210,9 +216,61 @@ def tournament_score(request):
     return JsonResponse(data)
 import traceback
 
+# Register matches on database
+
+@api_view(['POST'])
+def create_player(request):
+    try:
+        data = json.loads(request.body)
+        player_name = data.get('player_name')
+
+        if not player_name:
+            raise ValueError("Player name is required")
+
+        # Retrieve or create the player
+        player, created = Player.objects.get_or_create(name=player_name)
+
+        return JsonResponse({'status': 'success', 'player_id': player.id})
+    except Exception as e:
+        error_message = str(e)
+        traceback.print_exc()  # This will print the traceback to the console
+        return JsonResponse({'status': 'error', 'message': error_message}, status=500)
+
+@api_view(['POST'])
+def create_match(request):
+    try:
+        data = json.loads(request.body)
+        player1_score = data.get('player1_score')
+        player2_score = data.get('player2_score')
+        timestamp = data.get('timestamp')
+        mode = data.get('mode')
+
+        # Retrieve the players
+        try:
+            player1, created1 = Player.objects.get_or_create(name=data.get('player1'))
+        except Player.DoesNotExist:
+            return JsonResponse({'error': f'Player {player1} does not exist'}, status=400)
+
+        try:
+            player2, created2 = Player.objects.get_or_create(name=data.get('player2'))
+        except Player.DoesNotExist:
+            return JsonResponse({'error': f'Player {player2} does not exist'}, status=400)
+
+        # Create the match
+        match = Match.objects.create(player1=player1, player2=player2, player1_score=player1_score, player2_score=player2_score, timestamp=timestamp, mode=mode)
+
+        return JsonResponse({'status': 'success', 'match_id': match.id})
+    
+    except Exception as e:
+        error_message = str(e)
+        traceback.print_exc()
+        return JsonResponse({'status': 'error', 'message': error_message}, status=500)
+
+# Register tournament on database
+
 @csrf_exempt
 @api_view(['POST'])
-def add_participant(request):
+def add_participant_to_tournament(request):
     try:
         data = json.loads(request.body)
         tournament_id = data.get('tournament_id')
@@ -262,13 +320,14 @@ def create_tournament(request):
         return JsonResponse({'status': 'error', 'message': error_message}, status=500)
     
 @api_view(['POST'])
-def create_match(request):
+def create_match_in_tournament(request):
     try:
         data = json.loads(request.body)
         tournament_id = data.get('tournament_id')
         player1_score = data.get('player1_score')
         player2_score = data.get('player2_score')
         timestamp = data.get('timestamp')
+        mode = data.get('mode')
 
         # Retrieve the tournament
         tournament = Tournament.objects.get(id=tournament_id)
@@ -285,7 +344,7 @@ def create_match(request):
             return JsonResponse({'error': f'Player {player2} does not exist'}, status=400)
 
         # Create the match
-        match = Match.objects.create(player1=player1, player2=player2, player1_score=player1_score, player2_score=player2_score, timestamp=timestamp)
+        match = Match.objects.create(player1=player1, player2=player2, player1_score=player1_score, player2_score=player2_score, timestamp=timestamp, mode=mode)
 
         # Add match to the tournament
         tournament.match.add(match)
@@ -358,11 +417,3 @@ def register_matches(request):
         return JsonResponse({'success': True, 'tx_hash': receipt.transactionHash.hex()})
     except Exception as e:
         return JsonResponse({'success': False, 'error': str(e)}, status=500)
-    
-
-@api_view(['GET'])
-def match_history(request):
-    data = {
-        'content': render_to_string("main/match_history.html", request=request)
-    }
-    return JsonResponse(data)

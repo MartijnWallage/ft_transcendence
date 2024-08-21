@@ -21,7 +21,8 @@ class Match(models.Model):
     player2 = models.ForeignKey(Player, on_delete=models.CASCADE, related_name='player2_matches')
     player1_score = models.IntegerField()
     player2_score = models.IntegerField()
-    timestamp = models.BigIntegerField() 
+    timestamp = models.BigIntegerField()
+    mode = models.CharField(max_length=100)
 
     def __str__(self):
         return f"{self.player1} vs {self.player2}"
