@@ -12,7 +12,7 @@ class PongConsumer(AsyncWebsocketConsumer):
     }
     
     async def connect(self):
-        # Assign the room group name to share state between players
+        # Assign the room group name to share state between two players
         self.room_group_name = 'pong_game'
 
         # Join room group
@@ -71,12 +71,21 @@ class PongConsumer(AsyncWebsocketConsumer):
             await self.broadcast_player_list()
 
         elif message_type == 'game_update':
+            # Broadcast the game state to the group
+            await self.channel_layer.group_send(
+                self.room_group_name,
+                {
+                    'type': 'game_state',
+                    'state': data.get('state')
+                }
+            )
+        
+        elif message_type == 'game_update':
             # Update the game state based on the player's role
-            paddle_position = data.get('paddle_position', {})
             if self.player_role == 'A':
-                self.game_state['paddle_A'] = paddle_position
+                self.game_state['paddle_A'] = data.get('paddle_position', self.game_state['paddle_A'])
             else:
-                self.game_state['paddle_B'] = paddle_position
+                self.game_state['paddle_B'] = data.get('paddle_position', self.game_state['paddle_B'])
 
             # Update the ball position (this can be done by any player or a game loop on the server)
             if 'ball_position' in data:
