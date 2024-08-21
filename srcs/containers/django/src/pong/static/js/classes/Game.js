@@ -120,7 +120,7 @@ class Game {
 				if (data.type === 'player_connected') {
 					if (data.player === this.loggedUser) {
 						player1.online_role = data.player_role;
-						console.log('local role assigned to" + data.player_role');
+						console.log('local role assigned to' + data.player_role);
 					} else if (data.player !== this.loggedUser) {
 						player2 = new Player(data.player);
 						console.log('player 2 created');
