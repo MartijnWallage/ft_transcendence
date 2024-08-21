@@ -116,7 +116,7 @@ class Game {
 	
 			// WebSocket message handler
 			socket.onmessage = (e) => {
-				this.socket_data = JSON.parse(e.this.socket_data);
+				this.socket_data = JSON.parse(e.data);
 				console.log('Received message:', this.socket_data);
 	
 				if (this.socket_data.type === 'player_connected') {
