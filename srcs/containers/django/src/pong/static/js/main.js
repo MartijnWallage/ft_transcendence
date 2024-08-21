@@ -1,6 +1,6 @@
 import Stats from './three-lib/stats.module.js'
 import { Game } from './classes/Game.js';
-import { loadPageClosure, updateUI } from './loadPage.js';
+import { loadPageClosure, IdleTimerModule,updateUI } from './loadPage.js';
 
 function main() {
 
@@ -20,6 +20,7 @@ function main() {
 	const DOMContentLoadedHandler = async function() {
 		const page = location.hash.replace('#', '') || 'home';
 		await window.loadPage(page); // await is added to properly handle the updateUI function
+		IdleTimerModule.init();
 	};
 	document.addEventListener('DOMContentLoaded', DOMContentLoadedHandler);
 

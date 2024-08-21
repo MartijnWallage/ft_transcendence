@@ -133,6 +133,7 @@ def friend_requests(request):
 
 
 @login_required
+@login_required()
 def userinfo_view(request):
     user_info = {
         'username': request.user.username,
@@ -171,6 +172,7 @@ def home_view(request):
     return JsonResponse(data)
 
 @api_view(['GET'])
+@login_required(login_url='/api/login_user/')
 def dashboard_view(request):
     data = {
         'content': render_to_string("partials/dashboard.html", request=request)
@@ -192,6 +194,7 @@ def load_page_reg(request):
     return JsonResponse({'content': content})
 
 @api_view(['GET'])
+@login_required(login_url='/api/login_user/')
 def load_page_update(request):
     print("Update user form serving")
     form = UpdateUserForm(initial={'username': request.user.username, 'email': request.user.email})
@@ -200,6 +203,7 @@ def load_page_update(request):
 
 
 @api_view(['GET'])
+@login_required(login_url='/api/login_user/')
 def load_password_update(request):
     print("Update user form serving")
     form = CustomPasswordChangeForm(user=request.user)
@@ -219,7 +223,7 @@ def register(request):
 
 @api_view(['POST'])
 @parser_classes([MultiPartParser, FormParser])
-@login_required
+@login_required(login_url='/api/login_user/')
 def update_profile(request):
     serializer = UpdateUserSerializer(request.user, data=request.data, partial=True)
     if serializer.is_valid():
@@ -229,7 +233,7 @@ def update_profile(request):
 
 
 @api_view(['POST'])
-@login_required
+@login_required(login_url='/api/login_user/')
 def change_password(request):
     serializer = ChangePasswordSerializer(data=request.data, context={'request': request})
     if serializer.is_valid():

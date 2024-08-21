@@ -7,12 +7,6 @@ let isUserLoggedIn = false;
 
 function bindUserEventListeners(userContent, page) {
 	
-    // const user_status = document.getElementById('user-name');
-	// if (isUserLoggedIn) {
-    //     console.log('Event is binded to call dashboard');
-	// 	document.getElementById('user-name').addEventListener('click', () => window.loadPage('dashboard'));
-	// }
-
     if (page === 'dashboard') {
         console.log('Event is binded to call dashboard');
         updateSuggestedFriends();
@@ -21,7 +15,6 @@ function bindUserEventListeners(userContent, page) {
     }
     document.getElementById('js-logout-btn').addEventListener('click', handleLogout);
 	if (userContent) {
-        // userContent.removeEventListener('submit', handleFormSubmitWrapper);
         userContent.addEventListener('submit', handleFormSubmitWrapper);
     }
 
@@ -44,12 +37,6 @@ function handleFormSubmitWrapper(event) {
     } else if (form.id === 'update-password-form') {
         console.log("User content Password Change handling");
         url = '/api/update-password/';
-    } else if (form.id === 'add-friend-form') {
-        console.log("User content adding friend");
-        url = '/api/add-friend/';
-    } else if (form.id === 'friend-request-form') {
-        console.log("User content friend request handling");
-        url = '/api/handle-friend-request/';
     } else {
         console.error('Form ID not recognized');
         return;
@@ -75,7 +62,7 @@ function handleLogout() {
 			showNotification('You are successfully logged out');
             history.pushState(null, '', '');
             isUserLoggedIn = false;
-			window.loadPage('game_mode');
+			// window.loadPage('game_mode');
         } else {
             console.error('Logout failed:', data);
         }
@@ -93,26 +80,44 @@ function updateSuggestedFriends() {
             suggestedFriendsList.innerHTML = '';
             
             data.suggested_friends.forEach(user => {
-                console.log('suggested friends list', user);
                 const listItem = document.createElement('li');
                 listItem.className = 'list-group-item d-flex justify-content-between align-items-center';
-                // listItem.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-center');
                 listItem.textContent = user.username;
-                // const usernameElement = document.createElement('span');
-                // usernameElement.textContent = user.username;
-                console.log('this is username', user.username);
 
-                // Add button to send friend request
                 const addButton = document.createElement('button');
                 addButton.textContent = 'Add Friend';
                 addButton.className = 'btn btn-success btn-sm';
-                addButton.onclick = () => sendFriendRequest(user.username);
+                addButton.onclick = () => sendFriendRequest(user.username, listItem);
 
                 listItem.appendChild(addButton);
                 suggestedFriendsList.appendChild(listItem);
             });
         })
         .catch(error => console.error("Error updating suggested friends:", error));
+}
+
+function sendFriendRequest(username, listItem) {
+    fetch(`/api/add-friend/`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken'),
+        },
+        body: JSON.stringify({ friend_username: username }),
+        credentials: 'include'
+    })
+    .then(response => response.json())
+    .then(data => {
+        listItem.remove();
+        if (data.status === 'success') {
+            showNotification("Friend request sent successfully");
+        } else if (data.status === 'error') {
+            showNotification(data.message);
+        }else {
+            showNotification("Error handling friend request");
+        }
+    })
+    .catch(error => console.error("Error handling friend request:", error));
 }
 
 function updateFriendList() {
@@ -173,15 +178,12 @@ function updateFriendRequestList() {
     fetch('/api/friend-requests/')
         .then(response => response.json())
         .then(data => {
-            console.log('this is data-> ', data);
             const friendRequestList = document.getElementById('friend-request-list');
             friendRequestList.innerHTML = '';
 
             data.requests.forEach(request => {
-                console.log('looging through friend request list', request);
                 const listItem = document.createElement('li');
                 listItem.textContent = request.username;
-                // You can add buttons for accepting/rejecting friend requests
                 const acceptButton = document.createElement('button');
                 acceptButton.textContent = 'Accept';
                 acceptButton.classList.add('btn', 'btn-success', 'btn-sm');
@@ -262,10 +264,10 @@ async function fetchUserInfo() {
                 throw new Error(`HTTP error! Status: ${response.status}`);
             }
             const data = await response.json();
-            return data.user_info; // Return user_info object directly
+            return data.user_info;
         } catch (error) {
             console.error('Failed to fetch user info', error);
-            return null; // Return null if there's an error
+            return null;
         }
     }
 }
@@ -273,7 +275,6 @@ async function fetchUserInfo() {
 function handleFormSubmit(form, url) {
     const formData = new FormData(form);
 
-	console.log("handleformsubmit called")
     fetch(url, {
         method: 'POST',
         body: formData,
@@ -293,13 +294,7 @@ function handleFormSubmit(form, url) {
                 window.loadPage('game_mode');
             } else if (form.id === 'update-profile-form' || form.id === 'update-password-form') {
                 window.loadPage('dashboard');
-            } else if (form.id === 'add-friend-form') {
-                console.log('update friend list call from add friend form');
-                updateFriendList();
-            } else if (form.id === 'friend-request-form') {
-                updateFriendRequestList();
             }
-
         } else {
             const errorContainer = document.getElementById('error-container');
             if (errorContainer) {
