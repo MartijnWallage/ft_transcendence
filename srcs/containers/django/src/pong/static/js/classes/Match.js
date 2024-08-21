@@ -128,14 +128,14 @@ class Match {
 			0;
 			paddle2.movePaddle(direction, field);
 			
-			// move and bounce ball
-			ball.animateBall();
-			ball.tryPaddleCollision(paddle1, paddle2);
-			ball.tryCourtCollision(field);
+		// move and bounce ball
+		ball.animateBall();
+		ball.tryPaddleCollision(paddle1, paddle2);
+		ball.tryCourtCollision(field);
 			
 		this.score.update();
 
-		if (this.players[1].ai) {
+		if (this.players[1].ai || this.game.mode === 'vsOnline') {
 			cam1.renderSingleView(this.game);
 		} else {
 			cam1.renderSplitView(this.game, 0);
