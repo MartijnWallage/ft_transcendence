@@ -137,46 +137,39 @@ class Game {
 	
 		const socket = this.socket;
 	
-		let player2 = null;
+		// Create a promise to handle player2 connection
 		const player2Promise = new Promise((resolve, reject) => {
-			console.log('starting promise');
-	
-			// WebSocket open handler
-			socket.onopen = () => {
-				console.log('WebSocket connection opened');
-				socket.send(JSON.stringify({
-					'type': 'connected',
-					'player': player1.name,
-				}));
-			};
-	
-			// WebSocket message handler
-			socket.onmessage = (e) => {
-				this.socket_data = JSON.parse(e.data);
-				console.log('Received message:', this.socket_data);
-	
-				if (this.socket_data.type === 'player_connected') {
+			const checkPlayer2 = () => {
+				if (this.socket_data && this.socket_data.type === 'player_connected') {
 					if (this.socket_data.player === this.loggedUser) {
 						player1.online_role = this.socket_data.player_role;
 						console.log('local role assigned to ' + this.socket_data.player_role);
+						this.socket_data = null;
 					} else if (this.socket_data.player !== this.loggedUser) {
-						player2 = new Player(this.socket_data.player);
+						const player2 = new Player(this.socket_data.player);
 						console.log('player 2 created');
+						this.socket_data = null;
 						resolve({ player1, player2 });
 					}
 				}
 			};
 	
+			// Check for player2 connection initially and periodically
+			checkPlayer2();
+			const interval = setInterval(() => {
+				checkPlayer2();
+			}, 100); // Check every 100ms
+	
 			// WebSocket error handler
 			socket.onerror = (error) => {
+				clearInterval(interval);
 				reject(new Error('WebSocket error: ' + error.message));
 			};
 	
 			// WebSocket close handler
 			socket.onclose = () => {
-				if (!player2) {
-					reject(new Error('WebSocket connection closed before player2 connected'));
-				}
+				clearInterval(interval);
+				reject(new Error('WebSocket connection closed before player2 connected'));
 			};
 		});
 	
@@ -184,7 +177,7 @@ class Game {
 			// Wait for both players to be ready
 			const { player1, player2 } = await player2Promise;
 	
-			// Ensure proper start of the match
+			// Add a more stable way to make sure the game starts with the right amount of players
 			this.match = new Match(this, [player1, player2]);
 			this.match.play(this);
 		} catch (error) {
