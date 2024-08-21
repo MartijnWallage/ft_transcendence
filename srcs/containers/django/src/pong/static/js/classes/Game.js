@@ -100,7 +100,7 @@ class Game {
 
         this.socket.onopen = () => {
             console.log('WebSocket connection opened');
-				socket.send(JSON.stringify({
+				this.socket.send(JSON.stringify({
 					'type': 'connected',
 					'player': player1.name,
 				}));
@@ -141,7 +141,7 @@ class Game {
 		// Create a promise to wait for player2
 		const player2Promise = new Promise((resolve, reject) => {
 			console.log('starting promise');
-			while (this.socket_data === null) {
+			while (1) {
 				if (this.socket_data.type === 'player_connected') {
 					if (this.socket_data.player === this.loggedUser) {
 						player1.online_role = this.socket_data.player_role;
