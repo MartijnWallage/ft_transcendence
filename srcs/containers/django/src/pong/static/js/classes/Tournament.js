@@ -1,9 +1,57 @@
 import { Player } from './Player.js';
-import { Match } from './Match.js';
+import { MatchRemote } from './MatchRemote.js';
+
+
+
+// import { CentralMessageHandler } from './CentralMessageHandler.js';
+
+// async function connectToServer() {
+// 	const serverUrl = 'wss://10.15.203.3:8443/ws/pingpongsocket/';
+// 	console.log(`Attempting to connect to ${serverUrl}`);
+// 	this.connection = new WebSocket(serverUrl);
+
+// 	this.connection.onopen = () => {
+// 		console.log('WebSocket is connected.');
+// 	};
+
+// 	this.connection.onmessage = (event) => {
+// 		const message = JSON.parse(event.data);
+// 		console.log(`Received message from server:`, event.data);
+// 		this.handleServerMessage(message);
+// 	};
+
+// 	this.connection.onerror = (error) => {
+// 		console.error(`${this.name} WebSocket error:`, error);
+		
+		
+// 	};
+
+// 	this.connection.onclose = (event) => {
+// 		console.error('WebSocket closed:', event);
+// 		// Add more detailed information
+// 		console.log('Code:', event.code);
+// 		console.log('Reason:', event.reason);
+// 		console.log('Was Clean:', event.wasClean);
+// 	};
+// }
+
+
+
+// async function handleGameUpdate(gameState) {
+//     console.log('Received game update:', gameState);
+//     // Update the game state on the client side
+//     // For example:
+//     updateBallPosition(gameState.ball_position);
+//     updatePaddles(gameState.paddles);
+// }
+
+
+
 
 class Tournament {
 	constructor(game) {
 		this.game = game;
+		// this.matchRemote = new MatchRemote(game, players, connection);
 		this.matchResult = [];
 		this.tournamentId = null;
 		this.maxPlayers = 2; // Allow 2 players for the tournament
@@ -13,52 +61,56 @@ class Tournament {
         this.startTournamentHandler = this.startTournamentHandler.bind(this);
 		this.playerCount = 0;
 		this.tournament = null; // Initialize tournament variable
-		this.connectToServer();
+        this.handleServerMessage = this.handleServerMessage.bind(this); // Bind `this` to `handleServerMessage`
+        this.connectToServer();
 		this.playerNameSet = false;
 		this.pageLoadedPromise = null;
         this.pageLoadedResolve = null;
 	}
 
-	connectToServer() {
-        const serverUrl = 'wss://10.15.203.3:8443/ws/pingpongsocket/';
+	
+	async connectToServer() {
+		const serverUrl = 'wss://10.15.203.3:8443/ws/pingpongsocket/';
 		console.log(`Attempting to connect to ${serverUrl}`);
-        this.connection = new WebSocket(serverUrl);
-
-        this.connection.onopen = () => {
-            console.log('WebSocket is connected.');
-        };
-
-        this.connection.onmessage = (event) => {
-            const message = JSON.parse(event.data);
-            console.log(`Received message from server:`, event.data);
-            this.handleServerMessage(message);
-        };
-
-        this.connection.onerror = (error) => {
-            console.error(`${this.name} WebSocket error:`, error);
+		this.connection = new WebSocket(serverUrl);
+	
+		this.connection.onopen = () => {
+			console.log('WebSocket is connected.');
+		};
+	
+		this.connection.onmessage = (event) => {
+			const message = JSON.parse(event.data);
+			console.log(`Received message from server:`, event.data);
+			this.handleServerMessage(message);
+		};
+	
+		this.connection.onerror = (error) => {
+			console.error(`${this.name} WebSocket error:`, error);
 			
 			
-        };
-
-        this.connection.onclose = (event) => {
-            console.error('WebSocket closed:', event);
+		};
+	
+		this.connection.onclose = (event) => {
+			console.error('WebSocket closed:', event);
 			// Add more detailed information
 			console.log('Code:', event.code);
 			console.log('Reason:', event.reason);
 			console.log('Was Clean:', event.wasClean);
-        };
-    }
+		};
+	}
 
-	handleServerMessage(data) {
-        switch (data.type) {
-            case 'player_connected':
-                this.handlePlayerConnected(data.players);
-                break;
-
-            case 'player_disconnected':
-                this.handlePlayerDisconnected(data.players);
-                break;
-
+	async handleServerMessage(data) {
+		switch (data.type) {
+	
+			
+			case 'player_connected':
+				this.handlePlayerConnected(data.players);
+				break;
+	
+			case 'player_disconnected':
+				this.handlePlayerDisconnected(data.players);
+				break;
+	
 			case 'load_page':
 				this.handleLoadPage(data.player);
 				break;
@@ -67,14 +119,31 @@ class Tournament {
 				this.enterPressed(data.player);
 				break;
 			
+			case 'touch_update':
+			case 'key_update':
+				console.log('this.matchRemote', this.matchRemote);
+				if (this.matchRemote && typeof this.matchRemote.receiveKeyUpdate === 'function') {
+					this.matchRemote.receiveKeyUpdate(data);
+				} else {
+					console.error('receiveKeyUpdate method not found on matchRemote');
+				}
+				break;
+	
+			case 'game_update':
+				console.log('this.matchRemote', this.matchRemote);
 
-
-
-            default:
-                console.log(`Unknown message type: ${data.type}`);
-        }
-    }
-
+				if (this.matchRemote && typeof this.matchRemote.handleGameUpdate === 'function') {
+					this.matchRemote.handleGameUpdate(data.game_state);
+				} else {
+					console.error('handleGameUpdate method not found on matchRemote');
+				}
+				break;
+	
+	
+			default:
+				console.log(`Unknown message type: ${data.type}`);
+		}
+	}
 
 	enterPressed(playerName) {
 		console.log(`${playerName} is ready`);
@@ -225,6 +294,8 @@ class Tournament {
     }
 
 
+
+
     async startTournamentHandler() {
         try {
             // const response = await this.checkPlayerCount();
@@ -252,14 +323,16 @@ class Tournament {
 
             try {
 				this.game.connection = this.connection;
-                // this.game.match = new Match(this.game, currentPlayers, this.connection);
-                const match = new Match(this.game, currentPlayers, this.connection);
-				this.game.match = match;
+
+                const matchRemote = new MatchRemote(this.game, currentPlayers, this.connection);
+				
+				this.game.matchRemote = matchRemote;
+				this.matchRemote = matchRemote;
 
                 // this.game.match = this.connection;
                 console.log('before: game.match.playRemote');
 
-				await match.playRemote();
+				await matchRemote.playRemote();
 				// await this.game.match.playRemote();
 
                 console.log('after: game.match.playRemote');
@@ -273,25 +346,25 @@ class Tournament {
 
 
 
-                while (this.game.match.score.winner === null) {
-                    await new Promise(resolve => setTimeout(resolve, 100));
-                }
-                console.log('Match winner:', this.game.match.score.winner);
-                console.log('Match Result:', this.game.match.score.result);
+                // while (this.game.match.score.winner === null) {
+                //     await new Promise(resolve => setTimeout(resolve, 100));
+                // }
+                // console.log('Match winner:', this.game.match.score.winner);
+                // console.log('Match Result:', this.game.match.score.result);
 
-                let matchResult = { 
-                    player1: currentPlayers[0].name, 
-                    player2: currentPlayers[1].name, 
-                    player1Score: this.game.match.score.result[0], 
-                    player2Score: this.game.match.score.result[1], 
-                    timestamp: this.game.match.timestamp 
-                };
+                // let matchResult = { 
+                //     player1: currentPlayers[0].name, 
+                //     player2: currentPlayers[1].name, 
+                //     player1Score: this.game.match.score.result[0], 
+                //     player2Score: this.game.match.score.result[1], 
+                //     timestamp: this.game.match.timestamp 
+                // };
 
-                this.matchResult.push(matchResult);
+                // this.matchResult.push(matchResult);
 
-                if (this.matchResult.length > 0) {
-                    await this.endTournament();
-                }
+                // if (this.matchResult.length > 0) {
+                //     await this.endTournament();
+                // }
             } catch (error) {
                 console.error('Error starting game:', error);
             }
@@ -310,11 +383,6 @@ class Tournament {
             console.error('Error element not found.');
         }
     }
-
-
-	
-
-
 
 	async createTournament() {
 		console.log('Creating tournament...');
@@ -444,6 +512,8 @@ class Tournament {
 		});
 	}
 }
+
+
 
 export { Tournament };
 

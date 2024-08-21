@@ -48,7 +48,7 @@ function animate(stats, game) {
 	else {
 		// game.match.update(); 
 		
-		game.match.remoteupdate(); 
+		game.matchRemote.update(); 
 	}
 
 	requestAnimationFrame(animate.bind(null, stats, game));

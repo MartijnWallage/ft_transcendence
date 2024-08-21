@@ -1,14 +1,20 @@
 import json
 from channels.generic.websocket import AsyncWebsocketConsumer
+from .ball import Ball  # Ensure the correct path
+from .paddle import Paddle  # Ensure the correct path
 
 class PingpongConsumer(AsyncWebsocketConsumer):
     connected_players = {}
     max_players = 16  # Set your maximum number of players here
+    ball = None
+    paddles = {}
+    court_width = 10  # Example width, adjust as needed
+    court_depth = 5   # Example depth, adjust as needed
 
     async def connect(self):
         self.room_group_name = 'pingpong'
         await self.channel_layer.group_add(self.room_group_name, self.channel_name)
-        
+
         try:
             await self.accept()
 
@@ -22,6 +28,12 @@ class PingpongConsumer(AsyncWebsocketConsumer):
                     'isRemote': True
                 }
 
+                # Initialize the game objects if this is the first player
+                if not self.__class__.ball:
+                    self.__class__.ball = Ball()
+                    self.__class__.paddles['player1'] = Paddle(self.__class__.court_width, left=True)
+                    self.__class__.paddles['player2'] = Paddle(self.__class__.court_width, left=False)
+
                 await self.channel_layer.group_send(
                     self.room_group_name,
                     {
@@ -33,7 +45,6 @@ class PingpongConsumer(AsyncWebsocketConsumer):
                 await self.close()
 
         except Exception as e:
-            # Handle and log connection errors
             print(f"Error during WebSocket connection setup: {str(e)}")
             await self.close()
 
@@ -53,13 +64,14 @@ class PingpongConsumer(AsyncWebsocketConsumer):
                 }
             )
 
+
+
     async def receive(self, text_data):
         try:
             data = json.loads(text_data)
             message_type = data.get('type', '')
 
             if message_type == 'load_page':
-                # Notify other player to load the page
                 await self.channel_layer.group_send(
                     self.room_group_name,
                     {
@@ -69,10 +81,7 @@ class PingpongConsumer(AsyncWebsocketConsumer):
                 )
 
             elif message_type == 'enter_pressed':
-                # Update player readiness state
                 self.__class__.connected_players[self.channel_name]['ready'] = True
-                
-                # Broadcast readiness to all players
                 await self.channel_layer.group_send(
                     self.room_group_name,
                     {
@@ -80,60 +89,17 @@ class PingpongConsumer(AsyncWebsocketConsumer):
                         'player': self.__class__.connected_players[self.channel_name]['name']
                     }
                 )
-
-            # if message_type == 'register_player':
-            #     player_name = data.get('name', '')
-            #     if player_name and not self.is_player_name_taken(player_name):
-            #         # Assign the player name to the connecting player
-            #         self.__class__.connected_players[self.channel_name] = {
-            #             'name': player_name,
-            #             'role': 'player',  # Default role; you may want to assign based on game rules
-            #             'isRemote': True
-            #         }
-            #         await self.channel_layer.group_send(
-            #             self.room_group_name,
-            #             {
-            #                 'type': 'player_connected',
-            #                 'players': await self.get_player_status()
-            #             }
-            #         )
-            #         await self.send(text_data=json.dumps({'type': 'registration_success', 'name': player_name}))
-            #     else:
-            #         await self.send(text_data=json.dumps({
-            #             'type': 'error',
-            #             'message': 'Player name is already taken or invalid'
-            #         }))
-
-            # if message_type == 'start_tournament':
-            #     player_info = self.__class__.connected_players.get(self.channel_name)
-            #     if player_info and player_info['role'] == 'player1':
-            #         num_connected_players = len(self.__class__.connected_players)
-            #         if num_connected_players < 2:
-            #             await self.send(text_data=json.dumps({
-            #                 'type': 'error',
-            #                 'message': 'More than 2 players are required to start the tournament'
-            #             }))
-            #         else:
-            #             # Broadcast to all players
-            #             await self.channel_layer.group_send(
-            #                 self.room_group_name,
-            #                 {
-            #                     'type': 'start_tournament',
-            #                     'players': await self.get_player_status()
-            #                 }
-            #             )
-            #     else:
-            #         await self.send(text_data=json.dumps({
-            #             'type': 'error',
-            #             'message': 'Only player1 can start the tournament'
-            #         }))
-
-            # elif message_type == 'get_player_count':
-            #     player_count = len(self.__class__.connected_players)
-            #     await self.send(text_data=json.dumps({
-            #         'type': 'player_count',
-            #         'count': player_count,
-            #     }))
+           
+            elif message_type == 'key_update':
+                action_data = data
+                self.update_game_state(action_data)
+                await self.channel_layer.group_send(
+                    self.room_group_name,
+                    {
+                        'type': 'game_state_update',
+                        'game_state': self.get_game_state()
+                    }
+                )
 
             elif message_type == 'player_action':
                 action_data = data.get('data', {})
@@ -141,7 +107,7 @@ class PingpongConsumer(AsyncWebsocketConsumer):
                 await self.channel_layer.group_send(
                     self.room_group_name,
                     {
-                        'type': 'game_update',
+                        'type': 'game_state_update',
                         'game_state': self.get_game_state()
                     }
                 )
@@ -154,7 +120,6 @@ class PingpongConsumer(AsyncWebsocketConsumer):
             await self.send(text_data=json.dumps({'error': 'Invalid JSON data received'}))
         except Exception as e:
             await self.send(text_data=json.dumps({'error': f'An unexpected error occurred: {str(e)}'}))
-            # Optionally, log the error to server logs
             print(f"Error handling message: {str(e)}")
 
     async def load_page(self, event):
@@ -164,11 +129,9 @@ class PingpongConsumer(AsyncWebsocketConsumer):
                 'player': event['player']
             }))
         except Exception as e:
-            # Log the error or handle it as needed
             print(f"Error sending load_page message: {str(e)}")
 
     async def enter_pressed(self, event):
-        # Broadcast the 'enter_pressed' event to all players
         await self.channel_layer.group_send(
             self.room_group_name,
             {
@@ -178,7 +141,6 @@ class PingpongConsumer(AsyncWebsocketConsumer):
         )
 
     async def enter_acknowledged(self, event):
-        # Handle the 'enter_acknowledged' message
         await self.send(text_data=json.dumps({
             'type': 'enter_acknowledged',
             'player': event['player']
@@ -198,12 +160,6 @@ class PingpongConsumer(AsyncWebsocketConsumer):
         }))
 
     async def get_player_status(self):
-        print("Current player status:", [
-            {'name': player_info['name'], 
-             'role': player_info['role'], 
-             'isRemote': player_info['isRemote']}
-            for player_info in self.__class__.connected_players.values()
-        ])
         return [
             {'name': player_info['name'], 
              'role': player_info['role'], 
@@ -211,13 +167,49 @@ class PingpongConsumer(AsyncWebsocketConsumer):
             for player_info in self.__class__.connected_players.values()
         ]
     
-
     async def player_action(self, event):
         await self.send(text_data=json.dumps({'type': 'player_action', 'data': event['data']}))
 
     def update_game_state(self, action_data):
-        pass
+        player = action_data.get('player')
+        if player in self.__class__.paddles:
+            if action_data['type'] == 'key_update':
+                # Update paddle movement based on key input
+                direction = action_data.get('key', '')
+                if direction == 'a':
+                    self.__class__.paddles[player].movePaddle(-1, self.__class__.court_depth)
+                elif direction == 'd':
+                    self.__class__.paddles[player].movePaddle(1, self.__class__.court_depth)
+            elif action_data['type'] == 'touch_update':
+                # Handle touch inputs similarly if needed
+                pass
+
+        self.__class__.ball.tryPaddleCollision(self.__class__.paddles.get('player1'), self.__class__.paddles.get('player2'))
+        self.__class__.ball.tryCourtCollision(self.__class__.court_depth)
+        self.__class__.ball.animateBall()
 
     def get_game_state(self):
-        return {}
-
+        return {
+            'ball_position': {
+                'x': self.__class__.ball.x,
+                'z': self.__class__.ball.z,
+            },
+            'paddles': {
+                'player1': {
+                    'x': self.__class__.paddles['player1'].x,
+                    'z': self.__class__.paddles['player1'].z,
+                },
+                'player2': {
+                    'x': self.__class__.paddles['player2'].x,
+                    'z': self.__class__.paddles['player2'].z,
+                }
+            }
+        }
+    
+    async def game_state_update(self, event):
+        """Handler for game_update events to send updated game state to clients."""
+        await self.send(text_data=json.dumps({
+            'type': 'game_update',
+            'game_state': event['game_state']
+        }))
+    
