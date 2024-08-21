@@ -79,26 +79,6 @@ class PongConsumer(AsyncWebsocketConsumer):
                     'state': data.get('state')
                 }
             )
-        
-        elif message_type == 'game_update':
-            # Update the game state based on the player's role
-            if self.player_role == 'A':
-                self.game_state['paddle_A'] = data.get('paddle_position', self.game_state['paddle_A'])
-            else:
-                self.game_state['paddle_B'] = data.get('paddle_position', self.game_state['paddle_B'])
-
-            # Update the ball position (this can be done by any player or a game loop on the server)
-            if 'ball_position' in data:
-                self.game_state['ball'] = data['ball_position']
-
-            # Broadcast the updated game state to all players
-            await self.channel_layer.group_send(
-                self.room_group_name,
-                {
-                    'type': 'game_state',
-                    'state': self.game_state
-                }
-            )
 
     async def player_info(self, event):
         # Send the player's data to WebSocket
@@ -113,11 +93,7 @@ class PongConsumer(AsyncWebsocketConsumer):
         # Send the game state to WebSocket
         await self.send(text_data=json.dumps({
             'type': 'game_state',
-            'state': {
-                'paddle_A': event['state'].get('paddle_A', None),
-                'paddle_B': event['state'].get('paddle_B', None),
-                'ball': event['state'].get('ball', None)
-            }
+            'state': event['state']
         }))
 
     async def broadcast_player_list(self):

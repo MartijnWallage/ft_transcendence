@@ -47,32 +47,25 @@ class Match {
 	}
 
 	setupSocketListeners() {
-		this.socket.onmessage = (e) => {
-			const data = JSON.parse(e.data);
-	
-			if (data.type === 'game_state') {
-				console.log('Received game state:', data);
-				const state = data.state;
-	
-				// Update paddles and ball positions based on the player's role
-				if (this.game.playerRole === 'A') {
-					// Player A: update only player B's paddle and the ball
-					if (state.paddle_B) {
-						this.game.paddle2.setPosition(state.paddle_B);
-					}
-				} else if (this.game.playerRole === 'B') {
-					// Player B: update only player A's paddle and the ball
-					if (state.paddle_A) {
-						this.game.paddle1.setPosition(state.paddle_A);
-					}
-				}
-				
-				if (state.ball) {
-					this.game.ball.setPosition(state.ball);
-				}
-			}
-		};
-	}
+        this.socket.onmessage = (e) => {
+            const data = JSON.parse(e.data);
+
+            if (data.type === 'game_state') {
+                const state = data.state;
+
+                // Update paddles and ball positions
+                if (state.paddle_A) {
+                    this.game.paddle1.setPosition(state.paddle_A);
+                }
+                if (state.paddle_B) {
+                    this.game.paddle2.setPosition(state.paddle_B);
+                }
+                if (state.ball) {
+                    this.game.ball.setPosition(state.ball);
+                }
+            }
+        };
+    }
 
 	async play(game) {
 		const player1Name = this.players[0].name;
@@ -160,7 +153,6 @@ class Match {
 		};
 
 		// Send the game state to the server
-		console.log('socket = ' , socket);
 		socket.send(JSON.stringify(gameState));
 	}
 }
