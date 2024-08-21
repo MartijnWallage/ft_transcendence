@@ -124,20 +124,6 @@ class Game {
 					} else if (data.player !== this.loggedUser) {
 						player2 = new Player(data.player);
 						console.log('player 2 created');
-						socket.send(JSON.stringify({
-							'type': 'ready',
-							'player': player1.name,
-						}));
-					}
-					console.log('Player ' + data.player + ' connected as player ' + data.player_role);
-				}
-	
-				if (data.type === 'start') {
-					// Handle player ready status
-					console.log('game is about to start');
-	
-					// Resolve the promise if both players are ready
-					if (player1.online_role && player2) {
 						resolve({ player1, player2 });
 					}
 				}
@@ -161,6 +147,11 @@ class Game {
 			const { player1, player2 } = await player2Promise;
 	
 			// Initialize and start the match
+			// socket.send(JSON.stringify({
+			// 	'type': 'ready',
+			// 	'player': player1.name,
+			// }));
+
 			this.match = new Match(this, [player1, player2]);
 			this.match.play();
 		} catch (error) {
