@@ -12,12 +12,11 @@ class AI {
 		this.predictionBallZ = 0;
 		this.side = 1; // Not used right now. But ideally, the AI should be able to play on either side
         this.lastUpdateTime = 0;
-        this.updateInterval = 1000; // 1000 milliseconds = 1 second
+		this.level = 2;
+        this.updateInterval = 1000 / this.level; // 1000 milliseconds = 1 second
         this.init();
 		this.humanPaddle = this.game.paddle1;
-//		this.game.paddle2.speed *= 0.5; // For setting difficulty level
 		this.AIPaddle = this.game.paddle2;
-		this.AIPaddle.dz = 1; // for PickfordDefense AI paddle moves up and down with the ball prediction as middle
 		const halfCourt = this.game.field.geometry.parameters.depth / 2;
 		this.aimUpper = -halfCourt + this.game.ball.radius;
 		this.aimLower = halfCourt - this.game.ball.radius;
@@ -135,26 +134,14 @@ class AI {
 		
 
 	movePaddle(paddle) {
-		if (this.bestPaddlePosition == this.predictionBallZ)
-	 		return this.PickfordDefense(paddle);
-		return paddle.z < this.bestPaddlePosition ? 1 : -1;
+		let aim = this.predictionBallZ;
+		if (this.level === 2)
+			aim = this.bestPaddlePosition;
+		return paddle.z + paddle.speed < aim ? 1 : 
+			paddle.z - paddle.speed > aim ? -1:
+			0;
 	}
 			
-			
-	PickfordDefense(paddle) {
-		const bottomPaddle = paddle.z + paddle.geometry.parameters.depth / 2;
-		const topPaddle = paddle.z - paddle.geometry.parameters.depth / 2;
-		const edgeStrategy = this.game.ball.geometry.parameters.radius;
-		
-		if (this.AIPaddle.dz > 0 && this.predictionBallZ + edgeStrategy < topPaddle) {
-			this.AIPaddle.dz = -this.AIPaddle.dz;
-		} else if (this.AIPaddle.dz < 0 && this.predictionBallZ - edgeStrategy > bottomPaddle) {
-			this.AIPaddle.dz = -this.AIPaddle.dz;
-		}
-
-		return this.AIPaddle.dz;
-	}
-
 	copyPaddle(paddle) {
 		const newPaddle = {};
 		newPaddle.x = paddle.x;
