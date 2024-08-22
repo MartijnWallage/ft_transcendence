@@ -28,7 +28,7 @@ class Game {
 		this.field = new Field(this.scene);
 		this.paddle1 = new Paddle(this.scene, this.field, true);
 		this.paddle2 = new Paddle(this.scene, this.field, false);
-		this.ball = new Ball(this.scene);
+		this.ball = new Ball(this);
 		this.environment = new Environment(this.scene);
 		this.audio = null;
 
