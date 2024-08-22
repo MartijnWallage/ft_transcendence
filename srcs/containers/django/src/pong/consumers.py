@@ -37,6 +37,10 @@ class PongConsumer(AsyncWebsocketConsumer):
             return
 
         await self.accept()
+        await self.send(text_data=json.dumps({
+            'type': 'player_role',
+            'player_role': self.player_role,
+        }))
 
     async def disconnect(self, close_code):
         # Clear player data on disconnect
@@ -121,7 +125,6 @@ class PongConsumer(AsyncWebsocketConsumer):
                 'type': 'game_state',
                 'paddle_B': event.get('paddle_B', None),
             }))
-            
 
     async def game_start(self, event):
         await self.send(text_data=json.dumps({

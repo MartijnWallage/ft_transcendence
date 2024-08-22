@@ -118,8 +118,19 @@ class Game {
         this.socket.onmessage = (e) => {
 			this.socket_data = JSON.parse(e.data);
 			console.log('Received message:', this.socket_data);
-        };
-    }
+			let data = this.socket_data;
+
+			if (data.type === 'player_role') {
+				player1.online_role = data.player_role;
+				console.log('local role assigned to ' + data.player_role);
+			}
+			if (data.type === 'player_connected') {		
+				if (data.player_role !== player1.online_role) {
+					player1.oponent = new Player(this.socket_data.player);
+					console.log('Player connected:', data.player);
+				}
+        }
+    }}
 
 	handleReconnection() {
         // Attempt to reconnect
@@ -135,42 +146,19 @@ class Game {
 		const player1 = new Player(this.loggedUser);
 		this.initSocket(player1);
 	
-		const socket = this.socket;
-	
 		// Create a promise to handle player2 connection
 		const player2Promise = new Promise((resolve, reject) => {
 			const checkPlayer2 = () => {
-				if (this.socket_data && this.socket_data.type === 'player_connected') {
-					if (this.socket_data.player === this.loggedUser) {
-						player1.online_role = this.socket_data.player_role;
-						console.log('local role assigned to ' + this.socket_data.player_role);
-						this.socket_data = null;
-					} else if (this.socket_data.player !== this.loggedUser) {
-						const player2 = new Player(this.socket_data.player);
-						console.log('player 2 created');
-						this.socket_data = null;
-						resolve({ player1, player2 });
+				if (player1.oponent) {
+					const player2 = player1.oponent;
+					resolve({ player1, player2 });
 					}
-				}
 			};
-	
-			// Check for player2 connection initially and periodically
 			checkPlayer2();
 			const interval = setInterval(() => {
 				checkPlayer2();
-			}, 5); // Check every 100ms
+			}, 10);
 	
-			// WebSocket error handler
-			socket.onerror = (error) => {
-				clearInterval(interval);
-				reject(new Error('WebSocket error: ' + error.message));
-			};
-	
-			// WebSocket close handler
-			socket.onclose = () => {
-				clearInterval(interval);
-				reject(new Error('WebSocket connection closed before player2 connected'));
-			};
 		});
 	
 		try {
