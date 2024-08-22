@@ -116,7 +116,6 @@ class Match {
 
 		if (this.game.running === true) {
 			this.sendGameState(socket);
-			this.updateReceivedData();
 		}
 		// move left paddle
 		let direction = this.keys['a'] ? -1 : this.keys['d'] ? 1 : 0;
@@ -133,6 +132,10 @@ class Match {
 		ball.animateBall();
 		ball.tryPaddleCollision(paddle1, paddle2);
 		ball.tryCourtCollision(field);
+
+		if (this.game.running === true) {
+			this.updateReceivedData();
+		}
 			
 		this.score.update();
 

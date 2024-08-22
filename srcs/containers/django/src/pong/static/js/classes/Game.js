@@ -108,7 +108,7 @@ class Game {
 
         this.socket.onclose = (event) => {
             console.log('WebSocket closed', event);
-            this.handleReconnection();
+            // this.handleReconnection();
         };
 
         this.socket.onerror = (error) => {
