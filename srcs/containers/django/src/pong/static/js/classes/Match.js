@@ -45,29 +45,29 @@ class Match {
 		console.log('Match instance created');
 	}
 
-	updateReceivedData() {
-		if (this.game.socket_data && this.game.socket_data.type === 'game_state') {
-			const data = this.game.socket_data;
-			console.log('Received game data:', data);
+	// updateReceivedData() {
+	// 	if (this.game.socket_data && this.game.socket_data.type === 'game_state') {
+	// 		const data = this.game.socket_data;
+	// 		console.log('Received game data:', data);
 
-			const player1 = this.game.match.players[0];
-        	const myRole = player1.online_role;
+	// 		const player1 = this.game.match.players[0];
+    //     	const myRole = player1.online_role;
 
-			console.log('My role:', myRole);
-			// Update the other player's paddle position only
-			if (myRole === 'A' && data.paddle_B !== undefined) {
-				this.game.paddle2.position.z = data.paddle_B;
-			} else if (myRole === 'B' && data.ball_x !== undefined && data.ball_z !== undefined && data.paddle_A !== undefined) {
-				this.game.paddle2.position.z = data.paddle_A;
-				this.game.ball.position.x = data.ball_x;
-				this.game.ball.position.z = data.ball_z;
+	// 		console.log('My role:', myRole);
+	// 		// Update the other player's paddle position only
+	// 		if (myRole === 'A' && data.paddle_B !== undefined) {
+	// 			this.game.paddle2.position.z = data.paddle_B;
+	// 		} else if (myRole === 'B' && data.ball_x !== undefined && data.ball_z !== undefined && data.paddle_A !== undefined) {
+	// 			this.game.paddle2.position.z = data.paddle_A;
+	// 			this.game.ball.position.x = data.ball_x;
+	// 			this.game.ball.position.z = data.ball_z;
 
-				this.game.paddle2.position.z *= -1;
-				this.game.ball.position.x *= -1;
-				this.game.ball.position.z *= -1;
-			}
-		}
-	}
+	// 			this.game.paddle2.position.z *= -1;
+	// 			this.game.ball.position.x *= -1;
+	// 			this.game.ball.position.z *= -1;
+	// 		}
+	// 	}
+	// }
 
 
 	async play(game) {
@@ -133,9 +133,9 @@ class Match {
 		ball.tryPaddleCollision(paddle1, paddle2);
 		ball.tryCourtCollision(field);
 
-		if (this.game.running === true) {
-			this.updateReceivedData();
-		}
+		// if (this.game.running === true) {
+		// 	this.updateReceivedData();
+		// }
 			
 		this.score.update();
 

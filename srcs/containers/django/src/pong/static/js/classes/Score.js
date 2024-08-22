@@ -38,6 +38,7 @@ class Score {
 			return;
 		
 		this.game.running = false;
+		this.game.socket.close();
 
 		ball.resetBall();
 		await this.displayWinMessage(`${this.players[this.winner].name}`);
