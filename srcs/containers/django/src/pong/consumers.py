@@ -2,7 +2,6 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 import json
 
 class PongConsumer(AsyncWebsocketConsumer):
-    # Shared across all instances
     player_A = None
     player_B = None
     game_data = {
@@ -15,61 +14,71 @@ class PongConsumer(AsyncWebsocketConsumer):
     }
 
     async def connect(self):
-        self.room_group_name = 'pong_game'
-        await self.channel_layer.group_add(self.room_group_name, self.channel_name)
-
-        if not self.player_A:
-            self.player_role = 'A'
-            self.player_A = self.channel_name
-            await self.accept()
-            await self.send(text_data=json.dumps({
-                'type': 'connection_accepted',
+        # Assign player role and save connection information to class-level attributes
+        if PongConsumer.player_A is None:
+            PongConsumer.player_A = {
+                'channel_name': self.channel_name,
+                'player': 'Player A',
                 'player_role': 'A',
-            }))
-        elif not self.player_B:
-            self.player_role = 'B'
-            self.player_B = self.channel_name
-            await self.accept()
-            await self.send(text_data=json.dumps({
-                'type': 'connection_accepted',
+                'ready': False,
+            }
+            self.player_role = 'A'
+        elif PongConsumer.player_B is None:
+            PongConsumer.player_B = {
+                'channel_name': self.channel_name,
+                'player': 'Player B',
                 'player_role': 'B',
-            }))
+                'ready': False,
+            }
+            self.player_role = 'B'
         else:
-            # If both player slots are taken, reject the connection
+            # If both player slots are filled, close the connection or handle it accordingly
             await self.close()
+            return
+
+        await self.accept()
+        await self.broadcast_player_info()
 
     async def disconnect(self, close_code):
-        if self.channel_name == self.player_A:
-            self.player_A = None
-        elif self.channel_name == self.player_B:
-            self.player_B = None
+        # Clear player data on disconnect
+        if self.player_role == 'A':
+            PongConsumer.player_A = None
+        elif self.player_role == 'B':
+            PongConsumer.player_B = None
 
-        await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
+        # Remove player from group
+        await self.channel_layer.group_discard(
+            self.room_group_name,
+            self.channel_name
+        )
 
     async def receive(self, text_data):
         data = json.loads(text_data)
         message_type = data.get('type')
 
         if message_type == 'game_update':
+            # Update paddle positions based on player role
             if self.player_role == 'A' and 'paddle_A' in data:
-                self.game_data['paddle_A'] = data['paddle_A']
+                PongConsumer.game_data['paddle_A'] = data['paddle_A']
             elif self.player_role == 'B' and 'paddle_B' in data:
-                self.game_data['paddle_B'] = data['paddle_B']
+                PongConsumer.game_data['paddle_B'] = data['paddle_B']
 
-            if 'ball_x' in data:
-                self.game_data['ball_x'] = data['ball_x']
-            if 'ball_z' in data:
-                self.game_data['ball_z'] = data['ball_z']
+            # Update ball position if provided
+            if 'ball_x' in data and 'ball_z' in data:
+                PongConsumer.game_data['ball_x'] = data['ball_x']
+                PongConsumer.game_data['ball_z'] = data['ball_z']
 
+            # Broadcast the updated game state to both players
             await self.channel_layer.group_send(
                 self.room_group_name,
                 {
                     'type': 'game_state',
-                    'state': self.game_data
+                    'state': PongConsumer.game_data
                 }
             )
 
     async def game_state(self, event):
+        # Send the updated game state to WebSocket
         state = event.get('state', {})
         await self.send(text_data=json.dumps({
             'type': 'game_state',
@@ -79,4 +88,20 @@ class PongConsumer(AsyncWebsocketConsumer):
                 'ball_x': state.get('ball_x', None),
                 'ball_z': state.get('ball_z', None),
             }
+        }))
+
+    async def broadcast_player_info(self):
+        # Broadcast player information
+        if PongConsumer.player_A:
+            await self.send_player_info(PongConsumer.player_A)
+        if PongConsumer.player_B:
+            await self.send_player_info(PongConsumer.player_B)
+
+    async def send_player_info(self, player_info):
+        # Send specific player info
+        await self.send(text_data=json.dumps({
+            'type': 'player_connected',
+            'player': player_info['player'],
+            'player_role': player_info['player_role'],
+            'ready': player_info['ready']
         }))
