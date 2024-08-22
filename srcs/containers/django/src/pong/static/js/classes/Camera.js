@@ -69,12 +69,13 @@ class Camera {
 		scene.renderer.render(scene.scene, this.camera);
 	}
 
-	renderSingleView(scene) {
+	renderSingleView(scene, position) {
 		const left = 0;
 		const bottom = 0;
 		const width = window.innerWidth;
 		const height = window.innerHeight;
-		this.camera.position.set(-14, 14, 0);
+		const x = position === 0 ? -14 : 14;
+		this.camera.position.set(x, 14, 0);
 		if (width < height){
 			const objectWidth = 13;
 			const cameraDistance = this.camera.position.distanceTo(new THREE.Vector3(-12, 0, 0));

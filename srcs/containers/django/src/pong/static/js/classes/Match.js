@@ -136,7 +136,14 @@ class Match {
 		this.score.update();
 
 		if (this.players[1].ai || this.game.mode === 'vsOnline') {
-			cam1.renderSingleView(this.game);
+			const player1 = this.game.match.players[0]; // Assuming player1 is always the logged-in user
+       		const myRole = player1.online_role;
+			if (myRole === 'A') {
+				cam1.renderSingleView(this.game, 0);
+			}
+			else {
+				cam1.renderSingleView(this.game, 1);
+			}
 		} else {
 			cam1.renderSplitView(this.game, 0);
 			cam2.renderSplitView(this.game, 1);
