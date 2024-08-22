@@ -99,7 +99,7 @@ class Game {
         this.socket = new WebSocket('wss://' + window.location.host + '/ws/pong/');
 
         this.socket.onopen = () => {
-            console.log('WebSocket connection opened');
+            console.log('WebSocket connection opened for player:', player1.name);
 				this.socket.send(JSON.stringify({
 					'type': 'connected',
 					'player': player1.name,
