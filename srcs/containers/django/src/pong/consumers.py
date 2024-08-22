@@ -63,7 +63,7 @@ class PongConsumer(AsyncWebsocketConsumer):
             await self.broadcast_player_info()
 
         elif message_type == 'game_update':
-            # Update paddle positions based on player role
+        # Update paddle positions based on player role
             if self.player_role == 'A' and 'paddle_A' in data:
                 PongConsumer.game_data['paddle_A'] = data['paddle_A']
             elif self.player_role == 'B' and 'paddle_B' in data:
@@ -79,21 +79,21 @@ class PongConsumer(AsyncWebsocketConsumer):
                 self.room_group_name,
                 {
                     'type': 'game_state',
-                    'state': PongConsumer.game_data
+                    'paddle_A': PongConsumer.game_data['paddle_A'],
+                    'paddle_B': PongConsumer.game_data['paddle_B'],
+                    'ball_x': PongConsumer.game_data['ball_x'],
+                    'ball_z': PongConsumer.game_data['ball_z']
                 }
             )
 
     async def game_state(self, event):
-        # Send the updated game state to WebSocket
-        state = event.get('state', {})
+        # Send the updated game state to WebSocket directly as attributes
         await self.send(text_data=json.dumps({
             'type': 'game_state',
-            'state': {
-                'paddle_A': state.get('paddle_A', None),
-                'paddle_B': state.get('paddle_B', None),
-                'ball_x': state.get('ball_x', None),
-                'ball_z': state.get('ball_z', None),
-            }
+            'paddle_A': event.get('paddle_A', None),
+            'paddle_B': event.get('paddle_B', None),
+            'ball_x': event.get('ball_x', None),
+            'ball_z': event.get('ball_z', None),
         }))
 
     async def broadcast_player_info(self):
