@@ -26,15 +26,13 @@ class AI {
 		this.material = new THREE.MeshStandardMaterial({
 			color: 0x008000,
 			roughness: 0.4,
-			metalness: 0.8,
-			flatShading: true
+			metalness: 0.3,
 		});
 		this.mesh = new THREE.Mesh(this.geometry, this.material);
 		this.mesh.position.set(this.AIPaddle.x - this.AIPaddle.geometry.parameters.width / 2, 0.7, this.predictionBallZ);
 		if (this.visualizePrediction)
 			this.game.scene.add(this.mesh);
     }
-
 	
     // Method to initialize the interval
     init() {
@@ -132,7 +130,7 @@ class AI {
 
 	movePaddle(paddle) {
 		let aim = this.predictionBallZ;
-		if (this.level === 2)
+		if (this.level >= 2)
 			aim = this.bestPaddlePosition;
 		return paddle.z + paddle.speed < aim ? 1 : 
 			paddle.z - paddle.speed > aim ? -1:

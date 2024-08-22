@@ -41,6 +41,9 @@ class Score {
 			return;
 		
 		this.game.running = false;
+		if (this.game.match.players[1].ai) {
+			this.game.scene.remove(this.game.match.players[1].ai.mesh);
+		}
 
 		ball.resetBall();
 		await this.displayWinMessage(`${this.players[this.winner].name}`);
