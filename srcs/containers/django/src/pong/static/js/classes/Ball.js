@@ -19,7 +19,8 @@ class Ball {
 		this.serve = 1;
 		this.dx = 0;
 		this.dz = 0;
-		this.initialSpeed = 0.2;
+		// this.initialSpeed = 0.2;
+		this.initialSpeed = 0.05;
 		this.angleMultiplier = 0.2;
 		this.accelerate = 1.01;
 		scene.add(this.mesh);
