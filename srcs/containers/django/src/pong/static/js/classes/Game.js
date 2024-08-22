@@ -168,7 +168,7 @@ class Game {
 			// Add a more stable way to make sure the game starts with the right amount of players
 			this.match = new Match(this, [player1, player2]);
 			console.log('Starting the match...');
-			// this.match.play(this);
+			this.match.play(this);
 		} catch (error) {
 			// Handle errors (e.g., WebSocket errors or player2 not connected)
 			console.error('Error starting the match:', error);
