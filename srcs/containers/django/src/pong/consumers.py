@@ -59,18 +59,8 @@ class PongConsumer(AsyncWebsocketConsumer):
             if self.player_role == 'A':
                 PongConsumer.player_A['player'] = data.get('player')
             elif self.player_role == 'B':
-                PongConsumer.player_B['ready'] = data.get('player')
+                PongConsumer.player_B['player'] = data.get('player')
             await self.broadcast_player_info()
-
-            player_info = {
-                'player': data.get('player'),
-                'player_role': self.player_role,
-                'ready': False,
-                'channel_name': self.channel_name
-            }
-            self.players.append(player_info)
-
-            await self.broadcast_player_list()
 
         elif message_type == 'game_update':
             # Update paddle positions based on player role
