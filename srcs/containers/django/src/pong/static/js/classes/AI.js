@@ -57,6 +57,17 @@ class AI {
 			this.mesh.position.set(this.AIPaddle.x - this.AIPaddle.geometry.parameters.width / 2, 0.7, this.predictionBallZ);
         }
     }
+
+	checkCourtCollision(ball) {
+		const topBall = ball.z - ball.radius;
+		const bottomBall = ball.z + ball.radius;
+		const halfCourt = this.game.field.geometry.parameters.depth / 2;
+		const topCourt = -halfCourt;
+		const bottomCourt = halfCourt;
+		
+		return (ball.dz > 0 && bottomBall > bottomCourt)
+			|| (ball.dz < 0 && topBall < topCourt);
+	}
 	
 	simulateBall(ball, humanPaddle) {
 		// simulate animate ball
@@ -64,7 +75,7 @@ class AI {
 		ball.z += ball.dz;
 		const leftSidePaddle = this.AIPaddle.x - this.AIPaddle.geometry.parameters.width / 2;
 		// if ball is at the AI's side, return the ball's z position
-		if (ball.x > leftSidePaddle) {
+		if (ball.dx > 0 && ball.x + ball.radius > leftSidePaddle) {
 			return ball.z;
 		}
 		const halfCourt = this.game.field.geometry.parameters.depth / 2;
@@ -90,7 +101,7 @@ class AI {
 			ball.dx *= (abs(ball.dx) < ball.initialSpeed / 1.5) ? -2 : -ball.accelerate;
 		}
 		// simulate ball hitting wall
-		if (ball.z < -halfCourt + ball.radius || ball.z > halfCourt - ball.radius) {
+		if (this.checkCourtCollision(ball)) {
 			ball.dz = -ball.dz;
 		}
 		return this.simulateBall(ball, humanPaddle);
@@ -112,7 +123,8 @@ class AI {
 		if (bestPaddlePosition - halfPaddle < -halfCourt ||
 			bestPaddlePosition + halfPaddle > halfCourt ||
 			abs(ball.z - bestPaddlePosition) > halfPaddle + ball.radius) {
-			return ball.z;
+			return this.AIPaddle.z < ball.z ? ball.z - halfPaddle:
+				ball.z + halfPaddle;
 		}
 		return bestPaddlePosition;
 	}
