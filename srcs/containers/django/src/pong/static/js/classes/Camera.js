@@ -69,17 +69,15 @@ class Camera {
 		scene.renderer.render(scene.scene, this.camera);
 	}
 
-	renderSingleView(scene, position) {
+	renderSingleView(scene) {
 		const left = 0;
 		const bottom = 0;
 		const width = window.innerWidth;
 		const height = window.innerHeight;
-		const x = position === 0 ? -14 : 14;
-		const dx = position === 0 ? -12 : 12;
-		this.camera.position.set(x, 14, 0);
+		this.camera.position.set(-14, 14, 0);
 		if (width < height){
 			const objectWidth = 13;
-			const cameraDistance = this.camera.position.distanceTo(new THREE.Vector3(dx, 0, 0));
+			const cameraDistance = this.camera.position.distanceTo(new THREE.Vector3(-12, 0, 0));
 			this.calculateFovToFitObject(objectWidth, cameraDistance, width / height);
 		}
 		else {

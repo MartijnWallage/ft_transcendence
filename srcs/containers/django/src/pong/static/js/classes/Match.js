@@ -58,13 +58,13 @@ class Match {
 			if (myRole === 'A' && state.paddle_B !== undefined) {
 				this.game.paddle2.position.z = state.paddle_B;
 			} else if (myRole === 'B' && state.paddle_A !== undefined) {
-				this.game.paddle2.position.z = state.paddle_A;
+				this.game.paddle2.position.z = state.paddle_A * -1;
 			}
 	
 			// Update the ball's position
 			if (myRole === 'B' && state.ball_x !== undefined && state.ball_z !== undefined) {
-				this.game.ball.position.x = state.ball_x;
-				this.game.ball.position.z = state.ball_z;
+				this.game.ball.position.x = state.ball_x * -1;
+				this.game.ball.position.z = state.ball_z * -1;
 			}
 		}
 	}
@@ -136,14 +136,7 @@ class Match {
 		this.score.update();
 
 		if (this.players[1].ai || this.game.mode === 'vsOnline') {
-			const player1 = this.game.match.players[0]; // Assuming player1 is always the logged-in user
-       		const myRole = player1.online_role;
-			if (myRole === 'A') {
-				cam1.renderSingleView(this.game, 0);
-			}
-			else {
-				cam1.renderSingleView(this.game, 1);
-			}
+			cam1.renderSingleView(this.game);
 		} else {
 			cam1.renderSplitView(this.game, 0);
 			cam2.renderSplitView(this.game, 1);
@@ -168,7 +161,7 @@ class Match {
 			};
 		}
 		else {
-			gameState = {
+			const gameState = {
 				type: 'game_update',
 				paddle_B: this.game.paddle1.mesh.position.z,
 			};
