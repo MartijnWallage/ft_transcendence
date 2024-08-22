@@ -62,7 +62,7 @@ class Match {
 			}
 	
 			// Update the ball's position
-			if (state.ball_x !== undefined && state.ball_z !== undefined) {
+			if (myRole === 'B' && state.ball_x !== undefined && state.ball_z !== undefined) {
 				this.game.ball.position.x = state.ball_x;
 				this.game.ball.position.z = state.ball_z;
 			}
@@ -149,13 +149,21 @@ class Match {
 	sendGameState(socket) {
     if (socket.readyState === WebSocket.OPEN) {
         // Construct the game state data
-        const gameState = {
-            type: 'game_update',
-            paddle_A: this.game.paddle1.mesh.position.z,
-			paddle_B: this.game.paddle2.mesh.position.z,
-            ball_x: this.game.ball.mesh.position.x, // Assuming getPosition() returns {x, z}
-			ball_z: this.game.ball.mesh.position.z,
-        };
+		if (myRole === 'A') {
+			const gameState = {
+				type: 'game_update',
+				paddle_A: this.game.paddle1.mesh.position.z,
+				ball_x: this.game.ball.mesh.position.x, // Assuming getPosition() returns {x, z}
+				ball_z: this.game.ball.mesh.position.z,
+			};
+		}
+		else {
+			const gameState = {
+				type: 'game_update',
+				paddle_B: this.game.paddle1.mesh.position.z,
+			};
+
+		}
 
         // Send the game state to the server
         socket.send(JSON.stringify(gameState));
