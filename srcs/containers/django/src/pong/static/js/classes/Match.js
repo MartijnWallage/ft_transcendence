@@ -47,24 +47,24 @@ class Match {
 
 	updateReceivedData() {
 		if (this.game.socket_data && this.game.socket_data.type === 'game_state') {
-			const state = this.game.socket_data.state;
-			console.log('Received game state:', state);
+			const data = this.game.socket_data;
+			console.log('Received game data:', data);
 
 			const player1 = this.game.match.players[0]; // Assuming player1 is always the logged-in user
         	const myRole = player1.online_role;
 
 			console.log('My role:', myRole);
 			// Update the other player's paddle position only
-			if (myRole === 'A' && state.paddle_B !== undefined) {
-				this.game.paddle2.position.z = state.paddle_B;
-			} else if (myRole === 'B' && state.paddle_A !== undefined) {
-				this.game.paddle2.position.z = state.paddle_A;
+			if (myRole === 'A' && data.paddle_B !== undefined) {
+				this.game.paddle2.position.z = data.paddle_B;
+			} else if (myRole === 'B' && data.paddle_A !== undefined) {
+				this.game.paddle2.position.z = data.paddle_A;
 			}
 	
 			// Update the ball's position
-			if (myRole === 'B' && state.ball_x !== undefined && state.ball_z !== undefined) {
-				this.game.ball.position.x = state.ball_x;
-				this.game.ball.position.z = state.ball_z;
+			if (myRole === 'B' && data.ball_x !== undefined && data.ball_z !== undefined) {
+				this.game.ball.position.x = data.ball_x;
+				this.game.ball.position.z = data.ball_z;
 			}
 		}
 	}
