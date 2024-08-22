@@ -10,6 +10,8 @@ class PongConsumer(AsyncWebsocketConsumer):
         'paddle_B': 0,
         'ball_x': 0,
         'ball_z': 0,
+		'score_A': 0,
+		'score_B': 0,
     }
     
     async def connect(self):
