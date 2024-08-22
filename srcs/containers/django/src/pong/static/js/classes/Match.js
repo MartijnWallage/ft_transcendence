@@ -58,13 +58,13 @@ class Match {
 			if (myRole === 'A' && state.paddle_B !== undefined) {
 				this.game.paddle2.position.z = state.paddle_B;
 			} else if (myRole === 'B' && state.paddle_A !== undefined) {
-				this.game.paddle2.position.z = state.paddle_A * -1;
+				this.game.paddle2.position.z = state.paddle_A;
 			}
 	
 			// Update the ball's position
 			if (myRole === 'B' && state.ball_x !== undefined && state.ball_z !== undefined) {
-				this.game.ball.position.x = state.ball_x * -1;
-				this.game.ball.position.z = state.ball_z * -1;
+				this.game.ball.position.x = state.ball_x;
+				this.game.ball.position.z = state.ball_z;
 			}
 		}
 	}
