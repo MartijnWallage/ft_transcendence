@@ -136,17 +136,28 @@ class PongConsumer(AsyncWebsocketConsumer):
         }))
 
     async def broadcast_player_info(self):
-        # Broadcast player information
-        if PongConsumer.player_A:
-            await self.send_player_info(PongConsumer.player_A)
-        if PongConsumer.player_B:
-            await self.send_player_info(PongConsumer.player_B)
-
-    async def send_player_info(self, player_info):
-        # Send specific player info
-        await self.send(text_data=json.dumps({
-            'type': 'player_connected',
-            'player': player_info['player'],
-            'player_role': player_info['player_role'],
-            'ready': player_info['ready']
-        }))
+        # Broadcast player information to all clients in the group
+        player_info_A = PongConsumer.player_A
+        player_info_B = PongConsumer.player_B
+        
+        if player_info_A:
+            await self.channel_layer.group_send(
+                self.room_group_name,
+                {
+                    'type': 'player_connected',
+                    'player': player_info_A['player'],
+                    'player_role': player_info_A['player_role'],
+                    'ready': player_info_A['ready']
+                }
+            )
+        
+        if player_info_B:
+            await self.channel_layer.group_send(
+                self.room_group_name,
+                {
+                    'type': 'player_connected',
+                    'player': player_info_B['player'],
+                    'player_role': player_info_B['player_role'],
+                    'ready': player_info_B['ready']
+                }
+            )
