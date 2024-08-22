@@ -80,7 +80,7 @@ class AI {
 		}
 		const halfCourt = this.game.field.geometry.parameters.depth / 2;
 		const rightSidePaddle = humanPaddle.x + humanPaddle.width / 2;
-		if (ball.x < rightSidePaddle) {
+		if (ball.x + ball.radius < rightSidePaddle) {
 			const paddleTop = humanPaddle.z - humanPaddle.depth / 2;
 			const paddleBottom = humanPaddle.z + humanPaddle.depth / 2;
 			const paddleHalfDepth = humanPaddle.depth / 2;
