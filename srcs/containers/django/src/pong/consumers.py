@@ -54,11 +54,9 @@ class PongConsumer(AsyncWebsocketConsumer):
         }))
 
     async def disconnect(self, close_code):
-        # Clear player data on disconnect
-        if self.player_role == 'A':
-            PongConsumer.player_A = None
-        elif self.player_role == 'B':
-            PongConsumer.player_B = None
+
+        PongConsumer.player_A = None
+        PongConsumer.player_B = None
 
         # Leave room group
         await self.channel_layer.group_discard(
