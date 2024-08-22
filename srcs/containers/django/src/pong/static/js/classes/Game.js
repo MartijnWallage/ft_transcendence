@@ -33,7 +33,7 @@ class Game {
 		this.audio = null;
 
 		// Game state
-		this.scoreToWin = 6;
+		this.scoreToWin = 3;
 		this.running = false;
 		this.match = null;
 		this.tournament = null;
