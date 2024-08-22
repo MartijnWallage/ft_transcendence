@@ -149,6 +149,8 @@ class Match {
 	sendGameState(socket) {
     if (socket.readyState === WebSocket.OPEN) {
         // Construct the game state data
+		const player1 = this.game.match.players[0]; // Assuming player1 is always the logged-in user
+        const myRole = player1.online_role;
 		if (myRole === 'A') {
 			const gameState = {
 				type: 'game_update',
