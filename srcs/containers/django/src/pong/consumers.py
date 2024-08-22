@@ -37,7 +37,6 @@ class PongConsumer(AsyncWebsocketConsumer):
             return
 
         await self.accept()
-        await self.broadcast_player_info()
 
     async def disconnect(self, close_code):
         # Clear player data on disconnect
@@ -56,7 +55,24 @@ class PongConsumer(AsyncWebsocketConsumer):
         data = json.loads(text_data)
         message_type = data.get('type')
 
-        if message_type == 'game_update':
+        if message_type == 'connected':
+            if self.player_role == 'A':
+                PongConsumer.player_A['player'] = data.get('player')
+            elif self.player_role == 'B':
+                PongConsumer.player_B['ready'] = data.get('player')
+            await self.broadcast_player_info()
+
+            player_info = {
+                'player': data.get('player'),
+                'player_role': self.player_role,
+                'ready': False,
+                'channel_name': self.channel_name
+            }
+            self.players.append(player_info)
+
+            await self.broadcast_player_list()
+
+        elif message_type == 'game_update':
             # Update paddle positions based on player role
             if self.player_role == 'A' and 'paddle_A' in data:
                 PongConsumer.game_data['paddle_A'] = data['paddle_A']
