@@ -12,7 +12,8 @@ class PongConsumer(AsyncWebsocketConsumer):
         'ball_z': 0,
 		'score_A': 0,
 		'score_B': 0,
-    }
+		}
+
     
     async def connect(self):
         # Assign the room group name to share state between two players
