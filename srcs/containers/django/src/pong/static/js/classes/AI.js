@@ -114,7 +114,7 @@ class AI {
 		
 		ball.z = this.predictionBallZ;
 		ball.dx *= (abs(ball.dx) < ball.initialSpeed / 1.5) ? -2 : -ball.accelerate;
-		const distanceBetweenPaddles = ball.x - paddle1RightSide;
+		const distanceBetweenPaddles = ball.x - paddle1RightSide - ball.radius;
 		const steps = distanceBetweenPaddles / abs(ball.dx);
 		const desiredDz = (aim - ball.z) / steps;
 		let bestPaddlePosition = ball.z - (desiredDz / ball.angleMultiplier);
