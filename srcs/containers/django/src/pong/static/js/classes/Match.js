@@ -58,7 +58,7 @@ class Match {
 			if (myRole === 'A' && state.paddle_B !== undefined) {
 				this.game.paddle2.position.z = state.paddle_B;
 			} else if (myRole === 'B' && state.paddle_A !== undefined) {
-				this.game.paddle1.position.z = state.paddle_A;
+				this.game.paddle2.position.z = state.paddle_A;
 			}
 	
 			// Update the ball's position
