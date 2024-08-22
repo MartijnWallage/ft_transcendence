@@ -61,6 +61,10 @@ class Match {
 				this.game.paddle2.position.z = data.paddle_A;
 				this.game.ball.position.x = data.ball_x;
 				this.game.ball.position.z = data.ball_z;
+
+				this.game.paddle2.position.z *= -1;
+				this.game.ball.position.x *= -1;
+				this.game.ball.position.z *= -1;
 			}
 		}
 	}
