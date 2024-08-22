@@ -109,7 +109,7 @@ class AI {
 
 	findPaddlePosition(ball, aim) {
 		const halfPaddle = this.game.paddle2.geometry.parameters.depth / 2;
-		ball.x = this.game.paddle2.x - halfPaddle;
+		ball.x = this.game.paddle2.x - halfPaddle - ball.radius;
 		const paddle1RightSide = this.game.paddle1.x + halfPaddle;
 		
 		ball.z = this.predictionBallZ;
@@ -117,14 +117,15 @@ class AI {
 		const distanceBetweenPaddles = ball.x - paddle1RightSide;
 		const steps = distanceBetweenPaddles / abs(ball.dx);
 		const desiredDz = (aim - ball.z) / steps;
-		const bestPaddlePosition = ball.z - (desiredDz / ball.angleMultiplier);
+		let bestPaddlePosition = ball.z - (desiredDz / ball.angleMultiplier);
 
 		const halfCourt = this.game.field.geometry.parameters.depth / 2;
 		if (bestPaddlePosition - halfPaddle < -halfCourt ||
 			bestPaddlePosition + halfPaddle > halfCourt ||
 			abs(ball.z - bestPaddlePosition) > halfPaddle + ball.radius) {
-			return this.AIPaddle.z < ball.z ? ball.z - halfPaddle:
-				ball.z + halfPaddle;
+			bestPaddlePosition = this.AIPaddle.z < ball.z ? 
+									ball.z - halfPaddle:
+									ball.z + halfPaddle;
 		}
 		return bestPaddlePosition;
 	}
