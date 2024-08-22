@@ -1,5 +1,8 @@
 from channels.generic.websocket import AsyncWebsocketConsumer
 import json
+import logging
+
+logger = logging.getLogger(__name__)
 
 class PongConsumer(AsyncWebsocketConsumer):
     player_A = None
@@ -56,6 +59,7 @@ class PongConsumer(AsyncWebsocketConsumer):
         )
 
     async def receive(self, text_data):
+        logger.debug(f"Received data: {text_data}")
         data = json.loads(text_data)
         message_type = data.get('type')
 
