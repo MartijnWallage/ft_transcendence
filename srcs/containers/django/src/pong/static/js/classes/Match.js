@@ -50,19 +50,15 @@ class Match {
 			const data = this.game.socket_data;
 			console.log('Received game data:', data);
 
-			const player1 = this.game.match.players[0]; // Assuming player1 is always the logged-in user
+			const player1 = this.game.match.players[0];
         	const myRole = player1.online_role;
 
 			console.log('My role:', myRole);
 			// Update the other player's paddle position only
 			if (myRole === 'A' && data.paddle_B !== undefined) {
 				this.game.paddle2.position.z = data.paddle_B;
-			} else if (myRole === 'B' && data.paddle_A !== undefined) {
+			} else if (myRole === 'B' && data.ball_x !== undefined && data.ball_z !== undefined && data.paddle_A !== undefined) {
 				this.game.paddle2.position.z = data.paddle_A;
-			}
-	
-			// Update the ball's position
-			if (myRole === 'B' && data.ball_x !== undefined && data.ball_z !== undefined) {
 				this.game.ball.position.x = data.ball_x;
 				this.game.ball.position.z = data.ball_z;
 			}
@@ -114,9 +110,10 @@ class Match {
 		const cam2 = this.game.cam2;
 		const socket = this.game.socket;
 
-		
-		this.sendGameState(socket);
-		this.updateReceivedData();
+		if (this.game.running === true) {
+			this.sendGameState(socket);
+			this.updateReceivedData();
+		}
 		// move left paddle
 		let direction = this.keys['a'] ? -1 : this.keys['d'] ? 1 : 0;
 		paddle1.movePaddle(direction, field);
