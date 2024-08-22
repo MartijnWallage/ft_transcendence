@@ -14,6 +14,8 @@ class PongConsumer(AsyncWebsocketConsumer):
     }
 
     async def connect(self):
+        self.room_group_name = f'game_room'
+        
         # Assign player role and save connection information to class-level attributes
         if PongConsumer.player_A is None:
             PongConsumer.player_A = {

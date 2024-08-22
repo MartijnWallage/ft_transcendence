@@ -65,9 +65,9 @@ function waitForEnter(game) {
 		}
 		if ( game.mode === 'vsOnline') {
 			document.removeEventListener('keydown', onKeyDown);
-				document.removeEventListener('touchstart', onTouchStart);
-				notDisplayDiv('enter');
-				resolve();
+			document.removeEventListener('touchstart', onTouchStart);
+			notDisplayDiv('enter');
+			resolve();
 		}
 		document.addEventListener('keydown', onKeyDown);
 		document.addEventListener('touchstart', onTouchStart);
