@@ -121,6 +121,7 @@ class PongConsumer(AsyncWebsocketConsumer):
                 'type': 'game_state',
                 'paddle_B': event.get('paddle_B', None),
             }))
+            
 
     async def game_start(self, event):
         await self.send(text_data=json.dumps({
