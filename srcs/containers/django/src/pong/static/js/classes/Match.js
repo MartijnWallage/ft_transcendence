@@ -161,7 +161,7 @@ class Match {
 			};
 		}
 		else {
-			const gameState = {
+			gameState = {
 				type: 'game_update',
 				paddle_B: this.game.paddle1.mesh.position.z,
 			};
