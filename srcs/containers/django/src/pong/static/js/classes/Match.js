@@ -151,8 +151,9 @@ class Match {
         // Construct the game state data
 		const player1 = this.game.match.players[0]; // Assuming player1 is always the logged-in user
         const myRole = player1.online_role;
+		let gameState;
 		if (myRole === 'A') {
-			const gameState = {
+			gameState = {
 				type: 'game_update',
 				paddle_A: this.game.paddle1.mesh.position.z,
 				ball_x: this.game.ball.mesh.position.x, // Assuming getPosition() returns {x, z}
@@ -160,7 +161,7 @@ class Match {
 			};
 		}
 		else {
-			const gameState = {
+			gameState = {
 				type: 'game_update',
 				paddle_B: this.game.paddle1.mesh.position.z,
 			};
