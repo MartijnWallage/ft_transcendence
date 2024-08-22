@@ -1,5 +1,5 @@
 import { updateUI, bindUserEventListeners} from './userMgmt.js';
-import { showMatches, showMatchDetails } from './match-history.js';
+import { showMatches } from './match-history.js';
 
 function loadPageClosure(game) {
 	return async (page) => {
@@ -135,26 +135,23 @@ function dropDownEventListeners() {
     if (dropdown1v1) {
         dropdown1v1.addEventListener('click', (event) => {
             event.preventDefault(); // Prevent default link behavior
-            showMatches('1v1');
-            // loadPage('match_history');
+            showMatches('UvU');
         });
     }
 
-    var dropdownTournament = document.getElementById('dropdown-tournament');
-    if (dropdownTournament) {
-        dropdownTournament.addEventListener('click', (event) => {
-            event.preventDefault();
-            showMatches('tournament');
-            // loadPage('match_history');
-        });
-    }
+    // var dropdownTournament = document.getElementById('dropdown-tournament');
+    // if (dropdownTournament) {
+    //     dropdownTournament.addEventListener('click', (event) => {
+    //         event.preventDefault();
+    //         showMatches('tournament');
+    //     });
+    // }
 
     var dropdownVsAI = document.getElementById('dropdown-vs-ai');
     if (dropdownVsAI) {
         dropdownVsAI.addEventListener('click', (event) => {
             event.preventDefault();
-            showMatches('vsAI');
-            // loadPage('match_history');
+            showMatches('solo');
         });
     }
 }

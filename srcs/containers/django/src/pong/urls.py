@@ -24,6 +24,8 @@ urlpatterns = [
 	path('api/match_history/', views.match_history, name='match_history'),
 	path('api/create_match/', views.create_match, name='create_match'),
 	path('api/create_player/', views.create_player, name='create_player'),
+	path('api/user_matches/', views.user_matches, name='user_matches'),
+ 	path('api/get_logged_in_user/', views.get_logged_in_user, name='get_logged_in_user'),
 
 	path('api/register_user/', views.load_page_reg, name='load_page'),
 	path('api/login_user/', views.load_page, name='load_page_login'),

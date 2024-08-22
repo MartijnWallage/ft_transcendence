@@ -11,6 +11,7 @@ import { Audio } from './Audio.js';
 import { OrbitControls } from '../three-lib/OrbitControls.js';
 import { Blockchain } from './Blockchain.js';
 import { delay, displayDiv, notDisplayDiv, textToDiv } from '../utils.js';
+import { getCookie } from '../userMgmt.js';
 
 class Game {
 	constructor() {
@@ -82,54 +83,66 @@ class Game {
 		this.createMatch();
 	}
 
+	getCsrfToken() {
+		const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+		return token;
+	}
+
 	async createPlayer(playerName) {
 		console.log('Create player in database:', playerName);
-		$.ajax({
-			url: '/api/create_player/',
-			type: 'POST',
 	
-			data: JSON.stringify({
-				'player_name': playerName
-			}),
+		try {
+			const response = await fetch('/api/create_player/', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json; charset=utf-8',
+					'X-CSRFToken': getCookie('csrftoken'),
+				},
+				body: JSON.stringify({
+					'player_name': playerName,
+				}),
+			});
 	
-			contentType: 'application/json; charset=utf-8',
-	
-			dataType: 'json',
-	
-			success: function(response) {
-				console.log('Participant added:', response);
-			},
-	
-			error: function(error) {
-				console.log('Error addParicipant:', error);
+			if (!response.ok) {
+				throw new Error(`Error creating player: ${response.statusText}`);
 			}
 	
-		});
+			const data = await response.json();
+			console.log('Player added:', data);
+		} catch (error) {
+			console.error('Error adding player:', error);
+		}
 	}
 
 	async createMatch() {
 		console.log('Creating Match...');
-		$.ajax({
-			url: '/api/create_match/',
-			type: 'POST',
-			data: JSON.stringify({
-				'player1' : this.match.players[0].name,
-				'player2' : this.match.players[1].name,
-				'player1_score' : this.match.score.result[0],
-				'player2_score' : this.match.score.result[1],
-				'timestamp' : this.match.timestamp,
-				'mode': this.mode
-			}),
-			contentType: 'application/json; charset=utf-8',
-			dataType: 'json',
 	
-			success: function(response) {
-				console.log('Match created successfully:', response);
-			},
-			error: function(error) {
-				console.error('Error creating match:', error);
+		try {
+			const response = await fetch('/api/create_match/', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json; charset=utf-8',
+					'X-CSRFToken': getCookie('csrftoken'),
+				},
+				body: JSON.stringify({
+					'player1': this.match.players[0].name,
+					'player2': this.match.players[1].name,
+					'player1_score': this.match.score.result[0],
+					'player2_score': this.match.score.result[1],
+					'timestamp': this.match.timestamp,
+					'mode': this.mode,
+				}),
+			});
+	
+			if (!response.ok) {
+				throw new Error(`Error creating match: ${response.statusText}`);
 			}
-		});
+	
+			const data = await response.json();
+			console.log('Match created successfully:', data);
+		} catch (error) {
+			console.error('Error creating match:', error);
+		}
 	}
 
 	startUserVsUser() {

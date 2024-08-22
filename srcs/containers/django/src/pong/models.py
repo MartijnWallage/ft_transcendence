@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 
 class Player(models.Model):
 	name = models.CharField(max_length=100)
+	user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile', null=True, blank=True)
 
 	def __str__(self):
 		return self.name
@@ -30,9 +31,6 @@ class Tournament(models.Model):
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     avatar = models.ImageField(upload_to='avatars/', null=True, blank=True)
-    # matchvs1 = models.ManyToManyField(Match, related_name='vs1_matches')
-    # matchvsAI = models.ManyToManyField(Match, related_name='vsAI_matches')
-    # tournament = models.ManyToManyField(Tournament, related_name='tournament_matches')
 
     def __str__(self):
         return self.user.username

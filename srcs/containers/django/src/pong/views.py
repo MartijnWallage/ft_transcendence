@@ -22,7 +22,8 @@ from django.views.decorators.csrf import csrf_exempt
 from .serializers import RegisterSerializer, UpdateUserSerializer, ChangePasswordSerializer
 from .models import Player, Tournament, Match, UserProfile
 import json
-from django.db.models import Max
+from django.db.models import Max, Q
+from rest_framework.response import Response
 
 @login_required
 def userinfo_view(request):
@@ -105,6 +106,9 @@ def register(request):
     serializer = RegisterSerializer(data=request.data, context={'request': request})
     if serializer.is_valid():
         user = serializer.save()
+        # Create a Player instance associated with the new User
+        Player.objects.create(name=user.username, user=user)
+        print("user created: ", user)
         django_login(request, user)
         return JsonResponse({'status': 'success'}, status=201)
     return JsonResponse(serializer.errors, status=400)
@@ -148,7 +152,6 @@ def logout_view(request):
     print("this post method only is called for logout request")
     logout(request)
     return JsonResponse({'status': 'success'})
-
 
 @api_view(['GET'])	
 def game_mode_view(request):
@@ -216,146 +219,7 @@ def tournament_score(request):
     return JsonResponse(data)
 import traceback
 
-# Register matches on database
-
-@api_view(['POST'])
-def create_player(request):
-    try:
-        data = json.loads(request.body)
-        player_name = data.get('player_name')
-
-        if not player_name:
-            raise ValueError("Player name is required")
-
-        # Retrieve or create the player
-        player, created = Player.objects.get_or_create(name=player_name)
-
-        return JsonResponse({'status': 'success', 'player_id': player.id})
-    except Exception as e:
-        error_message = str(e)
-        traceback.print_exc()  # This will print the traceback to the console
-        return JsonResponse({'status': 'error', 'message': error_message}, status=500)
-
-@api_view(['POST'])
-def create_match(request):
-    try:
-        data = json.loads(request.body)
-        player1_score = data.get('player1_score')
-        player2_score = data.get('player2_score')
-        timestamp = data.get('timestamp')
-        mode = data.get('mode')
-
-        # Retrieve the players
-        try:
-            player1, created1 = Player.objects.get_or_create(name=data.get('player1'))
-        except Player.DoesNotExist:
-            return JsonResponse({'error': f'Player {player1} does not exist'}, status=400)
-
-        try:
-            player2, created2 = Player.objects.get_or_create(name=data.get('player2'))
-        except Player.DoesNotExist:
-            return JsonResponse({'error': f'Player {player2} does not exist'}, status=400)
-
-        # Create the match
-        match = Match.objects.create(player1=player1, player2=player2, player1_score=player1_score, player2_score=player2_score, timestamp=timestamp, mode=mode)
-
-        return JsonResponse({'status': 'success', 'match_id': match.id})
-    
-    except Exception as e:
-        error_message = str(e)
-        traceback.print_exc()
-        return JsonResponse({'status': 'error', 'message': error_message}, status=500)
-
-# Register tournament on database
-
-@csrf_exempt
-@api_view(['POST'])
-def add_participant_to_tournament(request):
-    try:
-        data = json.loads(request.body)
-        tournament_id = data.get('tournament_id')
-        player_name = data.get('player_name')
-
-        if not player_name or not tournament_id:
-            raise ValueError("Player name and tournament ID are required")
-
-        # Retrieve or create the player
-        player, created = Player.objects.get_or_create(name=player_name)
-        
-        # Retrieve the tournament
-        tournament = Tournament.objects.get(id=tournament_id)
-        
-        # Add player to the tournament
-        tournament.players.add(player)
-        tournament.save()
-
-        return JsonResponse({'status': 'success'})
-    
-    except Player.DoesNotExist:
-        return JsonResponse({'status': 'error', 'message': 'Player not found.'}, status=404)
-    except Tournament.DoesNotExist:
-        return JsonResponse({'status': 'error', 'message': 'Tournament not found.'}, status=404)
-    except Exception as e:
-        error_message = str(e)
-        traceback.print_exc()  # This will print the traceback to the console
-        return JsonResponse({'status': 'error', 'message': error_message}, status=500)
-
-
-@api_view(['POST'])
-def create_tournament(request):
-    try:
-        data = json.loads(request.body)
-        date = data.get('date')
-        hash = data.get('transaction_hash')  # Optional field
-
-        # Create the tournament
-        # tournament = Tournament.objects.create(date=date)
-        tournament = Tournament.objects.create(date=date, transaction_hash=hash)
-
-        
-        return JsonResponse({'status': 'success', 'tournament_id': tournament.id})
-    except Exception as e:
-        error_message = str(e)
-        traceback.print_exc()
-        return JsonResponse({'status': 'error', 'message': error_message}, status=500)
-    
-@api_view(['POST'])
-def create_match_in_tournament(request):
-    try:
-        data = json.loads(request.body)
-        tournament_id = data.get('tournament_id')
-        player1_score = data.get('player1_score')
-        player2_score = data.get('player2_score')
-        timestamp = data.get('timestamp')
-        mode = data.get('mode')
-
-        # Retrieve the tournament
-        tournament = Tournament.objects.get(id=tournament_id)
-
-        # Retrieve the players
-        try:
-            player1, created1 = Player.objects.get_or_create(name=data.get('player1'))
-        except Player.DoesNotExist:
-            return JsonResponse({'error': f'Player {player1} does not exist'}, status=400)
-
-        try:
-            player2, created2 = Player.objects.get_or_create(name=data.get('player2'))
-        except Player.DoesNotExist:
-            return JsonResponse({'error': f'Player {player2} does not exist'}, status=400)
-
-        # Create the match
-        match = Match.objects.create(player1=player1, player2=player2, player1_score=player1_score, player2_score=player2_score, timestamp=timestamp, mode=mode)
-
-        # Add match to the tournament
-        tournament.match.add(match)
-        tournament.save()
-
-        return JsonResponse({'status': 'success', 'tournament_id': tournament.id})
-    except Exception as e:
-        error_message = str(e)
-        traceback.print_exc()
-        return JsonResponse({'status': 'error', 'message': error_message}, status=500)
-    
+# Register tournament on blockchain
 
 @api_view(['GET'])
 def get_contract_address(request):
@@ -417,3 +281,205 @@ def register_matches(request):
         return JsonResponse({'success': True, 'tx_hash': receipt.transactionHash.hex()})
     except Exception as e:
         return JsonResponse({'success': False, 'error': str(e)}, status=500)
+
+
+
+# Register tournament on database
+
+@csrf_exempt
+@api_view(['POST'])
+def add_participant_to_tournament(request):
+    try:
+        data = json.loads(request.body)
+        tournament_id = data.get('tournament_id')
+        player_name = data.get('player_name')
+
+        if not player_name or not tournament_id:
+            raise ValueError("Player name and tournament ID are required")
+
+        # Retrieve or create the player
+        player, created = Player.objects.get_or_create(name=player_name)
+        
+        # Retrieve the tournament
+        tournament = Tournament.objects.get(id=tournament_id)
+        
+        # Add player to the tournament
+        tournament.players.add(player)
+        tournament.save()
+
+        return JsonResponse({'status': 'success'})
+    
+    except Player.DoesNotExist:
+        return JsonResponse({'status': 'error', 'message': 'Player not found.'}, status=404)
+    except Tournament.DoesNotExist:
+        return JsonResponse({'status': 'error', 'message': 'Tournament not found.'}, status=404)
+    except Exception as e:
+        error_message = str(e)
+        traceback.print_exc()  # This will print the traceback to the console
+        return JsonResponse({'status': 'error', 'message': error_message}, status=500)
+
+@csrf_exempt
+@api_view(['POST'])
+def create_tournament(request):
+    try:
+        data = json.loads(request.body)
+        date = data.get('date')
+        hash = data.get('transaction_hash')  # Optional field
+
+        # Create the tournament
+        # tournament = Tournament.objects.create(date=date)
+        tournament = Tournament.objects.create(date=date, transaction_hash=hash)
+
+        
+        return JsonResponse({'status': 'success', 'tournament_id': tournament.id})
+    except Exception as e:
+        error_message = str(e)
+        traceback.print_exc()
+        return JsonResponse({'status': 'error', 'message': error_message}, status=500)
+
+@csrf_exempt
+@api_view(['POST'])
+def create_match_in_tournament(request):
+    try:
+        data = request.data
+        tournament_id = data.get('tournament_id')
+        player1_score = data.get('player1_score')
+        player2_score = data.get('player2_score')
+        timestamp = data.get('timestamp')
+        mode = data.get('mode')
+
+        # Retrieve the tournament
+        tournament = Tournament.objects.get(id=tournament_id)
+
+        # Retrieve the players
+        try:
+            player1, created1 = Player.objects.get_or_create(name=data.get('player1'))
+        except Player.DoesNotExist:
+            return JsonResponse({'error': f'Player {player1} does not exist'}, status=400)
+
+        try:
+            player2, created2 = Player.objects.get_or_create(name=data.get('player2'))
+        except Player.DoesNotExist:
+            return JsonResponse({'error': f'Player {player2} does not exist'}, status=400)
+
+        # Create the match
+        match = Match.objects.create(player1=player1, player2=player2, player1_score=player1_score, player2_score=player2_score, timestamp=timestamp, mode=mode)
+
+        # Add match to the tournament
+        tournament.match.add(match)
+        tournament.save()
+
+        return JsonResponse({'status': 'success', 'tournament_id': tournament.id})
+    except Exception as e:
+        error_message = str(e)
+        traceback.print_exc()
+        return JsonResponse({'status': 'error', 'message': error_message}, status=500)
+
+
+# Register matches on database
+
+@api_view(['POST'])
+def create_player(request):
+    try:
+        data = request.data
+        player_name = data.get('player_name')
+
+        if not player_name:
+            raise ValueError("Player name is required")
+
+        # Retrieve or create the player
+        player, created = Player.objects.get_or_create(name=player_name)
+
+        return Response({'status': 'success', 'player_id': player.id})
+    except Exception as e:
+        error_message = str(e)
+        traceback.print_exc()  # This will print the traceback to the console
+        return Response({'status': 'error', 'message': error_message}, status=500)
+
+
+@api_view(['POST'])
+def create_match(request):
+    try:
+        data = request.data
+        player1_score = data.get('player1_score')
+        player2_score = data.get('player2_score')
+        timestamp = data.get('timestamp')
+        mode = data.get('mode')
+
+        # Retrieve or create players
+        player1, created1 = Player.objects.get_or_create(name=data.get('player1'))
+        player2, created2 = Player.objects.get_or_create(name=data.get('player2'))
+
+        # Create the match
+        match = Match.objects.create(
+            player1=player1,
+            player2=player2,
+            player1_score=player1_score,
+            player2_score=player2_score,
+            timestamp=timestamp,
+            mode=mode
+        )
+
+        return Response({'status': 'success', 'match_id': match.id})
+    
+    except Exception as e:
+        error_message = str(e)
+        traceback.print_exc()
+        return Response({'status': 'error', 'message': error_message}, status=500)
+
+
+# retrieve user matches    
+
+@api_view(['GET'])
+def get_logged_in_user(request):
+    return Response({'username': request.user.username})
+
+def get_user_matches(username, mode):
+    try:
+        # Retrieve the Player instance associated with the given username
+        player = Player.objects.get(name=username)
+        print("player: ", player)
+
+
+        # Retrieve all matches where the given player is either player1 or player2 and with the given mode
+        print(Q(player1=player))
+        print(Q(player2=player))
+        print(Q(mode=mode))
+        matches = Match.objects.filter(
+            (Q(player1=player) | Q(player2=player)) & Q(mode=mode)
+        )
+        print("matches: ", matches)
+        return matches
+    
+    except Player.DoesNotExist:
+        # Handle the case where the player does not exist
+        return None
+
+@api_view(['POST'])
+def user_matches(request):
+    username = request.data.get('username')
+    mode = request.data.get('mode')
+    
+    # Make sure username and mode are provided
+    if not username or not mode:
+        return Response({'error': 'Username and mode are required.'}, status=400)
+    
+    matches = get_user_matches(username, mode)
+    if matches is None:
+        return Response({'error': 'Player not found'}, status=404)
+    
+    # Serialize the matches if you want to return them in a JSON response
+    matches_data = [
+        {
+            'player1': match.player1.name,
+            'player2': match.player2.name,
+            'player1_score': match.player1_score,
+            'player2_score': match.player2_score,
+            'timestamp': match.timestamp,
+            'mode': match.mode,
+        }
+        for match in matches
+    ]
+    print("matches_data: ", matches_data)
+
+    return Response({'matches': matches_data}, status=200)
