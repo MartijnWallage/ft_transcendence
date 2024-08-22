@@ -35,7 +35,7 @@ class PongConsumer(AsyncWebsocketConsumer):
         self.players = deque(player for player in self.players if player['channel_name'] != self.channel_name)
 
         # Broadcast the updated player list to everyone
-        await self.broadcast_player_list()
+        # await self.broadcast_player_list()
 
         # Leave room group
         await self.channel_layer.group_discard(
