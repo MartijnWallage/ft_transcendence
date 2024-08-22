@@ -1,25 +1,51 @@
-Django== 4.1 #Django framework
-psycopg2== 2.9.9 #PostgreSQL adapter for Python
-web3		  # Ethereum
-# psycopg2-binary==2.9.9
-gunicorn==21.2.0
-django_postgres_extensions== 0.9.3
-whitenoise # for serving static files
-crispy-bootstrap5 # To integrate Bootstrap 5 with Django forms
-# crispy-forms
-django-crispy-forms
-djangorestframework
-pillow # to upload image
-markdown       # Markdown support for the browsable API.
-django-filter  # Filtering support
-django-environ # To read environment variables
-# djangorestframework-filters
-# django-utils-six
-# six
+Django==4.1                # Django framework
+psycopg2==2.9.9            # PostgreSQL adapter for Python
+web3==6.0.0                # Ethereum library
+gunicorn==21.2.0           # WSGI HTTP Server for UNIX
+django_postgres_extensions==0.9.3  # Additional PostgreSQL functionality for Django
+whitenoise==6.4.0          # Serve static files in production
+crispy-bootstrap5==0.7     # Integrate Bootstrap 5 with Django forms
+django-crispy-forms==1.14.0  # Django forms framework
+djangorestframework==3.14.0  # Django REST framework
+pillow==9.4.0              # Image processing library
+markdown==3.4.3            # Markdown support for the browsable API
+django-filter==23.2        # Filtering support for Django
+django-environ==0.9.0      # Environment variable management
+requests==2.31.0           # HTTP library
+rusty-rlp==0.1.15          # Rust-based RLP for better performance in pyrlp
 
 
-# djangorestframework==3.14.0 # Django REST framework 
-# djangorestframework-simplejwt # which provides JSON Web Token (JWT) authentication support for Django REST framework.
-requests # making HTTP requests
-# daphne==4.0.0 #This allows you to use WebSockets, long-lived HTTP connections, and other asynchronous protocols in Django.
-# channels==4.0.0 #Django Channels allows you to add real-time functionality to your Django applications, such as live notifications, chat applications, and other features that require asynchronous communication.
+
+
+
+
+
+
+
+
+# Django== 4.1 #Django framework
+# psycopg2== 2.9.9 #PostgreSQL adapter for Python
+# web3==6.0.0  # Ethereum (Specify the version)
+# # web3		  # Ethereum
+# # psycopg2-binary==2.9.9
+# gunicorn==21.2.0
+# django_postgres_extensions== 0.9.3
+# whitenoise # for serving static files
+# crispy-bootstrap5 # To integrate Bootstrap 5 with Django forms
+# # crispy-forms
+# django-crispy-forms
+# djangorestframework
+# pillow # to upload image
+# markdown       # Markdown support for the browsable API.
+# django-filter  # Filtering support
+# django-environ # To read environment variables
+# # djangorestframework-filters
+# # django-utils-six
+# # six
+
+
+# # djangorestframework==3.14.0 # Django REST framework 
+# # djangorestframework-simplejwt # which provides JSON Web Token (JWT) authentication support for Django REST framework.
+# requests # making HTTP requests
+# # daphne==4.0.0 #This allows you to use WebSockets, long-lived HTTP connections, and other asynchronous protocols in Django.
+# # channels==4.0.0 #Django Channels allows you to add real-time functionality to your Django applications, such as live notifications, chat applications, and other features that require asynchronous communication.
