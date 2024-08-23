@@ -120,7 +120,7 @@ function bindMenuEventListeners(game){
 	let soundBtn = document.getElementById('js-audio-btn');
 	if (soundBtn) {
 		soundBtn.addEventListener('click', function() {
-			game.muteAudio.bind(game);
+			game.muteAudio();
 			game.viewOptionMenu();
 		});
 	}
