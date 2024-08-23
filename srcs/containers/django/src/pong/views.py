@@ -229,7 +229,7 @@ def get_contract_address(request):
 
 @api_view(['POST'])
 def register_matches(request):
-    data = json.loads(request.body)
+    data = request.data
     tournament_id = data.get('tournament_id')
     print('tournament_id:', tournament_id)
     try:
@@ -243,7 +243,7 @@ def register_matches(request):
             'timestamp': match.timestamp
         } for match in matches]
     except Tournament.DoesNotExist:
-        return JsonResponse({'success': False, 'error': 'Tournament not found'}, status=404)
+        return Response({'success': False, 'error': 'Tournament not found'}, status=404)
     
     # Setup Web3 and contract
     alchemy_url = f"https://eth-sepolia.g.alchemy.com/v2/{settings.ALCHEMY_API_KEY}"
@@ -278,19 +278,18 @@ def register_matches(request):
         tournament.save()
 
         # Update the tournament with the transaction hash
-        return JsonResponse({'success': True, 'tx_hash': receipt.transactionHash.hex()})
+        return Response({'success': True, 'tx_hash': receipt.transactionHash.hex()})
     except Exception as e:
-        return JsonResponse({'success': False, 'error': str(e)}, status=500)
+        return Response({'success': False, 'error': str(e)}, status=500)
 
 
 
 # Register tournament on database
 
-@csrf_exempt
 @api_view(['POST'])
 def add_participant_to_tournament(request):
     try:
-        data = json.loads(request.body)
+        data = request.data
         tournament_id = data.get('tournament_id')
         player_name = data.get('player_name')
 
@@ -307,22 +306,21 @@ def add_participant_to_tournament(request):
         tournament.players.add(player)
         tournament.save()
 
-        return JsonResponse({'status': 'success'})
+        return Response({'status': 'success'})
     
     except Player.DoesNotExist:
-        return JsonResponse({'status': 'error', 'message': 'Player not found.'}, status=404)
+        return Response({'status': 'error', 'message': 'Player not found.'}, status=404)
     except Tournament.DoesNotExist:
-        return JsonResponse({'status': 'error', 'message': 'Tournament not found.'}, status=404)
+        return Response({'status': 'error', 'message': 'Tournament not found.'}, status=404)
     except Exception as e:
         error_message = str(e)
         traceback.print_exc()  # This will print the traceback to the console
-        return JsonResponse({'status': 'error', 'message': error_message}, status=500)
+        return Response({'status': 'error', 'message': error_message}, status=500)
 
-@csrf_exempt
 @api_view(['POST'])
 def create_tournament(request):
     try:
-        data = json.loads(request.body)
+        data = request.data
         date = data.get('date')
         hash = data.get('transaction_hash')  # Optional field
 
@@ -331,13 +329,12 @@ def create_tournament(request):
         tournament = Tournament.objects.create(date=date, transaction_hash=hash)
 
         
-        return JsonResponse({'status': 'success', 'tournament_id': tournament.id})
+        return Response({'status': 'success', 'tournament_id': tournament.id})
     except Exception as e:
         error_message = str(e)
         traceback.print_exc()
-        return JsonResponse({'status': 'error', 'message': error_message}, status=500)
+        return Response({'status': 'error', 'message': error_message}, status=500)
 
-@csrf_exempt
 @api_view(['POST'])
 def create_match_in_tournament(request):
     try:

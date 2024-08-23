@@ -104,92 +104,105 @@ class Tournament {
 	
 	async addParticipantInTournament(playerName, tournamentId) {
 		console.log('Adding participant:', playerName);
-		$.ajax({
-			url: '/api/add_participant_to_tournament/',
-			type: 'POST',
 	
-			data: JSON.stringify({
-				'X-CSRFToken': getCookie('csrftoken'),
-				'tournament_id': tournamentId,
-				'player_name': playerName,
-			}),
+		try {
+			const response = await fetch('/api/add_participant_to_tournament/', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					'X-CSRFToken': getCookie('csrftoken'), // Include CSRF token
+				},
+				body: JSON.stringify({
+					tournament_id: tournamentId,
+					player_name: playerName,
+				}),
+			});
 	
-			contentType: 'application/json; charset=utf-8',
-	
-			dataType: 'json',
-	
-			success: function(response) {
-				console.log('Participant added:', response);
-			},
-	
-			error: function(error) {
-				console.log('Error addParicipant:', error);
+			if (!response.ok) {
+				throw new Error(`Error adding participant: ${response.statusText}`);
 			}
 	
-		});
+			const data = await response.json();
+			console.log('Participant added:', data);
+	
+		} catch (error) {
+			console.error('Error addParticipant:', error);
+		}
 	}
+	
 	
 	async createTournament() {
 		console.log('Creating tournament...');
 		const currentDate = this.getCurrentDateISO();
 		console.log('Current Date:', currentDate);
 	
-		return new Promise((resolve, reject) => {
-			$.ajax({
-				url: '/api/create_tournament/',
-				type: 'POST',
-				data: JSON.stringify({
-					'X-CSRFToken': getCookie('csrftoken'),
-					'date': currentDate,
-					'transaction_hash' : null,
-				}),
-				contentType: 'application/json; charset=utf-8',
-				dataType: 'json',
-	
-				success: function(response) {
-					console.log('Tournament created successfully:', response);
-					if (response && response.tournament_id) {
-						console.log('Tournament ID:', response.tournament_id);
-						resolve(response.tournament_id);
-					} else {
-						console.log('Tournament ID not found in the response.');
-						resolve(null);
-					}
+		try {
+			const response = await fetch('/api/create_tournament/', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					'X-CSRFToken': getCookie('csrftoken'), // Include CSRF token
 				},
-				error: function(error) {
-					console.error('Error creating tournament:', error);
-					reject(error);
-				}
+				body: JSON.stringify({
+					date: currentDate,
+					transaction_hash: null,
+				}),
 			});
-		});
+	
+			if (!response.ok) {
+				throw new Error(`Error creating tournament: ${response.statusText}`);
+			}
+	
+			const data = await response.json();
+			console.log('Tournament created successfully:', data);
+			if (data && data.tournament_id) {
+				console.log('Tournament ID:', data.tournament_id);
+				return data.tournament_id;
+			} else {
+				console.log('Tournament ID not found in the response.');
+				return null;
+			}
+	
+		} catch (error) {
+			console.error('Error creating tournament:', error);
+			throw error;
+		}
 	}
+	
 	
 	async createMatchInTournament(tournamentId, matchResult, mode) {
 		console.log('Creating Match...');
-		$.ajax({
-			url: '/api/create_match_in_tournament/',
-			type: 'POST',
-			data: JSON.stringify({
-				'X-CSRFToken': getCookie('csrftoken'),
-				'tournament_id': tournamentId,
-				'player1' : matchResult.player1,
-				'player2' : matchResult.player2,
-				'player1_score' : matchResult.player1Score,
-				'player2_score' : matchResult.player2Score,
-				'timestamp' : matchResult.timestamp,
-				'mode': mode
-			}),
-			contentType: 'application/json; charset=utf-8',
-			dataType: 'json',
 	
-			success: function(response) {
-				console.log('Match created successfully:', response);
-			},
-			error: function(error) {
-				console.error('Error creating match:', error);
+		try {
+			const response = await fetch('/api/create_match_in_tournament/', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					'X-CSRFToken': getCookie('csrftoken'), // Include CSRF token
+				},
+				body: JSON.stringify({
+					tournament_id: tournamentId,
+					player1: matchResult.player1,
+					player2: matchResult.player2,
+					player1_score: matchResult.player1Score,
+					player2_score: matchResult.player2Score,
+					timestamp: matchResult.timestamp,
+					mode: mode,
+				}),
+			});
+	
+			if (!response.ok) {
+				throw new Error(`Error creating match: ${response.statusText}`);
 			}
-		});
+	
+			const data = await response.json();
+			console.log('Match created successfully:', data);
+	
+		} catch (error) {
+			console.error('Error creating match:', error);
+		}
 	}
+	
 
 	// Tournament End
 
