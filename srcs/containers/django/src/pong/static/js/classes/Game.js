@@ -24,7 +24,7 @@ class Game {
 		container.appendChild(this.renderer.domElement);
 
 		// Objects
-		this.field = new Field(this.scene);
+		this.field = new Field(this.scene, 16, 12);
 		this.paddle1 = new Paddle(this.scene, this.field, true);
 		this.paddle2 = new Paddle(this.scene, this.field, false);
 		this.ball = new Ball(this);
@@ -51,6 +51,16 @@ class Game {
 		console.log('Game class created');
 		this.boundCreateAudioContext = this.createAudioContext.bind(this);
 		document.addEventListener('click', this.boundCreateAudioContext);
+	}
+
+	updateField(length, width) {
+		this.scene.remove(this.field.mesh);
+		this.scene.remove(this.field.net);
+		this.scene.remove(this.paddle1.mesh);
+		this.scene.remove(this.paddle2.mesh);
+		this.field = new Field(this.scene, length, width);
+		this.paddle1 = new Paddle(this.scene, this.field, true);
+		this.paddle2 = new Paddle(this.scene, this.field, false);
 	}
 	
 	// Create audio audio context once there is a first interaction with the website to comply with internet rules
@@ -263,11 +273,10 @@ class Game {
 		const fieldLength = document.getElementById('fieldLength').value;
 		const aiLevel = document.getElementById('aiLevel').value;
 
+		this.updateField(fieldLength, fieldWidth);
 		this.ball.initialSpeed = ballSpeed / 40;
 		this.paddle1.speed = paddleSpeed / 40;
 		this.paddle2.speed = paddleSpeed / 40;
-		this.field.geometry.parameters.depth = fieldWidth;
-		this.field.geometry.parameters.width = fieldLength;
 		this.aiLevel = aiLevel === 'easy' ? 1 : aiLevel === 'medium' ? 2 : 3;
 
 		console.log(`Ball Speed: ${ballSpeed}`, this.ball.initialSpeed);
