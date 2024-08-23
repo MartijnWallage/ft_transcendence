@@ -55,7 +55,7 @@ class PongConsumer(AsyncWebsocketConsumer):
 
     async def disconnect(self, close_code):
         # Clear player data
-        logger.debug("********** Player disconnected **********")
+        logger.debug("********** Player disconnected **********") 
         if PongConsumer.player_A:
             await self.channel_layer.send(
                 PongConsumer.player_A['channel_name'],
