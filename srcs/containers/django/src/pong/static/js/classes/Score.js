@@ -17,7 +17,7 @@ class Score {
 		const ballRightSide = ball.position.x + ball.radius;
 		const ballLeftSide = ball.position.x - ball.radius;
 		const player_role = this.game.match.players[0].online_role;
-		let scorer;
+		let scorer = null;
 
 		// console.log('mode:', this.game.mode, 'player_role:', player_role);
 
@@ -32,6 +32,8 @@ class Score {
 			this.result[scorer] += 1;
 			textToDiv(this.result[scorer], `player${scorer + 1}-score`);
 		}
+		if (scorer === null)
+			return;
 
 		if (this.game.mode === 'vsOnline' && player_role === 'A') {
 			console.log('im in the loop2');
@@ -46,18 +48,6 @@ class Score {
 				this.game.socket.send(JSON.stringify(scoreUpdate));
 			}
 		}
-
-		// else if (this.game.mode ==! 'vsOnline') {
-		// 	if (ballRightSide < -halfFieldWidth)
-		// 		scorer = 1;
-		// 	else if (ballLeftSide > halfFieldWidth)
-		// 		scorer = 0;
-		// 	else
-		// 		return;
-		// 	this.result[scorer] += 1;
-		// 	textToDiv(this.result[scorer], `player${scorer + 1}-score`);
-		// }
-		
 		
 		ball.serveBall();
 		if (this.game.match.players[1].isAI()) {
