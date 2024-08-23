@@ -33,7 +33,7 @@ class Score {
 		console.log('mode:', this.game.mode, 'player_role:', player_role);
 		if (this.game.mode === 'vsOnline' && player_role === 'A') {
 			if (this.game.socket.readyState === WebSocket.OPEN) {
-				scoreUpdate = {
+				let scoreUpdate = {
 					type: 'score_update',
 					score_A: this.result[0],
 					score_B: this.result[1],
