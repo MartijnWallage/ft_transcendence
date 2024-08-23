@@ -25,10 +25,10 @@ class Friendship(models.Model):
 
 class Player(models.Model):
     name = models.CharField(max_length=100)
-    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile', null=True, blank=True)
+    user_profile = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile', null=True, blank=True)
 
     def __str__(self):
-        return self.name
+        return self.user_profile.user.username if self.user_profile else self.name
 
 class Match(models.Model):
     player1 = models.ForeignKey(Player, on_delete=models.CASCADE, related_name='player1_matches')
@@ -41,6 +41,18 @@ class Match(models.Model):
     def __str__(self):
         return f"{self.player1} vs {self.player2}"
     
+    def get_winner(self):
+        if self.player1_score > self.player2_score:
+            return self.player1
+        else:
+            return self.player2
+
+    def get_loser(self):
+        if self.player1_score < self.player2_score:
+            return self.player1
+        else:
+            return self.player2
+    
 class Tournament(models.Model):
     date = models.DateTimeField()
     players = models.ManyToManyField(Player, related_name='tournament_players')
@@ -49,10 +61,3 @@ class Tournament(models.Model):
 
     def __str__(self):
         return self.date
-
-class UserProfile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-    avatar = models.ImageField(upload_to='avatars/', null=True, blank=True)
-
-    def __str__(self):
-        return self.user.username

@@ -56,7 +56,15 @@ class RegisterSerializer(serializers.ModelSerializer):
             password=validated_data['password1']
         )
         print("User created:", user)
-        UserProfile.objects.create(user=user, avatar=avatar)
+        user_profile, created = UserProfile.objects.get_or_create(user=user)
+    
+        if avatar is not None:
+            user_profile.avatar = avatar
+            
+        # Always update the online_status
+        user_profile.online_status = True
+        user_profile.save()
+        # UserProfile.objects.create(user=user, avatar=avatar, online_status=True)
         # if 'avatar' in validated_data:
         #     UserProfile.objects.create(user=user, avatar=validated_data['avatar'])
         return user

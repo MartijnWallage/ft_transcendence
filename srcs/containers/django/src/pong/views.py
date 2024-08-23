@@ -43,7 +43,6 @@ def suggested_friends(request):
 @api_view(['POST'])
 @login_required
 def add_friend(request):
-    print(request.data)
     friend_username = request.data.get('friend_username')
     print('add friend method called with friend', friend_username)
     try:
@@ -96,7 +95,6 @@ def list_friends(request):
 @login_required
 def accept_friend(request):
 
-    friend_username = request.data.get('friend_username')
     requesting_user = User.objects.get(username=friend_username)
     action = request.data.get('action')
     print('accepting friend request')
@@ -121,8 +119,6 @@ def friend_requests(request):
     requests = Friendship.objects.filter(friend=request.user, accepted=False)
     pending_requests = [request for request in requests]
 
-    print('pending requests', pending_requests)
-
     serializer = UserProfileSerializer(UserProfile.objects.filter(user__in=[r.user for r in pending_requests]), many=True)
 
     return JsonResponse({"requests": serializer.data})
@@ -138,7 +134,7 @@ def userinfo_view(request):
     }
     try:
         user_profile = UserProfile.objects.get(user=request.user)
-        user_info['avatar_url'] = user_profile.avatar.url if user_profile.avatar else None
+        user_info['avatar_url'] = user_profile.avatar.url if user_profile.avatar else '/static/images/guest.png'
         print("this is avatar url:   ", user_info["avatar_url"])
     except UserProfile.DoesNotExist:
         print('user doesnot exists')
@@ -221,7 +217,7 @@ def register(request):
     if serializer.is_valid():
         user = serializer.save()
         # Create a Player instance associated with the new User
-        Player.objects.create(name=user.username, user=user)
+        # Player.objects.create(name=user.username, user_profile=user)
         print("user created: ", user)
         django_login(request, user)
         return JsonResponse({'status': 'success'}, status=201)
@@ -253,7 +249,6 @@ def change_password(request):
 # @csrf_exempt
 @api_view(['POST'])
 def login(request):
-    print("this post method only is called for login request")
     form = LoginForm(data=request.data)
     if form.is_valid():
         user = form.get_user()
@@ -502,13 +497,14 @@ def create_match_in_tournament(request):
 def create_player(request):
     try:
         data = request.data
-        player_name = data.get('player_name')
+        player_name = request.user.username
+        # player_name = data.get('player_name')
 
         if not player_name:
             raise ValueError("Player name is required")
 
         # Retrieve or create the player
-        player, created = Player.objects.get_or_create(name=player_name)
+        player, created = Player.objects.get_or_create(user_profile=player_name)
 
         return Response({'status': 'success', 'player_id': player.id})
     except Exception as e:
@@ -521,14 +517,29 @@ def create_player(request):
 def create_match(request):
     try:
         data = request.data
+        player1_data = data.get('player1')
+        player2_data = data.get('player2')
         player1_score = data.get('player1_score')
         player2_score = data.get('player2_score')
         timestamp = data.get('timestamp')
         mode = data.get('mode')
+        # Helper function to retrieve or create a player
+        def get_or_create_player(player_data):
+            # Attempt to find a user by the username
+            try:
+                user = User.objects.get(username=player_data)
+                player, created = Player.objects.get_or_create(user_profile=user)
+            except User.DoesNotExist:
+                # If no user exists, create a player by name
+                player, created = Player.objects.get_or_create(name=player_data)
+            return player
 
+        # Retrieve or create players for player1 and player2
+        player1 = get_or_create_player(player1_data)
+        player2 = get_or_create_player(player2_data)
         # Retrieve or create players
-        player1, created1 = Player.objects.get_or_create(name=data.get('player1'))
-        player2, created2 = Player.objects.get_or_create(name=data.get('player2'))
+        # player1, created1 = Player.objects.get_or_create(name=data.get('player1'))
+        # player2, created2 = Player.objects.get_or_create(name=data.get('player2'))
 
         # Create the match
         match = Match.objects.create(
@@ -556,8 +567,16 @@ def get_logged_in_user(request):
 
 def get_user_matches(username, mode):
     try:
+
+        try:
+            user = User.objects.get(username=username)
+            player = Player.objects.get(user_profile=user)  # Assuming `user_profile` links Player to User
+        except User.DoesNotExist:
+            # If the User doesn't exist, try to find the Player by name
+            player = Player.objects.get(name=username)
+
         # Retrieve the Player instance associated with the given username
-        player = Player.objects.get(name=username)
+        # player = Player.objects.get(name=username)
         print("player: ", player)
 
 
@@ -577,6 +596,7 @@ def get_user_matches(username, mode):
 
 @api_view(['POST'])
 def user_matches(request):
+    # username = request.user.username
     username = request.data.get('username')
     mode = request.data.get('mode')
     

@@ -1,9 +1,3 @@
-
-
-// error container visibility
-// login and signup button near 3 dots at the top (my suggestion)
-// Logout and profile should be displayed if username is clicked. (I will finish profile this week)
-
 let isUserLoggedIn = false;
 
 
