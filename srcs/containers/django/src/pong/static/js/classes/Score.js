@@ -8,6 +8,7 @@ class Score {
 		this.scoreToWin = this.game.scoreToWin;
 		this.result = [0, 0];
 		this.winner = null;
+		this.onlineUpdate = false;
 	}
 
 	async update() {
@@ -18,8 +19,6 @@ class Score {
 		const ballLeftSide = ball.position.x - ball.radius;
 		const player_role = this.game.match.players[0].online_role;
 		let scorer = null;
-
-		// console.log('mode:', this.game.mode, 'player_role:', player_role);
 
 		if (this.game.mode ==! 'vsOnline' || (this.game.mode === 'vsOnline' && player_role === 'A')) {
 			console.log('im in the loop');
@@ -32,8 +31,9 @@ class Score {
 			this.result[scorer] += 1;
 			textToDiv(this.result[scorer], `player${scorer + 1}-score`);
 		}
-		if (scorer === null)
+		if (scorer === null && this.onlineUpdate === false)
 			return;
+		this.onlineUpdate = false;
 
 		if (this.game.mode === 'vsOnline' && player_role === 'A') {
 			console.log('im in the loop2');
