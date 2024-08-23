@@ -12,16 +12,17 @@ class Score {
 	}
 
 	async update() {
-		const ball = this.game.ball;
-		const field = this.game.field;
+		const { ball, field, mode, match, socket } = this.game;
 		const halfFieldWidth = field.geometry.parameters.width / 2;
 		const ballRightSide = ball.position.x + ball.radius;
 		const ballLeftSide = ball.position.x - ball.radius;
-		const player_role = this.game.match.players[0].online_role;
+		const playerRole = match.players[0].online_role;
 		let scorer = null;
 
-		if (this.game.mode ==! 'vsOnline' || (this.game.mode === 'vsOnline' && player_role === 'A')) {
-			console.log('im in the loop');
+		const isVsOnlineMode = mode === 'vsOnline';
+		const isPlayerRoleA = playerRole === 'A';
+
+		if (!isVsOnlineMode || (isVsOnlineMode && isPlayerRoleA)) {
 			if (ballRightSide < -halfFieldWidth)
 				scorer = 1;
 			else if (ballLeftSide > halfFieldWidth)
@@ -31,28 +32,16 @@ class Score {
 			this.result[scorer] += 1;
 			textToDiv(this.result[scorer], `player${scorer + 1}-score`);
 		}
-		if (scorer === null && this.onlineUpdate === false)
+		if (scorer === null && !this.onlineUpdate)
 			return;
+			
+		if (isVsOnlineMode && isPlayerRoleA)
+			sendScoreUpdate(this.result[0], this.result[1]);
 		this.onlineUpdate = false;
-
-		if (this.game.mode === 'vsOnline' && player_role === 'A') {
-			console.log('im in the loop2');
-
-			if (this.game.socket.readyState === WebSocket.OPEN) {
-				let scoreUpdate = {
-					type: 'score_update',
-					score_A: this.result[0],
-					score_B: this.result[1],
-				};
-				console.log('Sending score update:', scoreUpdate);
-				this.game.socket.send(JSON.stringify(scoreUpdate));
-			}
-		}
-		
+			
 		ball.serveBall();
-		if (this.game.match.players[1].isAI()) {
-			this.game.match.players[1].ai.refreshView();
-		}
+		if (match.players[1].isAI())
+			match.players[1].ai.refreshView();
 		
 		if (this.result[0] === this.scoreToWin)
 			this.winner = 0;
@@ -62,12 +51,24 @@ class Score {
 			return;
 		
 		this.game.running = false;
-		if (this.game.socket)
-			this.game.socket.close();
+		if (socket)
+			socket.close();
 
 		ball.resetBall();
 		await this.displayWinMessage(`${this.players[this.winner].name}`);
 		this.game.readyForNextMatch = true;
+	}
+
+	sendScoreUpdate(scoreA, scoreB) {
+		if (this.game.socket.readyState === WebSocket.OPEN) {
+			let scoreUpdate = {
+				type: 'score_update',
+				score_A: scoreA,
+				score_B: scoreB,
+			};
+			console.log('Sending score update:', scoreUpdate);
+			this.game.socket.send(JSON.stringify(scoreUpdate));
+		}
 	}
 
 	displayWinMessage(winner) {
