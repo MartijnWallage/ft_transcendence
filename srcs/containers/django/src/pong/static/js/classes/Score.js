@@ -30,6 +30,7 @@ class Score {
 			textToDiv(this.result[scorer], `player${scorer + 1}-score`);
 		}
 
+		console.log('mode:', this.game.mode, 'player_role:', player_role);
 		if (this.game.mode === 'vsOnline' && player_role === 'A') {
 			if (this.game.socket.readyState === WebSocket.OPEN) {
 				scoreUpdate = {
