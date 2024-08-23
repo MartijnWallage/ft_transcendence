@@ -74,6 +74,7 @@ class Game {
 	// These are the modes bound to the buttons in the menu
 	async startSolo() {
 		this.mode = 'solo';
+		console.log('mode:', this.mode);
 		this.audio.playSound(this.audio.select_2);
 		const player1 = new Player(this.loggedUser);
 		const player2 = new Player('pongAI');
@@ -84,6 +85,7 @@ class Game {
 
 	startUserVsUser() {
 		this.mode = 'UvU';
+		console.log('mode:', this.mode);
 		this.audio.playSound(this.audio.select_2);
 		const player1 = new Player(this.loggedUser);
 		const player2 = new Player('Guest 2');
@@ -157,6 +159,7 @@ class Game {
 
 	async startVsOnline() {
 		this.mode = 'vsOnline';
+		console.log('mode:', this.mode);
 		this.audio.playSound(this.audio.select_2);
 		const player1 = new Player(this.loggedUser);
 		var player2 = null;
