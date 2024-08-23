@@ -129,8 +129,8 @@ class Game {
 				const player1 = this.match.players[0];
 				const myRole = player1.online_role;
 				if (myRole === 'B') {
-					console.log('Received message:', data.player_A, '  ', data.player_B);
-					this.match.score.result = [data.player_B, data.player_B];
+					console.log('Received message:', data.score_A, '  ', data.score_B);
+					this.match.score.result = [data.score_B, data.score_B];
 				}
 			}
 			if (data.type === 'player_connected') {		
