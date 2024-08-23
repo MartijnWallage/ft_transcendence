@@ -82,19 +82,19 @@ class Match {
 		ball.serveBall();
 	}
 
-	update() {
+	update(game) {
 		this.frameCount++;
 		console.log('frameCount:', this.frameCount);
-		const field = this.game.field;
-		const paddle1 = this.game.paddle1;
-		const paddle2 = this.game.paddle2;
-		const ball = this.game.ball;
-		const cam1 = this.game.cam1;
-		const cam2 = this.game.cam2;
-		const socket = this.game.socket;
+		const field = game.field;
+		const paddle1 = game.paddle1;
+		const paddle2 = game.paddle2;
+		const ball = game.ball;
+		const cam1 = game.cam1;
+		const cam2 = game.cam2;
+		const socket = game.socket;
 
-		console.log('mode after:', this.game.mode);
-		if (this.game.mode === 'vsOnline') {
+		console.log('mode after:', game.mode);
+		if (game.mode === 'vsOnline') {
 			if (this.timeToSend) {
 				this.sendGameState(socket);
 				this.timeToSend = false;
@@ -109,7 +109,7 @@ class Match {
 		paddle1.movePaddle(direction, field);
 		
 		// move right paddle
-		if (this.game.mode =! 'vsOnline') {
+		if (game.mode =! 'vsOnline') {
 			direction = this.players[1].ai ? this.players[1].ai.movePaddle(paddle2) :
 				this.keys['ArrowRight'] ? -1 :
 				this.keys['ArrowLeft'] ? 1 :
@@ -124,12 +124,12 @@ class Match {
 			
 		this.score.update();
 
-		console.log('mode after:', this.game.mode);
-		if (this.players[1].ai || this.game.mode === 'vsOnline') {
-			cam1.renderSingleView(this.game);
+		console.log('mode after:', game.mode);
+		if (this.players[1].ai || game.mode === 'vsOnline') {
+			cam1.renderSingleView(game);
 		} else {
-			cam1.renderSplitView(this.game, 0);
-			cam2.renderSplitView(this.game, 1);
+			cam1.renderSplitView(game, 0);
+			cam2.renderSplitView(game, 1);
 			displayDiv('vertical-line');
 		}
 	}
