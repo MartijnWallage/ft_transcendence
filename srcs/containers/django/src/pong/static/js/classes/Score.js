@@ -44,17 +44,6 @@ class Score {
 			}
 		}
 
-		else if (this.game.mode === 'vsOnline' && player_role === 'B') {
-			if (this.game.socket.readyState === WebSocket.OPEN) {
-				let scoreUpdate = {
-					type: 'score_update',
-					score_A: this.result[0],
-					score_B: this.result[1],
-				};
-				console.log('Sending score update:', scoreUpdate);
-				this.game.socket.send(JSON.stringify(scoreUpdate));
-			}
-		}
 		// else if (this.game.mode ==! 'vsOnline') {
 		// 	if (ballRightSide < -halfFieldWidth)
 		// 		scorer = 1;
