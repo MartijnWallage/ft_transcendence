@@ -11,7 +11,7 @@ class Field {
 		this.mesh = new THREE.Mesh(this.geometry, this.material);
 		scene.add(this.mesh);
 
-		this.net_geometry = new THREE.BoxGeometry(0.3, 0.51, 11.8);
+		this.net_geometry = new THREE.BoxGeometry(0.3, this.geometry.parameters.height + 0.01, this.geometry.parameters.depth - 0.2);
 		this.net_material = new THREE.MeshStandardMaterial({
 			color: 0xc1d1db,
 			roughness: 0.5,

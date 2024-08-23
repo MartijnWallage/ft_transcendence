@@ -28,7 +28,7 @@ class Game {
 		this.field = new Field(this.scene);
 		this.paddle1 = new Paddle(this.scene, this.field, true);
 		this.paddle2 = new Paddle(this.scene, this.field, false);
-		this.ball = new Ball(this.scene);
+		this.ball = new Ball(this);
 		this.environment = new Environment(this.scene);
 		this.audio = null;
 
@@ -39,6 +39,7 @@ class Game {
 		this.tournament = null;
 		this.readyForNextMatch = false;
 		this.isOptionMenuVisible = false;
+		this.isSettingsMenuVisible = false;
 		this.mode = 'none';
 		this.loggedUser = 'Guest';
 
@@ -220,6 +221,7 @@ class Game {
 			console.log('displaying option menu');
 			displayDiv('js-tournament_score-btn');
 			displayDiv('js-audio-btn');
+			displayDiv('js-settings-btn');
 			if (this.loggedUser === 'Guest') {
 				displayDiv('js-login-btn');
 			}
@@ -236,9 +238,23 @@ class Game {
 			notDisplayDiv('js-audio-btn');
 			notDisplayDiv('js-login-btn');
 			notDisplayDiv('js-logout-btn');
+			notDisplayDiv('js-settings-btn');
 			notDisplayDiv('js-end-game-btn');
 			textToDiv('=', 'js-option-btn');
 			this.isOptionMenuVisible = false;
+		}
+	}
+	
+	viewSettingsMenu() {
+		console.log('viewSettingsMenu');
+		console.log(this.isSettingsMenuVisible);
+		if (this.isSettingsMenuVisible === false) {
+			console.log('displaying settings menu');
+			this.isSettingsMenuVisible = true;
+		}
+		else {
+			console.log('hiding settings menu');
+			this.isSettingsMenuVisible = false;
 		}
 	}
 	

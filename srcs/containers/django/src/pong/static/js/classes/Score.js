@@ -29,6 +29,9 @@ class Score {
 		textToDiv(this.result[scorer], `player${scorer + 1}-score`);
 		
 		ball.serveBall();
+		if (this.game.match.players[1].isAI()) {
+			this.game.match.players[1].ai.refreshView();
+		}
 		
 		if (this.result[0] === this.scoreToWin)
 			this.winner = 0;
