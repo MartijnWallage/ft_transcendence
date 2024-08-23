@@ -74,23 +74,21 @@ class Game {
 	// These are the modes bound to the buttons in the menu
 	async startSolo() {
 		this.mode = 'solo';
-		console.log('mode:', this.mode);
 		this.audio.playSound(this.audio.select_2);
 		const player1 = new Player(this.loggedUser);
 		const player2 = new Player('pongAI');
 		player2.setAI(this);
 		this.match = new Match(this, [player1, player2]);
-		this.match.play();
+		this.match.play(this);
 	}
 
 	startUserVsUser() {
 		this.mode = 'UvU';
-		console.log('mode:', this.mode);
 		this.audio.playSound(this.audio.select_2);
 		const player1 = new Player(this.loggedUser);
 		const player2 = new Player('Guest 2');
 		this.match = new Match(this, [player1, player2]);
-		this.match.play();
+		this.match.play(this);
 	}
 
 	initSocket(player1) {
@@ -159,7 +157,6 @@ class Game {
 
 	async startVsOnline() {
 		this.mode = 'vsOnline';
-		console.log('mode:', this.mode);
 		this.audio.playSound(this.audio.select_2);
 		const player1 = new Player(this.loggedUser);
 		var player2 = null;
