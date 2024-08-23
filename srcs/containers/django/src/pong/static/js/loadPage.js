@@ -1,4 +1,4 @@
-import { updateUI, bindUserEventListeners, handleLogout} from './userMgmt.js';
+import { updateUI, bindUserEventListeners, handleLogout } from './userMgmt.js';
 
 
 function loadPageClosure(game) {
