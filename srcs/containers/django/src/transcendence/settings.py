@@ -49,7 +49,8 @@ INSTALLED_APPS = [
     'rest_framework',
     # 'pong',
     'crispy_bootstrap5',
-    'crispy_forms'
+    'crispy_forms',
+    'channels',
 ]
 
 
@@ -185,10 +186,24 @@ CSRF_TRUSTED_ORIGINS = [
     'https://127.0.0.1',
     'https://127.0.0.1:8443',
     'https://159.89.8.55',
-    'https://144.126.245.86'
+    'https://144.126.245.86',
+    'https://10.15.205.3'
 ]
 
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 # to upload avatar for the user
+
+
+#remote player
+ASGI_APPLICATION = "transcendence.asgi.application"
+
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [('redis', 6379)],  # Assuming you have a Redis container running
+        },
+    },
+}

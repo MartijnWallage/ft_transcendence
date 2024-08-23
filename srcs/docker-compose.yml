@@ -19,10 +19,8 @@ services:
       - media:/home/app/web/media  # Mount the media volume
 
   postgressql:
+    image: postgres:16.3-bullseye
     container_name: postgressql
-    build:
-      context: containers/postgressql
-      dockerfile: Dockerfile
     env_file:
       - .env
     networks:
@@ -44,12 +42,21 @@ services:
        - ts-network
     ports:
       - "8443:443"   # For HTTPS
-      - "8080:80"   # For HTTP redirection
+#      - "80:80"   # For HTTP redirection
     restart: on-failure #always
     depends_on:
       - django
     volumes:
       - media:/app/web/media/
+
+  redis:
+    image: redis:latest  # Use the official Redis image
+    ports:
+      - "6380:6379"  # Expose the port to the host if necessary
+    networks:
+      - ts-network
+    environment:
+      - REDIS_BIND=0.0.0.0
 
 networks:
   ts-network:

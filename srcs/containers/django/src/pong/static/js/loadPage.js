@@ -44,6 +44,11 @@ function loadPageClosure(game) {
 
 function bindEventListeners(game) {
 
+	const startVsOnline = document.getElementById('js-start-vs-online-btn');
+	if (startVsOnline) {
+		startVsOnline.addEventListener('click', game.startVsOnline.bind(game));
+	}
+
 	const startUserVsUserButton = document.getElementById('js-start-user-vs-user-btn');
 	if (startUserVsUserButton) {
 		startUserVsUserButton.addEventListener('click', game.startUserVsUser.bind(game));
@@ -77,6 +82,10 @@ function bindEventListeners(game) {
 		saveSettings.addEventListener('click', game.saveSettings.bind(game));
 	}
 	
+	const closeSettings = document.getElementById('closeSettingsMenu');
+	if (closeSettings) {
+		closeSettings.addEventListener('click', notDisplayDiv('js-settings-btn'));
+	}
 
 	// BETWEEN MATCH
 
@@ -145,4 +154,5 @@ function fadeOut(element) {
 		}, { once: true });
 	});
 }
+
 export { loadPageClosure, updateUI, bindMenuEventListeners };

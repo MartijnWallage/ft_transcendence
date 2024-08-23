@@ -5,7 +5,7 @@ class Score {
 		this.game = game;
 		this.players = players;
 		console.log('In Score: Players:', this.players);
-		this.scoreToWin = game.scoreToWin;
+		this.scoreToWin = this.game.scoreToWin;
 		this.result = [0, 0];
 		this.winner = null;
 	}
@@ -41,6 +41,8 @@ class Score {
 			return;
 		
 		this.game.running = false;
+		if (this.game.socket)
+			this.game.socket.close();
 
 		ball.resetBall();
 		await this.displayWinMessage(`${this.players[this.winner].name}`);
