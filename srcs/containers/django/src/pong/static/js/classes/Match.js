@@ -9,6 +9,7 @@ class Match {
 		this.score = new Score(game, players);
 		this.timestamp = null;
 		this.timeToSend = false;
+		this.frameCount = 0;
 		game.readyForNextMatch = false;
 
 		// Initialize WebSocket connection
@@ -46,31 +47,6 @@ class Match {
 		console.log('Match instance created');
 	}
 
-	// updateReceivedData() {
-	// 	if (this.game.socket_data && this.game.socket_data.type === 'game_state') {
-	// 		const data = this.game.socket_data;
-	// 		console.log('Received game data:', data);
-
-	// 		const player1 = this.game.match.players[0];
-    //     	const myRole = player1.online_role;
-
-	// 		console.log('My role:', myRole);
-	// 		// Update the other player's paddle position only
-	// 		if (myRole === 'A' && data.paddle_B !== undefined) {
-	// 			this.game.paddle2.position.z = data.paddle_B;
-	// 		} else if (myRole === 'B' && data.ball_x !== undefined && data.ball_z !== undefined && data.paddle_A !== undefined) {
-	// 			this.game.paddle2.position.z = data.paddle_A;
-	// 			this.game.ball.position.x = data.ball_x;
-	// 			this.game.ball.position.z = data.ball_z;
-
-	// 			this.game.paddle2.position.z *= -1;
-	// 			this.game.ball.position.x *= -1;
-	// 			this.game.ball.position.z *= -1;
-	// 		}
-	// 	}
-	// }
-
-
 	async play(game) {
 		const player1Name = this.players[0].name;
 		const player2Name = this.players[1].name;
@@ -107,6 +83,8 @@ class Match {
 	}
 
 	update() {
+		this.frameCount++;
+		console.log('frameCount:', this.frameCount);
 		const field = this.game.field;
 		const paddle1 = this.game.paddle1;
 		const paddle2 = this.game.paddle2;
@@ -119,16 +97,19 @@ class Match {
 			this.sendGameState(socket);
 			this.timeToSend = false;
 		}
+
 		// move left paddle
 		let direction = this.keys['a'] ? -1 : this.keys['d'] ? 1 : 0;
 		paddle1.movePaddle(direction, field);
 		
 		// move right paddle
-		// direction = this.players[1].ai ? this.players[1].ai.movePaddle(paddle2) :
-		// 	this.keys['ArrowRight'] ? -1 :
-		// 	this.keys['ArrowLeft'] ? 1 :
-		// 	0;
-		// 	paddle2.movePaddle(direction, field);
+		if (this.game.mode =! 'vsOnline') {
+			direction = this.players[1].ai ? this.players[1].ai.movePaddle(paddle2) :
+				this.keys['ArrowRight'] ? -1 :
+				this.keys['ArrowLeft'] ? 1 :
+				0;
+				paddle2.movePaddle(direction, field);
+		}
 			
 		// move and bounce ball
 		ball.animateBall();
