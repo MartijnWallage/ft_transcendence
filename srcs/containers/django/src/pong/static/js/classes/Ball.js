@@ -2,9 +2,10 @@ import * as THREE from '../three-lib/three.module.js';
 import { getRandomInt, abs } from '../utils.js'; 
 
 class Ball {
-	constructor(scene) {
+	constructor(game) {
 		this.audio = null;
-		this.scene = scene;
+		this.game = game;
+		this.scene = this.game.scene;
 		this.radius = 0.3;
 		this.geometry = new THREE.SphereGeometry(this.radius);
 		this.material = new THREE.MeshStandardMaterial({
@@ -22,7 +23,7 @@ class Ball {
 		this.initialSpeed = 0.2;
 		this.angleMultiplier = 0.2;
 		this.accelerate = 1.01;
-		scene.add(this.mesh);
+		this.scene.add(this.mesh);
 	}
 
 	addAudio(audio) {
@@ -85,6 +86,9 @@ class Ball {
 		this.position.z = 0;
 		this.dx = 0;
 		this.dz = 0;
+		if (this.game.match && this.game.match.players[1].ai) {
+			this.game.scene.remove(this.game.match.players[1].ai.mesh);
+		}
 	}
 
 	serveBall() {

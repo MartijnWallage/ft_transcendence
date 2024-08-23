@@ -166,8 +166,16 @@ def home_view(request):
     }
     return JsonResponse(data)
 
+
 @api_view(['GET'])
-@login_required(login_url='/api/login_user/')
+def settings_view(request):
+    data = {
+        'content': render_to_string("main/settings.html", request=request)
+    }
+    return JsonResponse(data)
+
+
+@api_view(['GET'])
 def dashboard_view(request):
     data = {
         'content': render_to_string("partials/dashboard.html", request=request)

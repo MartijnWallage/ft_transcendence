@@ -1,0 +1,55 @@
+{% block content %}
+<div id="menu" class="container-md mx-auto p-5">
+  	<h1 class="my-4 display-5">TRANSCENDENCE</h1>
+  	<div id="under-title" class="container my-3 px-4 text-center">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="settingsModalLabel">Game Settings</h5>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					<form id="settingsForm">
+						<!-- Ball Speed -->
+						<div class="form-group">
+							<label for="ballSpeed">Ball Speed</label>
+							<input type="range" class="form-control-range" id="ballSpeed" min="1" max="10" value="5">
+						</div>
+
+						<!-- Paddle Speed -->
+						<div class="form-group">
+							<label for="paddleSpeed">Paddle Speed</label>
+							<input type="range" class="form-control-range" id="paddleSpeed" min="1" max="10" value="5">
+						</div>
+
+						<!-- Field Dimensions -->
+						<div class="form-group">
+							<label for="fieldWidth">Field Width (px)</label>
+							<input type="number" class="form-control" id="fieldWidth" min="200" max="1000" value="600">
+						</div>
+						<div class="form-group">
+							<label for="fieldHeight">Field Height (px)</label>
+							<input type="number" class="form-control" id="fieldHeight" min="200" max="800" value="400">
+						</div>
+
+						<!-- AI Level -->
+						<div class="form-group">
+							<label for="aiLevel">AI Level</label>
+							<select class="form-control" id="aiLevel">
+								<option value="easy">Easy</option>
+								<option value="medium">Medium</option>
+								<option value="hard">Hard</option>
+							</select>
+						</div>
+
+						<!-- Submit Button -->
+						<button type="button" class="btn btn-primary" id="saveSettings">Save Changes</button>
+					</form>
+				</div>
+			</div>
+		</div>
+  	</div>
+</div>
+{% endblock %}
