@@ -131,7 +131,8 @@ class Game {
 				if (myRole === 'B') {
 					console.log('Received message:', data.score_A, '  ', data.score_B);
 					this.match.score.result = [data.score_B, data.score_B];
-					// textToDiv(this.match.score.result[scorer], `player${scorer + 1}-score`);
+					textToDiv(this.match.score.result[0], `player${1}-score`);
+					textToDiv(this.match.score.result[1], `player${2}-score`);
 				}
 			}
 			if (data.type === 'player_connected') {		
