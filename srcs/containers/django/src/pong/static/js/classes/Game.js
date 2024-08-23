@@ -130,7 +130,7 @@ class Game {
 				const myRole = player1.online_role;
 				if (myRole === 'B') {
 					console.log('Received message:', data.score_A, '  ', data.score_B);
-					this.match.score.result = [data.score_B, data.score_B];
+					this.match.score.result = [data.score_B, data.score_A];
 					textToDiv(this.match.score.result[0], `player${1}-score`);
 					textToDiv(this.match.score.result[1], `player${2}-score`);
 				}
