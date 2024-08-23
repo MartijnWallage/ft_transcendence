@@ -92,30 +92,30 @@ class Game {
 	}
 
 	initSocket(player1) {
-        if (this.socket) {
-            this.socket.close();
-        }
+		if (this.socket) {
+			this.socket.close();
+		}
 
-        this.socket = new WebSocket('wss://' + window.location.host + '/ws/pong/');
+		this.socket = new WebSocket('wss://' + window.location.host + '/ws/pong/');
 
-        this.socket.onopen = () => {
-            console.log('WebSocket connection opened for player:', player1.name);
+		this.socket.onopen = () => {
+			console.log('WebSocket connection opened for player:', player1.name);
 				this.socket.send(JSON.stringify({
 					'type': 'connected',
 					'player': player1.name,
 				}));
-        };
+		};
 
-        this.socket.onclose = (event) => {
-            console.log('WebSocket closed', event);
-            // this.handleReconnection();
-        };
+		this.socket.onclose = (event) => {
+			console.log('WebSocket closed', event);
+			// this.handleReconnection();
+		};
 
-        this.socket.onerror = (error) => {
-            console.error('WebSocket error', error);
-        };
+		this.socket.onerror = (error) => {
+			console.error('WebSocket error', error);
+		};
 
-        this.socket.onmessage = (e) => {
+		this.socket.onmessage = (e) => {
 			this.socket_data = JSON.parse(e.data);
 			console.log('Received message:', this.socket_data);
 			let data = this.socket_data;
@@ -145,15 +145,15 @@ class Game {
 					this.ball.position.x *= -1;
 					this.ball.position.z *= -1;
 				}		
-        	}
-    }}
+			}
+	}}
 
 	handleReconnection() {
-        setTimeout(() => {
-            console.log('Reconnecting...');
-            this.initSocket();
-        }, this.reconnectInterval);
-    }
+		setTimeout(() => {
+			console.log('Reconnecting...');
+			this.initSocket();
+		}, this.reconnectInterval);
+	}
 
 	async startVsOnline() {
 		this.mode = 'vsOnline';

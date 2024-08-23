@@ -8,7 +8,7 @@ class Match {
 		this.running = false;
 		this.score = new Score(game, players);
 		this.timestamp = null;
-		this.timeToSend = false;
+		this.timeToSend = true;
 		this.frameCount = 0;
 		game.readyForNextMatch = false;
 
@@ -93,9 +93,14 @@ class Match {
 		const cam2 = this.game.cam2;
 		const socket = this.game.socket;
 
-		if (this.game.running && this.timeToSend) {
-			this.sendGameState(socket);
-			this.timeToSend = false;
+		if (this.game.mode === 'vsOnline') {
+			if (this.timeToSend) {
+				this.sendGameState(socket);
+				this.timeToSend = false;
+			}
+			else {
+				this.timeToSend = true;
+			}
 		}
 
 		// move left paddle
@@ -115,10 +120,6 @@ class Match {
 		ball.animateBall();
 		ball.tryPaddleCollision(paddle1, paddle2);
 		ball.tryCourtCollision(field);
-
-		// if (this.game.running === true) {
-		// 	this.updateReceivedData();
-		// }
 			
 		this.score.update();
 
@@ -132,33 +133,33 @@ class Match {
 	}
 	
 	sendGameState(socket) {
-    if (socket.readyState === WebSocket.OPEN) {
-        // Construct the game state data
-		const player1 = this.game.match.players[0]; // Assuming player1 is always the logged-in user
-        const myRole = player1.online_role;
-		let gameState;
-		if (myRole === 'A') {
-			gameState = {
-				type: 'game_update',
-				paddle_A: this.game.paddle1.mesh.position.z,
-				ball_x: this.game.ball.mesh.position.x, // Assuming getPosition() returns {x, z}
-				ball_z: this.game.ball.mesh.position.z,
-			};
-		}
-		else {
-			gameState = {
-				type: 'game_update',
-				paddle_B: this.game.paddle1.mesh.position.z,
-			};
+		if (socket.readyState === WebSocket.OPEN) {
+			// Construct the game state data
+			const player1 = this.game.match.players[0]; // Assuming player1 is always the logged-in user
+			const myRole = player1.online_role;
+			let gameState;
+			if (myRole === 'A') {
+				gameState = {
+					type: 'game_update',
+					paddle_A: this.game.paddle1.mesh.position.z,
+					ball_x: this.game.ball.mesh.position.x, // Assuming getPosition() returns {x, z}
+					ball_z: this.game.ball.mesh.position.z,
+				};
+			}
+			else {
+				gameState = {
+					type: 'game_update',
+					paddle_B: this.game.paddle1.mesh.position.z,
+				};
 
-		}
+			}
 
-        // Send the game state to the server
-        socket.send(JSON.stringify(gameState));
-    } else {
-        console.error('WebSocket is not open. Ready state:', socket.readyState);
-    }
-}
+			// Send the game state to the server
+			socket.send(JSON.stringify(gameState));
+		} else {
+			console.error('WebSocket is not open. Ready state:', socket.readyState);
+		}
+	}
 }
 
 export { Match };
