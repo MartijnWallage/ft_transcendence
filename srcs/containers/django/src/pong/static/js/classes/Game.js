@@ -93,7 +93,7 @@ class Game {
 
 	initSocket(player1) {
         if (this.socket) {
-            this.socket.close(); // Close existing connection if it exists
+            this.socket.close();
         }
 
         this.socket = new WebSocket('wss://' + window.location.host + '/ws/pong/');
@@ -133,7 +133,6 @@ class Game {
 			if (data.type === 'game_state' && this.running === true) {
 				const player1 = this.match.players[0];
 				const myRole = player1.online_role;
-				console.log('My role:', myRole);
 				// Update the other player's paddle position only
 				if (myRole === 'A' && data.paddle_B !== undefined) {
 					this.paddle2.position.z = data.paddle_B;
@@ -150,7 +149,6 @@ class Game {
     }}
 
 	handleReconnection() {
-        // Attempt to reconnect
         setTimeout(() => {
             console.log('Reconnecting...');
             this.initSocket();
@@ -164,11 +162,11 @@ class Game {
 		this.initSocket(player1);
 	
 		// Create a promise to handle player2 connection
-		const player2Promise = new Promise((resolve, reject) => {
+		const player2Promise = new Promise((resolve) => {
 			const checkPlayer2 = () => {
 				if (player1.oponent) {
 					const player2 = player1.oponent;
-					resolve({ player1, player2 });
+					resolve();
 					}
 			};
 			checkPlayer2();
@@ -177,19 +175,11 @@ class Game {
 			}, 10);
 	
 		});
-	
-		try {
-			// Wait for both players to be ready
-			const { player1, player2 } = await player2Promise;
-	
-			// Add a more stable way to make sure the game starts with the right amount of players
-			this.match = new Match(this, [player1, player2]);
-			console.log('Starting the match...');
-			this.match.play(this);
-		} catch (error) {
-			// Handle errors (e.g., WebSocket errors or player2 not connected)
-			console.error('Error starting the match:', error);
-		}
+
+		await player2Promise;
+		this.match = new Match(this, [player1, player2]);
+		console.log('Starting the match...');
+		this.match.play(this);
 	}
 
 	createTournament() {
