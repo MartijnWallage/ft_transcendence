@@ -159,13 +159,14 @@ class Game {
 		this.mode = 'vsOnline';
 		this.audio.playSound(this.audio.select_2);
 		const player1 = new Player(this.loggedUser);
+		var player2 = null;
 		this.initSocket(player1);
 	
 		// Create a promise to handle player2 connection
 		const player2Promise = new Promise((resolve) => {
 			const checkPlayer2 = () => {
 				if (player1.oponent) {
-					const player2 = player1.oponent;
+					player2 = player1.oponent;
 					resolve();
 					}
 			};
