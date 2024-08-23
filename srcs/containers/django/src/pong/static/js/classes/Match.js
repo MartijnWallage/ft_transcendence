@@ -93,7 +93,6 @@ class Match {
 		const cam2 = game.cam2;
 		const socket = game.socket;
 
-		console.log('mode before:', game.mode);
 		if (game.mode === 'vsOnline') {
 			if (this.timeToSend) {
 				this.sendGameState(socket);
@@ -108,25 +107,21 @@ class Match {
 		let direction = this.keys['a'] ? -1 : this.keys['d'] ? 1 : 0;
 		paddle1.movePaddle(direction, field);
 		
-		console.log('mode middle1:', game.mode);
 		// move right paddle
-		if (game.mode =! 'vsOnline') {
+		if (game.mode !==  'vsOnline') {
 			direction = this.players[1].ai ? this.players[1].ai.movePaddle(paddle2) :
 				this.keys['ArrowRight'] ? -1 :
 				this.keys['ArrowLeft'] ? 1 :
 				0;
 				paddle2.movePaddle(direction, field);
 		}
-		console.log('mode middle2:', game.mode);
 		// move and bounce ball
 		ball.animateBall();
 		ball.tryPaddleCollision(paddle1, paddle2);
 		ball.tryCourtCollision(field);
 		
-		console.log('mode middle3:', game.mode);
 		this.score.update();
 
-		console.log('mode after:', game.mode);
 		if (this.players[1].ai || game.mode === 'vsOnline') {
 			cam1.renderSingleView(game);
 		} else {
