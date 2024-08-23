@@ -81,11 +81,16 @@ function bindEventListeners(game) {
 	if (saveSettings) {
 		saveSettings.addEventListener('click', game.saveSettings.bind(game));
 	}
-	
-	const closeSettings = document.getElementById('closeSettingsMenu');
-	if (closeSettings) {
-		closeSettings.addEventListener('click', notDisplayDiv('js-settings-btn'));
+
+	const resetDefaults = document.getElementById('resetDefaults');
+	if (resetDefaults) {
+		resetDefaults.addEventListener('click', game.resetToDefaults.bind(game));
 	}
+	
+/* 	const closeSettings = document.getElementById('closeSettingsMenu');
+	if (closeSettings) {
+		closeSettings.addEventListener('click', loadPage('game_mode'));
+	} */
 
 	// BETWEEN MATCH
 

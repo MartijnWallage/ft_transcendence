@@ -245,6 +245,17 @@ class Game {
 		}
 	}
 
+	// Settings menu
+
+	// Function to reset settings to default values
+	resetToDefaults() {
+		document.getElementById('ballSpeed').value = 4;
+		document.getElementById('paddleSpeed').value = 4;
+		document.getElementById('fieldWidth').value = 12;
+		document.getElementById('fieldLength').value = 16;
+		document.getElementById('aiLevel').value = 'medium';
+	}
+
 	saveSettings() {
 		const ballSpeed = document.getElementById('ballSpeed').value;
 		const paddleSpeed = document.getElementById('paddleSpeed').value;
@@ -264,16 +275,13 @@ class Game {
 		console.log(`Field Width: ${fieldWidth}`, this.field.geometry.parameters.width);
 		console.log(`Field Length: ${fieldLength}`, this.field.geometry.parameters.depth);
 		console.log(`AI Level: ${aiLevel}`, this.aiLevel);
-		
-		
 
 		// updateBallSpeed(ballSpeed);
 		// updatePaddleSpeed(paddleSpeed);
 		// updateFieldDimensions(fieldWidth, fieldHeight);
 		// updateAILevel(aiLevel);
 	
-		// Close the modal after saving
-		$('#settingsModal').modal('hide');
+		loadPage('game_mode');
 	}
 	
 	muteAudio() {
