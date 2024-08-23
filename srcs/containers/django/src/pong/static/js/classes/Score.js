@@ -34,6 +34,8 @@ class Score {
 		}
 		if (scorer === null)
 			return;
+		else
+			textToDiv(this.result[scorer], `player${scorer + 1}-score`);
 
 		if (this.game.mode === 'vsOnline' && player_role === 'A') {
 			console.log('im in the loop2');
