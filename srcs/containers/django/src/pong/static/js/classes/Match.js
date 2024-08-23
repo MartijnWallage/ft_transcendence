@@ -123,6 +123,7 @@ class Match {
 			
 		this.score.update();
 
+		console.log('mode:', this.game.mode);
 		if (this.players[1].ai || this.game.mode === 'vsOnline') {
 			cam1.renderSingleView(this.game);
 		} else {
