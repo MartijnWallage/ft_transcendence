@@ -20,7 +20,8 @@ class Ball {
 		this.serve = 1;
 		this.dx = 0;
 		this.dz = 0;
-		this.initialSpeed = 0.2;
+		// this.initialSpeed = 0.2;
+		this.initialSpeed = 0.05;
 		this.angleMultiplier = 0.2;
 		this.accelerate = 1.01;
 		this.scene.add(this.mesh);
@@ -98,6 +99,18 @@ class Ball {
 		this.dx = this.initialSpeed * this.serve / 2;
 		this.dz = getRandomInt(-7.5, 7.5) / 100;
 	}
+
+	setPosition(position) {
+        this.mesh.position.x = position.x;
+        this.mesh.position.z = position.z;
+    }
+
+    getPosition() {
+        return {
+            x: this.mesh.position.x,
+            z: this.mesh.position.z
+        };
+    }
 
 	get position() {
 		return this.mesh.position;

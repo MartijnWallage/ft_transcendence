@@ -44,6 +44,10 @@ function loadPageClosure(game) {
 
 function bindEventListeners(game) {
 
+	const startVsOnline = document.getElementById('js-start-vs-online-btn');
+	if (startVsOnline) {
+		startVsOnline.addEventListener('click', game.startVsOnline.bind(game));
+	}
 
 	const startUserVsUserButton = document.getElementById('js-start-user-vs-user-btn');
 	if (startUserVsUserButton) {

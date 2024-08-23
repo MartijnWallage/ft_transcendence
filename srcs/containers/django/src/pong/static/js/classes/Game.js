@@ -33,7 +33,7 @@ class Game {
 		this.audio = null;
 
 		// Game state
-		this.scoreToWin = 6;
+		this.scoreToWin = 3;
 		this.running = false;
 		this.match = null;
 		this.tournament = null;
@@ -42,6 +42,11 @@ class Game {
 		this.isSettingsMenuVisible = false;
 		this.mode = 'none';
 		this.loggedUser = 'Guest';
+
+		this.socket = null;
+		this.socket_data = null;
+
+		// this.socket = new WebSocket('wss://' + window.location.host + '/ws/pong/');
 
 		console.log('Game class created');
 		this.boundCreateAudioContext = this.createAudioContext.bind(this);
@@ -68,14 +73,14 @@ class Game {
 	}
 
 	// These are the modes bound to the buttons in the menu
-	startSolo() {
+	async startSolo() {
 		this.mode = 'solo';
 		this.audio.playSound(this.audio.select_2);
 		const player1 = new Player(this.loggedUser);
 		const player2 = new Player('pongAI');
 		player2.setAI(this);
 		this.match = new Match(this, [player1, player2]);
-		this.match.play();
+		this.match.play(this);
 	}
 
 	startUserVsUser() {
@@ -84,7 +89,99 @@ class Game {
 		const player1 = new Player(this.loggedUser);
 		const player2 = new Player('Guest 2');
 		this.match = new Match(this, [player1, player2]);
-		this.match.play();
+		this.match.play(this);
+	}
+
+	initSocket(player1) {
+		if (this.socket) {
+			this.socket.close();
+		}
+
+		this.socket = new WebSocket('wss://' + window.location.host + '/ws/pong/');
+
+		this.socket.onopen = () => {
+			console.log('WebSocket connection opened for player:', player1.name);
+				this.socket.send(JSON.stringify({
+					'type': 'connected',
+					'player': player1.name,
+				}));
+		};
+
+		this.socket.onclose = (event) => {
+			console.log('WebSocket closed', event);
+			// this.handleReconnection();
+		};
+
+		this.socket.onerror = (error) => {
+			console.error('WebSocket error', error);
+		};
+
+		this.socket.onmessage = (e) => {
+			this.socket_data = JSON.parse(e.data);
+			console.log('Received message:', this.socket_data);
+			let data = this.socket_data;
+
+			if (data.type === 'player_role') {
+				player1.online_role = data.player_role;
+				console.log('local role assigned to ' + data.player_role);
+			}
+			if (data.type === 'player_connected') {		
+				if (data.player_role !== player1.online_role) {
+					player1.oponent = new Player(this.socket_data.player);
+					console.log('Player connected:', data.player);
+				}
+			}
+			if (data.type === 'game_state' && this.running === true) {
+				const player1 = this.match.players[0];
+				const myRole = player1.online_role;
+				// Update the other player's paddle position only
+				if (myRole === 'A' && data.paddle_B !== undefined) {
+					this.paddle2.position.z = data.paddle_B;
+					this.paddle2.position.z *= -1;
+				} else if (myRole === 'B' && data.ball_x !== undefined && data.ball_z !== undefined && data.paddle_A !== undefined) {
+					this.paddle2.position.z = data.paddle_A;
+					this.ball.position.x = data.ball_x;
+					this.ball.position.z = data.ball_z;
+					this.paddle2.position.z *= -1;
+					this.ball.position.x *= -1;
+					this.ball.position.z *= -1;
+				}		
+			}
+	}}
+
+	handleReconnection() {
+		setTimeout(() => {
+			console.log('Reconnecting...');
+			this.initSocket();
+		}, this.reconnectInterval);
+	}
+
+	async startVsOnline() {
+		this.mode = 'vsOnline';
+		this.audio.playSound(this.audio.select_2);
+		const player1 = new Player(this.loggedUser);
+		var player2 = null;
+		this.initSocket(player1);
+	
+		// Create a promise to handle player2 connection
+		const player2Promise = new Promise((resolve) => {
+			const checkPlayer2 = () => {
+				if (player1.oponent) {
+					player2 = player1.oponent;
+					resolve();
+					}
+			};
+			checkPlayer2();
+			const interval = setInterval(() => {
+				checkPlayer2();
+			}, 10);
+	
+		});
+
+		await player2Promise;
+		this.match = new Match(this, [player1, player2]);
+		console.log('Starting the match...');
+		this.match.play(this);
 	}
 
 	createTournament() {
