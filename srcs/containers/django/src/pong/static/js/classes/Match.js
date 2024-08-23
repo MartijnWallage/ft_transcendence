@@ -122,11 +122,11 @@ class Match {
 		paddle1.movePaddle(direction, field);
 		
 		// move right paddle
-		direction = this.players[1].ai ? this.players[1].ai.movePaddle(paddle2) :
-			this.keys['ArrowRight'] ? -1 :
-			this.keys['ArrowLeft'] ? 1 :
-			0;
-			paddle2.movePaddle(direction, field);
+		// direction = this.players[1].ai ? this.players[1].ai.movePaddle(paddle2) :
+		// 	this.keys['ArrowRight'] ? -1 :
+		// 	this.keys['ArrowLeft'] ? 1 :
+		// 	0;
+		// 	paddle2.movePaddle(direction, field);
 			
 		// move and bounce ball
 		ball.animateBall();
