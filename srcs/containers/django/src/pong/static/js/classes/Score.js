@@ -16,7 +16,7 @@ class Score {
 		const halfFieldWidth = field.geometry.parameters.width / 2;
 		const ballRightSide = ball.position.x + ball.radius;
 		const ballLeftSide = ball.position.x - ball.radius;
-		const player_role = this.game.match.players[1].online_role;
+		const player_role = this.game.match.players[0].online_role;
 		let scorer;
 
 		if (!(this.game.mode === 'vsOnline' && player_role === 'B')) {
