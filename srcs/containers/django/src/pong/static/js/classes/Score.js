@@ -19,32 +19,20 @@ class Score {
 		const player_role = this.game.match.players[0].online_role;
 		let scorer;
 
-		if (this.game.mode ==! 'vsOnline') {
-			if(this.game.mode === 'vsOnline' && player_role === 'B') {
-			if (ballRightSide < -halfFieldWidth)
-				scorer = 1;
-			else if (ballLeftSide > halfFieldWidth)
-				scorer = 0;
-			else
-				return;
-			this.result[scorer] += 1;
-			textToDiv(this.result[scorer], `player${scorer + 1}-score`);
-			}
-		}
-
-		if (!(this.game.mode === 'vsOnline' && player_role === 'B')) {
-			if (ballRightSide < -halfFieldWidth)
-				scorer = 1;
-			else if (ballLeftSide > halfFieldWidth)
-				scorer = 0;
-			else
-				return;
-			this.result[scorer] += 1;
-			textToDiv(this.result[scorer], `player${scorer + 1}-score`);
-		}
-
 		console.log('mode:', this.game.mode, 'player_role:', player_role);
-		if (this.game.mode === 'vsOnline' && player_role === 'A') {
+
+		if (this.game.mode === 'vsOnline' && player_role === 'B') {
+			if (ballRightSide < -halfFieldWidth)
+				scorer = 1;
+			else if (ballLeftSide > halfFieldWidth)
+				scorer = 0;
+			else
+				return;
+			this.result[scorer] += 1;
+			textToDiv(this.result[scorer], `player${scorer + 1}-score`);
+		}
+
+		else if (this.game.mode === 'vsOnline' && player_role === 'A') {
 			if (this.game.socket.readyState === WebSocket.OPEN) {
 				let scoreUpdate = {
 					type: 'score_update',
@@ -54,6 +42,16 @@ class Score {
 				console.log('Sending score update:', scoreUpdate);
 				this.game.socket.send(JSON.stringify(scoreUpdate));
 			}
+		}
+		else if (this.game.mode ==! 'vsOnline') {
+			if (ballRightSide < -halfFieldWidth)
+				scorer = 1;
+			else if (ballLeftSide > halfFieldWidth)
+				scorer = 0;
+			else
+				return;
+			this.result[scorer] += 1;
+			textToDiv(this.result[scorer], `player${scorer + 1}-score`);
 		}
 		
 		
