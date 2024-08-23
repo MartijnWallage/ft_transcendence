@@ -72,7 +72,7 @@ class Game {
 	}
 
 	// These are the modes bound to the buttons in the menu
-	startSolo() {
+	async startSolo() {
 		this.mode = 'solo';
 		this.audio.playSound(this.audio.select_2);
 		const player1 = new Player(this.loggedUser);
