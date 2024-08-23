@@ -8,6 +8,7 @@ class Match {
 		this.running = false;
 		this.score = new Score(game, players);
 		this.timestamp = null;
+		this.timeToSend = false;
 		game.readyForNextMatch = false;
 
 		// Initialize WebSocket connection
@@ -114,8 +115,9 @@ class Match {
 		const cam2 = this.game.cam2;
 		const socket = this.game.socket;
 
-		if (this.game.running === true) {
+		if (this.game.running && this.timeToSend) {
 			this.sendGameState(socket);
+			this.timeToSend = false;
 		}
 		// move left paddle
 		let direction = this.keys['a'] ? -1 : this.keys['d'] ? 1 : 0;
@@ -146,8 +148,6 @@ class Match {
 			cam2.renderSplitView(this.game, 1);
 			displayDiv('vertical-line');
 		}
-
-		// Send updated game state to the server
 	}
 	
 	sendGameState(socket) {
