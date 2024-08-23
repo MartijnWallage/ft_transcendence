@@ -55,6 +55,7 @@ class PongConsumer(AsyncWebsocketConsumer):
 
     async def disconnect(self, close_code):
         # Clear player data
+        logger.debug("********** Player disconnected **********")
         if PongConsumer.player_A:
             await self.channel_layer.send(
                 PongConsumer.player_A['channel_name'],
@@ -84,7 +85,6 @@ class PongConsumer(AsyncWebsocketConsumer):
         await self.close()
 
     async def receive(self, text_data):
-        logger.debug(f"Received data: {text_data}")
         try:
             data = json.loads(text_data)
         except json.JSONDecodeError:
