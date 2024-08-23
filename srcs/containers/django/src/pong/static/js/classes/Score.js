@@ -39,7 +39,7 @@ class Score {
 					score_B: this.result[1],
 				};
 				console.log('Sending score update:', scoreUpdate);
-				socket.send(JSON.stringify(scoreUpdate));
+				this.game.socket.send(JSON.stringify(scoreUpdate));
 			}
 		}
 		
