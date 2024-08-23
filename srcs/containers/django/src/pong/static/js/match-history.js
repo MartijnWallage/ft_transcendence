@@ -17,6 +17,26 @@ const matchData = {
 	]
 };
 
+function formatTimestamp(timestamp) {
+    // Create a new Date object from the timestamp
+    const date = new Date(timestamp);
+    
+    // Get the year, month, and day
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-based, so add 1
+    const day = String(date.getDate()).padStart(2, '0');
+
+    // Get the hours, minutes, and seconds
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    const seconds = String(date.getSeconds()).padStart(2, '0');
+
+    // Format the date as YYYY-MM-DD HH:mm:ss
+    const formattedDate = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+    
+    return formattedDate;
+}
+
 // export function showMatchDetails(matchId, mode) {
 // 	console.log("LOG: showMatchDetails");
 // 	const match = matchData[mode].find(m => m.id === matchId);
@@ -41,6 +61,37 @@ const matchData = {
 // 		modalEvents.appendChild(eventItem);
 // 	});
 // }
+
+async function fetchUserTournaments(username) {
+    try {
+        const url = '/api/user_tournaments/';
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ username }),
+        });
+
+        if (!response.ok) {
+            throw new Error(`Error fetching tournaments: ${response.statusText}`);
+        }
+
+        const data = await response.json();
+        if (data.error) {
+            console.error(data.error);
+            alert(data.error);
+            return;
+        }
+
+        console.log("Fetched tournaments:", data.tournaments);
+        return data.tournaments;
+
+    } catch (error) {
+        console.error('Fetch error:', error);
+        return null;
+    }
+}
 
 async function fetchUserMatches(username, mode) {
     try {
@@ -116,13 +167,17 @@ async function showMatches(mode) {
 		matchTitle.textContent = '1 vs 1 Matches';
 	} else if (mode === 'solo') {
 		matchTitle.textContent = 'Player vs AI Matches';
-	} else if (mode === 'tournament') {
-		matchTitle.textContent = 'Tournament Matches';
-	}
+    }
+	// } else if (mode === 'tournament') {
+	// 	matchTitle.textContent = 'Tournament Matches';
+	// }
 
 	// Populate the table with the selected mode's matches
-	matches.forEach((match, index) => {
+	matches.slice().reverse().forEach((match, index) => {
+		const formattedDate = formatTimestamp(match.timestamp);
 		const row = document.createElement('tr');
+        const matchresult = match.player1_score > match.player2_score ? "Win" : "Loss";
+        const matchresultclass = matchresult === "Win" ? "bg-success" : "bg-danger";
 		row.setAttribute('data-bs-toggle', 'modal');
 		row.setAttribute('data-bs-target', '#matchDetailModal');
         // row.addEventListener('click', () => {
@@ -130,13 +185,51 @@ async function showMatches(mode) {
         // });
 		row.innerHTML = `
 			<th scope="row">${index + 1}</th>
-			<td>${match.timestamp}</td>
+			<td>${formattedDate}</td>
 			<td>${match.player2}</td>
-			<td>${match.player1_score} - ${match.player2_score}</td>
-			<td><span class="badge ${match.resultClass}">${match.result}</span></td>
+			<td>${match.player1_score}-${match.player2_score}</td>
+			<td><span class="badge ${matchresultclass}">${matchresult}</span></td>
 		`;
 		tableBody.appendChild(row);
 	});
 }
 
-export { showMatches };
+
+async function showTournaments() {
+    console.log("showTournaments");
+    const tableBody = document.getElementById('tournamentTableBody');
+    const tournamentTitle = document.getElementById('tournamentTitle');
+    const username = await fetchLoggedInUser();
+    const tournaments = await fetchUserTournaments(username);
+
+    // Clear existing rows
+    tableBody.innerHTML = '';
+
+    // Update the title
+    tournamentTitle.textContent = 'Tournament Matches';
+
+    // Populate the table with tournament data
+    tournaments.slice().reverse().forEach((tournament, index) => {
+        const formattedDate = tournament.date;
+        tournament.matches.forEach((match, matchIndex) => {
+            const row = document.createElement('tr');
+            const matchresult = match.player1_score > match.player2_score ? "Win" : "Loss";
+            const matchresultclass = matchresult === "Win" ? "bg-success" : "bg-danger";
+            row.setAttribute('data-bs-toggle', 'modal');
+            row.setAttribute('data-bs-target', '#tournamentMatchDetailModal');
+            // row.addEventListener('click', () => {
+            //     showMatchDetails(match.id, 'tournament');
+            // });
+            row.innerHTML = `
+                <th scope="row">${index + 1}-${matchIndex + 1}</th>
+                <td>${formattedDate}</td>
+                <td>${match.player2}</td>
+                <td>${match.player1_score}-${match.player2_score}</td>
+                <td><span class="badge ${matchresultclass}">${matchresult}</span></td>
+            `;
+            tableBody.appendChild(row);
+        });
+    });
+}
+
+export { showMatches, formatTimestamp, showTournaments };

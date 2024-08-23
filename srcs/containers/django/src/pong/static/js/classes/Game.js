@@ -78,73 +78,6 @@ class Game {
 		this.match.play();
 	}
 
-	registerInDatabase() {
-		console.log('registerInDatabase');
-		this.createMatch();
-	}
-
-	getCsrfToken() {
-		const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-		return token;
-	}
-
-	async createPlayer(playerName) {
-		console.log('Create player in database:', playerName);
-	
-		try {
-			const response = await fetch('/api/create_player/', {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json; charset=utf-8',
-					'X-CSRFToken': getCookie('csrftoken'),
-				},
-				body: JSON.stringify({
-					'player_name': playerName,
-				}),
-			});
-	
-			if (!response.ok) {
-				throw new Error(`Error creating player: ${response.statusText}`);
-			}
-	
-			const data = await response.json();
-			console.log('Player added:', data);
-		} catch (error) {
-			console.error('Error adding player:', error);
-		}
-	}
-
-	async createMatch() {
-		console.log('Creating Match...');
-	
-		try {
-			const response = await fetch('/api/create_match/', {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json; charset=utf-8',
-					'X-CSRFToken': getCookie('csrftoken'),
-				},
-				body: JSON.stringify({
-					'player1': this.match.players[0].name,
-					'player2': this.match.players[1].name,
-					'player1_score': this.match.score.result[0],
-					'player2_score': this.match.score.result[1],
-					'timestamp': this.match.timestamp,
-					'mode': this.mode,
-				}),
-			});
-	
-			if (!response.ok) {
-				throw new Error(`Error creating match: ${response.statusText}`);
-			}
-	
-			const data = await response.json();
-			console.log('Match created successfully:', data);
-		} catch (error) {
-			console.error('Error creating match:', error);
-		}
-	}
-
 	startUserVsUser() {
 		this.mode = 'UvU';
 		this.audio.playSound(this.audio.select_2);
@@ -228,6 +161,75 @@ class Game {
 	executeBlockchain() {
 		this.audio.playSound(this.audio.select_1);
 		new Blockchain(this.tournament.tournamentId);
+	}
+	
+	// register in database {
+
+	registerInDatabase() {
+		console.log('registerInDatabase');
+		this.createMatch();
+	}
+
+	getCsrfToken() {
+		const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+		return token;
+	}
+
+	async createPlayer(playerName) {
+		console.log('Create player in database:', playerName);
+	
+		try {
+			const response = await fetch('/api/create_player/', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json; charset=utf-8',
+					'X-CSRFToken': getCookie('csrftoken'),
+				},
+				body: JSON.stringify({
+					'player_name': playerName,
+				}),
+			});
+	
+			if (!response.ok) {
+				throw new Error(`Error creating player: ${response.statusText}`);
+			}
+	
+			const data = await response.json();
+			console.log('Player added:', data);
+		} catch (error) {
+			console.error('Error adding player:', error);
+		}
+	}
+
+	async createMatch() {
+		console.log('Creating Match...');
+	
+		try {
+			const response = await fetch('/api/create_match/', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json; charset=utf-8',
+					'X-CSRFToken': getCookie('csrftoken'),
+				},
+				body: JSON.stringify({
+					'player1': this.match.players[0].name,
+					'player2': this.match.players[1].name,
+					'player1_score': this.match.score.result[0],
+					'player2_score': this.match.score.result[1],
+					'timestamp': this.match.timestamp,
+					'mode': this.mode,
+				}),
+			});
+	
+			if (!response.ok) {
+				throw new Error(`Error creating match: ${response.statusText}`);
+			}
+	
+			const data = await response.json();
+			console.log('Match created successfully:', data);
+		} catch (error) {
+			console.error('Error creating match:', error);
+		}
 	}
 }
 

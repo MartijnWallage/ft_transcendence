@@ -1,5 +1,5 @@
 import { updateUI, bindUserEventListeners} from './userMgmt.js';
-import { showMatches } from './match-history.js';
+import { showMatches, showTournaments } from './match-history.js';
 
 function loadPageClosure(game) {
 	return async (page) => {
@@ -118,13 +118,15 @@ function bindMenuEventListeners(game){
 
 	// Match History
 
-    var matchHistory = document.getElementById('match-history-btn');
-    if (matchHistory) {
-        matchHistory.addEventListener('click', function() {
-            loadPage('match_history');
-		
-        });
-    }
+	var matchHistory = document.getElementById('match-history-btn');
+	if (matchHistory) {
+		matchHistory.addEventListener('click', function() {
+			loadPage('match_history').then(() => {
+				// Now that the page content has been loaded, call showMatches directly
+				showMatches('UvU');
+			});
+		});
+	}
 
 }
 
@@ -135,22 +137,28 @@ function dropDownEventListeners() {
     if (dropdown1v1) {
         dropdown1v1.addEventListener('click', (event) => {
             event.preventDefault(); // Prevent default link behavior
+            document.getElementById('tournament-history').style.display = 'none';
+            document.getElementById('match-history').style.display = 'block';
             showMatches('UvU');
         });
     }
 
-    // var dropdownTournament = document.getElementById('dropdown-tournament');
-    // if (dropdownTournament) {
-    //     dropdownTournament.addEventListener('click', (event) => {
-    //         event.preventDefault();
-    //         showMatches('tournament');
-    //     });
-    // }
+    var dropdownTournament = document.getElementById('dropdown-tournament');
+    if (dropdownTournament) {
+        dropdownTournament.addEventListener('click', (event) => {
+            event.preventDefault();
+            document.getElementById('tournament-history').style.display = 'block';
+            document.getElementById('match-history').style.display = 'none';
+            showTournaments();
+        });
+    }
 
     var dropdownVsAI = document.getElementById('dropdown-vs-ai');
     if (dropdownVsAI) {
         dropdownVsAI.addEventListener('click', (event) => {
             event.preventDefault();
+            document.getElementById('tournament-history').style.display = 'none';
+            document.getElementById('match-history').style.display = 'block';
             showMatches('solo');
         });
     }

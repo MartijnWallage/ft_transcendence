@@ -483,3 +483,56 @@ def user_matches(request):
     print("matches_data: ", matches_data)
 
     return Response({'matches': matches_data}, status=200)
+
+# retrieve user tournaments
+
+def get_user_tournaments(username):
+    try:
+        # Retrieve the Player instance associated with the given username
+        player = Player.objects.get(name=username)
+        print("Player:", player)
+
+        # Retrieve all tournaments where the given player is a participant
+        tournaments = Tournament.objects.filter(players=player).prefetch_related('match')
+        print("Tournaments:", tournaments)
+
+        return tournaments
+    
+    except Player.DoesNotExist:
+        # Handle the case where the player does not exist
+        return None
+
+@api_view(['POST'])
+def user_tournaments(request):
+    username = request.data.get('username')
+    
+    # Ensure the username is provided
+    if not username:
+        return Response({'error': 'Username is required.'}, status=400)
+    
+    tournaments = get_user_tournaments(username)
+    if tournaments is None:
+        return Response({'error': 'Player not found'}, status=404)
+
+    # Serialize the tournaments and their match details
+    tournaments_data = [
+        {
+            'date': tournament.date.strftime('%Y-%m-%d %H:%M:%S'),
+            'transaction_hash': tournament.transaction_hash,
+            'matches': [
+                {
+                    'player1': match.player1.name,
+                    'player2': match.player2.name,
+                    'player1_score': match.player1_score,
+                    'player2_score': match.player2_score,
+                    'timestamp': match.timestamp,
+                    'mode': match.mode,
+                }
+                for match in tournament.match.all()
+            ],
+        }
+        for tournament in tournaments
+    ]
+    
+    print("Tournaments Data:", tournaments_data)
+    return Response({'tournaments': tournaments_data}, status=200)

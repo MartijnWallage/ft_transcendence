@@ -10,12 +10,13 @@
                 <ul class="dropdown-menu" aria-labelledby="modeDropdown">
                     <li><a class="dropdown-item" id="dropdown-1v1" href="#">1 vs 1</a></li>
                     <li><a class="dropdown-item" id="dropdown-vs-ai"  href="#">Player vs AI</a></li>
-                    <!-- <li><a class="dropdown-item" id="dropdown-tournament"  href="#">Tournament</a></li> -->
+                    <li><a class="dropdown-item" id="dropdown-tournament"  href="#">Tournament</a></li>
                 </ul>
             </div>
         </div>
         
-        <div class="card shadow-lg">
+        <!-- Match History Section -->
+        <div id="match-history" class="card shadow-lg">
             <div class="card-header bg-primary text-white">
                 <h3 class="text-center" id="matchTitle">1 vs 1 Matches</h3>
             </div>
@@ -30,37 +31,38 @@
                             <th>Result</th>
                         </tr>
                     </thead>
-                    <tbody id="matchTableBody">
-                        <!-- Default: 1 vs 1 matches -->
-                        <tr>
-                            <th scope="row">1</th>
-                            <td>2023-08-12</td>
-                            <td>Player B</td>
-                            <td>3-2</td>
-                            <td><span class="badge bg-success">Win</span></td>
-                        </tr>
-                        <tr>
-                            <th scope="row">2</th>
-                            <td>2023-08-10</td>
-                            <td>Player C</td>
-                            <td>1-1</td>
-                            <td><span class="badge bg-secondary">Draw</span></td>
-                        </tr>
-                        <tr>
-                            <th scope="row">3</th>
-                            <td>2023-08-08</td>
-                            <td>Player D</td>
-                            <td>0-2</td>
-                            <td><span class="badge bg-danger">Loss</span></td>
-                        </tr>
-                        <!-- Add more rows as needed -->
-                    </tbody>
+                    <tbody id="matchTableBody"></tbody>
                 </table>
             </div>
             <div class="card-footer text-muted text-center">
                 Last updated: date here
             </div>
         </div>
+    </div>
+
+  
+    <!-- Tournament History Section -->
+    <div id="tournament-history" class="card shadow-lg" style="display: none;">
+        <div class="card-header bg-primary text-white">
+            <h3 class="text-center" id="tournamentTitle">Tournament Matches</h3>
+        </div>
+        <div class="card-body">
+            <table class="table table-hover">
+                <thead class="table-dark">
+                    <tr>
+                        <th>#</th>
+                        <th>Date</th>
+                        <th>Number of players</th>
+                        <th>Result</th>
+                    </tr>
+                </thead>
+                <tbody id="tournamentTableBody"></tbody>
+            </table>
+        </div>
+        <div class="card-footer text-muted text-center">
+            Last updated: date here
+        </div>
+    </div>
     </div>
 
     <!-- Modal for Match Details -->
