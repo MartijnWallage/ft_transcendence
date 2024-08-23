@@ -39,6 +39,10 @@ urlpatterns = [
     path('api/list-friends/', views.list_friends, name='list_friends'),
 	path('api/friend-requests/', views.friend_requests, name='friend_requests'),
 	path('api/suggested-friends/', views.suggested_friends, name='suggested_friends'),
+    
+
+	path('api/user_stats/', views.user_stats_view, name='user_stats'),
+	path('api/save_match/', views.save_match_view, name='user_stats_save'),
 	# path('api/pong_solo/', views.pong_solo_view, name='api_pong_solo'),
 	# path('api/pong_tournament/', views.pong_tournament_view, name='api_pong_tournament'),
 	# path('api/pong_two_player_local/', views.pong_two_player_local_view, name='api_pong_two_player_local'),

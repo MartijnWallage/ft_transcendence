@@ -8,6 +8,7 @@ let isUserLoggedIn = false;
 function bindUserEventListeners(userContent, page) {
 	
     if (page === 'dashboard') {
+        document.getElementById('view-stats-button').addEventListener('click', get_stats());
         console.log('Event is binded to call dashboard');
         updateSuggestedFriends();
         updateFriendList();
@@ -19,6 +20,52 @@ function bindUserEventListeners(userContent, page) {
     }
 
 }
+
+function get_stats() {
+
+    fetch('/api/user_stats/')
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                displayUserStats(data.data);
+            } else {
+                alert('Failed to load user stats');
+            }
+        })
+        .catch(error => console.error('Error:', error));
+}
+
+function displayUserStats(stats) {
+    const container = document.getElementById('user-stats-container');
+    container.innerHTML = `
+        <h2>User Stats</h2>
+        <p>Total Games: ${stats.total_games}</p>
+        <p>Wins: ${stats.wins}</p>
+        <p>Losses: ${stats.losses}</p>
+        <h3>Match History</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Opponent</th>
+                    <th>Score</th>
+                    <th>Result</th>
+                </tr>
+            </thead>
+            <tbody>
+                ${stats.match_history.map(match => `
+                    <tr>
+                        <td>${match.date}</td>
+                        <td>${match.opponent}</td>
+                        <td>${match.score}</td>
+                        <td>${match.result}</td>
+                    </tr>
+                `).join('')}
+            </tbody>
+        </table>
+    `;
+}
+
 
 function handleFormSubmitWrapper(event) {
     event.preventDefault();
@@ -253,7 +300,7 @@ async function updateUI(game) {
     const userInfoElement = document.getElementById('user-name');
     const userAvatar = document.getElementById('user-avatar');
 
-    if (userInfo && userInfo.username) {
+    if (userInfo && userInfo.username && isUserLoggedIn) {
         userInfoElement.innerText = `Welcome, ${userInfo.username}`;
         game.loggedUser = userInfo.username;
         if (userInfo.avatar_url) {
@@ -348,4 +395,4 @@ function getCookie(name) {
     return cookieValue;
 }
 
-export { handleLogout, bindUserEventListeners, updateUI }
+export { handleLogout, bindUserEventListeners, updateUI, getCookie }

@@ -22,22 +22,42 @@ class Friendship(models.Model):
         return f"{self.user.username} is friends with {self.friend.username}"
 
 
-
 class Player(models.Model):
-    name = models.CharField(max_length=100)
-
+    name = models.CharField(max_length=100, null=True, blank=True)
+    user_profile = models.ForeignKey(UserProfile, on_delete=models.CASCADE, null=True, blank=True, related_name='player_profile')
+    # is_ai = models.BooleanField(default=False)
+# if there is logged in user, make the stats for user otherwise given username
     def __str__(self):
-        return self.name
+        # if self.is_ai:
+        #     return "AI"
+        return self.user_profile.user.username if self.user_profile else self.name
 
 class Match(models.Model):
     player1 = models.ForeignKey(Player, on_delete=models.CASCADE, related_name='player1_matches')
     player2 = models.ForeignKey(Player, on_delete=models.CASCADE, related_name='player2_matches')
     player1_score = models.IntegerField()
     player2_score = models.IntegerField()
-    timestamp = models.BigIntegerField() 
+    timestamp = models.BigIntegerField()
+    mode = models.CharField(max_length=20, choices=[('solo', 'AI'), ('UvU', 'Friend'), ('tournament', 'Local')])
 
     def __str__(self):
-        return f"{self.player1} vs {self.player2}"
+        return f"{self.player1} vs {self.player2} in {self.mode} mode"
+    
+    def get_winner(self):
+        if self.player1_score > self.player2_score:
+            return self.player1
+        elif self.player2_score > self.player1_score:
+            return self.player2
+        else:
+            return None
+
+    def get_loser(self):
+        if self.player1_score < self.player2_score:
+            return self.player1
+        elif self.player2_score < self.player1_score:
+            return self.player2
+        else:
+            return None
     
 class Tournament(models.Model):
     date = models.DateTimeField()
@@ -48,4 +68,30 @@ class Tournament(models.Model):
     def __str__(self):
         return self.date
 
+class Game(models.Model):
+    GAME_TYPE_CHOICES = [
+        ('AI', 'Against AI'),
+        ('FRIEND', 'Against Friend'),
+        ('LOCAL', 'Local Multiplayer'),
+        ('TOURNAMENT', 'Tournament')
+    ]
 
+    player1 = models.ForeignKey(User, related_name='games_as_player1', on_delete=models.CASCADE)
+    player2 = models.CharField(max_length=150, null=True, blank=True)  # This can be a username or 'AI'
+    game_type = models.CharField(max_length=20, choices=GAME_TYPE_CHOICES)
+    player1_score = models.IntegerField(default=0)
+    player2_score = models.IntegerField(default=0)
+    winner = models.CharField(max_length=150, null=True, blank=True)  # Username of the winner
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.player1.username} vs {self.player2} - Winner: {self.winner}"
+
+class UserStats(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    wins = models.IntegerField(default=0)
+    losses = models.IntegerField(default=0)
+    total_games = models.IntegerField(default=0)
+
+    def __str__(self):
+        return f"{self.user.username} - Wins: {self.wins}, Losses: {self.losses}, Total Games: {self.total_games}"

@@ -21,9 +21,211 @@ from django.contrib.auth.models import User
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from .serializers import RegisterSerializer, UpdateUserSerializer, ChangePasswordSerializer, FriendShipSerializer, UserProfileSerializer
-from .models import Player, Tournament, Match, UserProfile, Friendship
+from .models import Game, Player, Tournament, Match, UserProfile, Friendship, UserStats
 from django.db.models import Q
+from django.db import models
+import traceback
 import json
+
+
+
+
+@csrf_exempt
+@login_required
+@api_view(['POST'])
+def save_match_view(request):
+    try:
+        data = request.data
+
+        # Retrieve or create the players
+        player1_name = data.get('player1')
+        player2_name = data.get('player2')
+
+        player1_profile = UserProfile.objects.filter(user__username=player1_name).first()
+        player2_profile = UserProfile.objects.filter(user__username=player2_name).first()
+        
+        if player1_profile:
+            player1, _ = Player.objects.get_or_create(user_profile=player1_profile)
+        else:
+            player1, _ = Player.objects.get_or_create(name=player1_name)
+        
+        if player2_profile:
+            player2, _ = Player.objects.get_or_create(user_profile=player2_profile)
+        else:
+            player2, _ = Player.objects.get_or_create(name=player2_name)
+        print('this is player 1', player1)
+        print('this is player 2', player2)
+
+        # Extract other match details
+        player1_score = data.get('player1_score')
+        player2_score = data.get('player2_score')
+        mode = data.get('mode')
+        timestamp = data.get('timestamp')
+
+        # Create and save the match
+        match1 = Match.objects.create(
+            player1=player1,
+            player2=player2,
+            player1_score=player1_score,
+            player2_score=player2_score,
+            timestamp=timestamp,
+            mode=mode
+        )
+        print('this is match', match1)
+
+        # Game.objects.create(
+        #     player1=player1.user_profile.user,
+        #     player2=player2.name,  # or player2.user_profile.user if they're a User
+        #     game_type=data.get('mode', 'Friend'),
+        #     player1_score=player1_score,
+        #     player2_score=player2_score,
+        # )
+        return JsonResponse({'status': 'success'})
+    except Exception as e:
+        traceback.print_exc()
+        return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
+
+
+
+@login_required(login_url='/api/login_user/')
+@api_view(['GET'])
+def user_stats_view(request):
+    user = request.user
+    print('this is user', user)
+
+    try:
+        user_profile = user.userprofile
+        print('user_profile: ', user_profile)
+        player = Player.objects.get(user_profile=user_profile)
+        print('player: ', player)
+    except Player.DoesNotExist:
+        return JsonResponse({'status': 'error', 'message': 'Player profile not found.'}, status=404)
+
+    # Retrieve all matches where the user participated
+    matches = Match.objects.filter(player1=player) | Match.objects.filter(player2=player)
+    print('this is matches', matches)
+    total_games = matches.count()
+    wins = 0
+    losses = 0
+    match_history = []
+
+    for match in matches:
+        if match.get_winner() == user:
+            wins += 1
+        elif match.get_loser() == user:
+            losses += 1
+
+        # opponent = match.player2.username if match.player1 == user else match.player1.username
+        if match.player1 == player:
+            opponent = match.player2.user_profile.user.username if match.player2.user_profile else match.player2.name
+        else:
+            opponent = match.player1.user_profile.user.username if match.player1.user_profile else match.player1.name
+
+        match_history.append({
+            'date': match.timestamp,
+            'opponent': opponent,
+            'score': f"{match.player1_score} - {match.player2_score}",
+            'result': 'Win' if match.get_winner() == user else 'Loss' if match.get_loser() == user else 'Draw'
+        })
+
+    response_data = {
+        'total_games': total_games,
+        'wins': wins,
+        'losses': losses,
+        'match_history': match_history
+    }
+    print('response data', response_data)
+
+    return JsonResponse({'status': 'success', 'data': response_data})
+
+
+# @login_required(login_url='/api/login_user/')
+# @api_view(['GET'])
+# def user_stats_view(request):
+#     try:
+#         user_profile = request.user.userprofile
+#         player = Player.objects.filter(user_profile=user_profile).first()
+
+#         if not player:
+#             return JsonResponse({'status': 'error', 'message': 'Player profile not found.'}, status=404)
+
+#         matches = Match.objects.filter(player1=player) | Match.objects.filter(player2=player)
+
+#         total_games = matches.count()
+#         wins = matches.filter(player1=player, player1_score__gt=models.F('player2_score')).count() + \
+#                matches.filter(player2=player, player2_score__gt=models.F('player1_score')).count()
+#         losses = total_games - wins
+
+#         html_content = render_to_string("main/user_stats.html", {
+#             'total_games': total_games,
+#             'wins': wins,
+#             'losses': losses,
+#             'matches': matches,
+#         }, request=request)
+
+#         return JsonResponse({'status': 'success', 'content': html_content})
+
+#     except Exception as e:
+#         return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
+
+# @login_required(login_url='/api/login_user/')
+# @api_view(['GET'])
+# def user_stats_view(request):
+#     try:
+#         user = request.user
+
+#         # Filter games where the user is either player1 or player2
+#         games_as_player1 = Game.objects.filter(player1=user)
+#         games_as_player2 = Game.objects.filter(player2=user.username)
+
+#         # Initialize counters
+#         total_games = games_as_player1.count() + games_as_player2.count()
+#         wins = games_as_player1.filter(winner=user.username).count() + games_as_player2.filter(winner=user.username).count()
+#         losses = total_games - wins
+
+#         # Wins/Losses by mode
+#         wins_ai = games_as_player1.filter(winner=user.username, game_type='AI').count() + \
+#                   games_as_player2.filter(winner=user.username, game_type='AI').count()
+#         losses_ai = games_as_player1.filter(game_type='AI').exclude(winner=user.username).count() + \
+#                     games_as_player2.filter(game_type='AI').exclude(winner=user.username).count()
+
+#         wins_friend = games_as_player1.filter(winner=user.username, game_type='FRIEND').count() + \
+#                       games_as_player2.filter(winner=user.username, game_type='FRIEND').count()
+#         losses_friend = games_as_player1.filter(game_type='FRIEND').exclude(winner=user.username).count() + \
+#                         games_as_player2.filter(game_type='FRIEND').exclude(winner=user.username).count()
+
+#         wins_local = games_as_player1.filter(winner=user.username, game_type='LOCAL').count() + \
+#                      games_as_player2.filter(winner=user.username, game_type='LOCAL').count()
+#         losses_local = games_as_player1.filter(game_type='LOCAL').exclude(winner=user.username).count() + \
+#                        games_as_player2.filter(game_type='LOCAL').exclude(winner=user.username).count()
+
+#         wins_tournament = games_as_player1.filter(winner=user.username, game_type='TOURNAMENT').count() + \
+#                           games_as_player2.filter(winner=user.username, game_type='TOURNAMENT').count()
+#         losses_tournament = games_as_player1.filter(game_type='TOURNAMENT').exclude(winner=user.username).count() + \
+#                             games_as_player2.filter(game_type='TOURNAMENT').exclude(winner=user.username).count()
+
+#         # Prepare data for rendering
+#         stats = {
+#             'total_games': total_games,
+#             'total_wins': wins,
+#             'total_losses': losses,
+#             'wins_ai': wins_ai,
+#             'losses_ai': losses_ai,
+#             'wins_friend': wins_friend,
+#             'losses_friend': losses_friend,
+#             'wins_local': wins_local,
+#             'losses_local': losses_local,
+#             'wins_tournament': wins_tournament,
+#             'losses_tournament': losses_tournament,
+#         }
+
+#         html_content = render_to_string("main/user_stats.html", stats, request=request)
+
+#         return JsonResponse({'status': 'success', 'content': html_content})
+
+#     except Exception as e:
+#         return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
+
 
 
 @api_view(['GET'])
@@ -408,7 +610,127 @@ def create_match(request):
         error_message = str(e)
         traceback.print_exc()
         return JsonResponse({'status': 'error', 'message': error_message}, status=500)
-    
+
+# @api_view(['POST'])
+# def create_match(request):
+#     try:
+#         data = json.loads(request.body)
+#         tournament_id = data.get('tournament_id')
+#         player1_score = data.get('player1_score')
+#         player2_score = data.get('player2_score')
+#         timestamp = data.get('timestamp')
+
+#         # Retrieve the tournament
+#         tournament = Tournament.objects.get(id=tournament_id)
+
+#         # Retrieve the players
+#         player1, created1 = Player.objects.get_or_create(name=data.get('player1'))
+#         player2, created2 = Player.objects.get_or_create(name=data.get('player2'))
+
+#         # Determine winner and loser
+#         if player1_score > player2_score:
+#             winner = player1
+#             loser = player2
+#         else:
+#             winner = player2
+#             loser = player1
+
+#         # Create the match
+#         match = Match.objects.create(
+#             player1=player1, 
+#             player2=player2, 
+#             player1_score=player1_score, 
+#             player2_score=player2_score, 
+#             timestamp=timestamp,
+#             winner=winner,
+#             loser=loser
+#         )
+
+#         # Add match to the tournament
+#         tournament.match.add(match)
+#         tournament.save()
+
+#         # Update the winner's stats
+#         winner_stats, created = UserStats.objects.get_or_create(user=winner.user_profile.user)
+#         winner_stats.wins += 1
+#         winner_stats.total_games += 1
+#         winner_stats.save()
+
+#         # Update the loser's stats
+#         if loser.user_profile.user:  # Only if loser is a registered user
+#             loser_stats, created = UserStats.objects.get_or_create(user=loser.user_profile.user)
+#             loser_stats.losses += 1
+#             loser_stats.total_games += 1
+#             loser_stats.save()
+
+#         return JsonResponse({'status': 'success', 'tournament_id': tournament.id})
+
+#     except Exception as e:
+#         error_message = str(e)
+#         traceback.print_exc()
+#         return JsonResponse({'status': 'error', 'message': error_message}, status=500)
+
+
+# @api_view(['POST'])
+# def create_match(request):
+#     try:
+#         data = json.loads(request.body)
+#         tournament_id = data.get('tournament_id')
+#         player1_score = data.get('player1_score')
+#         player2_score = data.get('player2_score')
+#         timestamp = data.get('timestamp')
+#         mode = data.get('mode')
+
+#         # Retrieve or create the players
+#         player1, created1 = Player.objects.get_or_create(name=data.get('player1'))
+#         player2, created2 = Player.objects.get_or_create(name=data.get('player2'))
+
+#         # Determine the winner and loser
+#         if player1_score > player2_score:
+#             winner = player1
+#             loser = player2
+#         elif player2_score > player1_score:
+#             winner = player2
+#             loser = player1
+#         else:
+#             winner = loser = None
+
+#         # Create the match
+#         match = Match.objects.create(
+#             player1=player1, 
+#             player2=player2, 
+#             player1_score=player1_score, 
+#             player2_score=player2_score, 
+#             timestamp=timestamp,
+#             mode=mode
+#         )
+
+#         # If it's a tournament, add the match to the tournament
+#         if tournament_id:
+#             tournament = Tournament.objects.get(id=tournament_id)
+#             tournament.match.add(match)
+#             tournament.save()
+
+#         # Update stats for registered users only
+#         if winner and winner.user_profile:
+#             winner_stats, _ = UserStats.objects.get_or_create(user=winner.user_profile.user)
+#             winner_stats.wins += 1
+#             winner_stats.total_games += 1
+#             winner_stats.save()
+
+#         if loser and loser.user_profile:
+#             loser_stats, _ = UserStats.objects.get_or_create(user=loser.user_profile.user)
+#             loser_stats.losses += 1
+#             loser_stats.total_games += 1
+#             loser_stats.save()
+
+#         return JsonResponse({'status': 'success', 'tournament_id': tournament.id if tournament_id else None})
+
+#     except Exception as e:
+#         error_message = str(e)
+#         traceback.print_exc()
+#         return JsonResponse({'status': 'error', 'message': error_message}, status=500)
+
 
 @api_view(['GET'])
 def get_contract_address(request):

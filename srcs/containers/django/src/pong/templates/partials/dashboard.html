@@ -11,6 +11,9 @@
               <button type="button" class="btn btn-outline-light btn-lg"
                       onclick="loadPage('update-profile-page')">Change Info</button>
           </div>
+          <div class="col d-flex justify-content-start">
+              <button type="button" id="view-stats-button" class="btn btn-outline-light btn-lg">Show Stats</button>
+          </div>
       </div>
   </div>
 
@@ -31,15 +34,16 @@
       <div id="online-friends" class="mb-4">
           <h5>Online Friends</h5>
           <ul id="online-friends-list" class="list-group">
-          </ul>
-      </div>
-
-      <div id="all-friends">
-          <h5>All Friends</h5>
-          <ul id="all-friends-list" class="list-group">
-          </ul>
-      </div>
-  </div>
+        </ul>
+    </div>
+    
+    <div id="all-friends">
+        <h5>All Friends</h5>
+        <ul id="all-friends-list" class="list-group">
+        </ul>
+    </div>
+</div>
+<div id="user-stats-container" class="p-4 d-flex flex-column align-items-start bg-dark text-blue">
 
 
 {% endblock %}
