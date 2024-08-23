@@ -44,7 +44,6 @@ function loadPageClosure(game) {
 
 function bindEventListeners(game) {
 
-
 	const startUserVsUserButton = document.getElementById('js-start-user-vs-user-btn');
 	if (startUserVsUserButton) {
 		startUserVsUserButton.addEventListener('click', game.startUserVsUser.bind(game));
@@ -72,6 +71,12 @@ function bindEventListeners(game) {
 	if (blockchainScore) {
 		blockchainScore.addEventListener('click', game.executeBlockchain.bind(game));
 	}
+
+	const saveSettings = document.getElementById('saveSettings');
+	if (saveSettings) {
+		saveSettings.addEventListener('click', game.saveSettings.bind(game));
+	}
+	
 
 	// BETWEEN MATCH
 

@@ -33,6 +33,7 @@ class Game {
 
 		// Game state
 		this.scoreToWin = 6;
+		this.aiLevel = 2;
 		this.running = false;
 		this.match = null;
 		this.tournament = null;
@@ -145,6 +146,37 @@ class Game {
 			textToDiv('=', 'js-option-btn');
 			this.isOptionMenuVisible = false;
 		}
+	}
+
+	saveSettings() {
+		const ballSpeed = document.getElementById('ballSpeed').value;
+		const paddleSpeed = document.getElementById('paddleSpeed').value;
+		const fieldWidth = document.getElementById('fieldWidth').value;
+		const fieldLength = document.getElementById('fieldLength').value;
+		const aiLevel = document.getElementById('aiLevel').value;
+
+		
+		this.ball.initialSpeed = ballSpeed / 40;
+		this.paddle1.speed = paddleSpeed / 40;
+		this.paddle2.speed = paddleSpeed / 40;
+		this.field.geometry.parameters.width = fieldWidth;
+		this.field.geometry.parameters.depth = fieldLength;
+		this.aiLevel = aiLevel === 'easy' ? 1 : aiLevel === 'medium' ? 2 : 3;
+
+		console.log(`Ball Speed: ${ballSpeed}`, this.ball.initialSpeed);
+		console.log(`Paddle Speed: ${paddleSpeed}`, this.paddle1.speed);
+		console.log(`Field Width: ${fieldWidth}`, this.field.geometry.parameters.width);
+		console.log(`Field Length: ${fieldLength}`, this.field.geometry.parameters.depth);
+		console.log(`AI Level: ${aiLevel}`, this.aiLevel);
+	
+		// Example: Assuming you have global variables or functions to update these settings in your game.
+		// updateBallSpeed(ballSpeed);
+		// updatePaddleSpeed(paddleSpeed);
+		// updateFieldDimensions(fieldWidth, fieldHeight);
+		// updateAILevel(aiLevel);
+	
+		// Close the modal after saving
+		$('#settingsModal').modal('hide');
 	}
 	
 	muteAudio() {
