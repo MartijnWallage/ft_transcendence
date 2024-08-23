@@ -77,6 +77,21 @@ function bindEventListeners(game) {
 		blockchainScore.addEventListener('click', game.executeBlockchain.bind(game));
 	}
 
+	const saveSettings = document.getElementById('saveSettings');
+	if (saveSettings) {
+		saveSettings.addEventListener('click', game.saveSettings.bind(game));
+	}
+
+	const resetDefaults = document.getElementById('resetDefaults');
+	if (resetDefaults) {
+		resetDefaults.addEventListener('click', game.resetToDefaults.bind(game));
+	}
+	
+/* 	const closeSettings = document.getElementById('closeSettingsMenu');
+	if (closeSettings) {
+		closeSettings.addEventListener('click', loadPage('game_mode'));
+	} */
+
 	// BETWEEN MATCH
 
 	let exitBtn = document.getElementById('js-exit-btn');
@@ -107,10 +122,9 @@ function bindMenuEventListeners(game){
 		soundBtn.addEventListener('click', game.muteAudio.bind(game));
 	}
 
-	let settingsBtn = document.getElementById('js-settings-btn');
-	if (settingsBtn) {
-		settingsBtn.addEventListener('click', game.viewSettingsMenu.bind(game));
-	}
+	document.getElementById('js-settings-btn').addEventListener('click', function() {
+		loadPage('settings');
+	});
 
 	document.getElementById('user-name').addEventListener('click', function() {
 		loadPage('dashboard');
@@ -145,4 +159,5 @@ function fadeOut(element) {
 		}, { once: true });
 	});
 }
+
 export { loadPageClosure, updateUI, bindMenuEventListeners };

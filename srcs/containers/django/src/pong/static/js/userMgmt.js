@@ -32,7 +32,8 @@ function handleFormSubmitWrapper(event) {
         console.log("User content register-form handling");
         url = '/api/register/';
     } else if (form.id === 'update-profile-form') {
-        console.log("User content register-form handling");window.loadPage('dashboard')
+        console.log("User content register-form handling");
+		window.loadPage('dashboard')
         url = '/api/update-profile/';
     } else if (form.id === 'update-password-form') {
         console.log("User content Password Change handling");

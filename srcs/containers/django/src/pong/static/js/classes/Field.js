@@ -1,8 +1,8 @@
 import * as THREE from '../three-lib/three.module.js';
 
 class Field {
-	constructor(scene) {
-		this.geometry = new THREE.BoxGeometry(16, 0.5, 12);
+	constructor(scene, length, width) {
+		this.geometry = new THREE.BoxGeometry(length, 0.5, width);
 		this.material = new THREE.MeshStandardMaterial({
 			color: 0x0a1826,
 			roughness: 0.5,
@@ -11,7 +11,7 @@ class Field {
 		this.mesh = new THREE.Mesh(this.geometry, this.material);
 		scene.add(this.mesh);
 
-		this.net_geometry = new THREE.BoxGeometry(0.3, this.geometry.parameters.height + 0.01, this.geometry.parameters.depth - 0.2);
+		this.net_geometry = new THREE.BoxGeometry(0.3, this.geometry.parameters.height + 0.01, width - 0.2);
 		this.net_material = new THREE.MeshStandardMaterial({
 			color: 0xc1d1db,
 			roughness: 0.5,

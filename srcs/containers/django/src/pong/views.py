@@ -64,7 +64,7 @@ def home_view(request):
 @api_view(['GET'])
 def settings_view(request):
     data = {
-        'content': render_to_string("main/settings.html", request=request)
+        'content': render_to_string("partials/settings.html", request=request)
     }
     return JsonResponse(data)
 

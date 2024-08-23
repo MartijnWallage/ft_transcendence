@@ -8,7 +8,6 @@ import { Ball } from './Ball.js';
 import { Environment } from './Environment.js';
 import { Camera } from './Camera.js';
 import { Audio } from './Audio.js';
-import { OrbitControls } from '../three-lib/OrbitControls.js';
 import { Blockchain } from './Blockchain.js';
 import { delay, displayDiv, notDisplayDiv, textToDiv } from '../utils.js';
 
@@ -25,7 +24,7 @@ class Game {
 		container.appendChild(this.renderer.domElement);
 
 		// Objects
-		this.field = new Field(this.scene);
+		this.field = new Field(this.scene, 16, 12);
 		this.paddle1 = new Paddle(this.scene, this.field, true);
 		this.paddle2 = new Paddle(this.scene, this.field, false);
 		this.ball = new Ball(this);
@@ -33,7 +32,8 @@ class Game {
 		this.audio = null;
 
 		// Game state
-		this.scoreToWin = 3;
+		this.scoreToWin = 6;
+		this.aiLevel = 2;
 		this.running = false;
 		this.match = null;
 		this.tournament = null;
@@ -51,6 +51,16 @@ class Game {
 		console.log('Game class created');
 		this.boundCreateAudioContext = this.createAudioContext.bind(this);
 		document.addEventListener('click', this.boundCreateAudioContext);
+	}
+
+	updateField(length, width) {
+		this.scene.remove(this.field.mesh);
+		this.scene.remove(this.field.net);
+		this.scene.remove(this.paddle1.mesh);
+		this.scene.remove(this.paddle2.mesh);
+		this.field = new Field(this.scene, length, width);
+		this.paddle1 = new Paddle(this.scene, this.field, true);
+		this.paddle2 = new Paddle(this.scene, this.field, false);
 	}
 	
 	// Create audio audio context once there is a first interaction with the website to comply with internet rules
@@ -243,18 +253,43 @@ class Game {
 			this.isOptionMenuVisible = false;
 		}
 	}
+
+	// Settings menu
+
+	// Function to reset settings to default values
+	resetToDefaults() {
+		document.getElementById('ballSpeed').value = 4;
+		document.getElementById('paddleSpeed').value = 4;
+		document.getElementById('fieldWidth').value = 12;
+		document.getElementById('fieldLength').value = 16;
+		document.getElementById('aiLevel').value = 'medium';
+	}
+
+	saveSettings() {
+		const ballSpeed = document.getElementById('ballSpeed').value;
+		const paddleSpeed = document.getElementById('paddleSpeed').value;
+		const fieldWidth = document.getElementById('fieldWidth').value;
+		const fieldLength = document.getElementById('fieldLength').value;
+		const aiLevel = document.getElementById('aiLevel').value;
+
+		this.updateField(fieldLength, fieldWidth);
+		this.ball.initialSpeed = ballSpeed / 40;
+		this.paddle1.speed = paddleSpeed / 40;
+		this.paddle2.speed = paddleSpeed / 40;
+		this.aiLevel = aiLevel === 'easy' ? 1 : aiLevel === 'medium' ? 2 : 3;
+
+		console.log(`Ball Speed: ${ballSpeed}`, this.ball.initialSpeed);
+		console.log(`Paddle Speed: ${paddleSpeed}`, this.paddle1.speed);
+		console.log(`Field Width: ${fieldWidth}`, this.field.geometry.parameters.width);
+		console.log(`Field Length: ${fieldLength}`, this.field.geometry.parameters.depth);
+		console.log(`AI Level: ${aiLevel}`, this.aiLevel);
+
+		// updateBallSpeed(ballSpeed);
+		// updatePaddleSpeed(paddleSpeed);
+		// updateFieldDimensions(fieldWidth, fieldHeight);
+		// updateAILevel(aiLevel);
 	
-	viewSettingsMenu() {
-		console.log('viewSettingsMenu');
-		console.log(this.isSettingsMenuVisible);
-		if (this.isSettingsMenuVisible === false) {
-			console.log('displaying settings menu');
-			this.isSettingsMenuVisible = true;
-		}
-		else {
-			console.log('hiding settings menu');
-			this.isSettingsMenuVisible = false;
-		}
+		loadPage('game_mode');
 	}
 	
 	muteAudio() {
