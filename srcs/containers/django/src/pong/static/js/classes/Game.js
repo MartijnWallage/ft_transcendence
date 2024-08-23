@@ -131,7 +131,7 @@ class Game {
 				}
 			}
 			if (data.type === 'game_state' && this.running === true) {
-				const player1 = this.game.match.players[0];
+				const player1 = this.match.players[0];
 				const myRole = player1.online_role;
 				console.log('My role:', myRole);
 				// Update the other player's paddle position only
