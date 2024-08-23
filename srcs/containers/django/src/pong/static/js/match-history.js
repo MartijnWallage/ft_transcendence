@@ -69,6 +69,7 @@ async function fetchUserTournaments(username) {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken'),
             },
             body: JSON.stringify({ username }),
         });
@@ -201,7 +202,7 @@ async function showTournaments() {
     const tournamentTitle = document.getElementById('tournamentTitle');
     const username = await fetchLoggedInUser();
     const tournaments = await fetchUserTournaments(username);
-
+    console.log("LOG Tournaments:", tournaments);
     // Clear existing rows
     tableBody.innerHTML = '';
 
@@ -211,25 +212,23 @@ async function showTournaments() {
     // Populate the table with tournament data
     tournaments.slice().reverse().forEach((tournament, index) => {
         const formattedDate = tournament.date;
-        tournament.matches.forEach((match, matchIndex) => {
-            const row = document.createElement('tr');
-            const matchresult = match.player1_score > match.player2_score ? "Win" : "Loss";
-            const matchresultclass = matchresult === "Win" ? "bg-success" : "bg-danger";
-            row.setAttribute('data-bs-toggle', 'modal');
-            row.setAttribute('data-bs-target', '#tournamentMatchDetailModal');
-            // row.addEventListener('click', () => {
-            //     showMatchDetails(match.id, 'tournament');
-            // });
-            row.innerHTML = `
-                <th scope="row">${index + 1}-${matchIndex + 1}</th>
-                <td>${formattedDate}</td>
-                <td>${match.player2}</td>
-                <td>${match.player1_score}-${match.player2_score}</td>
-                <td><span class="badge ${matchresultclass}">${matchresult}</span></td>
-            `;
-            tableBody.appendChild(row);
-        });
+        const number_of_matches = tournament.matches.length;
+        const tournament_result = tournament.matches[0].player1_score > tournament.matches[0].player2_score ? "Win" : "Loss";
+        const tournament_result_class = tournament_result === "Win" ? "bg-success" : "bg-danger";
+        const row = document.createElement('tr');
+        row.setAttribute('data-bs-toggle', 'modal');
+        row.setAttribute('data-bs-target', '#tournamentMatchDetailModal');
+        // row.addEventListener('click', () => {
+        //     showMatchDetails(tournament.id, 'tournament');
+        // });
+        row.innerHTML = `
+            <th scope="row">${index + 1}</th>
+            <td>${formattedDate}</td>
+            <td>${number_of_matches}</td>
+            <td><span class="badge ${tournament_result_class}">${tournament_result}</span></td>
+        `;
+        tableBody.appendChild(row);
     });
 }
 
-export { showMatches, formatTimestamp, showTournaments };
+export { showMatches, formatTimestamp, showTournaments, fetchLoggedInUser };

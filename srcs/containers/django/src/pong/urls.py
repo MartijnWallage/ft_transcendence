@@ -26,6 +26,7 @@ urlpatterns = [
 	path('api/create_player/', views.create_player, name='create_player'),
 	path('api/user_matches/', views.user_matches, name='user_matches'),
  	path('api/get_logged_in_user/', views.get_logged_in_user, name='get_logged_in_user'),
+    path('api/user_tournaments/', views.user_tournaments, name='user_tournaments'),
 
 	path('api/register_user/', views.load_page_reg, name='load_page'),
 	path('api/login_user/', views.load_page, name='load_page_login'),
@@ -37,7 +38,6 @@ urlpatterns = [
     path('api/update-profile-page/', views.load_page_update, name='userinfo_profile'),
     path('api/update-password-page/', views.load_password_update, name='userinfo_password'),
 	path('api/logout/', views.logout_view, name='logout'),
-    
 	# path('api/pong_solo/', views.pong_solo_view, name='api_pong_solo'),
 	# path('api/pong_tournament/', views.pong_tournament_view, name='api_pong_tournament'),
 	# path('api/pong_two_player_local/', views.pong_two_player_local_view, name='api_pong_two_player_local'),

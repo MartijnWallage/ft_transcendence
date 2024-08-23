@@ -1,15 +1,27 @@
 import { Player } from './Player.js';
 import { Match } from './Match.js';
 import { displayDiv, HTMLToDiv, notDisplayDiv } from '../utils.js';
-
+import { fetchLoggedInUser } from '../match-history.js';
+import { getCookie } from '../userMgmt.js';
 class Tournament {
 
 	constructor(game) {
-		this.game = game;
 		this.players = [];
+		this.game = game;
 		this.matchResult = [];
 		this.tournamentId = null;
 	}
+
+    async initializeTournament() {
+        try {
+            const playerName = await fetchLoggedInUser(); // Assuming this function is async and returns a promise
+            const newPlayer = new Player(playerName);
+            this.players.push(newPlayer);
+			this.displayPlayers();
+        } catch (error) {
+            console.error('Error initializing tournament:', error);
+        }
+    }
 
 	async start() {
 		const game = this.game;
@@ -52,7 +64,7 @@ class Tournament {
 		}
 	}
 
-	addPlayer() {
+	async addPlayer() {
 		this.game.audio.playSound(this.game.audio.select_1);
 		const playerName = document.getElementById('playerNameInput').value.trim();
 		console.log(playerName);
@@ -69,7 +81,7 @@ class Tournament {
 		document.getElementById('playerNameInput').value = '';
 	}
 
-	displayPlayers() {
+	async displayPlayers() {
 		const game = this.game;
 	
 		const playerListDiv = document.getElementById('playerList');
@@ -97,8 +109,9 @@ class Tournament {
 			type: 'POST',
 	
 			data: JSON.stringify({
+				'X-CSRFToken': getCookie('csrftoken'),
 				'tournament_id': tournamentId,
-				'player_name': playerName
+				'player_name': playerName,
 			}),
 	
 			contentType: 'application/json; charset=utf-8',
@@ -126,8 +139,9 @@ class Tournament {
 				url: '/api/create_tournament/',
 				type: 'POST',
 				data: JSON.stringify({
+					'X-CSRFToken': getCookie('csrftoken'),
 					'date': currentDate,
-					'transaction_hash' : null
+					'transaction_hash' : null,
 				}),
 				contentType: 'application/json; charset=utf-8',
 				dataType: 'json',
@@ -156,6 +170,7 @@ class Tournament {
 			url: '/api/create_match_in_tournament/',
 			type: 'POST',
 			data: JSON.stringify({
+				'X-CSRFToken': getCookie('csrftoken'),
 				'tournament_id': tournamentId,
 				'player1' : matchResult.player1,
 				'player2' : matchResult.player2,

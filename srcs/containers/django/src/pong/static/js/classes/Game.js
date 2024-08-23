@@ -90,6 +90,7 @@ class Game {
 	createTournament() {
 		this.mode = 'tournament';
 		const tournament = new Tournament(this);
+		tournament.initializeTournament();
 		this.tournament = tournament;
 	}
 

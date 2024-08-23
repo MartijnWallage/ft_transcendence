@@ -14,11 +14,37 @@
                 </ul>
             </div>
         </div>
-        
-        <!-- Match History Section -->
-        <div id="match-history" class="card shadow-lg">
+        <div>
+            <!-- Match History Section -->
+            <div id="match-history" class="card shadow-lg">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="text-center" id="matchTitle">1 vs 1 Matches</h3>
+                </div>
+                <div class="card-body">
+                    <table class="table table-hover">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>#</th>
+                                <th>Date</th>
+                                <th>Opponent</th>
+                                <th>Score</th>
+                                <th>Result</th>
+                            </tr>
+                        </thead>
+                        <tbody id="matchTableBody"></tbody>
+                    </table>
+                </div>
+                <div class="card-footer text-muted text-center">
+                    Last updated: date here
+                </div>
+            </div>
+        </div>
+
+    
+        <!-- Tournament History Section -->
+        <div id="tournament-history" class="card shadow-lg" style="display: none;">
             <div class="card-header bg-primary text-white">
-                <h3 class="text-center" id="matchTitle">1 vs 1 Matches</h3>
+                <h3 class="text-center" id="tournamentTitle">Tournament Matches</h3>
             </div>
             <div class="card-body">
                 <table class="table table-hover">
@@ -26,12 +52,11 @@
                         <tr>
                             <th>#</th>
                             <th>Date</th>
-                            <th>Opponent</th>
-                            <th>Score</th>
+                            <th>Number of players</th>
                             <th>Result</th>
                         </tr>
                     </thead>
-                    <tbody id="matchTableBody"></tbody>
+                    <tbody id="tournamentTableBody"></tbody>
                 </table>
             </div>
             <div class="card-footer text-muted text-center">
@@ -39,32 +64,7 @@
             </div>
         </div>
     </div>
-
-  
-    <!-- Tournament History Section -->
-    <div id="tournament-history" class="card shadow-lg" style="display: none;">
-        <div class="card-header bg-primary text-white">
-            <h3 class="text-center" id="tournamentTitle">Tournament Matches</h3>
-        </div>
-        <div class="card-body">
-            <table class="table table-hover">
-                <thead class="table-dark">
-                    <tr>
-                        <th>#</th>
-                        <th>Date</th>
-                        <th>Number of players</th>
-                        <th>Result</th>
-                    </tr>
-                </thead>
-                <tbody id="tournamentTableBody"></tbody>
-            </table>
-        </div>
-        <div class="card-footer text-muted text-center">
-            Last updated: date here
-        </div>
-    </div>
-    </div>
-
+</div>
     <!-- Modal for Match Details -->
     <!-- <div class="modal fade" id="matchDetailModal"  data-bs-backdrop="false" tabindex="-1" aria-labelledby="matchDetailModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg modal-dialog-centered">
