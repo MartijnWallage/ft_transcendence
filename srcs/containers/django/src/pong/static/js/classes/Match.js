@@ -93,6 +93,7 @@ class Match {
 		const cam2 = this.game.cam2;
 		const socket = this.game.socket;
 
+		console.log('mode after:', this.game.mode);
 		if (this.game.mode === 'vsOnline') {
 			if (this.timeToSend) {
 				this.sendGameState(socket);
@@ -123,7 +124,7 @@ class Match {
 			
 		this.score.update();
 
-		console.log('mode:', this.game.mode);
+		console.log('mode after:', this.game.mode);
 		if (this.players[1].ai || this.game.mode === 'vsOnline') {
 			cam1.renderSingleView(this.game);
 		} else {
