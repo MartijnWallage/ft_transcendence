@@ -22,14 +22,15 @@ class Score {
 		// console.log('mode:', this.game.mode, 'player_role:', player_role);
 
 		if (!(this.game.mode === 'vsOnline' && player_role === 'B')) {
-		if (ballRightSide < -halfFieldWidth)
-			scorer = 1;
-		else if (ballLeftSide > halfFieldWidth)
-			scorer = 0;
-		else
-			return;
-		this.result[scorer] += 1;
-		textToDiv(this.result[scorer], `player${scorer + 1}-score`);
+			console.log('im in the loop');
+			if (ballRightSide < -halfFieldWidth)
+				scorer = 1;
+			else if (ballLeftSide > halfFieldWidth)
+				scorer = 0;
+			else
+				return;
+			this.result[scorer] += 1;
+			textToDiv(this.result[scorer], `player${scorer + 1}-score`);
 		}
 
 		if (this.game.mode === 'vsOnline' && player_role === 'A') {
