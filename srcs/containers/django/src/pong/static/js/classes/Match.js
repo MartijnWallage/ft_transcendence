@@ -93,7 +93,7 @@ class Match {
 		const cam2 = game.cam2;
 		const socket = game.socket;
 
-		console.log('mode after:', game.mode);
+		console.log('mode before:', game.mode);
 		if (game.mode === 'vsOnline') {
 			if (this.timeToSend) {
 				this.sendGameState(socket);
