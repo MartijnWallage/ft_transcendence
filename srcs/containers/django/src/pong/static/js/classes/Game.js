@@ -119,7 +119,7 @@ class Game {
 
 		this.socket.onclose = (event) => {
 			console.log('WebSocket closed', event);
-			// this.handleReconnection();
+			this.handleDisconnection();
 		};
 
 		this.socket.onerror = (error) => {
@@ -128,7 +128,6 @@ class Game {
 
 		this.socket.onmessage = (e) => {
 			this.socket_data = JSON.parse(e.data);
-			// console.log('Received message:', this.socket_data);
 			let data = this.socket_data;
 			
 			if (data.type === 'player_role') {
@@ -167,11 +166,8 @@ class Game {
 			}
 	}}
 
-	handleReconnection() {
-		setTimeout(() => {
-			console.log('Reconnecting...');
-			this.initSocket();
-		}, this.reconnectInterval);
+	handleDisconnection() {
+		console.log('!!! Connection lost !!!');
 	}
 
 	async startVsOnline() {

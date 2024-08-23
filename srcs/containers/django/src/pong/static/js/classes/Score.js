@@ -32,10 +32,8 @@ class Score {
 			this.result[scorer] += 1;
 			textToDiv(this.result[scorer], `player${scorer + 1}-score`);
 		}
-		console.log('before');
 		if (scorer === null && !this.onlineUpdate)
 			return;
-		console.log('after');
 			
 		if (isVsOnlineMode && isPlayerRoleA)
 			this.sendScoreUpdate(this.result[0], this.result[1]);
