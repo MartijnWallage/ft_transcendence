@@ -128,12 +128,15 @@ class Game {
 
 		this.socket.onmessage = (e) => {
 			this.socket_data = JSON.parse(e.data);
-			console.log('Received message:', this.socket_data);
+			// console.log('Received message:', this.socket_data);
 			let data = this.socket_data;
-
+			
 			if (data.type === 'player_role') {
 				player1.online_role = data.player_role;
 				console.log('local role assigned to ' + data.player_role);
+			}
+			if (data.type === 'new_score') {
+				this.match.updateScore(data.player, data.score); //somehting like taht
 			}
 			if (data.type === 'player_connected') {		
 				if (data.player_role !== player1.online_role) {
@@ -141,21 +144,17 @@ class Game {
 					console.log('Player connected:', data.player);
 				}
 			}
-			if (data.type === 'game_state' && this.running === true) {
+			if (data.type === 'game_state' && this.running) {
 				const player1 = this.match.players[0];
 				const myRole = player1.online_role;
-				// Update the other player's paddle position only
+			
 				if (myRole === 'A' && data.paddle_B !== undefined) {
-					this.paddle2.position.z = data.paddle_B;
-					this.paddle2.position.z *= -1;
+					this.paddle2.position.z = -data.paddle_B;
 				} else if (myRole === 'B' && data.ball_x !== undefined && data.ball_z !== undefined && data.paddle_A !== undefined) {
-					this.paddle2.position.z = data.paddle_A;
-					this.ball.position.x = data.ball_x;
-					this.ball.position.z = data.ball_z;
-					this.paddle2.position.z *= -1;
-					this.ball.position.x *= -1;
-					this.ball.position.z *= -1;
-				}		
+					this.paddle2.position.z = -data.paddle_A;
+					this.ball.position.x = -data.ball_x;
+					this.ball.position.z = -data.ball_z;
+				}
 			}
 	}}
 
