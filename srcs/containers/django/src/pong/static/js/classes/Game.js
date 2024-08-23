@@ -126,7 +126,11 @@ class Game {
 				console.log('local role assigned to ' + data.player_role);
 			}
 			if (data.type === 'new_score') {
-				this.match.updateScore(data.player, data.score); //somehting like taht
+				const player1 = this.match.players[0];
+				const myRole = player1.online_role;
+				if (myRole === 'B') {
+					this.match.score.result = [data.player_B, data.player_B];
+				}
 			}
 			if (data.type === 'player_connected') {		
 				if (data.player_role !== player1.online_role) {

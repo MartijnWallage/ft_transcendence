@@ -16,17 +16,31 @@ class Score {
 		const halfFieldWidth = field.geometry.parameters.width / 2;
 		const ballRightSide = ball.position.x + ball.radius;
 		const ballLeftSide = ball.position.x - ball.radius;
-
+		const player_role = this.game.match.players[1].online_role;
 		let scorer;
-		if (ballRightSide < -halfFieldWidth)
-			scorer = 1;
-		else if (ballLeftSide > halfFieldWidth)
-			scorer = 0;
-		else
-			return;
+
+		if (!(this.game.mode === 'vsOnline' && player_role === 'B')) {
+			if (ballRightSide < -halfFieldWidth)
+				scorer = 1;
+			else if (ballLeftSide > halfFieldWidth)
+				scorer = 0;
+			else
+				return;
+			this.result[scorer] += 1;
+			textToDiv(this.result[scorer], `player${scorer + 1}-score`);
+		}
+
+		if (this.game.mode === 'vsOnline' && player_role === 'A') {
+			if (this.game.socket.readyState === WebSocket.OPEN) {
+				scoreUpdate = {
+					type: 'score_update',
+					score_A: this.result[0],
+					score_B: this.result[1],
+				};
+				socket.send(JSON.stringify(scoreUpdate));
+			}
+		}
 		
-		this.result[scorer] += 1;
-		textToDiv(this.result[scorer], `player${scorer + 1}-score`);
 		
 		ball.serveBall();
 		if (this.game.match.players[1].isAI()) {
