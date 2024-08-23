@@ -246,7 +246,8 @@ class Game {
 			else {
 				displayDiv('js-logout-btn');
 			}
-			displayDiv('js-end-game-btn');
+			if (this.running)
+				displayDiv('js-end-game-btn');
 			textToDiv('-', 'js-option-btn');
 			this.isOptionMenuVisible = true;
 		}

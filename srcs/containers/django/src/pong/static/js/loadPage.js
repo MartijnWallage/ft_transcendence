@@ -119,7 +119,10 @@ function bindMenuEventListeners(game){
 
 	let soundBtn = document.getElementById('js-audio-btn');
 	if (soundBtn) {
-		soundBtn.addEventListener('click', game.muteAudio.bind(game));
+		soundBtn.addEventListener('click', function() {
+			game.muteAudio.bind(game);
+			game.viewOptionMenu();
+		});
 	}
 
 	document.getElementById('js-settings-btn').addEventListener('click', function() {
