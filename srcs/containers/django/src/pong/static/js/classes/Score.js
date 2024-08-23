@@ -21,7 +21,7 @@ class Score {
 
 		// console.log('mode:', this.game.mode, 'player_role:', player_role);
 
-		if (!(this.game.mode === 'vsOnline' && player_role === 'B')) {
+		if (this.game.mode ==! 'vsOnline' || (this.game.mode ==! 'vsOnline' && player_role === 'A')) {
 			console.log('im in the loop');
 			if (ballRightSide < -halfFieldWidth)
 				scorer = 1;
@@ -34,6 +34,8 @@ class Score {
 		}
 
 		if (this.game.mode === 'vsOnline' && player_role === 'A') {
+			console.log('im in the loop2');
+
 			if (this.game.socket.readyState === WebSocket.OPEN) {
 				let scoreUpdate = {
 					type: 'score_update',
