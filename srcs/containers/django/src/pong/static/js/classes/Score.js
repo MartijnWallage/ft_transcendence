@@ -19,7 +19,8 @@ class Score {
 		const player_role = this.game.match.players[0].online_role;
 		let scorer;
 
-
+		if (this.game.mode ==! 'vsOnline') {
+			if(this.game.mode === 'vsOnline' && player_role === 'B') {
 			if (ballRightSide < -halfFieldWidth)
 				scorer = 1;
 			else if (ballLeftSide > halfFieldWidth)
@@ -28,9 +29,10 @@ class Score {
 				return;
 			this.result[scorer] += 1;
 			textToDiv(this.result[scorer], `player${scorer + 1}-score`);
+			}
+		}
 
-
-		if ((this.game.mode === 'vsOnline' && player_role === 'B')) {
+		if (!(this.game.mode === 'vsOnline' && player_role === 'B')) {
 			if (ballRightSide < -halfFieldWidth)
 				scorer = 1;
 			else if (ballLeftSide > halfFieldWidth)
