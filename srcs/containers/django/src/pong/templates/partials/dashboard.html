@@ -10,6 +10,47 @@
         <button type="button" class="btn btn-outline-light btn-lg"
                 href="#infochange" onclick="loadPage('update-profile-page')">Change Info</button>
       </div>
+  <h2 class="my-4 display-5">Dashboard</h2>
+
+  <div id="dashboard-view" class="container my-3 px-4">
+      <div class="row gx-5">
+          <div class="col d-flex justify-content-end">
+              <button type="button" class="btn btn-outline-light btn-lg" 
+                      onclick="loadPage('update-password-page')">Change Password</button>
+          </div>
+          <div class="col d-flex justify-content-start">
+              <button type="button" class="btn btn-outline-light btn-lg"
+                      onclick="loadPage('update-profile-page')">Change Info</button>
+          </div>
+      </div>
   </div>
-</div>
+
+  <div id="friends-section" class="p-4 d-flex flex-column align-items-start bg-dark text-blue" style="width: 100%; max-width: 350px; border-radius: 10px; overflow-y: auto;">
+      <h4>Friends</h4>
+      
+      <div id="suggested-friends" class="mb-4">
+        <h5>Suggested Friends</h5>
+        <ul id="suggested-friends-list" class="list-group">
+        </ul>
+      </div>
+      <div id="friend-requests" class="mb-4">
+          <h5>Friend Requests</h5>
+          <ul id="friend-request-list" class="list-group">
+          </ul>
+      </div>
+
+      <div id="online-friends" class="mb-4">
+          <h5>Online Friends</h5>
+          <ul id="online-friends-list" class="list-group">
+          </ul>
+      </div>
+
+      <div id="all-friends">
+          <h5>All Friends</h5>
+          <ul id="all-friends-list" class="list-group">
+          </ul>
+      </div>
+  </div>
+
+
 {% endblock %}

@@ -1,4 +1,4 @@
-import { updateUI, bindUserEventListeners} from './userMgmt.js';
+import { updateUI, bindUserEventListeners, handleLogout} from './userMgmt.js';
 import { showMatches, showTournaments } from './match-history.js';
 
 function loadPageClosure(game) {
@@ -31,9 +31,10 @@ function loadPageClosure(game) {
 			}
 			await updateUI(game);
 			console.log('Page UI updated:', page);
-			bindUserEventListeners(mainContent);
+			bindUserEventListeners(mainContent, page);
 			bindEventListeners(game);
 			if (page === 'match_history') {
+				document.getElementById('lastModified').textContent = new Date(document.lastModified).toLocaleString();
 				dropDownEventListeners();
 			}
 			
@@ -44,7 +45,30 @@ function loadPageClosure(game) {
 	};
 }
 
+const IdleTimerModule = (() => {
+	let idleTime = 0;
+	const maxIdleTime = 5 * 60 * 1000;
 
+	const resetIdleTimer = () => {
+		clearTimeout(idleTime);
+		startIdleTimer();
+	};
+
+	const startIdleTimer = () => {
+		idleTime = setTimeout(handleLogout, maxIdleTime);
+	};
+
+	return {
+		init: () => {
+			window.onload = resetIdleTimer;
+			document.onmousemove = resetIdleTimer;
+			document.onkeydown = resetIdleTimer;
+			document.onkeyup = resetIdleTimer;
+			document.onscroll = resetIdleTimer;
+			startIdleTimer();
+		}
+	};
+})();
 
 function bindEventListeners(game) {
 
@@ -188,4 +212,4 @@ function fadeOut(element) {
 		}, { once: true });
 	});
 }
-export { loadPageClosure, updateUI, bindMenuEventListeners };
+export { loadPageClosure, updateUI, IdleTimerModule, bindMenuEventListeners };

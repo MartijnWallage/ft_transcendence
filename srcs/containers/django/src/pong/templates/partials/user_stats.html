@@ -1,0 +1,22 @@
+{% block content %}
+<div id="user-stats" class="container-md mx-auto p-5">
+  <h1 class="my-4 display-5">User Stats</h1>
+  <div id="stats-summary" class="container my-3 px-4">
+    <div class="row gx-5">
+      <div class="col d-flex justify-content-center">
+        <h3>Wins: <span id="win-count">0</span></h3>
+      </div>
+      <div class="col d-flex justify-content-center">
+        <h3>Losses: <span id="loss-count">0</span></h3>
+      </div>
+    </div>
+  </div>
+
+  <div id="recent-games" class="container my-3 px-4">
+    <h3 class="my-4">Recent Games</h3>
+    <ul id="games-list" class="list-group">
+      <!-- Recent games will be dynamically loaded here -->
+    </ul>
+  </div>
+</div>
+{% endblock %}

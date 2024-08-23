@@ -195,6 +195,16 @@ h1 {
 	margin-right: auto;
 }
 
+.avatar-img {
+    width: 30px; 
+    height: 30px; 
+    object-fit: cover; 
+    border-radius: 50%; 
+}
+
+.avatar-img.online {
+    border-color: green; /* Green border for online users */
+}
 
 .modal {
 	z-index: 1050; /* Ensure this value is higher than your menu's z-index */
