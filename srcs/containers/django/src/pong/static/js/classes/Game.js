@@ -133,6 +133,7 @@ class Game {
 				}
 			}
 			if (data.type === 'player_connected') {		
+				console.log('Received message:', this.socket_data);
 				if (data.player_role !== player1.online_role) {
 					player1.oponent = new Player(this.socket_data.player);
 					console.log('Player connected:', data.player);

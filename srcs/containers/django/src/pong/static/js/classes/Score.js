@@ -37,6 +37,7 @@ class Score {
 					score_A: this.result[0],
 					score_B: this.result[1],
 				};
+				console.log('Sending score update:', scoreUpdate);
 				socket.send(JSON.stringify(scoreUpdate));
 			}
 		}
