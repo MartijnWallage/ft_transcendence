@@ -42,7 +42,7 @@ services:
        - ts-network
     ports:
       - "443:443"   # For HTTPS
-      q - "80:80"   # For HTTP redirection
+      - "80:80"   # For HTTP redirection
     restart: on-failure #always
     depends_on:
       - django
