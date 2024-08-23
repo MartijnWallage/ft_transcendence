@@ -38,7 +38,7 @@ class Score {
 		console.log('after');
 			
 		if (isVsOnlineMode && isPlayerRoleA)
-			sendScoreUpdate(this.result[0], this.result[1]);
+			this.sendScoreUpdate(this.result[0], this.result[1]);
 		this.onlineUpdate = false;
 			
 		ball.serveBall();
