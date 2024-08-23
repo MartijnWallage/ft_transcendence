@@ -8,7 +8,6 @@ import { Ball } from './Ball.js';
 import { Environment } from './Environment.js';
 import { Camera } from './Camera.js';
 import { Audio } from './Audio.js';
-import { OrbitControls } from '../three-lib/OrbitControls.js';
 import { Blockchain } from './Blockchain.js';
 import { delay, displayDiv, notDisplayDiv, textToDiv } from '../utils.js';
 
@@ -145,19 +144,6 @@ class Game {
 			notDisplayDiv('js-end-game-btn');
 			textToDiv('=', 'js-option-btn');
 			this.isOptionMenuVisible = false;
-		}
-	}
-	
-	viewSettingsMenu() {
-		console.log('viewSettingsMenu');
-		console.log(this.isSettingsMenuVisible);
-		if (this.isSettingsMenuVisible === false) {
-			console.log('displaying settings menu');
-			this.isSettingsMenuVisible = true;
-		}
-		else {
-			console.log('hiding settings menu');
-			this.isSettingsMenuVisible = false;
 		}
 	}
 	

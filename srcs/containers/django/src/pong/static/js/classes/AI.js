@@ -6,7 +6,8 @@ class AI {
 		// settings
 		this.level = 2;
 		this.side = 1; // Not used right now. But ideally, the AI should be able to play on either side
-        this.updateInterval = 1000 / this.level; // 1000 milliseconds = 1 second
+		const divider = this.level > 3 ? this.level - 2 : 1;
+        this.updateInterval = 1000 / divider; // 1000 milliseconds = 1 second
 		this.visualizePrediction = true;
 		
 		this.game = game;
