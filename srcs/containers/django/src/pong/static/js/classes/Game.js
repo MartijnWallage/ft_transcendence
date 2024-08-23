@@ -137,6 +137,7 @@ class Game {
 				// Update the other player's paddle position only
 				if (myRole === 'A' && data.paddle_B !== undefined) {
 					this.paddle2.position.z = data.paddle_B;
+					this.paddle2.position.z *= -1;
 				} else if (myRole === 'B' && data.ball_x !== undefined && data.ball_z !== undefined && data.paddle_A !== undefined) {
 					this.paddle2.position.z = data.paddle_A;
 					this.ball.position.x = data.ball_x;
