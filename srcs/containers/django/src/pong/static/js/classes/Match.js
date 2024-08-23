@@ -108,6 +108,7 @@ class Match {
 		let direction = this.keys['a'] ? -1 : this.keys['d'] ? 1 : 0;
 		paddle1.movePaddle(direction, field);
 		
+		console.log('mode middle1:', game.mode);
 		// move right paddle
 		if (game.mode =! 'vsOnline') {
 			direction = this.players[1].ai ? this.players[1].ai.movePaddle(paddle2) :
@@ -116,12 +117,13 @@ class Match {
 				0;
 				paddle2.movePaddle(direction, field);
 		}
-			
+		console.log('mode middle2:', game.mode);
 		// move and bounce ball
 		ball.animateBall();
 		ball.tryPaddleCollision(paddle1, paddle2);
 		ball.tryCourtCollision(field);
-			
+		
+		console.log('mode middle3:', game.mode);
 		this.score.update();
 
 		console.log('mode after:', game.mode);
