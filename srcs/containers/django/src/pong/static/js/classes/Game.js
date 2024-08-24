@@ -159,9 +159,9 @@ class Game {
 		}
 	}
 
-	executeBlockchain() {
+	executeBlockchain(tournamentId) {
 		this.audio.playSound(this.audio.select_1);
-		new Blockchain(this.tournament.tournamentId);
+		new Blockchain(tournamentId);
 	}
 	
 	// register in database {

@@ -1,21 +1,5 @@
 import { getCookie } from './userMgmt.js';
-
-const matchData = {
-	"1v1": [
-		{ id: 1, date: "2023-08-12", opponent: "Player B", score: "3-2", result: "Win", resultClass: "bg-success" },
-		{ id: 2, date: "2023-08-10", opponent: "Player C", score: "1-1", result: "Draw", resultClass: "bg-secondary" },
-		{ id: 3, date: "2023-08-08", opponent: "Player D", score: "0-2", result: "Loss", resultClass: "bg-danger" }
-	],
-	"vsAI": [
-		{ id: 1, date: "2023-08-15", opponent: "AI Bot", score: "4-0", result: "Win", resultClass: "bg-success" },
-		{ id: 2, date: "2023-08-13", opponent: "AI Bot", score: "2-3", result: "Loss", resultClass: "bg-danger" }
-	],
-	"tournament": [
-		{ id: 1, date: "2023-08-18", opponent: "Team Alpha", score: "2-1", result: "Win", resultClass: "bg-success", details: { events: ["Goal by Player 1 at 12'", "Goal by Player 2 at 55'", "Conceded goal at 78'"] }},
-		{ id: 2, date: "2023-08-17", opponent: "Team Beta", score: "2-2", result: "Draw", resultClass: "bg-secondary", details: { events: ["Goal by Player 3 at 22'", "Goal by Player 4 at 64'", "Conceded goals at 44' and 89'"] }},
-		{ id: 3, date: "2023-08-16", opponent: "Team Gamma", score: "1-3", result: "Loss", resultClass: "bg-danger", details: { events: ["Goal by Player 5 at 10'", "Conceded goals at 30', 45', and 70'"] }}
-	]
-};
+import { Blockchain } from './classes/Blockchain.js';
 
 function formatTimestamp(timestamp) {
     // Create a new Date object from the timestamp
@@ -35,67 +19,6 @@ function formatTimestamp(timestamp) {
     const formattedDate = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
     
     return formattedDate;
-}
-
-// export function showMatchDetails(matchId, mode) {
-// 	console.log("LOG: showMatchDetails");
-// 	const match = matchData[mode].find(m => m.id === matchId);
-// 	const modalOpponent = document.getElementById('modalOpponent');
-// 	const modalDate = document.getElementById('modalDate');
-// 	const modalScore = document.getElementById('modalScore');
-// 	const modalEvents = document.getElementById('modalEvents');
-
-// 	// Populate modal with match details
-// 	modalOpponent.textContent = `Opponent: ${match.opponent}`;
-// 	modalDate.textContent = `Date: ${match.date}`;
-// 	modalScore.textContent = match.score;
-
-// 	// Clear existing events
-// 	modalEvents.innerHTML = '';
-
-// 	// Add match events
-// 	match.details.events.forEach(event => {
-// 		const eventItem = document.createElement('li');
-// 		eventItem.classList.add('list-group-item');
-// 		eventItem.textContent = event;
-// 		modalEvents.appendChild(eventItem);
-// 	});
-// }
-
-
-function showTournamentDetails(tournamentId) {
-    console.log("showTournamentDetails called with ID:", tournamentId);
-
-    // Find the specific tournament using its ID
-    const tournament = window.tournamentsData.find(t => t.id === parseInt(tournamentId));
-    
-    if (!tournament) {
-        console.error("Tournament not found");
-        return;
-    }
-
-    const tournamentResult = tournament.matches.length > 0 && tournament.matches[0].player1_score > tournament.matches[0].player2_score ? "Win" : "Loss";
-    const resultElement = document.getElementById('tournamentResult');
-    const matchDetailsTableBody = document.getElementById('matchDetailsTableBody');
-
-    resultElement.textContent = tournamentResult;
-    
-    // Clear previous match details
-    matchDetailsTableBody.innerHTML = '';
-
-    tournament.matches.forEach(match => {
-        const row = document.createElement('tr');
-        row.innerHTML = `
-            <td>${match.player1}</td>
-            <td>${match.player2}</td>
-            <td>${match.player1_score} - ${match.player2_score}</td>
-        `;
-        matchDetailsTableBody.appendChild(row);
-    });
-
-    // Show the modal
-    const modal = new bootstrap.Modal(document.getElementById('tournamentDetailsModal'));
-    modal.show();
 }
 
 async function fetchUserTournaments(username) {
@@ -205,9 +128,6 @@ async function showMatches(mode) {
 	} else if (mode === 'solo') {
 		matchTitle.textContent = 'Player vs AI Matches';
     }
-	// } else if (mode === 'tournament') {
-	// 	matchTitle.textContent = 'Tournament Matches';
-	// }
 
 	// Populate the table with the selected mode's matches
 	matches.slice().reverse().forEach((match, index) => {
@@ -215,8 +135,8 @@ async function showMatches(mode) {
 		const row = document.createElement('tr');
         const matchresult = match.player1_score > match.player2_score ? "Win" : "Loss";
         const matchresultclass = matchresult === "Win" ? "bg-success" : "bg-danger";
-		row.setAttribute('data-bs-toggle', 'modal');
-		row.setAttribute('data-bs-target', '#matchDetailModal');
+		// row.setAttribute('data-bs-toggle', 'modal');
+		// row.setAttribute('data-bs-target', '#matchDetailModal');
         // row.addEventListener('click', () => {
         //     showMatchDetails(match.id, mode);
         // });
@@ -270,6 +190,49 @@ async function showTournaments() {
         `;
         tableBody.appendChild(row);
     });
+}
+
+function showTournamentDetails(tournamentId) {
+    console.log("showTournamentDetails called with ID:", tournamentId);
+
+    // Find the specific tournament using its ID
+    const tournament = window.tournamentsData.find(t => t.id === parseInt(tournamentId));
+    
+    if (!tournament) {
+        console.error("Tournament not found");
+        return;
+    }
+
+    const tournamentResult = tournament.matches.length > 0 && tournament.matches[0].player1_score > tournament.matches[0].player2_score ? "Win" : "Loss";
+    const resultElement = document.getElementById('tournamentResult');
+    const matchDetailsTableBody = document.getElementById('matchDetailsTableBody');
+
+    resultElement.textContent = tournamentResult;
+    
+    // Clear previous match details
+    matchDetailsTableBody.innerHTML = '';
+
+    tournament.matches.forEach(match => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${match.player1}</td>
+            <td>${match.player2}</td>
+            <td>${match.player1_score} - ${match.player2_score}</td>
+        `;
+        matchDetailsTableBody.appendChild(row);
+    });
+
+    // Show the modal
+    const modal = new bootstrap.Modal(document.getElementById('tournamentDetailsModal'));
+    modal.show();
+
+    const registerButton = document.getElementById('registerOnBlockchainBtn');
+    if (registerButton) {
+        registerButton.addEventListener('click', () => {
+            // this.audio.playSound(this.audio.select_1);
+            new Blockchain(tournamentId);
+        });
+    }
 }
 
 export { showMatches, formatTimestamp, showTournaments, fetchLoggedInUser };

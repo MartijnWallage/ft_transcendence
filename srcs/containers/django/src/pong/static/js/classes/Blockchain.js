@@ -1,3 +1,5 @@
+import { getCookie } from "../userMgmt.js";
+
 class Blockchain {
 
 	constructor(tournamentId){
@@ -14,7 +16,7 @@ class Blockchain {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
-					'X-CSRFToken': this.getCSRFToken() // Include CSRF token for security
+					'X-CSRFToken': getCookie('csrftoken')
 				},
 				body: JSON.stringify({ tournament_id: this.tournamentId })
 			});
@@ -42,20 +44,20 @@ class Blockchain {
 		}
 	}
 
-	getCSRFToken() {
-		let cookieValue = null;
-		if (document.cookie && document.cookie !== '') {
-			const cookies = document.cookie.split(';');
-			for (let i = 0; i < cookies.length; i++) {
-				const cookie = cookies[i].trim();
-				if (cookie.substring(0, 10) === 'csrftoken=') {
-					cookieValue = decodeURIComponent(cookie.substring(10));
-					break;
-				}
-			}
-		}
-		return cookieValue;
-	}
+	// getCSRFToken() {
+	// 	let cookieValue = null;
+	// 	if (document.cookie && document.cookie !== '') {
+	// 		const cookies = document.cookie.split(';');
+	// 		for (let i = 0; i < cookies.length; i++) {
+	// 			const cookie = cookies[i].trim();
+	// 			if (cookie.substring(0, 10) === 'csrftoken=') {
+	// 				cookieValue = decodeURIComponent(cookie.substring(10));
+	// 				break;
+	// 			}
+	// 		}
+	// 	}
+	// 	return cookieValue;
+	// }
 }
 
 export { Blockchain };
