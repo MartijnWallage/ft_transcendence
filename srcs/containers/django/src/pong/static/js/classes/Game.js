@@ -13,24 +13,6 @@ import { delay, displayDiv, notDisplayDiv, textToDiv } from '../utils.js';
 
 class Game {
 	constructor() {
-		// Scene
-		const container = document.getElementById('threejs-container');
-		this.scene = new THREE.Scene();
-		this.renderer = new THREE.WebGLRenderer({ antialias: true });
-		this.cam1 = new Camera;
-		this.cam2 = new Camera;
-		this.renderer.setSize(window.innerWidth, window.innerHeight);
-		this.renderer.setClearColor(0xc1d1db);
-		container.appendChild(this.renderer.domElement);
-
-		// Objects
-		this.field = new Field(this.scene, 16, 12);
-		this.paddle1 = new Paddle(this.scene, this.field, true);
-		this.paddle2 = new Paddle(this.scene, this.field, false);
-		this.ball = new Ball(this);
-		this.environment = new Environment(this.scene);
-		this.audio = null;
-
 		// Game state
 		this.scoreToWin = 6;
 		this.aiLevel = 2;
@@ -53,6 +35,23 @@ class Game {
         this.fieldLength = 16;
         this.aiLevel = 2;
 
+		// Scene
+		const container = document.getElementById('threejs-container');
+		this.scene = new THREE.Scene();
+		this.renderer = new THREE.WebGLRenderer({ antialias: true });
+		this.cam1 = new Camera;
+		this.cam2 = new Camera;
+		this.renderer.setSize(window.innerWidth, window.innerHeight);
+		this.renderer.setClearColor(0xc1d1db);
+		container.appendChild(this.renderer.domElement);
+
+		// Objects
+		this.field = new Field(this.scene, 16, 12);
+		this.paddle1 = new Paddle(this.scene, this.field, true);
+		this.paddle2 = new Paddle(this.scene, this.field, false);
+		this.ball = new Ball(this);
+		this.environment = new Environment(this.scene);
+		this.audio = null;
 
 		// this.socket = new WebSocket('wss://' + window.location.host + '/ws/pong/');
 
@@ -298,7 +297,7 @@ class Game {
 	}
 
 	setSettingsMenuToCurrent() {
-		document.getElementById('ballSpeed').value = this.initialSpeed * 20;
+		document.getElementById('ballSpeed').value = this.ball.initialSpeed * 20;
 		document.getElementById('paddleSpeed').value = this.paddle1.speed * 20;
 		document.getElementById('fieldWidth').value = this.field.geometry.parameters.depth;
 		document.getElementById('fieldLength').value = this.field.geometry.parameters.width;
