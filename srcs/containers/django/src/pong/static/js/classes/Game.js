@@ -52,16 +52,6 @@ class Game {
 		this.boundCreateAudioContext = this.createAudioContext.bind(this);
 		document.addEventListener('click', this.boundCreateAudioContext);
 	}
-
-	updateField(length, width) {
-		this.scene.remove(this.field.mesh);
-		this.scene.remove(this.field.net);
-		this.scene.remove(this.paddle1.mesh);
-		this.scene.remove(this.paddle2.mesh);
-		this.field = new Field(this.scene, length, width);
-		this.paddle1 = new Paddle(this.scene, this.field, true);
-		this.paddle2 = new Paddle(this.scene, this.field, false);
-	}
 	
 	// Create audio audio context once there is a first interaction with the website to comply with internet rules
 	async createAudioContext() {
@@ -259,7 +249,7 @@ class Game {
 	// Function to reset settings to default values
 	resetToDefaults() {
 		document.getElementById('ballSpeed').value = 4;
-		document.getElementById('paddleSpeed').value = 4;
+		document.getElementById('paddleSpeed').value = 3;
 		document.getElementById('fieldWidth').value = 12;
 		document.getElementById('fieldLength').value = 16;
 		document.getElementById('aiLevel').value = 'medium';
@@ -273,9 +263,9 @@ class Game {
 		const aiLevel = document.getElementById('aiLevel').value;
 
 		this.updateField(fieldLength, fieldWidth);
-		this.ball.initialSpeed = ballSpeed / 40;
-		this.paddle1.speed = paddleSpeed / 40;
-		this.paddle2.speed = paddleSpeed / 40;
+		this.ball.initialSpeed = ballSpeed / 20;
+		this.paddle1.speed = paddleSpeed / 20;
+		this.paddle2.speed = paddleSpeed / 20;
 		this.aiLevel = aiLevel === 'easy' ? 1 : aiLevel === 'medium' ? 2 : 3;
 
 		console.log(`Ball Speed: ${ballSpeed}`, this.ball.initialSpeed);
@@ -290,6 +280,16 @@ class Game {
 		// updateAILevel(aiLevel);
 	
 		loadPage('game_mode');
+	}
+
+    updateField(length, width) {
+		this.scene.remove(this.field.mesh);
+		this.scene.remove(this.field.net);
+		this.scene.remove(this.paddle1.mesh);
+		this.scene.remove(this.paddle2.mesh);
+		this.field = new Field(this.scene, length, width);
+		this.paddle1 = new Paddle(this.scene, this.field, true);
+		this.paddle2 = new Paddle(this.scene, this.field, false);
 	}
 	
 	muteAudio() {
