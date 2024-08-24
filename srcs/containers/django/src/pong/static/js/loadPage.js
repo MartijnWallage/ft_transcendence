@@ -1,4 +1,4 @@
-import { updateUI, bindUserEventListeners} from './userMgmt.js';
+import { updateUI, bindUserEventListeners, handleLogout } from './userMgmt.js';
 
 
 function loadPageClosure(game) {
@@ -107,23 +107,36 @@ function bindEventListeners(game) {
 
 function bindMenuEventListeners(game){
 	// OPTION MENU
-	let optionBtn = document.getElementById('js-option-btn');
-	if (optionBtn) {
-		optionBtn.addEventListener('click', game.viewOptionMenu.bind(game));
-	}
+	document.getElementById('js-option-btn').addEventListener('click', game.viewOptionMenu.bind(game));
 
-	let endGameBtn = document.getElementById('js-end-game-btn');
-	if (endGameBtn) {
-		endGameBtn.addEventListener('click', game.endGame.bind(game));
-	}
+	document.getElementById('js-login-btn').addEventListener('click', function() {
+		game.viewOptionMenu();
+		loadPage('login_user');
+	});
 
-	let soundBtn = document.getElementById('js-audio-btn');
-	if (soundBtn) {
-		soundBtn.addEventListener('click', game.muteAudio.bind(game));
-	}
+	document.getElementById('js-logout-btn').addEventListener('click', function() {
+		game.viewOptionMenu();
+		handleLogout()
+	});
 
+	document.getElementById('js-tournament_score-btn').addEventListener('click', function() {
+		game.viewOptionMenu();
+		loadPage('tournament_score');
+	});
+
+	document.getElementById('js-audio-btn').addEventListener('click', function() {
+		game.viewOptionMenu();
+		game.muteAudio();
+	});
+	
 	document.getElementById('js-settings-btn').addEventListener('click', function() {
+		game.viewOptionMenu();
 		loadPage('settings');
+	});
+	
+	document.getElementById('js-end-game-btn').addEventListener('click', function() {
+		game.viewOptionMenu();
+		game.endGame();
 	});
 
 	document.getElementById('user-name').addEventListener('click', function() {

@@ -146,6 +146,7 @@ h1 {
 }
 
 .form-label,
+.form-group,
 .form-text,
 .btn-link {
 	color: white !important;

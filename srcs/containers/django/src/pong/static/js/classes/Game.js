@@ -119,7 +119,7 @@ class Game {
 
 		this.socket.onclose = (event) => {
 			console.log('WebSocket closed', event);
-			// this.handleReconnection();
+			this.handleDisconnection();
 		};
 
 		this.socket.onerror = (error) => {
@@ -128,7 +128,6 @@ class Game {
 
 		this.socket.onmessage = (e) => {
 			this.socket_data = JSON.parse(e.data);
-			// console.log('Received message:', this.socket_data);
 			let data = this.socket_data;
 			
 			if (data.type === 'player_role') {
@@ -136,9 +135,18 @@ class Game {
 				console.log('local role assigned to ' + data.player_role);
 			}
 			if (data.type === 'new_score') {
-				this.match.updateScore(data.player, data.score); //somehting like taht
+				const player1 = this.match.players[0];
+				const myRole = player1.online_role;
+				if (myRole === 'B') {
+					console.log('Received message:', data.score_A, '  ', data.score_B);
+					this.match.score.result = [data.score_B, data.score_A];
+					this.match.score.onlineUpdate = true;
+					textToDiv(this.match.score.result[0], `player${1}-score`);
+					textToDiv(this.match.score.result[1], `player${2}-score`);
+				}
 			}
 			if (data.type === 'player_connected') {		
+				console.log('Received message:', this.socket_data);
 				if (data.player_role !== player1.online_role) {
 					player1.oponent = new Player(this.socket_data.player);
 					console.log('Player connected:', data.player);
@@ -158,11 +166,8 @@ class Game {
 			}
 	}}
 
-	handleReconnection() {
-		setTimeout(() => {
-			console.log('Reconnecting...');
-			this.initSocket();
-		}, this.reconnectInterval);
+	handleDisconnection() {
+		console.log('!!! Connection lost !!!');
 	}
 
 	async startVsOnline() {
@@ -237,7 +242,8 @@ class Game {
 			else {
 				displayDiv('js-logout-btn');
 			}
-			displayDiv('js-end-game-btn');
+			if (this.running)
+				displayDiv('js-end-game-btn');
 			textToDiv('-', 'js-option-btn');
 			this.isOptionMenuVisible = true;
 		}
