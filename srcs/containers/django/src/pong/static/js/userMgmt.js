@@ -12,11 +12,11 @@ function bindUserEventListeners(userContent) {
     //     console.log('Event is binded to call dashboard');
 	// 	document.getElementById('user-name').addEventListener('click', () => window.loadPage('dashboard'));
 	// }
-    document.getElementById('js-logout-btn').addEventListener('click', handleLogout);
-	if (userContent) {
-        // userContent.removeEventListener('submit', handleFormSubmitWrapper);
-        userContent.addEventListener('submit', handleFormSubmitWrapper);
-    }
+    // document.getElementById('js-logout-btn').addEventListener('click', handleLogout);
+	// if (userContent) {
+    //     // userContent.removeEventListener('submit', handleFormSubmitWrapper);
+    //     userContent.addEventListener('submit', handleFormSubmitWrapper);
+    // }
 
 }
 
