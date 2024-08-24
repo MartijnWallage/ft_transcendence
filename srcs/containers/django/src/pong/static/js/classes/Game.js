@@ -264,6 +264,18 @@ class Game {
 		}
 	}
 
+	hideOptionMenu() {
+		console.log('hiding option menu');
+		notDisplayDiv('js-tournament_score-btn');
+		notDisplayDiv('js-audio-btn');
+		notDisplayDiv('js-login-btn');
+		notDisplayDiv('js-logout-btn');
+		notDisplayDiv('js-settings-btn');
+		notDisplayDiv('js-end-game-btn');
+		textToDiv('=', 'js-option-btn');
+		this.isOptionMenuVisible = false;
+	}
+
 	// Settings menu
 
 	// Functions to reset settings to default values
@@ -282,6 +294,14 @@ class Game {
 		document.getElementById('paddleSpeed').value = this.paddleSpeed * 20;
 		document.getElementById('fieldWidth').value = this.fieldWidth;
 		document.getElementById('fieldLength').value = this.fieldLength;
+		document.getElementById('aiLevel').value = this.aiLevel == 1 ? 'easy' : this.aiLevel == 2 ? 'medium' : 'hard'; 
+	}
+
+	setSettingsMenuToCurrent() {
+		document.getElementById('ballSpeed').value = this.initialSpeed * 20;
+		document.getElementById('paddleSpeed').value = this.paddle1.speed * 20;
+		document.getElementById('fieldWidth').value = this.field.geometry.parameters.depth;
+		document.getElementById('fieldLength').value = this.field.geometry.parameters.width;
 		document.getElementById('aiLevel').value = this.aiLevel == 1 ? 'easy' : this.aiLevel == 2 ? 'medium' : 'hard'; 
 	}
 

@@ -124,9 +124,10 @@ function bindMenuEventListeners(game){
 		game.muteAudio();
 	});
 	
-	document.getElementById('js-settings-btn').addEventListener('click', function() {
-		game.viewOptionMenu();
-		loadPage('settings');
+	document.getElementById('js-settings-btn').addEventListener('click', async function() {
+		game.hideOptionMenu();
+		await loadPage('settings');
+		game.setSettingsMenuToCurrent();
 	});
 	
 	document.getElementById('js-end-game-btn').addEventListener('click', function() {
