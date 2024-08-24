@@ -516,6 +516,7 @@ def user_tournaments(request):
         {
             'date': tournament.date,
             'transaction_hash': tournament.transaction_hash,
+            'id' : tournament.id,
             'matches': [
                 {
                     'player1': match.player1.name,

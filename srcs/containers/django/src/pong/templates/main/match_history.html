@@ -56,7 +56,8 @@
                             <th>Result</th>
                         </tr>
                     </thead>
-                    <tbody id="tournamentTableBody"></tbody>
+                    <tbody id="tournamentTableBody">
+                    </tbody>
                 </table>
             </div>
             <div class="card-footer text-muted text-center">
@@ -65,28 +66,34 @@
         </div>
     </div>
 </div>
-    <!-- Modal for Match Details -->
-    <!-- <div class="modal fade" id="matchDetailModal"  data-bs-backdrop="false" tabindex="-1" aria-labelledby="matchDetailModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="matchDetailModalLabel">Match Details</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+
+<div class="modal fade" id="tournamentDetailsModal"   data-bs-backdrop="false"  tabindex="-1" aria-labelledby="tournamentDetailsLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg  modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="tournamentDetailsLabel">Tournament Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <strong>Tournament Result:</strong> <span id="tournamentResult"></span>
                 </div>
-                <div class="modal-body">
-                    <h4 id="modalOpponent"></h4>
-                    <p id="modalDate"></p>
-                    <p id="modalScore" class="display-4"></p>
-                    <hr>
-                    <h5>Match Events</h5>
-                    <ul id="modalEvents" class="list-group"> -->
-                        <!-- Events will be injected here -->
-                    <!-- </ul>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                </div>
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Player 1</th>
+                            <th>Player 2</th>
+                            <th>Score</th>
+                        </tr>
+                    </thead>
+                    <tbody id="matchDetailsTableBody"></tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-success" id="registerOnBlockchainBtn">Register on Blockchain</button>
             </div>
         </div>
-    </div> -->
+    </div>
+</div>
 {% endblock %}

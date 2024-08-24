@@ -62,6 +62,42 @@ function formatTimestamp(timestamp) {
 // 	});
 // }
 
+
+function showTournamentDetails(tournamentId) {
+    console.log("showTournamentDetails called with ID:", tournamentId);
+
+    // Find the specific tournament using its ID
+    const tournament = window.tournamentsData.find(t => t.id === parseInt(tournamentId));
+    
+    if (!tournament) {
+        console.error("Tournament not found");
+        return;
+    }
+
+    const tournamentResult = tournament.matches.length > 0 && tournament.matches[0].player1_score > tournament.matches[0].player2_score ? "Win" : "Loss";
+    const resultElement = document.getElementById('tournamentResult');
+    const matchDetailsTableBody = document.getElementById('matchDetailsTableBody');
+
+    resultElement.textContent = tournamentResult;
+    
+    // Clear previous match details
+    matchDetailsTableBody.innerHTML = '';
+
+    tournament.matches.forEach(match => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${match.player1}</td>
+            <td>${match.player2}</td>
+            <td>${match.player1_score} - ${match.player2_score}</td>
+        `;
+        matchDetailsTableBody.appendChild(row);
+    });
+
+    // Show the modal
+    const modal = new bootstrap.Modal(document.getElementById('tournamentDetailsModal'));
+    modal.show();
+}
+
 async function fetchUserTournaments(username) {
     try {
         const url = '/api/user_tournaments/';
@@ -206,6 +242,9 @@ async function showTournaments() {
     // Clear existing rows
     tableBody.innerHTML = '';
 
+    // Store tournaments data in a variable
+    window.tournamentsData = tournaments;
+
     // Update the title
     tournamentTitle.textContent = 'Tournament Matches';
 
@@ -218,9 +257,11 @@ async function showTournaments() {
         const row = document.createElement('tr');
         row.setAttribute('data-bs-toggle', 'modal');
         row.setAttribute('data-bs-target', '#tournamentMatchDetailModal');
-        // row.addEventListener('click', () => {
-        //     showMatchDetails(tournament.id, 'tournament');
-        // });
+        row.setAttribute('data-tournament-id', tournament.id);
+        row.addEventListener('click', () => {
+            console.log("LOG Tournament ID:", tournament.id);
+            showTournamentDetails(tournament.id);
+        });
         row.innerHTML = `
             <th scope="row">${index + 1}</th>
             <td>${formattedDate}</td>
