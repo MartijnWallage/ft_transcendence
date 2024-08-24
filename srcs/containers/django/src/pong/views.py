@@ -514,7 +514,7 @@ def user_tournaments(request):
     # Serialize the tournaments and their match details
     tournaments_data = [
         {
-            'date': tournament.date.strftime('%Y-%m-%d %H:%M:%S'),
+            'date': tournament.date,
             'transaction_hash': tournament.transaction_hash,
             'matches': [
                 {

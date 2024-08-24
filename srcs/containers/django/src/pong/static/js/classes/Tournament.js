@@ -133,7 +133,7 @@ class Tournament {
 	
 	async createTournament() {
 		console.log('Creating tournament...');
-		const currentDate = this.getCurrentDateISO();
+		const currentDate = Date.now();
 		console.log('Current Date:', currentDate);
 	
 		try {

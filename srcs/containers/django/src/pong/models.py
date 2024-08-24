@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+import datetime
 
 class Player(models.Model):
 	name = models.CharField(max_length=100)
@@ -20,13 +21,14 @@ class Match(models.Model):
         return f"{self.player1} vs {self.player2}"
 	
 class Tournament(models.Model):
-	date = models.DateTimeField()
-	players = models.ManyToManyField(Player, related_name='tournament_players')
-	match = models.ManyToManyField(Match, related_name='tournament_matches')
-	transaction_hash = models.CharField(max_length=66, blank=True, null=True)  # Store the hash as a string
+    date = models.BigIntegerField()
+    players = models.ManyToManyField(Player, related_name='tournament_players')
+    match = models.ManyToManyField(Match, related_name='tournament_matches')
+    transaction_hash = models.CharField(max_length=66, blank=True, null=True)  # Store the hash as a string
+    
+    def __str__(self):
+        return f"Tournament ID: {self.id}"
 
-	def __str__(self):
-		return self.date
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)

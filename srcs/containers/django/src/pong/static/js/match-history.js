@@ -82,7 +82,7 @@ async function fetchUserTournaments(username) {
         if (data.error) {
             console.error(data.error);
             alert(data.error);
-            return;
+            return null;
         }
 
         console.log("Fetched tournaments:", data.tournaments);
@@ -211,8 +211,8 @@ async function showTournaments() {
 
     // Populate the table with tournament data
     tournaments.slice().reverse().forEach((tournament, index) => {
-        const formattedDate = tournament.date;
-        const number_of_matches = tournament.matches.length;
+        const formattedDate = formatTimestamp(tournament.date);
+        const number_of_players = tournament.matches.length + 1;
         const tournament_result = tournament.matches[0].player1_score > tournament.matches[0].player2_score ? "Win" : "Loss";
         const tournament_result_class = tournament_result === "Win" ? "bg-success" : "bg-danger";
         const row = document.createElement('tr');
@@ -224,7 +224,7 @@ async function showTournaments() {
         row.innerHTML = `
             <th scope="row">${index + 1}</th>
             <td>${formattedDate}</td>
-            <td>${number_of_matches}</td>
+            <td>${number_of_players}</td>
             <td><span class="badge ${tournament_result_class}">${tournament_result}</span></td>
         `;
         tableBody.appendChild(row);
