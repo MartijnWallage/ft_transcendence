@@ -74,9 +74,9 @@ function bindEventListeners(game) {
 	
 	var blockchainScore = document.getElementById('js-register-blockchain');
 	if (blockchainScore) {
-		blockchainScore.addEventListener('click', game.executeBlockchain.bind(game));
+        blockchainScore.addEventListener('click', game.executeBlockchain.bind(game));
 	}
-
+        
 	const saveSettings = document.getElementById('saveSettings');
 	if (saveSettings) {
 		saveSettings.addEventListener('click', game.saveSettings.bind(game));
@@ -84,13 +84,8 @@ function bindEventListeners(game) {
 
 	const resetDefaults = document.getElementById('resetDefaults');
 	if (resetDefaults) {
-		resetDefaults.addEventListener('click', game.resetToDefaults.bind(game));
+		resetDefaults.addEventListener('click', game.setSettingsMenuToDefault.bind(game));
 	}
-	
-/* 	const closeSettings = document.getElementById('closeSettingsMenu');
-	if (closeSettings) {
-		closeSettings.addEventListener('click', loadPage('game_mode'));
-	} */
 
 	// BETWEEN MATCH
 
@@ -146,6 +141,7 @@ function bindMenuEventListeners(game){
 	document.getElementById('user-avatar').addEventListener('click', function() {
 		loadPage('dashboard');
 	});
+
 }
 
 function fadeIn(element) {

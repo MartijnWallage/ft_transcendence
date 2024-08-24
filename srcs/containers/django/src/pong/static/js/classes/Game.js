@@ -46,6 +46,14 @@ class Game {
 		this.socket = null;
 		this.socket_data = null;
 
+        // Default Settings
+        this.ballSpeed = 0.2;
+        this.paddleSpeed = 0.15;
+        this.fieldWidth = 12;
+        this.fieldLength = 16;
+        this.aiLevel = 2;
+
+
 		// this.socket = new WebSocket('wss://' + window.location.host + '/ws/pong/');
 
 		console.log('Game class created');
@@ -163,6 +171,10 @@ class Game {
 	async startVsOnline() {
 		this.mode = 'vsOnline';
 		this.audio.playSound(this.audio.select_2);
+    
+        // set settings to default
+        this.setSettingsToDefault();
+    
 		const player1 = new Player(this.loggedUser);
 		var player2 = null;
 		this.initSocket(player1);
@@ -225,7 +237,6 @@ class Game {
 			console.log('displaying option menu');
 			displayDiv('js-tournament_score-btn');
 			displayDiv('js-audio-btn');
-			displayDiv('js-settings-btn');
 			if (this.loggedUser === 'Guest') {
 				displayDiv('js-login-btn');
 			}
@@ -234,6 +245,9 @@ class Game {
 			}
 			if (this.running)
 				displayDiv('js-end-game-btn');
+            else {
+                displayDiv('js-settings-btn');
+            }
 			textToDiv('-', 'js-option-btn');
 			this.isOptionMenuVisible = true;
 		}
@@ -252,13 +266,23 @@ class Game {
 
 	// Settings menu
 
-	// Function to reset settings to default values
-	resetToDefaults() {
-		document.getElementById('ballSpeed').value = 4;
-		document.getElementById('paddleSpeed').value = 3;
-		document.getElementById('fieldWidth').value = 12;
-		document.getElementById('fieldLength').value = 16;
-		document.getElementById('aiLevel').value = 'medium';
+	// Functions to reset settings to default values
+    setSettingsToDefault() {
+        this.updateField(fieldLength, fieldWidth);
+        this.game.ball.initialSpeed = this.ballSpeed;
+        this.game.paddle1.speed = this.paddleSpeed;
+        this.game.paddle2.speed = this.paddleSpeed;
+        const fieldWidth = this.fieldWidth;
+        const fieldLength = this.fieldLength;
+        this.game.aiLevel = this.aiLevel;
+    }
+
+	setSettingsMenuToDefault() {
+		document.getElementById('ballSpeed').value = this.ballSpeed * 20;
+		document.getElementById('paddleSpeed').value = this.paddleSpeed * 20;
+		document.getElementById('fieldWidth').value = this.fieldWidth;
+		document.getElementById('fieldLength').value = this.fieldLength;
+		document.getElementById('aiLevel').value = this.aiLevel == 1 ? 'easy' : this.aiLevel == 2 ? 'medium' : 'hard'; 
 	}
 
 	saveSettings() {
