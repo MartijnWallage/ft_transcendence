@@ -206,6 +206,7 @@ function showTournamentDetails(tournamentId) {
     const tournamentResult = tournament.matches.length > 0 && tournament.matches[0].player1_score > tournament.matches[0].player2_score ? "Win" : "Loss";
     const resultElement = document.getElementById('tournamentResult');
     const matchDetailsTableBody = document.getElementById('matchDetailsTableBody');
+    const transactionInfoElement = document.getElementById('transaction-info');
 
     resultElement.textContent = tournamentResult;
     
@@ -221,6 +222,16 @@ function showTournamentDetails(tournamentId) {
         `;
         matchDetailsTableBody.appendChild(row);
     });
+
+    // Show transaction info
+    if (tournament.transaction_hash) {
+        const etherscanUrl = `https://sepolia.etherscan.io/tx/${tournament.transaction_hash}`;
+        transactionInfoElement.innerHTML = 
+            `Transaction Hash: <a href="${etherscanUrl}" target="_blank">${tournament.transaction_hash}</a>`;
+    } else {
+        transactionInfoElement.innerHTML = 
+            'Nothing has been registered on the blockchain yet.';
+    }
 
     // Show the modal
     const modal = new bootstrap.Modal(document.getElementById('tournamentDetailsModal'));
