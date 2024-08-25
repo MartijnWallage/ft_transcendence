@@ -47,7 +47,7 @@ services:
     #For Cloud
     ports:
       - "8443:443"   # For HTTPS
-#      - "80:80"   # For HTTP redirection
+#      - "8080:80"   # For HTTP redirection 
     restart: on-failure #always
     depends_on:
       - django

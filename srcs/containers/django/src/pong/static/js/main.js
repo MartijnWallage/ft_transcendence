@@ -42,7 +42,16 @@ function main() {
 				sessionStorage.setItem('visitedHash', 'true');
 			}
 		}
+		// const savedState = JSON.parse(localStorage.getItem("currentPageState"));
+		// if (savedState) {
+		// 	// Restore the application state here based on savedState.page
+		// 	navigateToPage(savedState.page);
+		// }
 	});
+
+	// function navigateToPage(page) {
+	// 	window.loadPage(page);
+	// }
 
 	bindMenuEventListeners(this_game);
 	window.addEventListener('resize', () => this_game.onWindowResize());

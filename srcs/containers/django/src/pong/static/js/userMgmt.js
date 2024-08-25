@@ -299,6 +299,7 @@ function handleFormSubmit(form, url) {
             if (form.id === 'login-form' || form.id === 'register-form') {
                 isUserLoggedIn = true;
                 const nextPage = checkForNextPage() || 'game_mode';
+                console.log("Next page:", nextPage);
                 window.loadPage(nextPage);
             } else if (form.id === 'update-profile-form' || form.id === 'update-password-form') {
                 window.loadPage('dashboard');

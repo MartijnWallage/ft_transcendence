@@ -23,6 +23,8 @@ function loadPageClosure(game) {
 			mainContent.innerHTML = data.content;
 			console.log('LOG: Page content loaded:', page);
 			history.pushState({ page: page }, "", "#" + page);
+			// localStorage.setItem("currentPageState", JSON.stringify({ page: page }));
+
 			
 			const updatedUnderTitle = document.getElementById('under-title');
 			if (updatedUnderTitle) {
