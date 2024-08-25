@@ -237,7 +237,7 @@ def register(request):
     if serializer.is_valid():
         user = serializer.save()
         # Create a Player instance associated with the new User
-        # Player.objects.create(name=user.username, user_profile=user)
+        Player.objects.create(name=user.username, user_profile=user)
         print("user created: ", user)
         django_login(request, user)
         return JsonResponse({'status': 'success'}, status=201)
@@ -641,7 +641,12 @@ def get_user_matches(username, mode):
         }
     except Player.DoesNotExist:
         # Handle the case where the player does not exist
-        return None
+        return {
+            'matches': [],
+            'total_matches': 0,
+            'won_matches': 0,
+            'lost_matches': 0
+        }
 
 @api_view(['POST'])
 def user_matches(request):
@@ -653,10 +658,8 @@ def user_matches(request):
     if not username or not mode:
         return Response({'error': 'Username and mode are required.'}, status=400)
     
-    matches = get_user_matches(username, mode)
-    
-    if matches is None:
-        matches = []
+    result = get_user_matches(username, mode)
+    matches = result.get('matches', [])
     
     # Serialize the matches if you want to return them in a JSON response
     matches_data = [

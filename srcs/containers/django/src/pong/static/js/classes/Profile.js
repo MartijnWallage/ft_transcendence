@@ -40,9 +40,18 @@ class Profile{
 	}
 
 	bindUserEventListeners(userContent, page) {
-		
 		if (page === 'dashboard') {
 			console.log('Event is binded to call dashboard');
+			var matchHistory = document.getElementById('match-history-btn')
+			matchHistory.style.display = 'block';
+			// if (matchHistory) {
+			matchHistory.addEventListener('click', () => {
+				loadPage('match_history').then(() => {
+					// Here, 'this' refers to the Profile instance because of the arrow function
+					this.game.stats.showMatches('UvU');
+				});
+			});
+		// }
 			this.updateSuggestedFriends();
 			this.updateFriendList();
 			this.updateFriendRequestList();

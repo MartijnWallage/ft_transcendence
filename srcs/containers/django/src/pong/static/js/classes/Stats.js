@@ -120,6 +120,12 @@ class Stats {
             } else if (mode === 'solo') {
                 matchTitle.textContent = 'Player vs AI Matches';
             }
+
+            if (matches.length === 0) {
+                // Show a message when there are no matches
+                tableBody.innerHTML = '<tr><td colspan="5">No matches found.</td></tr>';
+                return;
+            }
         
             matches.slice().reverse().forEach((match, index) => {
                 const formattedDate = this.formatTimestamp(match.timestamp);
@@ -153,7 +159,13 @@ class Stats {
         
             // Update the title
             tournamentTitle.textContent = 'Tournament Matches';
-        
+
+            // if (tournaments.length === 0) {
+            //     // Show a message when there are no matches
+            //     tableBody.innerHTML = '<tr><td colspan="5">No Tournaments found.</td></tr>';
+            //     return;
+            // }
+
             tournaments.slice().reverse().forEach((tournament, index) => {
                 const formattedDate = this.formatTimestamp(tournament.date);
                 const number_of_players = tournament.matches.length + 1;

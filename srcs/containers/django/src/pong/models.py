@@ -28,7 +28,9 @@ class Player(models.Model):
     user_profile = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile', null=True, blank=True)
 
     def __str__(self):
-        return self.user_profile.user.username if self.user_profile else self.name
+        return self.user_profile.username if self.user_profile else self.name
+        # return self.user_profile.user.username if self.user_profile else self.name
+    
 
 class Match(models.Model):
     player1 = models.ForeignKey(Player, on_delete=models.CASCADE, related_name='player1_matches')
