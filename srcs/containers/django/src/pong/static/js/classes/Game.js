@@ -12,6 +12,7 @@ import { Blockchain } from './Blockchain.js';
 import { delay, displayDiv, notDisplayDiv, textToDiv } from '../utils.js';
 import { getCookie } from '../userMgmt.js';
 import { Stats } from './Stats.js';
+import { Profile } from './Profile.js';
 
 class Game {
 	constructor() {
@@ -54,9 +55,10 @@ class Game {
 		this.boundCreateAudioContext = this.createAudioContext.bind(this);
 		document.addEventListener('click', this.boundCreateAudioContext);
 
-		// Statistics and match history
+		// Statistics and user profile
 
 		this.stats = new Stats(this);
+		this.userProfile = new Profile(this);
 }
 
 	updateField(length, width) {

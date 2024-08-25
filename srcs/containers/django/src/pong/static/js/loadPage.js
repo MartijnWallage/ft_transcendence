@@ -30,9 +30,9 @@ function loadPageClosure(game) {
 			if (updatedUnderTitle) {
 				await fadeIn(updatedUnderTitle);
 			}
-			await updateUI(game);
+			await game.userProfile.updateUI(game);
 			console.log('Page UI updated:', page);
-			bindUserEventListeners(mainContent, page);
+			game.userProfile.bindUserEventListeners(mainContent, page);
 			bindEventListeners(game);
 			if (page === 'match_history') {
 				// document.getElementById('lastModified').textContent = new Date(document.lastModified).toLocaleString();
@@ -45,31 +45,6 @@ function loadPageClosure(game) {
 		}
 	};
 }
-
-const IdleTimerModule = (() => {
-	let idleTime = 0;
-	const maxIdleTime = 5 * 60 * 1000;
-
-	const resetIdleTimer = () => {
-		clearTimeout(idleTime);
-		startIdleTimer();
-	};
-
-	const startIdleTimer = () => {
-		idleTime = setTimeout(handleLogout, maxIdleTime);
-	};
-
-	return {
-		init: () => {
-			window.onload = resetIdleTimer;
-			document.onmousemove = resetIdleTimer;
-			document.onkeydown = resetIdleTimer;
-			document.onkeyup = resetIdleTimer;
-			document.onscroll = resetIdleTimer;
-			startIdleTimer();
-		}
-	};
-})();
 
 function bindEventListeners(game) {
 
@@ -236,4 +211,4 @@ function fadeOut(element) {
 		}, { once: true });
 	});
 }
-export { loadPageClosure, updateUI, IdleTimerModule, bindMenuEventListeners };
+export { loadPageClosure, bindMenuEventListeners };
