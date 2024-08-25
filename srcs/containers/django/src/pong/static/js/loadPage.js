@@ -32,7 +32,7 @@ function loadPageClosure(game) {
 			}
 			await updateUI(game);
 			console.log('Page UI updated:', page);
-			bindUserEventListeners(mainContent, page);
+			bindUserEventListeners(mainContent, page, game);
 			bindEventListeners(game);
 			if (page === 'match_history') {
 				// document.getElementById('lastModified').textContent = new Date(document.lastModified).toLocaleString();
@@ -164,17 +164,17 @@ function bindMenuEventListeners(game){
 	});
 
 
-	// Match History
+	// // Match History
 
-	var matchHistory = document.getElementById('match-history-btn');
-	if (matchHistory) {
-		matchHistory.addEventListener('click', function() {
-			loadPage('match_history').then(() => {
-				// Now that the page content has been loaded, call showMatches directly
-				game.stats.showMatches('UvU');
-			});
-		});
-	}
+	// var matchHistory = document.getElementById('match-history-btn');
+	// if (matchHistory) {
+	// 	matchHistory.addEventListener('click', function() {
+	// 		loadPage('match_history').then(() => {
+	// 			// Now that the page content has been loaded, call showMatches directly
+	// 			game.stats.showMatches('UvU');
+	// 		});
+	// 	});
+	// }
 
 }
 

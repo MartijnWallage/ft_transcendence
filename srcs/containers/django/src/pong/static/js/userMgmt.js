@@ -1,10 +1,20 @@
 let isUserLoggedIn = false;
 
 
-function bindUserEventListeners(userContent, page) {
+function bindUserEventListeners(userContent, page, game) {
 	
     if (page === 'dashboard') {
         console.log('Event is binded to call dashboard');
+        var matchHistory = document.getElementById('match-history-btn')
+        matchHistory.style.display = 'block';
+        // if (matchHistory) {
+        matchHistory.addEventListener('click', function() {
+            loadPage('match_history').then(() => {
+                // Now that the page content has been loaded, call showMatches directly
+                game.stats.showMatches('UvU');
+            });
+        });
+    // }
         updateSuggestedFriends();
         updateFriendList();
         updateFriendRequestList();
