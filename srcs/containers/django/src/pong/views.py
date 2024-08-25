@@ -23,7 +23,7 @@ from django.views.decorators.csrf import csrf_exempt
 from .serializers import RegisterSerializer, UpdateUserSerializer, ChangePasswordSerializer, FriendShipSerializer, UserProfileSerializer
 from .models import Player, Tournament, Match, UserProfile, Friendship
 import json
-from django.db.models import Max, Q
+from django.db.models import Max, Q, F
 from rest_framework.response import Response
 
 
@@ -173,9 +173,29 @@ def settings_view(request):
 
 @api_view(['GET'])
 def dashboard_view(request):
+    username_to_check = request.user.username
+    # if not username:
+    #     return JsonResponse({"status": "error", "message": "D Username is required"}, status=400)
+    username = User.objects.get(username=username_to_check).username
+    matches = get_user_matches(username, None)
+    if matches is None:
+        return JsonResponse({"status": "error", "message": "D Player not found"}, status=404)
+
+    total_matches = matches['total_matches']
+    won_matches = matches['won_matches']
+    lost_matches = matches['lost_matches']
+
+    # Pass statistics to the template
     data = {
-        'content': render_to_string("partials/dashboard.html", request=request)
+        'content': render_to_string("partials/dashboard.html", {
+            'total_matches': total_matches,
+            'won_matches': won_matches,
+            'lost_matches': lost_matches
+        }, request=request)
     }
+    # data = {
+    #     'content': render_to_string("partials/dashboard.html", request=request)
+    # }
     return JsonResponse(data)
 
 @api_view(['GET'])
@@ -588,12 +608,37 @@ def get_user_matches(username, mode):
         print(Q(player1=player))
         print(Q(player2=player))
         print(Q(mode=mode))
-        matches = Match.objects.filter(
-            (Q(player1=player) | Q(player2=player)) & Q(mode=mode)
-        )
+        if mode is None:
+            matches = Match.objects.filter(
+                (Q(player1=player) | Q(player2=player))
+            )
+        else:
+            matches = Match.objects.filter(
+                (Q(player1=player) | Q(player2=player)) & Q(mode=mode)
+            )
         print("matches: ", matches)
-        return matches
-    
+
+        # matches = Match.objects.filter(
+        #     (Q(player1=player) | Q(player2=player)) & Q(mode=mode)
+        # )
+        # print("matches: ", matches)
+        # return matches
+        total_matches = matches.count()
+
+        # Calculate matches won and lost by the player
+        won_matches = matches.filter(
+            (Q(player1=player) & Q(player1_score__gt=F('player2_score'))) |
+            (Q(player2=player) & Q(player2_score__gt=F('player1_score')))
+        ).count()
+
+        lost_matches = total_matches - won_matches
+
+        return {
+            'matches': matches,
+            'total_matches': total_matches,
+            'won_matches': won_matches,
+            'lost_matches': lost_matches
+        }
     except Player.DoesNotExist:
         # Handle the case where the player does not exist
         return None

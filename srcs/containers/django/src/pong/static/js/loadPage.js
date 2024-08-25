@@ -139,7 +139,7 @@ function bindMenuEventListeners(game){
 	});
 
 
-	// Match History
+	// // Match History
 
 	var matchHistory = document.getElementById('match-history-btn');
 	if (matchHistory) {
