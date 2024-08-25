@@ -232,11 +232,6 @@ function showTournamentDetails(tournamentId, loggedInUser) {
             registerButton.classList.add('btn-success');
             registerButton.textContent = 'Register on Blockchain';
             registerButton.disabled = false;
-
-            // Add click event listener for registration
-            registerButton.addEventListener('click', () => {
-                registerMatches(tournamentId);
-            });
         }
 
     // Show the modal

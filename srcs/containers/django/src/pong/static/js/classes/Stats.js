@@ -183,6 +183,7 @@ class Stats {
             return "Loss";
         }
         
+
         showTournamentDetails(tournamentId, loggedInUser) {
             console.log("showTournamentDetails called with ID:", tournamentId);
         
@@ -198,37 +199,48 @@ class Stats {
             const resultElement = document.getElementById('tournamentResult');
             const matchDetailsTableBody = document.getElementById('matchDetailsTableBody');
             const transactionInfoElement = document.getElementById('transaction-info');
-        
+            const registerButton = document.getElementById('registerOnBlockchainBtn');
+            
             resultElement.textContent = tournamentResult;
             
             // Clear previous match details
             matchDetailsTableBody.innerHTML = '';
-        
+            
             tournament.matches.forEach(match => {
                 const row = document.createElement('tr');
                 row.innerHTML = `
                     <td>${match.player1}</td>
                     <td>${match.player2}</td>
                     <td>${match.player1_score} - ${match.player2_score}</td>
-                `;
-                matchDetailsTableBody.appendChild(row);
-            });
-        
-            // Show transaction info
-            if (tournament.transaction_hash) {
-                const etherscanUrl = `https://sepolia.etherscan.io/tx/${tournament.transaction_hash}`;
-                transactionInfoElement.innerHTML = 
-                    `Transaction Hash: <a href="${etherscanUrl}" target="_blank">${tournament.transaction_hash}</a>`;
-            } else {
-                transactionInfoElement.innerHTML = 
-                    'Nothing has been registered on the blockchain yet.';
-            }
+                    `;
+                    matchDetailsTableBody.appendChild(row);
+                });
+                
+                // Show transaction info and update button state
+                if (tournament.transaction_hash) {
+                    const etherscanUrl = `https://sepolia.etherscan.io/tx/${tournament.transaction_hash}`;
+                    transactionInfoElement.innerHTML = 
+                        `Transaction Hash: <a href="${etherscanUrl}" target="_blank">${tournament.transaction_hash}</a>`;
+                    
+                    // Disable the "Register on Blockchain" button if a transaction hash exists
+                    registerButton.classList.remove('btn-success');
+                    registerButton.classList.add('btn-secondary');
+                    registerButton.textContent = 'Registered';
+                    registerButton.disabled = true;
+                 } else {
+                    // If no transaction hash, ensure the button is enabled for registration
+                    transactionInfoElement.innerHTML = 'Nothing has been registered on the blockchain yet.';
+                    
+                    registerButton.classList.remove('btn-secondary');
+                    registerButton.classList.add('btn-success');
+                    registerButton.textContent = 'Register on Blockchain';
+                    registerButton.disabled = false;
+                }
         
             // Show the modal
             const modal = new bootstrap.Modal(document.getElementById('tournamentDetailsModal'));
             modal.show();
         
-            const registerButton = document.getElementById('registerOnBlockchainBtn');
             if (registerButton) {
                 registerButton.addEventListener('click', () => {
                     // this.audio.playSound(this.audio.select_1);
