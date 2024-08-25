@@ -7,6 +7,7 @@ urlpatterns = [
 	path('api/dashboard/', views.dashboard_view, name='api_dashboard'),
 
 	path('api/game_mode/', views.game_mode_view, name='api_game_mode'),
+	path('api/settings/', views.settings_view, name='api_settings'),
 
 	path('api/tournament/', views.tournament_view, name='api_tournament'),
 

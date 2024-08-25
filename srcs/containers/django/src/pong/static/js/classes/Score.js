@@ -5,7 +5,7 @@ class Score {
 		this.game = game;
 		this.players = players;
 		console.log('In Score: Players:', this.players);
-		this.scoreToWin = game.scoreToWin;
+		this.scoreToWin = this.game.scoreToWin;
 		this.result = [0, 0];
 		this.winner = null;
 	}
@@ -29,6 +29,9 @@ class Score {
 		textToDiv(this.result[scorer], `player${scorer + 1}-score`);
 		
 		ball.serveBall();
+		if (this.game.match.players[1].isAI()) {
+			this.game.match.players[1].ai.refreshView();
+		}
 		
 		if (this.result[0] === this.scoreToWin)
 			this.winner = 0;
@@ -38,6 +41,8 @@ class Score {
 			return;
 		
 		this.game.running = false;
+		if (this.game.socket)
+			this.game.socket.close();
 
 		ball.resetBall();
 		await this.displayWinMessage(`${this.players[this.winner].name}`);

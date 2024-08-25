@@ -8,8 +8,13 @@ class Match {
 		this.running = false;
 		this.score = new Score(game, players);
 		this.timestamp = null;
+		this.timeToSend = true;
+		this.frameCount = 0;
 		game.readyForNextMatch = false;
 
+		// Initialize WebSocket connection
+		this.socket = game.socket;
+		
 		//key listener
 		this.keys = {};
 		document.addEventListener("keydown", (event) => { 
@@ -42,7 +47,7 @@ class Match {
 		console.log('Match instance created');
 	}
 
-	async play() {
+	async play(game) {
 		const player1Name = this.players[0].name;
 		const player2Name = this.players[1].name;
 
@@ -60,7 +65,7 @@ class Match {
 		textToDiv('0', 'player2-score');
 		textToDiv(player2Name, 'player2-name');
 
-		await waitForEnter();
+		await waitForEnter(game);
 		this.game.running = true;
 		displayDiv('game-scores');
 
@@ -77,38 +82,79 @@ class Match {
 		ball.serveBall();
 	}
 
-	update() {
-		const field = this.game.field;
-		const paddle1 = this.game.paddle1;
-		const paddle2 = this.game.paddle2;
-		const ball = this.game.ball;
-		const cam1 = this.game.cam1;
-		const cam2 = this.game.cam2;
-	
+	update(game) {
+		const field = game.field;
+		const paddle1 = game.paddle1;
+		const paddle2 = game.paddle2;
+		const ball = game.ball;
+		const cam1 = game.cam1;
+		const cam2 = game.cam2;
+		const socket = game.socket;
+
+		if (game.mode === 'vsOnline') {
+			if (this.timeToSend) {
+				this.sendGameState(socket);
+				this.timeToSend = false;
+			}
+			else {
+				this.timeToSend = true;
+			}
+		}
+
 		// move left paddle
 		let direction = this.keys['a'] ? -1 : this.keys['d'] ? 1 : 0;
 		paddle1.movePaddle(direction, field);
-	
+		
 		// move right paddle
-		direction = this.players[1].ai ? this.players[1].ai.movePaddle(paddle2) :
-			this.keys['ArrowRight'] ? -1 :
-			this.keys['ArrowLeft'] ? 1 :
-			0;
-		paddle2.movePaddle(direction, field);
-	
+		if (game.mode !==  'vsOnline') {
+			direction = this.players[1].ai ? this.players[1].ai.movePaddle(paddle2) :
+				this.keys['ArrowRight'] ? -1 :
+				this.keys['ArrowLeft'] ? 1 :
+				0;
+				paddle2.movePaddle(direction, field);
+		}
 		// move and bounce ball
 		ball.animateBall();
 		ball.tryPaddleCollision(paddle1, paddle2);
 		ball.tryCourtCollision(field);
-	
+		
 		this.score.update();
 
-		if (this.players[1].ai) {
-			cam1.renderSingleView(this.game);
+		if (this.players[1].ai || game.mode === 'vsOnline') {
+			cam1.renderSingleView(game);
 		} else {
-			cam1.renderSplitView(this.game, 0);
-			cam2.renderSplitView(this.game, 1);
+			cam1.renderSplitView(game, 0);
+			cam2.renderSplitView(game, 1);
 			displayDiv('vertical-line');
+		}
+	}
+	
+	sendGameState(socket) {
+		if (socket.readyState === WebSocket.OPEN) {
+			// Construct the game state data
+			const player1 = this.game.match.players[0]; // Assuming player1 is always the logged-in user
+			const myRole = player1.online_role;
+			let gameState;
+			if (myRole === 'A') {
+				gameState = {
+					type: 'game_update',
+					paddle_A: this.game.paddle1.mesh.position.z,
+					ball_x: this.game.ball.mesh.position.x, // Assuming getPosition() returns {x, z}
+					ball_z: this.game.ball.mesh.position.z,
+				};
+			}
+			else {
+				gameState = {
+					type: 'game_update',
+					paddle_B: this.game.paddle1.mesh.position.z,
+				};
+
+			}
+
+			// Send the game state to the server
+			socket.send(JSON.stringify(gameState));
+		} else {
+			console.error('WebSocket is not open. Ready state:', socket.readyState);
 		}
 	}
 }

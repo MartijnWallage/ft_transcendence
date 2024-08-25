@@ -38,7 +38,7 @@ class Tournament {
 			let currentPlayers = [this.players[0], this.players[1]];
 			for (let index = 1; index < this.players.length; index++) {
 				game.match = new Match(game, currentPlayers);
-				await game.match.play();
+				await game.match.play(game);
 				while (game.match.score.winner === null) {
 					await new Promise(resolve => setTimeout(resolve, 100));
 				}

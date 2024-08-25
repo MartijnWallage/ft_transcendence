@@ -2,15 +2,10 @@ import { getCookie } from './userMgmt.js';
 import { Blockchain } from './classes/Blockchain.js';
 
 function formatTimestamp(timestamp) {
-    // Create a new Date object from the timestamp
     const date = new Date(timestamp);
-    
-    // Get the year, month, and day
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-based, so add 1
     const day = String(date.getDate()).padStart(2, '0');
-
-    // Get the hours, minutes, and seconds
     const hours = String(date.getHours()).padStart(2, '0');
     const minutes = String(date.getMinutes()).padStart(2, '0');
     const seconds = String(date.getSeconds()).padStart(2, '0');
@@ -55,7 +50,6 @@ async function fetchUserTournaments(username) {
 
 async function fetchUserMatches(username, mode) {
     try {
-        // Construct the URL for the request
         const url = `/api/user_matches/`;
         
         // Make the GET request to the Django API
@@ -65,32 +59,28 @@ async function fetchUserMatches(username, mode) {
                 'Content-Type': 'application/json',
 				'X-CSRFToken': getCookie('csrftoken'),
             },
-            body: JSON.stringify({ username, mode }) // Pass the username and mode in the body
+            body: JSON.stringify({ username, mode })
         });
 
-        // Check if the response is successful
         if (!response.ok) {
             throw new Error(`Error fetching matches: ${response.statusText}`);
         }
 
-        // Parse the JSON response
         const data = await response.json();
         
-        // Check if there's an error in the response
         if (data.error) {
             console.error(data.error);
-            alert(data.error); // Or handle the error as you prefer
+            alert(data.error);
             return;
         }
 
-        // Log the fetched matches data to the console
         console.log("Fetched matches:", data.matches);
 
 		return data.matches;
 
     } catch (error) {
         console.error('Fetch error:', error);
-		return null; // Return null if there's an error
+		return null;
     }
 }
 
@@ -106,7 +96,7 @@ async function fetchLoggedInUser() {
 		return username;
     } catch (error) {
         console.error('Error fetching logged-in user:', error);
-		return null; // Return null if there's an error
+		return null;
     }
 }
 
@@ -117,29 +107,21 @@ async function showMatches(mode) {
 	const matchTitle = document.getElementById('matchTitle');
 	const username = await fetchLoggedInUser();
 	const matches = await fetchUserMatches(username, mode);
-	// const matches = matchData[mode];
 
 	// Clear existing rows
 	tableBody.innerHTML = '';
 
-	// Update the title
 	if (mode === 'UvU') {
 		matchTitle.textContent = '1 vs 1 Matches';
 	} else if (mode === 'solo') {
 		matchTitle.textContent = 'Player vs AI Matches';
     }
 
-	// Populate the table with the selected mode's matches
 	matches.slice().reverse().forEach((match, index) => {
 		const formattedDate = formatTimestamp(match.timestamp);
 		const row = document.createElement('tr');
         const matchresult = match.player1_score > match.player2_score ? "Win" : "Loss";
         const matchresultclass = matchresult === "Win" ? "bg-success" : "bg-danger";
-		// row.setAttribute('data-bs-toggle', 'modal');
-		// row.setAttribute('data-bs-target', '#matchDetailModal');
-        // row.addEventListener('click', () => {
-        //     showMatchDetails(match.id, mode);
-        // });
 		row.innerHTML = `
 			<th scope="row">${index + 1}</th>
 			<td>${formattedDate}</td>
@@ -168,11 +150,10 @@ async function showTournaments() {
     // Update the title
     tournamentTitle.textContent = 'Tournament Matches';
 
-    // Populate the table with tournament data
     tournaments.slice().reverse().forEach((tournament, index) => {
         const formattedDate = formatTimestamp(tournament.date);
         const number_of_players = tournament.matches.length + 1;
-        const tournament_result = tournament.matches[0].player1_score > tournament.matches[0].player2_score ? "Win" : "Loss";
+        const tournament_result = determineTournamentResult(tournament, username);
         const tournament_result_class = tournament_result === "Win" ? "bg-success" : "bg-danger";
         const row = document.createElement('tr');
         row.setAttribute('data-bs-toggle', 'modal');
@@ -180,7 +161,7 @@ async function showTournaments() {
         row.setAttribute('data-tournament-id', tournament.id);
         row.addEventListener('click', () => {
             console.log("LOG Tournament ID:", tournament.id);
-            showTournamentDetails(tournament.id);
+            showTournamentDetails(tournament.id, username);
         });
         row.innerHTML = `
             <th scope="row">${index + 1}</th>
@@ -192,7 +173,15 @@ async function showTournaments() {
     });
 }
 
-function showTournamentDetails(tournamentId) {
+function determineTournamentResult(tournament, loggedInUser) {
+    const lastMatch = tournament.matches[tournament.matches.length - 1];
+    if (lastMatch.player1 === loggedInUser || lastMatch.player2 === loggedInUser) {
+        return lastMatch.player1_score > lastMatch.player2_score ? "Win" : "Loss";
+    }
+    return "Loss";
+}
+
+function showTournamentDetails(tournamentId, loggedInUser) {
     console.log("showTournamentDetails called with ID:", tournamentId);
 
     // Find the specific tournament using its ID
@@ -203,41 +192,57 @@ function showTournamentDetails(tournamentId) {
         return;
     }
 
-    const tournamentResult = tournament.matches.length > 0 && tournament.matches[0].player1_score > tournament.matches[0].player2_score ? "Win" : "Loss";
+    const tournamentResult = determineTournamentResult(tournament, loggedInUser);
     const resultElement = document.getElementById('tournamentResult');
     const matchDetailsTableBody = document.getElementById('matchDetailsTableBody');
     const transactionInfoElement = document.getElementById('transaction-info');
-
+    const registerButton = document.getElementById('registerOnBlockchainBtn');
+    
     resultElement.textContent = tournamentResult;
     
     // Clear previous match details
     matchDetailsTableBody.innerHTML = '';
-
+    
     tournament.matches.forEach(match => {
         const row = document.createElement('tr');
         row.innerHTML = `
             <td>${match.player1}</td>
             <td>${match.player2}</td>
             <td>${match.player1_score} - ${match.player2_score}</td>
-        `;
-        matchDetailsTableBody.appendChild(row);
-    });
+            `;
+            matchDetailsTableBody.appendChild(row);
+        });
+        
+        // Show transaction info and update button state
+        if (tournament.transaction_hash) {
+            const etherscanUrl = `https://sepolia.etherscan.io/tx/${tournament.transaction_hash}`;
+            transactionInfoElement.innerHTML = 
+                `Transaction Hash: <a href="${etherscanUrl}" target="_blank">${tournament.transaction_hash}</a>`;
+            
+            // Disable the "Register on Blockchain" button if a transaction hash exists
+            registerButton.classList.remove('btn-success');
+            registerButton.classList.add('btn-secondary');
+            registerButton.textContent = 'Registered';
+            registerButton.disabled = true;
+         } else {
+            // If no transaction hash, ensure the button is enabled for registration
+            transactionInfoElement.innerHTML = 'Nothing has been registered on the blockchain yet.';
+            
+            registerButton.classList.remove('btn-secondary');
+            registerButton.classList.add('btn-success');
+            registerButton.textContent = 'Register on Blockchain';
+            registerButton.disabled = false;
 
-    // Show transaction info
-    if (tournament.transaction_hash) {
-        const etherscanUrl = `https://sepolia.etherscan.io/tx/${tournament.transaction_hash}`;
-        transactionInfoElement.innerHTML = 
-            `Transaction Hash: <a href="${etherscanUrl}" target="_blank">${tournament.transaction_hash}</a>`;
-    } else {
-        transactionInfoElement.innerHTML = 
-            'Nothing has been registered on the blockchain yet.';
-    }
+            // Add click event listener for registration
+            registerButton.addEventListener('click', () => {
+                registerMatches(tournamentId);
+            });
+        }
 
     // Show the modal
     const modal = new bootstrap.Modal(document.getElementById('tournamentDetailsModal'));
     modal.show();
 
-    const registerButton = document.getElementById('registerOnBlockchainBtn');
     if (registerButton) {
         registerButton.addEventListener('click', () => {
             // this.audio.playSound(this.audio.select_1);

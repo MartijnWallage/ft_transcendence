@@ -52,7 +52,7 @@ function main() {
 		if (game.running === false) {
 			game.cam1.renderMenuView(game);
 		} else {
-			game.match.update();
+			game.match.update(game);
 		}
 		requestAnimationFrame(animate.bind(null, game));
 		}

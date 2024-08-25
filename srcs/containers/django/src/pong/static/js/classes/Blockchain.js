@@ -10,6 +10,14 @@ class Blockchain {
 	async registerMatches() {
 		console.log('Tournament ID:', this.tournamentId);
 	
+		const registerButton = document.getElementById('registerOnBlockchainBtn');
+    
+		// Immediately disable the button and change its appearance to indicate processing
+		registerButton.classList.remove('btn-success');
+		registerButton.classList.add('btn-secondary');
+		registerButton.textContent = 'Registering...';
+		registerButton.disabled = true;
+
 		try {
 			// Send tournament ID to the server
 			const response = await fetch('/api/register_matches/', {
@@ -29,35 +37,34 @@ class Blockchain {
 			console.log('Server response:', result);
 	
 			if (result.success) {
-				const txHash = result.tx_hash;
-				const etherscanUrl = `https://sepolia.etherscan.io/tx/${txHash}`;
-				alert(`Matches registered successfully! Transaction Hash: ${txHash}`);
-	
-				document.getElementById('transaction-info').innerHTML = 
-					`Transaction Hash: <a href="${etherscanUrl}" target="_blank">${txHash}</a>`;
+            const transactionInfoElement = document.getElementById('transaction-info');
+            const txHash = result.tx_hash;
+            const etherscanUrl = `https://sepolia.etherscan.io/tx/${txHash}`;
+            alert(`Matches registered successfully! Transaction Hash: ${txHash}`);
+
+            transactionInfoElement.innerHTML = 
+                `Transaction Hash: <a href="${etherscanUrl}" target="_blank">${txHash}</a>`;
+
+            // Update the button to show it's registered and keep it disabled
+            registerButton.textContent = 'Registered';
 			} else {
 				alert('Error registering matches: ' + result.error);
+
+				// Re-enable the button if the registration failed
+				registerButton.classList.remove('btn-secondary');
+				registerButton.classList.add('btn-success');
+				registerButton.textContent = 'Register on Blockchain';
+				registerButton.disabled = false;
 			}
 		} catch (error) {
 			console.error(error);
 			alert('Error registering matches.');
+			registerButton.classList.remove('btn-secondary');
+			registerButton.classList.add('btn-success');
+			registerButton.textContent = 'Register on Blockchain';
+			registerButton.disabled = false;
 		}
 	}
-
-	// getCSRFToken() {
-	// 	let cookieValue = null;
-	// 	if (document.cookie && document.cookie !== '') {
-	// 		const cookies = document.cookie.split(';');
-	// 		for (let i = 0; i < cookies.length; i++) {
-	// 			const cookie = cookies[i].trim();
-	// 			if (cookie.substring(0, 10) === 'csrftoken=') {
-	// 				cookieValue = decodeURIComponent(cookie.substring(10));
-	// 				break;
-	// 			}
-	// 		}
-	// 	}
-	// 	return cookieValue;
-	// }
 }
 
 export { Blockchain };

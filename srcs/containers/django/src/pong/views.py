@@ -64,6 +64,13 @@ def home_view(request):
     return JsonResponse(data)
 
 @api_view(['GET'])
+def settings_view(request):
+    data = {
+        'content': render_to_string("partials/settings.html", request=request)
+    }
+    return JsonResponse(data)
+
+@api_view(['GET'])
 def dashboard_view(request):
     data = {
         'content': render_to_string("partials/dashboard.html", request=request)
@@ -271,7 +278,11 @@ def register_matches(request):
         tx_hash = web3.eth.send_raw_transaction(signed_tx.rawTransaction)
 
         # Wait for the transaction receipt
-        receipt = web3.eth.wait_for_transaction_receipt(tx_hash, timeout=120)
+        try:
+            receipt = web3.eth.wait_for_transaction_receipt(tx_hash, timeout=120)  # Increased timeout
+        except TimeoutError:
+            return Response({'success': False, 'error': 'Transaction timed out'}, status=408)
+
 
         # Store the transaction hash in the database
         tournament.transaction_hash = receipt.transactionHash.hex()
