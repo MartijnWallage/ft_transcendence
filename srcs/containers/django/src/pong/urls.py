@@ -39,9 +39,15 @@ urlpatterns = [
     path('api/update-profile-page/', views.load_page_update, name='userinfo_profile'),
     path('api/update-password-page/', views.load_password_update, name='userinfo_password'),
 	path('api/logout/', views.logout_view, name='logout'),
+    
+
+	path('api/handle-friend-request/', views.accept_friend, name='friendrequest'),
+    path('api/add-friend/', views.add_friend, name='add_friend'),
+    path('api/list-friends/', views.list_friends, name='list_friends'),
+	path('api/friend-requests/', views.friend_requests, name='friend_requests'),
+	path('api/suggested-friends/', views.suggested_friends, name='suggested_friends'),
 	# path('api/pong_solo/', views.pong_solo_view, name='api_pong_solo'),
 	# path('api/pong_tournament/', views.pong_tournament_view, name='api_pong_tournament'),
 	# path('api/pong_two_player_local/', views.pong_two_player_local_view, name='api_pong_two_player_local'),
 	# path('api/pong_two_player_online/', views.pong_two_player_online_view, name='api_pong_two_player_online'),
-
 ]

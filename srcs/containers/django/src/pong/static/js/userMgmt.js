@@ -1,24 +1,16 @@
-
-
-// error container visibility
-// login and signup button near 3 dots at the top (my suggestion)
-// Logout and profile should be displayed if username is clicked. (I will finish profile this week)
-
 let isUserLoggedIn = false;
 
 
-function bindUserEventListeners(userContent) {
+function bindUserEventListeners(userContent, page) {
 	
-    // Loggin and Register
-
-    // const user_status = document.getElementById('user-name');
-	// if (isUserLoggedIn) {
-    //     console.log('Event is binded to call dashboard');
-	// 	document.getElementById('user-name').addEventListener('click', () => window.loadPage('dashboard'));
-	// }
+    if (page === 'dashboard') {
+        console.log('Event is binded to call dashboard');
+        updateSuggestedFriends();
+        updateFriendList();
+        updateFriendRequestList();
+    }
     document.getElementById('js-logout-btn').addEventListener('click', handleLogout);
 	if (userContent) {
-        // userContent.removeEventListener('submit', handleFormSubmitWrapper);
         userContent.addEventListener('submit', handleFormSubmitWrapper);
     }
 }
@@ -36,7 +28,6 @@ function handleFormSubmitWrapper(event) {
         url = '/api/register/';
     } else if (form.id === 'update-profile-form') {
         console.log("User content register-form handling");
-		window.loadPage('dashboard')
         url = '/api/update-profile/';
     } else if (form.id === 'update-password-form') {
         console.log("User content Password Change handling");
@@ -49,31 +40,195 @@ function handleFormSubmitWrapper(event) {
     handleFormSubmit(form, url);
 }
 
+
+window.addEventListener('beforeunload', () => {
+    if (isUserLoggedIn === true) {
+        const formData = new FormData();
+        formData.append('csrfmiddlewaretoken', getCookie('csrftoken'));
+        navigator.sendBeacon('/api/logout/', formData);
+    }
+});
+
+
 function handleLogout() {
-    console.log('window.loadPage during logout:', window.loadPage);
-    fetch('/api/logout/', {
+    if (isUserLoggedIn === true) {
+        console.log('window.loadPage during logout:', window.loadPage);
+        fetch('/api/logout/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            credentials: 'include'
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                console.log('logout worked for user.');
+                showNotification('You are successfully logged out');
+                history.pushState(null, '', '');
+                isUserLoggedIn = false;
+                window.loadPage('game_mode');
+            } else {
+                console.error('Logout failed:', data);
+            }
+        })
+        .catch(error => {
+            console.error('Fetch error:', error);
+        });
+    }
+}
+
+function updateSuggestedFriends() {
+    fetch('/api/suggested-friends/')
+        .then(response => response.json())
+        .then(data => {
+            const suggestedFriendsList = document.getElementById('suggested-friends-list');
+            suggestedFriendsList.innerHTML = '';
+            
+            data.suggested_friends.forEach(user => {
+                const listItem = document.createElement('li');
+                listItem.className = 'list-group-item d-flex justify-content-between align-items-center';
+                listItem.textContent = user.username;
+
+                const addButton = document.createElement('button');
+                addButton.textContent = 'Add Friend';
+                addButton.className = 'btn btn-success btn-sm';
+                addButton.onclick = () => sendFriendRequest(user.username, listItem);
+
+                listItem.appendChild(addButton);
+                suggestedFriendsList.appendChild(listItem);
+            });
+        })
+        .catch(error => console.error("Error updating suggested friends:", error));
+}
+
+function sendFriendRequest(username, listItem) {
+    fetch(`/api/add-friend/`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            'X-CSRFToken': getCookie('csrftoken')
+            'X-CSRFToken': getCookie('csrftoken'),
         },
+        body: JSON.stringify({ friend_username: username }),
+        credentials: 'include'
+    })
+    .then(response => response.json())
+    .then(data => {
+        listItem.remove();
+        if (data.status === 'success') {
+            showNotification("Friend request sent successfully");
+        } else if (data.status === 'error') {
+            showNotification(data.message);
+        }else {
+            showNotification("Error handling friend request");
+        }
+    })
+    .catch(error => console.error("Error handling friend request:", error));
+}
+
+function updateFriendList() {
+    fetch('/api/list-friends/')
+        .then(response => response.json())
+        .then(data => {
+            const allFriendsList = document.getElementById('all-friends-list');
+            const onlineFriendsList = document.getElementById('online-friends-list');
+
+            allFriendsList.innerHTML = '';
+            onlineFriendsList.innerHTML = '';
+            console.log('this is data-> ', data);
+            data.friends.forEach(friend => {
+                const listItem = document.createElement('li');
+                listItem.className = 'list-group-item d-flex justify-content-between align-items-center';
+                
+                const usernameSpan = document.createElement('span');
+                usernameSpan.textContent = friend.username;
+                listItem.appendChild(usernameSpan);
+
+                const avatarImg = document.createElement('img');
+                avatarImg.src = friend.avatar || 'static/images/guest.png'; 
+                avatarImg.alt = `${friend.username}'s avatar`;
+                avatarImg.className = 'avatar-img'; 
+                listItem.appendChild(avatarImg);
+
+                allFriendsList.appendChild(listItem);
+
+                if (friend.online_status) {
+                    const onlineItem = document.createElement('li');
+                    onlineItem.className = 'list-group-item d-flex justify-content-between align-items-center';
+                    
+                    const onlineUsernameSpan = document.createElement('span');
+                    onlineUsernameSpan.textContent = friend.username;
+                    onlineItem.appendChild(onlineUsernameSpan);
+
+                    const avatarImg = document.createElement('img');
+                    avatarImg.src = friend.avatar || 'static/images/guest.png'; 
+                    avatarImg.alt = `${friend.username}'s avatar`;
+                    avatarImg.className = 'avatar-img'; 
+                    avatarImg.classList.add('online');
+                    onlineItem.appendChild(avatarImg);
+                    
+                    const onlineStatusSpan = document.createElement('span');
+                    onlineStatusSpan.textContent = 'Online';
+                    onlineStatusSpan.className = 'online-status online'; 
+                    onlineItem.appendChild(onlineStatusSpan);
+
+                    onlineFriendsList.appendChild(onlineItem);
+                }
+            });
+        })
+        .catch(error => console.error("Error updating friend list:", error));
+}
+
+
+function updateFriendRequestList() {
+    fetch('/api/friend-requests/')
+        .then(response => response.json())
+        .then(data => {
+            const friendRequestList = document.getElementById('friend-request-list');
+            friendRequestList.innerHTML = '';
+
+            data.requests.forEach(request => {
+                const listItem = document.createElement('li');
+                listItem.textContent = request.username;
+                const acceptButton = document.createElement('button');
+                acceptButton.textContent = 'Accept';
+                acceptButton.classList.add('btn', 'btn-success', 'btn-sm');
+                acceptButton.onclick = () => handleFriendRequest(request.username ,'accept');
+
+                const rejectButton = document.createElement('button');
+                rejectButton.textContent = 'Reject';
+                rejectButton.classList.add('btn', 'btn-danger', 'btn-sm');
+                rejectButton.onclick = () => handleFriendRequest(request.username, 'reject');
+
+                listItem.appendChild(acceptButton);
+                listItem.appendChild(rejectButton);
+                friendRequestList.appendChild(listItem);
+            });
+        })
+        .catch(error => console.error("Error updating friend request list:", error));
+}
+
+function handleFriendRequest(username, action) {
+    fetch(`/api/handle-friend-request/`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken'),
+        },
+        body: JSON.stringify({ action: action, friend_username: username }),
         credentials: 'include'
     })
     .then(response => response.json())
     .then(data => {
         if (data.status === 'success') {
-			console.log('logout worked for user.');
-			showNotification('You are successfully logged out');
-            history.pushState(null, '', '');
-            isUserLoggedIn = false;
-			window.loadPage('game_mode');
+            updateFriendRequestList();
+            updateFriendList();
         } else {
-            console.error('Logout failed:', data);
+            showNotification("Error handling friend request");
         }
     })
-    .catch(error => {
-        console.error('Fetch error:', error);
-    });
+    .catch(error => console.error("Error handling friend request:", error));
 }
 
 
@@ -116,10 +271,10 @@ async function fetchUserInfo() {
                 throw new Error(`HTTP error! Status: ${response.status}`);
             }
             const data = await response.json();
-            return data.user_info; // Return user_info object directly
+            return data.user_info;
         } catch (error) {
             console.error('Failed to fetch user info', error);
-            return null; // Return null if there's an error
+            return null;
         }
     }
 }
@@ -127,7 +282,6 @@ async function fetchUserInfo() {
 function handleFormSubmit(form, url) {
     const formData = new FormData(form);
 
-	console.log("handleformsubmit called")
     fetch(url, {
         method: 'POST',
         body: formData,
@@ -139,30 +293,22 @@ function handleFormSubmit(form, url) {
     .then(response => response.json())
     .then(data => {
         if (data.status === 'success') {
-            showNotification('You are now successfully logged in');
+            showNotification('Form Action Success');
             history.pushState(null, '', '');
-            isUserLoggedIn = true;
-            window.loadPage('game_mode'); // Reload or update page content to reflect logged-out state
 
+            if (form.id === 'login-form' || form.id === 'register-form') {
+                isUserLoggedIn = true;
+                const nextPage = checkForNextPage() || 'game_mode';
+                window.loadPage(nextPage);
+            } else if (form.id === 'update-profile-form' || form.id === 'update-password-form') {
+                window.loadPage('dashboard');
+            }
         } else {
-            // alert('Username or Password Incorrect.');
             const errorContainer = document.getElementById('error-container');
-            // if (errorContainer) {
-			// 	errorContainer.style.display = 'block';
-            //     errorContainer.innerHTML = 'Usrname or Password Invalid';
-            //     showNotification("Invalid User or Password");
-            //     // errorContainer.innerHTML = JSON.stringify(data.errors);
-			// 	// setTimeout(() => {
-			// 	// 	$(errorContainer).alert = 'close';
-			// 	// }, 4000); // Hide after 4 seconds
-            //     // this is bootstrap js which I have included in base.html to show alert only for 4 seconds
-            // }
             if (errorContainer) {
-                // Clear previous messages
                 errorContainer.style.display = 'block';
-                errorContainer.innerHTML = ''; // Clear any previous messages
+                errorContainer.innerHTML = '';
 
-                // Extract and display error messages
                 if (data.errors && data.errors.__all__) {
                     data.errors.__all__.forEach(error => {
                         const errorMessage = document.createElement('div');
@@ -181,6 +327,17 @@ function handleFormSubmit(form, url) {
     .catch(error => {
 		console.error("Fetch error:", error);
 	 });
+}
+
+function checkForNextPage() {
+    const params = new URLSearchParams(window.location.search);
+    const next = params.get('next');
+
+    if (next) {
+        return next.replace('/api/', '').replace('/', '');
+    }
+
+    return null;
 }
 
 function getCookie(name) {

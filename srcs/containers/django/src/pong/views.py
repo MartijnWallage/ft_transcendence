@@ -17,15 +17,115 @@ from django.conf import settings
 from web3 import Web3
 from web3.middleware import geth_poa_middleware
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-from .serializers import RegisterSerializer, UpdateUserSerializer, ChangePasswordSerializer
-from .models import Player, Tournament, Match, UserProfile
+from .serializers import RegisterSerializer, UpdateUserSerializer, ChangePasswordSerializer, FriendShipSerializer, UserProfileSerializer
+from .models import Player, Tournament, Match, UserProfile, Friendship
 import json
 from django.db.models import Max, Q
 from rest_framework.response import Response
 
+
+@api_view(['GET'])
 @login_required
+def suggested_friends(request):
+    all_users = User.objects.exclude(id=request.user.id)
+    friend_ids = Friendship.objects.filter(
+        Q(user=request.user) | Q(friend=request.user),
+        accepted=True
+    ).values_list('user', 'friend')
+    friends_ids = set([user_id for sublist in friend_ids for user_id in sublist])
+    suggested_users = all_users.exclude(id__in=friends_ids)  
+    serializer = UserProfileSerializer(UserProfile.objects.filter(user__in=suggested_users), many=True)
+    return JsonResponse({"suggested_friends": serializer.data})
+
+@api_view(['POST'])
+@login_required
+def add_friend(request):
+    friend_username = request.data.get('friend_username')
+    print('add friend method called with friend', friend_username)
+    try:
+        friend = User.objects.get(username=friend_username)
+        if friend == request.user:
+            return JsonResponse({"status": "error", "message": "You cannot add yourself as friend!"}, status=400)
+
+        friendship, created = Friendship.objects.get_or_create(user=request.user, friend=friend)
+
+        if created:
+            return JsonResponse({"status": "success", "message": "Friend request sent"})
+        else:
+            if friendship.accepted:
+                return JsonResponse({"status": "error", "message": "You are already friends"}, status=400)
+            else:
+                return JsonResponse({"status": "error", "message": "Friendship already exists"}, status=400)
+    except User.DoesNotExist:
+        return JsonResponse({"status": "error", "message": "User not found"}, status=400)
+
+
+
+@api_view(['GET'])
+@login_required
+def list_friends(request):
+    friendships = Friendship.objects.filter(
+        (Q(user=request.user) | Q(friend=request.user)) & Q(accepted=True)
+    )
+    
+    serializer = FriendShipSerializer(friendships, many=True)
+    print('list friend called')
+    friends_list = []
+    seen_usernames = set()
+    for item in serializer.data:
+        if item['user_username'] == request.user.username:
+            friend_profile = item['friend_profile']
+        else:
+            friend_profile = item['user_profile']
+        
+        if friend_profile['username'] != request.user.username:
+            if friend_profile['username'] not in seen_usernames:
+                friends_list.append({
+                    'username': friend_profile['username'],
+                    'avatar': friend_profile['avatar'],
+                    'online_status': friend_profile['online_status']
+                })
+                seen_usernames.add(friend_profile['username'])
+    return JsonResponse({"friends": friends_list})
+
+@api_view(['POST'])
+@login_required
+def accept_friend(request):
+    friend_username = request.data.get('friend_username')
+    requesting_user = User.objects.get(username=friend_username)
+    action = request.data.get('action')
+    print('accepting friend request')
+    try:
+        friendship = Friendship.objects.get(user=requesting_user, friend=request.user)
+        if action == "accept":
+            if friendship.accepted:
+                return JsonResponse({"status": "error", "message": "Friendship already exists"}, status=400)
+            friendship.accepted = True
+            friendship.save()
+            return JsonResponse({"status": "success", "message": "Friend request accepted"})
+        elif action == "reject":
+            friendship.delete()
+            return JsonResponse({"status": "success", "message": "Friend request deleted"})
+    except Friendship.DoesNotExist:
+        return JsonResponse({"status": "error", "message": "Friend request doesn't exists"}, status=400)
+
+
+@api_view(['GET'])
+@login_required
+def friend_requests(request):
+    requests = Friendship.objects.filter(friend=request.user, accepted=False)
+    pending_requests = [request for request in requests]
+
+    serializer = UserProfileSerializer(UserProfile.objects.filter(user__in=[r.user for r in pending_requests]), many=True)
+
+    return JsonResponse({"requests": serializer.data})
+
+
+@login_required
+@login_required()
 def userinfo_view(request):
     user_info = {
         'username': request.user.username,
@@ -34,9 +134,8 @@ def userinfo_view(request):
     }
     try:
         user_profile = UserProfile.objects.get(user=request.user)
-        user_info['avatar_url'] = user_profile.avatar.url if user_profile.avatar else None
-        print("this is avatar url:   ")
-        print(user_info["avatar_url"])
+        user_info['avatar_url'] = user_profile.avatar.url if user_profile.avatar else '/static/images/guest.png'
+        print("this is avatar url:   ", user_info["avatar_url"])
     except UserProfile.DoesNotExist:
         print('user doesnot exists')
         pass
@@ -63,12 +162,14 @@ def home_view(request):
     }
     return JsonResponse(data)
 
+
 @api_view(['GET'])
 def settings_view(request):
     data = {
         'content': render_to_string("partials/settings.html", request=request)
     }
     return JsonResponse(data)
+
 
 @api_view(['GET'])
 def dashboard_view(request):
@@ -92,6 +193,7 @@ def load_page_reg(request):
     return JsonResponse({'content': content})
 
 @api_view(['GET'])
+@login_required(login_url='/api/login_user/')
 def load_page_update(request):
     print("Update user form serving")
     form = UpdateUserForm(initial={'username': request.user.username, 'email': request.user.email})
@@ -100,6 +202,7 @@ def load_page_update(request):
 
 
 @api_view(['GET'])
+@login_required(login_url='/api/login_user/')
 def load_password_update(request):
     print("Update user form serving")
     form = CustomPasswordChangeForm(user=request.user)
@@ -114,7 +217,7 @@ def register(request):
     if serializer.is_valid():
         user = serializer.save()
         # Create a Player instance associated with the new User
-        Player.objects.create(name=user.username, user=user)
+        # Player.objects.create(name=user.username, user_profile=user)
         print("user created: ", user)
         django_login(request, user)
         return JsonResponse({'status': 'success'}, status=201)
@@ -122,8 +225,9 @@ def register(request):
 
 @api_view(['POST'])
 @parser_classes([MultiPartParser, FormParser])
-@login_required
+@login_required(login_url='/api/login_user/')
 def update_profile(request):
+    print('update profile called')
     serializer = UpdateUserSerializer(request.user, data=request.data, partial=True)
     if serializer.is_valid():
         serializer.save()
@@ -132,8 +236,9 @@ def update_profile(request):
 
 
 @api_view(['POST'])
-@login_required
+@login_required(login_url='/api/login_user/')
 def change_password(request):
+    print('change password called')
     serializer = ChangePasswordSerializer(data=request.data, context={'request': request})
     if serializer.is_valid():
         serializer.save()
@@ -144,7 +249,6 @@ def change_password(request):
 # @csrf_exempt
 @api_view(['POST'])
 def login(request):
-    print("this post method only is called for login request")
     form = LoginForm(data=request.data)
     if form.is_valid():
         user = form.get_user()
@@ -160,6 +264,7 @@ def logout_view(request):
     logout(request)
     return JsonResponse({'status': 'success'})
 
+# @login_required(login_url='/api/login_user/')
 @api_view(['GET'])	
 def game_mode_view(request):
     data = {
@@ -167,6 +272,7 @@ def game_mode_view(request):
     }
     return JsonResponse(data)
 
+@login_required(login_url='/api/login_user/')
 @api_view(['GET'])
 def two_player_view(request):
     data = {
@@ -174,6 +280,7 @@ def two_player_view(request):
     }
     return JsonResponse(data)
 
+@login_required(login_url='/api/login_user/')
 @api_view(['GET'])
 def two_player_local_view(request):
     data = {
@@ -188,6 +295,7 @@ def two_player_online_view(request):
     }
     return JsonResponse(data)
 
+@login_required(login_url='/api/login_user/')
 @api_view(['GET'])
 def tournament_view(request):
     data = {
@@ -390,12 +498,16 @@ def create_match_in_tournament(request):
 def create_player(request):
     try:
         data = request.data
+        # player_name = request.user.username
         player_name = data.get('player_name')
+
+        # player_profile = User.objects.get(username=player_name)
 
         if not player_name:
             raise ValueError("Player name is required")
 
         # Retrieve or create the player
+        # player, created = Player.objects.get_or_create(user_profile=player_profile)
         player, created = Player.objects.get_or_create(name=player_name)
 
         return Response({'status': 'success', 'player_id': player.id})
@@ -409,11 +521,26 @@ def create_player(request):
 def create_match(request):
     try:
         data = request.data
+        # player1_data = data.get('player1')
+        # player2_data = data.get('player2')
         player1_score = data.get('player1_score')
         player2_score = data.get('player2_score')
         timestamp = data.get('timestamp')
         mode = data.get('mode')
+        # Helper function to retrieve or create a player
+        # def get_or_create_player(player_data):
+        #     # Attempt to find a user by the username
+        #     try:
+        #         user = User.objects.get(username=player_data)
+        #         player, created = Player.objects.get_or_create(user_profile=user)
+        #     except User.DoesNotExist:
+        #         # If no user exists, create a player by name
+        #         player, created = Player.objects.get_or_create(name=player_data)
+        #     return player
 
+        # # Retrieve or create players for player1 and player2
+        # player1 = get_or_create_player(player1_data)
+        # player2 = get_or_create_player(player2_data)
         # Retrieve or create players
         player1, created1 = Player.objects.get_or_create(name=data.get('player1'))
         player2, created2 = Player.objects.get_or_create(name=data.get('player2'))
@@ -444,6 +571,14 @@ def get_logged_in_user(request):
 
 def get_user_matches(username, mode):
     try:
+
+        # try:
+        #     user = User.objects.get(username=username)
+        #     player = Player.objects.get(user_profile=user)  # Assuming `user_profile` links Player to User
+        # except User.DoesNotExist:
+        #     # If the User doesn't exist, try to find the Player by name
+        #     player = Player.objects.get(name=username)
+
         # Retrieve the Player instance associated with the given username
         player = Player.objects.get(name=username)
         print("player: ", player)
@@ -465,6 +600,7 @@ def get_user_matches(username, mode):
 
 @api_view(['POST'])
 def user_matches(request):
+    # username = request.user.username
     username = request.data.get('username')
     mode = request.data.get('mode')
     
