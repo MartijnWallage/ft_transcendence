@@ -11,6 +11,7 @@ import { Audio } from './Audio.js';
 import { Blockchain } from './Blockchain.js';
 import { delay, displayDiv, notDisplayDiv, textToDiv } from '../utils.js';
 import { getCookie } from '../userMgmt.js';
+import { Stats } from './Stats.js';
 
 class Game {
 	constructor() {
@@ -52,7 +53,11 @@ class Game {
 		console.log('Game class created');
 		this.boundCreateAudioContext = this.createAudioContext.bind(this);
 		document.addEventListener('click', this.boundCreateAudioContext);
-	}
+
+		// Statistics and match history
+
+		this.stats = new Stats(this);
+}
 
 	updateField(length, width) {
 		this.scene.remove(this.field.mesh);

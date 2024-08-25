@@ -1,3 +1,5 @@
+import { getCookie } from '../userMgmt.js';
+
 class Stats {
     constructor(game) {
         this.game = game;
@@ -107,8 +109,8 @@ class Stats {
             console.log("mode: ", mode);
             const tableBody = document.getElementById('matchTableBody');
             const matchTitle = document.getElementById('matchTitle');
-            const username = await fetchLoggedInUser();
-            const matches = await fetchUserMatches(username, mode);
+            const username = await this.fetchLoggedInUser();
+            const matches = await this.fetchUserMatches(username, mode);
         
             // Clear existing rows
             tableBody.innerHTML = '';
@@ -120,7 +122,7 @@ class Stats {
             }
         
             matches.slice().reverse().forEach((match, index) => {
-                const formattedDate = formatTimestamp(match.timestamp);
+                const formattedDate = this.formatTimestamp(match.timestamp);
                 const row = document.createElement('tr');
                 const matchresult = match.player1_score > match.player2_score ? "Win" : "Loss";
                 const matchresultclass = matchresult === "Win" ? "bg-success" : "bg-danger";
@@ -140,8 +142,8 @@ class Stats {
             console.log("showTournaments");
             const tableBody = document.getElementById('tournamentTableBody');
             const tournamentTitle = document.getElementById('tournamentTitle');
-            const username = await fetchLoggedInUser();
-            const tournaments = await fetchUserTournaments(username);
+            const username = await this.fetchLoggedInUser();
+            const tournaments = await this.fetchUserTournaments(username);
             console.log("LOG Tournaments:", tournaments);
             // Clear existing rows
             tableBody.innerHTML = '';
@@ -153,9 +155,9 @@ class Stats {
             tournamentTitle.textContent = 'Tournament Matches';
         
             tournaments.slice().reverse().forEach((tournament, index) => {
-                const formattedDate = formatTimestamp(tournament.date);
+                const formattedDate = this.formatTimestamp(tournament.date);
                 const number_of_players = tournament.matches.length + 1;
-                const tournament_result = determineTournamentResult(tournament, username);
+                const tournament_result = this.determineTournamentResult(tournament, username);
                 const tournament_result_class = tournament_result === "Win" ? "bg-success" : "bg-danger";
                 const row = document.createElement('tr');
                 row.setAttribute('data-bs-toggle', 'modal');
@@ -163,7 +165,7 @@ class Stats {
                 row.setAttribute('data-tournament-id', tournament.id);
                 row.addEventListener('click', () => {
                     console.log("LOG Tournament ID:", tournament.id);
-                    showTournamentDetails(tournament.id, username);
+                    this.showTournamentDetails(tournament.id, username);
                 });
                 row.innerHTML = `
                     <th scope="row">${index + 1}</th>
@@ -195,7 +197,7 @@ class Stats {
                 return;
             }
         
-            const tournamentResult = determineTournamentResult(tournament, loggedInUser);
+            const tournamentResult = this.determineTournamentResult(tournament, loggedInUser);
             const resultElement = document.getElementById('tournamentResult');
             const matchDetailsTableBody = document.getElementById('matchDetailsTableBody');
             const transactionInfoElement = document.getElementById('transaction-info');
@@ -243,9 +245,10 @@ class Stats {
         
             if (registerButton) {
                 registerButton.addEventListener('click', () => {
-                    // this.audio.playSound(this.audio.select_1);
-                    new Blockchain(tournamentId);
+                    this.game.executeBlockchain(tournamentId);
                 });
             }
         }
 }
+
+export { Stats };

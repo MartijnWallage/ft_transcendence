@@ -1,7 +1,6 @@
 import { Player } from './Player.js';
 import { Match } from './Match.js';
 import { displayDiv, HTMLToDiv, notDisplayDiv } from '../utils.js';
-import { fetchLoggedInUser } from '../match-history.js';
 import { getCookie } from '../userMgmt.js';
 class Tournament {
 
@@ -14,7 +13,7 @@ class Tournament {
 
     async initializeTournament() {
         try {
-            const playerName = await fetchLoggedInUser(); // Assuming this function is async and returns a promise
+            const playerName = await this.game.stats.fetchLoggedInUser();
             const newPlayer = new Player(playerName);
             this.players.push(newPlayer);
 			this.displayPlayers();

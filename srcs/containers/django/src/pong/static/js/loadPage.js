@@ -1,5 +1,4 @@
 import { updateUI, bindUserEventListeners} from './userMgmt.js';
-import { showMatches, showTournaments } from './match-history.js';
 
 function loadPageClosure(game) {
 	return async (page) => {
@@ -34,7 +33,7 @@ function loadPageClosure(game) {
 			bindUserEventListeners(mainContent);
 			bindEventListeners(game);
 			if (page === 'match_history') {
-				dropDownEventListeners();
+				dropDownEventListeners(game);
 			}
 			
 		} catch (error) {
@@ -146,14 +145,14 @@ function bindMenuEventListeners(game){
 		matchHistory.addEventListener('click', function() {
 			loadPage('match_history').then(() => {
 				// Now that the page content has been loaded, call showMatches directly
-				showMatches('UvU');
+				game.stats.showMatches('UvU');
 			});
 		});
 	}
 
 }
 
-function dropDownEventListeners() {
+function dropDownEventListeners(game) {
     console.log("LOG: dropDownEventListeners");
 
     var dropdown1v1 = document.getElementById('dropdown-1v1');
@@ -162,7 +161,7 @@ function dropDownEventListeners() {
             event.preventDefault(); // Prevent default link behavior
             document.getElementById('tournament-history').style.display = 'none';
             document.getElementById('match-history').style.display = 'block';
-            showMatches('UvU');
+            game.stats.showMatches('UvU');
         });
     }
 
@@ -172,7 +171,7 @@ function dropDownEventListeners() {
             event.preventDefault();
             document.getElementById('tournament-history').style.display = 'block';
             document.getElementById('match-history').style.display = 'none';
-            showTournaments();
+            game.stats.showTournaments();
         });
     }
 
@@ -182,7 +181,7 @@ function dropDownEventListeners() {
             event.preventDefault();
             document.getElementById('tournament-history').style.display = 'none';
             document.getElementById('match-history').style.display = 'block';
-            showMatches('solo');
+            game.stats.showMatches('solo');
         });
     }
 }
