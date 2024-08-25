@@ -150,6 +150,13 @@ function bindMenuEventListeners(game){
 			});
 		});
 	}
+	// User 
+
+	let logout_btn = document.getElementById('js-logout-btn');
+	if (logout_btn) {
+		logout_btn.addEventListener('click', game.userProfile.handleLogout.bind(game.userProfile));
+	} 
+
 
 }
 

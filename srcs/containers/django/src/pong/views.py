@@ -609,8 +609,9 @@ def user_matches(request):
         return Response({'error': 'Username and mode are required.'}, status=400)
     
     matches = get_user_matches(username, mode)
+    
     if matches is None:
-        return Response({'error': 'Player not found'}, status=404)
+        matches = []
     
     # Serialize the matches if you want to return them in a JSON response
     matches_data = [
@@ -656,7 +657,7 @@ def user_tournaments(request):
     
     tournaments = get_user_tournaments(username)
     if tournaments is None:
-        return Response({'error': 'Player not found'}, status=404)
+        tournaments = []
 
     # Serialize the tournaments and their match details
     tournaments_data = [

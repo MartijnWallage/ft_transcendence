@@ -47,7 +47,7 @@ class Profile{
 			this.updateFriendList();
 			this.updateFriendRequestList();
 		}
-		document.getElementById('js-logout-btn').addEventListener('click', this.handleLogout);
+		
 		if (userContent) {
 			userContent.addEventListener('submit', this.handleFormSubmitWrapper);
 		}
