@@ -75,7 +75,7 @@ class Stats {
                 if (data.error) {
                     console.error(data.error);
                     alert(data.error);
-                    return;
+                    return null;
                 }
         
                 console.log("Fetched matches:", data.matches);
