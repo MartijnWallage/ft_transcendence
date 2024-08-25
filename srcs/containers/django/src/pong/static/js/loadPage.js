@@ -34,7 +34,7 @@ function loadPageClosure(game) {
 			bindUserEventListeners(mainContent, page);
 			bindEventListeners(game);
 			if (page === 'match_history') {
-				document.getElementById('lastModified').textContent = new Date(document.lastModified).toLocaleString();
+				// document.getElementById('lastModified').textContent = new Date(document.lastModified).toLocaleString();
 				dropDownEventListeners();
 			}
 			

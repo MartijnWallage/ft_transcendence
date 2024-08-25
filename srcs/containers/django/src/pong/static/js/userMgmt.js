@@ -40,12 +40,12 @@ function handleFormSubmitWrapper(event) {
     handleFormSubmit(form, url);
 }
 
-// Handle browser/tab close
+
 window.addEventListener('beforeunload', () => {
     if (isUserLoggedIn === true) {
-        navigator.sendBeacon('/api/logout/', JSON.stringify({
-            csrfmiddlewaretoken: getCookie('csrftoken')
-        }));
+        const formData = new FormData();
+        formData.append('csrfmiddlewaretoken', getCookie('csrftoken'));
+        navigator.sendBeacon('/api/logout/', formData);
     }
 });
 
@@ -298,7 +298,8 @@ function handleFormSubmit(form, url) {
 
             if (form.id === 'login-form' || form.id === 'register-form') {
                 isUserLoggedIn = true;
-                window.loadPage('game_mode');
+                const nextPage = checkForNextPage() || 'game_mode';
+                window.loadPage(nextPage);
             } else if (form.id === 'update-profile-form' || form.id === 'update-password-form') {
                 window.loadPage('dashboard');
             }
@@ -326,6 +327,17 @@ function handleFormSubmit(form, url) {
     .catch(error => {
 		console.error("Fetch error:", error);
 	 });
+}
+
+function checkForNextPage() {
+    const params = new URLSearchParams(window.location.search);
+    const next = params.get('next');
+
+    if (next) {
+        return next.replace('/api/', '').replace('/', '');
+    }
+
+    return null;
 }
 
 function getCookie(name) {

@@ -94,7 +94,7 @@ def list_friends(request):
 @api_view(['POST'])
 @login_required
 def accept_friend(request):
-
+    friend_username = request.data.get('friend_username')
     requesting_user = User.objects.get(username=friend_username)
     action = request.data.get('action')
     print('accepting friend request')

@@ -29,4 +29,4 @@ urlpatterns = [
 	path('favicon.ico', lambda x: HttpResponsePermanentRedirect('/static/images/favicon.png')),
 ] 
 
-if settings.DEBUG: urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+# if settings.DEBUG: urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
