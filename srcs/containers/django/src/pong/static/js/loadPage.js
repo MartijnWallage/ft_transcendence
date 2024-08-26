@@ -75,12 +75,7 @@ function bindEventListeners(game) {
 		console.log('creating tournament');
 		startTournamentBtn.addEventListener('click', game.tournament.start.bind(game.tournament));
 	}
-	
-	var blockchainScore = document.getElementById('js-register-blockchain');
-	if (blockchainScore) {
-        blockchainScore.addEventListener('click', game.executeBlockchain.bind(game));
-	}
-        
+	        
 	const saveSettings = document.getElementById('saveSettings');
 	if (saveSettings) {
 		saveSettings.addEventListener('click', game.saveSettings.bind(game));
@@ -90,6 +85,13 @@ function bindEventListeners(game) {
 	if (resetDefaults) {
 		resetDefaults.addEventListener('click', game.setSettingsMenuToDefault.bind(game));
 	}
+
+	//Blockchain interaction
+
+	// var blockchainScore = document.getElementById('js-register-blockchain');
+	// if (blockchainScore) {
+    //     blockchainScore.addEventListener('click', game.executeBlockchain.bind(game));
+	// }
 
 	// BETWEEN MATCH
 
@@ -159,13 +161,13 @@ function bindMenuEventListeners(game){
 			});
 		});
 	}
+
 	// User 
 
 	let logout_btn = document.getElementById('js-logout-btn');
 	if (logout_btn) {
 		logout_btn.addEventListener('click', game.userProfile.handleLogout.bind(game.userProfile));
-	} 
-
+	}
 
 }
 

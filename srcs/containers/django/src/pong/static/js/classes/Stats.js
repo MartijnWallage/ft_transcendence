@@ -3,6 +3,7 @@ import { getCookie } from '../userMgmt.js';
 class Stats {
     constructor(game) {
         this.game = game;
+        this.tournamentsData = [];
     }
 
     formatTimestamp(timestamp) {
@@ -158,7 +159,7 @@ class Stats {
             tableBody.innerHTML = '';
         
             // Store tournaments data in a variable
-            window.tournamentsData = tournaments;
+            this.tournamentsData = tournaments;
         
             // Update the title
             tournamentTitle.textContent = 'Tournament Matches';
@@ -205,7 +206,7 @@ class Stats {
             console.log("showTournamentDetails called with ID:", tournamentId);
         
             // Find the specific tournament using its ID
-            const tournament = window.tournamentsData.find(t => t.id === parseInt(tournamentId));
+            const tournament = this.tournamentsData.find(t => t.id === parseInt(tournamentId));
             
             if (!tournament) {
                 console.error("Tournament not found");
@@ -255,12 +256,14 @@ class Stats {
                 }
         
             // Show the modal
-            // const modal = new bootstrap.Modal(document.getElementById('tournamentDetailsModal'));
-            // modal.show();
             const modalElement = document.getElementById('tournamentDetailsModal');
+            if (!modalElement) {
+                console.error("Modal element not found.");
+                return;
+            }
+
             const modal = bootstrap.Modal.getOrCreateInstance(modalElement);
             modal.show();
-
         
             if (registerButton) {
                 registerButton.addEventListener('click', () => {
