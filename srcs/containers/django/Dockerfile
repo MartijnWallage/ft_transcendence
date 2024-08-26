@@ -45,6 +45,8 @@ RUN chown -R myuser:mygroup $APP_HOME/static $APP_HOME/media /tmp/daphne/ssl
 COPY tools/docker-entrypoint.sh /docker-entrypoint.sh
 RUN chmod +x /docker-entrypoint.sh
 
+# Set the working directory in the container
+WORKDIR $APP_HOME
 # Copy the entire Django project directory into the Docker image workdir
 COPY src/ $APP_HOME
 
