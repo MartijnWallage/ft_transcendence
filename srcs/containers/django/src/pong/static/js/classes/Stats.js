@@ -123,6 +123,9 @@ class Stats {
             } else if (mode === 'solo') {
                 matchTitle.textContent = 'Player vs AI Matches';
             }
+            else if (mode === 'vsOnline') {
+                matchTitle.textContent = 'Player vs Online users';
+            }
 
             if (matches.length === 0) {
                 // Show a message when there are no matches
