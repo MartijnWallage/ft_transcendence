@@ -8,9 +8,6 @@ class Stats {
         this.tournamentId = null;
     }
 
-    // init() {
-    //     this.statForUser = this.game.loggedUser;
-    // }
         
     formatTimestamp(timestamp) {
         const date = new Date(timestamp);
@@ -113,21 +110,61 @@ class Stats {
         }
 
         
-        async showMatches(mode) {
+        // async showMatches(mode) {
             
+        //     console.log("1. showMatches username: ", this.statForUser);
+        //     console.log("mode: ", mode);
+        //     const tableBody = document.getElementById('matchTableBody');
+        //     const matchTitle = document.getElementById('matchTitle');
+
+        //     // console.log("2. showMatches username: ", username);
+
+        //     // const username = await this.fetchLoggedInUser();
+        //     const matches = await this.fetchUserMatches(this.statForUser, mode);
+        
+        //     // Clear existing rows
+        //     tableBody.innerHTML = '';
+        
+        //     if (mode === 'UvU') {
+        //         matchTitle.textContent = '1 vs 1 Matches';
+        //     } else if (mode === 'solo') {
+        //         matchTitle.textContent = 'Player vs AI Matches';
+        //     }
+        //     else if (mode === 'vsOnline') {
+        //         matchTitle.textContent = 'Player vs Online users';
+        //     }
+
+        //     if (matches.length === 0) {
+        //         // Show a message when there are no matches
+        //         tableBody.innerHTML = '<tr><td colspan="5">No matches found.</td></tr>';
+        //         return;
+        //     }
+        
+        //     matches.slice().reverse().forEach((match, index) => {
+        //         const formattedDate = this.formatTimestamp(match.timestamp);
+        //         const row = document.createElement('tr');
+        //         const matchresult = match.player1_score > match.player2_score ? "Win" : "Loss";
+        //         const matchresultclass = matchresult === "Win" ? "bg-success" : "bg-danger";
+        //         row.innerHTML = `
+        //             <th scope="row">${index + 1}</th>
+        //             <td>${formattedDate}</td>
+        //             <td>${match.player2}</td>
+        //             <td>${match.player1_score}-${match.player2_score}</td>
+        //             <td><span class="badge ${matchresultclass}">${matchresult}</span></td>
+        //         `;
+        //         tableBody.appendChild(row);
+        //     });
+        // }
+        async showMatches(mode) {
             // console.log("1. showMatches username: ", username);
             console.log("mode: ", mode);
             const tableBody = document.getElementById('matchTableBody');
             const matchTitle = document.getElementById('matchTitle');
-
             // console.log("2. showMatches username: ", username);
-
             // const username = await this.fetchLoggedInUser();
             const matches = await this.fetchUserMatches(this.statForUser, mode);
-        
             // Clear existing rows
             tableBody.innerHTML = '';
-        
             if (mode === 'UvU') {
                 matchTitle.textContent = '1 vs 1 Matches';
             } else if (mode === 'solo') {
@@ -136,23 +173,31 @@ class Stats {
             else if (mode === 'vsOnline') {
                 matchTitle.textContent = 'Player vs Online users';
             }
-
             if (matches.length === 0) {
                 // Show a message when there are no matches
                 tableBody.innerHTML = '<tr><td colspan="5">No matches found.</td></tr>';
                 return;
             }
-        
             matches.slice().reverse().forEach((match, index) => {
                 const formattedDate = this.formatTimestamp(match.timestamp);
                 const row = document.createElement('tr');
-                const matchresult = match.player1_score > match.player2_score ? "Win" : "Loss";
-                const matchresultclass = matchresult === "Win" ? "bg-success" : "bg-danger";
+                const score = match.player1_score + '-' + match.player2_score;
+                // Determine the opponent
+                const opponent = match.player1 === this.statForUser ? match.player2 : match.player1;
+                // Determine if this.statForUser is player1 or player2 and then set the match result accordingly
+                let matchresult, matchresultclass;
+                if (match.player1 === this.statForUser) {
+                    matchresult = match.player1_score > match.player2_score ? "Win" : "Loss";
+                } else {
+                    matchresult = match.player2_score > match.player1_score ? "Win" : "Loss";
+                }
+                // Set the CSS class based on the result
+                matchresultclass = matchresult === "Win" ? "bg-success" : "bg-danger";
                 row.innerHTML = `
                     <th scope="row">${index + 1}</th>
                     <td>${formattedDate}</td>
-                    <td>${match.player2}</td>
-                    <td>${match.player1_score}-${match.player2_score}</td>
+                    <td>${opponent}</td>
+                    <td>${score}</td>
                     <td><span class="badge ${matchresultclass}">${matchresult}</span></td>
                 `;
                 tableBody.appendChild(row);
@@ -164,7 +209,7 @@ class Stats {
             console.log("showTournaments");
             const tableBody = document.getElementById('tournamentTableBody');
             const tournamentTitle = document.getElementById('tournamentTitle');
-            const username = this.game.loggedUser;
+            const username = this.statForUser;
             // const username = await this.fetchLoggedInUser();
             console.log("Username in stats: ", username);
             const tournaments = await this.fetchUserTournaments(username);
