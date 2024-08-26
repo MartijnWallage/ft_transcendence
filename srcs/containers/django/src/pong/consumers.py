@@ -69,7 +69,7 @@ class PongConsumer(AsyncWebsocketConsumer):
 		)
 
 		# Leave room group
-		await self.channel_layer.group_discard(a
+		await self.channel_layer.group_discard(
 			self.room_group_name,
 			self.channel_name
 		)
