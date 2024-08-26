@@ -5,6 +5,7 @@ urlpatterns = [
 	path('', views.index, name='index'),
 	path('api/home/', views.home_view, name='api_home'),
 	path('api/dashboard/', views.dashboard_view, name='api_dashboard'),
+	path('api/dashboard_score/', views.score_view, name='api_score'),
 
 	path('api/game_mode/', views.game_mode_view, name='api_game_mode'),
 	path('api/settings/', views.settings_view, name='api_settings'),
@@ -46,6 +47,7 @@ urlpatterns = [
     path('api/list-friends/', views.list_friends, name='list_friends'),
 	path('api/friend-requests/', views.friend_requests, name='friend_requests'),
 	path('api/suggested-friends/', views.suggested_friends, name='suggested_friends'),
+	path('api/all-users/', views.all_users, name='all_users'),
 	# path('api/pong_solo/', views.pong_solo_view, name='api_pong_solo'),
 	# path('api/pong_tournament/', views.pong_tournament_view, name='api_pong_tournament'),
 	# path('api/pong_two_player_local/', views.pong_two_player_local_view, name='api_pong_two_player_local'),

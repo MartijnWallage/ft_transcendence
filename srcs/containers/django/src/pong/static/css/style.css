@@ -227,7 +227,19 @@ h1 {
 }
 
 .avatar-img.online {
+	width: 30px; 
+    height: 30px; 
+    object-fit: cover; 
+    border-radius: 50%; 
     border-color: green; /* Green border for online users */
+}
+
+.online-dot {
+    display: inline-block;
+    width: 10px; /* Adjust the size of the dot here */
+    height: 10px;
+    border-radius: 50%;
+    background-color: green; /* This is the color of the dot */
 }
 
 .modal {

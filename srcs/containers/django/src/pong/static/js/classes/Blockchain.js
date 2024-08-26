@@ -1,4 +1,4 @@
-import { getCookie } from "../userMgmt.js";
+import { getCookie } from "../utils.js";
 
 class Blockchain {
 
