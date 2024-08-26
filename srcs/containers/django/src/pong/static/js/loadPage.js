@@ -76,7 +76,7 @@ function bindEventListeners(game) {
         
 	const saveSettings = document.getElementById('saveSettings');
 	if (saveSettings) {
-		saveSettings.addEventListener('click', game.settings.saveSettings.bind(game.settings));
+		saveSettings.addEventListener('click', game.settings.save.bind(game.settings));
 	}
 
 	const resetDefaults = document.getElementById('resetDefaults');

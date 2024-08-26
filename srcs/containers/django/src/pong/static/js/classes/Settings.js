@@ -13,7 +13,6 @@ class Settings {
 
         // Initialize with defaults
         this.init();
-        this.updateMenu();
     }
     
     init() {        
@@ -45,7 +44,7 @@ class Settings {
         this.updateMenu();
     }
 
-	saveSettings() {
+	save() {
         this.scoreToWin = document.getElementById('scoreToWin').value;
 		this.ballSpeed = document.getElementById('ballSpeed').value / 20;
 		this.paddleSpeed = document.getElementById('paddleSpeed').value / 20;
@@ -55,7 +54,7 @@ class Settings {
 		const aiLevel = document.getElementById('aiLevel').value;
 		this.aiLevel = aiLevel === 'easy' ? 1 : aiLevel === 'medium' ? 2 : 3;
 
-		window.loadPage('game_mode');
+		loadPage('game_mode');
 	}
 }
 

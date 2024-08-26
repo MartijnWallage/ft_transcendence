@@ -14,6 +14,9 @@ import { delay, displayDiv, notDisplayDiv, textToDiv } from '../utils.js';
 
 class Game {
 	constructor() {
+        // Settings
+        this.settings = new Settings;
+    
 		// Game state
 		this.running = false;
 		this.match = null;
@@ -26,8 +29,6 @@ class Game {
 		this.socket = null;
 		this.socket_data = null;
 
-        // Settings
-        this.settings = new Settings;
 		// Scene
 		const container = document.getElementById('threejs-container');
 		this.scene = new THREE.Scene();
