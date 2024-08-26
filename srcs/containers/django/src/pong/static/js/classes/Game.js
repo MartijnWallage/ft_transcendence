@@ -299,15 +299,10 @@ class Game {
         this.paddle1.remove();
         this.paddle2.remove();
         this.ball.remove();
-        console.log('removed old scene');
 		this.field = new Field(this.scene, length, width);
-        console.log('added new field');
 		this.paddle1 = new Paddle(this, true);
-        console.log('added new paddle1');
 		this.paddle2 = new Paddle(this, false);
-        console.log('added new paddle2');
         this.ball = new Ball(this);
-        console.log('added new ball');
 	}
 	
 	muteAudio() {

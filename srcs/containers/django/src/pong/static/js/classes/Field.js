@@ -3,9 +3,7 @@ import * as THREE from '../three-lib/three.module.js';
 class Field {
 	constructor(scene, length, width) {
         this.scene = scene;
-        console.log('In Field: length and width: ', length, width);
 		this.geometry = new THREE.BoxGeometry(length, 0.5, width);
-        console.log('In Field: added new geometry', this.geometry);
 		this.material = new THREE.MeshStandardMaterial({
 			color: 0x0a1826,
 			roughness: 0.5,
