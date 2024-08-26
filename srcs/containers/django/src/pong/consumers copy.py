@@ -94,7 +94,7 @@ class PongConsumer(AsyncWebsocketConsumer):
 			await self.handle_game_update(data)
 
 	async def send_error(self, message):
-		await self.send(text_data=json.dumps({
+		await self.safe_send(text_data=json.dumps({
 			'type': 'error',
 			'message': message,
 		}))
@@ -163,7 +163,7 @@ class PongConsumer(AsyncWebsocketConsumer):
 		}))
 
 	async def game_start(self, event):
-		await self.send(text_data=json.dumps({'type': 'game_start'}))
+		await self.safe_send(text_data=json.dumps({'type': 'game_start'}))
 
 	async def broadcast_player_info(self):
 		for player in [PongConsumer.player_A, PongConsumer.player_B]:
