@@ -7,6 +7,17 @@ class Profile{
 
 		this.handleFormSubmitWrapper = this.handleFormSubmitWrapper.bind(this);
 
+		// window.addEventListener('beforeunload', (event) => {
+		// 	// Check if the navigation type is a reload or back-forward
+		// 	const navigationType = performance.getEntriesByType('navigation')[0]?.type;
+			
+		// 	if (navigationType !== 'reload' && navigationType !== 'back_forward' && this.isUserLoggedIn === true) {
+		// 		const formData = new FormData();
+		// 		formData.append('csrfmiddlewaretoken', getCookie('csrftoken'));
+		// 		navigator.sendBeacon('/api/logout/', formData);
+		// 	}
+		// });
+		
 		window.addEventListener('beforeunload', () => {
 			if (this.isUserLoggedIn === true) {
 				const formData = new FormData();
