@@ -57,7 +57,7 @@ class Game {
 		this.audio = null;
 
 		// Game state
-		this.scoreToWin = 1;
+		this.scoreToWin = 6;
 		this.aiLevel = 2;
 		this.running = false;
 		this.match = null;
