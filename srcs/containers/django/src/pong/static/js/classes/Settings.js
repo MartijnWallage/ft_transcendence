@@ -22,12 +22,13 @@ class Settings {
         this.fieldWidth = this.#fieldWidth;
         this.fieldLength = this.#fieldLength;
         this.aiLevel = this.#aiLevel;
+        console.log('In Settings: initialized with defaults:', this.scoreToWin, this.ballSpeed, this.paddleSpeed, this.fieldWidth, this.fieldLength, this.aiLevel);
     }
 
 	// Functions to reset settings to default values
     reset() {
         this.init();
-        this.game.updateScene(fieldLength, fieldWidth);
+        this.game.updateScene(this.fieldLength, this.fieldWidth);
     }
     
 	updateMenu() {
@@ -45,15 +46,21 @@ class Settings {
     }
 
 	save() {
-        this.scoreToWin = document.getElementById('scoreToWin').value;
-		this.ballSpeed = document.getElementById('ballSpeed').value / 20;
-		this.paddleSpeed = document.getElementById('paddleSpeed').value / 20;
-		this.fieldWidth = document.getElementById('fieldWidth').value;
-		this.fieldLength = document.getElementById('fieldLength').value;
-		this.game.updateScene(fieldLength, fieldWidth);
-		const aiLevel = document.getElementById('aiLevel').value;
-		this.aiLevel = aiLevel === 'easy' ? 1 : aiLevel === 'medium' ? 2 : 3;
+        const scoreToWin = document.getElementById('scoreToWin').value;
+        const ballSpeed = document.getElementById('ballSpeed').value / 20;
+        const paddleSpeed = document.getElementById('paddleSpeed').value / 20;
+        const fieldWidth = document.getElementById('fieldWidth').value;
+        const fieldLength = document.getElementById('fieldLength').value;
+        const aiLevel = document.getElementById('aiLevel').value;
 
+        this.scoreToWin = scoreToWin;
+        this.ballSpeed = ballSpeed;
+        this.paddleSpeed = paddleSpeed;
+        this.fieldWidth = fieldWidth;
+        this.fieldLength = fieldLength;
+        this.aiLevel = aiLevel === 'easy' ? 1 : aiLevel === 'medium' ? 2 : 3;
+        
+		this.game.updateScene(this.fieldLength, this.fieldWidth);
 		loadPage('game_mode');
 	}
 }

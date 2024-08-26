@@ -25,6 +25,10 @@ class Ball {
 		this.scene.add(this.mesh);
 	}
 
+    remove() {
+        this.scene.remove(this.mesh);
+    }
+
 	addAudio(audio) {
 		this.audio = audio;
 	}

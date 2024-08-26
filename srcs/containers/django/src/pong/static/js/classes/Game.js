@@ -18,8 +18,7 @@ import { Profile } from './Profile.js';
 class Game {
 	constructor() {
         // Settings
-        this.settings = new Settings;
-    
+        
 		// Game state
 		this.running = false;
 		this.match = null;
@@ -31,7 +30,7 @@ class Game {
 		this.loggedUser = 'Guest';
 		this.socket = null;
 		this.socket_data = null;
-
+        
 		// Scene
 		const container = document.getElementById('threejs-container');
 		this.scene = new THREE.Scene();
@@ -41,18 +40,17 @@ class Game {
 		this.renderer.setSize(window.innerWidth, window.innerHeight);
 		this.renderer.setClearColor(0xc1d1db);
 		container.appendChild(this.renderer.domElement);
-
+        
 		// Objects
+        this.settings = new Settings(this);
 		this.field = new Field(this.scene, this.settings.fieldLength, this.settings.fieldWidth);
 		this.paddle1 = new Paddle(this, true);
 		this.paddle2 = new Paddle(this, false);
 		this.ball = new Ball(this);
 		this.environment = new Environment(this.scene);
 		this.audio = null;
-
+        
 		// Game state
-		this.scoreToWin = 1;
-		this.aiLevel = 2;
 		this.running = false;
 		this.match = null;
 		this.tournament = null;
@@ -75,18 +73,8 @@ class Game {
 
 		this.stats = new Stats(this);
 		this.userProfile = new Profile(this);
-}
+    }
 
-	updateField(length, width) {
-		this.scene.remove(this.field.mesh);
-		this.scene.remove(this.field.net);
-		this.scene.remove(this.paddle1.mesh);
-		this.scene.remove(this.paddle2.mesh);
-		this.field = new Field(this.scene, length, width);
-		this.paddle1 = new Paddle(this.scene, this.field, true);
-		this.paddle2 = new Paddle(this.scene, this.field, false);
-	}
-	
 	// Create audio audio context once there is a first interaction with the website to comply with internet rules
 	async createAudioContext() {
 		const audio = document.createElement("audio");
@@ -307,13 +295,19 @@ class Game {
 
     // update scene for when settings have changed
     updateScene(length, width) {
-		this.scene.remove(this.field.mesh);
-		this.scene.remove(this.field.net);
-		this.scene.remove(this.paddle1.mesh);
-		this.scene.remove(this.paddle2.mesh);
+        this.field.remove();
+        this.paddle1.remove();
+        this.paddle2.remove();
+        this.ball.remove();
+        console.log('removed old scene');
 		this.field = new Field(this.scene, length, width);
-		this.paddle1 = new Paddle(this.scene, this.field, true);
-		this.paddle2 = new Paddle(this.scene, this.field, false);
+        console.log('added new field');
+		this.paddle1 = new Paddle(this, true);
+        console.log('added new paddle1');
+		this.paddle2 = new Paddle(this, false);
+        console.log('added new paddle2');
+        this.ball = new Ball(this);
+        console.log('added new ball');
 	}
 	
 	muteAudio() {

@@ -42,12 +42,13 @@ class Score {
 		if (match.players[1].isAI())
 			match.players[1].ai.refreshView();
 		
-		if (this.result[0] === this.game.settings.scoreToWin)
+		if (this.result[0] == this.game.settings.scoreToWin) {
 			this.winner = 0;
-		else if (this.result[1] === this.game.settings.scoreToWin)
+        } else if (this.result[1] == this.game.settings.scoreToWin) {
 			this.winner = 1;
-		else 
+        } else { 
 			return;
+        }
 		
 		this.game.running = false;
 		if (socket)
