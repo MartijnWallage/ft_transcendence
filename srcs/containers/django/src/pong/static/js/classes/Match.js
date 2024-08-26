@@ -100,7 +100,7 @@ class Match {
 
 		// move left paddle
 		let direction = this.keys['a'] ? -1 : this.keys['d'] ? 1 : 0;
-		paddle1.movePaddle(direction, field);
+		paddle1.movePaddle(direction);
 		
 		// move right paddle
 		if (game.mode !==  'vsOnline') {
@@ -108,7 +108,7 @@ class Match {
 				this.keys['ArrowRight'] ? -1 :
 				this.keys['ArrowLeft'] ? 1 :
 				0;
-				paddle2.movePaddle(direction, field);
+				paddle2.movePaddle(direction);
 		}
 		// move and bounce ball
 		ball.animateBall();

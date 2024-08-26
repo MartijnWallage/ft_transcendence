@@ -1,4 +1,5 @@
 import * as THREE from '../three-lib/three.module.js';
+import { Settings } from './Settings.js';
 import { Tournament } from './Tournament.js';
 import { Player } from './Player.js';
 import { Match } from './Match.js';
@@ -16,9 +17,9 @@ import { Profile } from './Profile.js';
 
 class Game {
 	constructor() {
+        // Settings
+        
 		// Game state
-		this.scoreToWin = 6;
-		this.aiLevel = 2;
 		this.running = false;
 		this.match = null;
 		this.tournament = null;
@@ -27,17 +28,9 @@ class Game {
 		this.isSettingsMenuVisible = false;
 		this.mode = 'none';
 		this.loggedUser = 'Guest';
-
 		this.socket = null;
 		this.socket_data = null;
-
-        // Default Settings
-        this.ballSpeed = 0.2;
-        this.paddleSpeed = 0.15;
-        this.fieldWidth = 12;
-        this.fieldLength = 16;
-        this.aiLevel = 2;
-
+        
 		// Scene
 		const container = document.getElementById('threejs-container');
 		this.scene = new THREE.Scene();
@@ -47,18 +40,17 @@ class Game {
 		this.renderer.setSize(window.innerWidth, window.innerHeight);
 		this.renderer.setClearColor(0xc1d1db);
 		container.appendChild(this.renderer.domElement);
-
+        
 		// Objects
-		this.field = new Field(this.scene, 16, 12);
-		this.paddle1 = new Paddle(this.scene, this.field, true);
-		this.paddle2 = new Paddle(this.scene, this.field, false);
+        this.settings = new Settings(this);
+		this.field = new Field(this.scene, this.settings.fieldLength, this.settings.fieldWidth);
+		this.paddle1 = new Paddle(this, true);
+		this.paddle2 = new Paddle(this, false);
 		this.ball = new Ball(this);
 		this.environment = new Environment(this.scene);
 		this.audio = null;
-
+        
 		// Game state
-		this.scoreToWin = 6;
-		this.aiLevel = 2;
 		this.running = false;
 		this.match = null;
 		this.tournament = null;
@@ -81,18 +73,8 @@ class Game {
 
 		this.stats = new Stats(this);
 		this.userProfile = new Profile(this);
-}
+    }
 
-	updateField(length, width) {
-		this.scene.remove(this.field.mesh);
-		this.scene.remove(this.field.net);
-		this.scene.remove(this.paddle1.mesh);
-		this.scene.remove(this.paddle2.mesh);
-		this.field = new Field(this.scene, length, width);
-		this.paddle1 = new Paddle(this.scene, this.field, true);
-		this.paddle2 = new Paddle(this.scene, this.field, false);
-	}
-	
 	// Create audio audio context once there is a first interaction with the website to comply with internet rules
 	async createAudioContext() {
 		const audio = document.createElement("audio");
@@ -205,10 +187,10 @@ class Game {
 		this.audio.playSound(this.audio.select_2);
     
         // set settings to default
-        // this.setSettingsToDefault();
+        this.settings.reset();
     
 		const player1 = new Player(this.loggedUser);
-		var player2 = null;
+		let player2 = null;
 		this.initSocket(player1);
 	
 		// Create a promise to handle player2 connection
@@ -311,70 +293,16 @@ class Game {
 		this.isOptionMenuVisible = false;
 	}
 
-	// Settings menu
-
-	// Functions to reset settings to default values
-    setSettingsToDefault() {
-		this.game.ball.initialSpeed = this.ballSpeed;
-        this.game.paddle1.speed = this.paddleSpeed;
-        this.game.paddle2.speed = this.paddleSpeed;
-        const fieldWidth = this.fieldWidth;
-        const fieldLength = this.fieldLength;
-        this.updateField(fieldLength, fieldWidth);
-        this.game.aiLevel = this.aiLevel;
-    }
-
-	setSettingsMenuToDefault() {
-		document.getElementById('ballSpeed').value = this.ballSpeed * 20;
-		document.getElementById('paddleSpeed').value = this.paddleSpeed * 20;
-		document.getElementById('fieldWidth').value = this.fieldWidth;
-		document.getElementById('fieldLength').value = this.fieldLength;
-		document.getElementById('aiLevel').value = this.aiLevel == 1 ? 'easy' : this.aiLevel == 2 ? 'medium' : 'hard'; 
-	}
-
-	setSettingsMenuToCurrent() {
-		document.getElementById('ballSpeed').value = this.ball.initialSpeed * 20;
-		document.getElementById('paddleSpeed').value = this.paddle1.speed * 20;
-		document.getElementById('fieldWidth').value = this.field.geometry.parameters.depth;
-		document.getElementById('fieldLength').value = this.field.geometry.parameters.width;
-		document.getElementById('aiLevel').value = this.aiLevel == 1 ? 'easy' : this.aiLevel == 2 ? 'medium' : 'hard'; 
-	}
-
-	saveSettings() {
-		const ballSpeed = document.getElementById('ballSpeed').value;
-		const paddleSpeed = document.getElementById('paddleSpeed').value;
-		const fieldWidth = document.getElementById('fieldWidth').value;
-		const fieldLength = document.getElementById('fieldLength').value;
-		const aiLevel = document.getElementById('aiLevel').value;
-
-		this.updateField(fieldLength, fieldWidth);
-		this.ball.initialSpeed = ballSpeed / 20;
-		this.paddle1.speed = paddleSpeed / 20;
-		this.paddle2.speed = paddleSpeed / 20;
-		this.aiLevel = aiLevel === 'easy' ? 1 : aiLevel === 'medium' ? 2 : 3;
-
-		console.log(`Ball Speed: ${ballSpeed}`, this.ball.initialSpeed);
-		console.log(`Paddle Speed: ${paddleSpeed}`, this.paddle1.speed);
-		console.log(`Field Width: ${fieldWidth}`, this.field.geometry.parameters.width);
-		console.log(`Field Length: ${fieldLength}`, this.field.geometry.parameters.depth);
-		console.log(`AI Level: ${aiLevel}`, this.aiLevel);
-
-		// updateBallSpeed(ballSpeed);
-		// updatePaddleSpeed(paddleSpeed);
-		// updateFieldDimensions(fieldWidth, fieldHeight);
-		// updateAILevel(aiLevel);
-	
-		loadPage('game_mode');
-	}
-
-    updateField(length, width) {
-		this.scene.remove(this.field.mesh);
-		this.scene.remove(this.field.net);
-		this.scene.remove(this.paddle1.mesh);
-		this.scene.remove(this.paddle2.mesh);
+    // update scene for when settings have changed
+    updateScene(length, width) {
+        this.field.remove();
+        this.paddle1.remove();
+        this.paddle2.remove();
+        this.ball.remove();
 		this.field = new Field(this.scene, length, width);
-		this.paddle1 = new Paddle(this.scene, this.field, true);
-		this.paddle2 = new Paddle(this.scene, this.field, false);
+		this.paddle1 = new Paddle(this, true);
+		this.paddle2 = new Paddle(this, false);
+        this.ball = new Ball(this);
 	}
 	
 	muteAudio() {

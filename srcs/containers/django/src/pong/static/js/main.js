@@ -57,7 +57,7 @@ function main() {
 	bindMenuEventListeners(this_game);
 	window.addEventListener('resize', () => this_game.onWindowResize());
 	requestAnimationFrame(animate.bind(null, this_game));
-	}
+}
 
 	function animate(game) {
 		if (game.running === false) {
@@ -66,6 +66,6 @@ function main() {
 			game.match.update(game);
 		}
 		requestAnimationFrame(animate.bind(null, game));
-		}
+    }
 
 main();
