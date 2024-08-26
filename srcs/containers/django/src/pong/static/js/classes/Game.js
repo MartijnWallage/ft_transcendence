@@ -11,7 +11,7 @@ import { Camera } from './Camera.js';
 import { Audio } from './Audio.js';
 import { Blockchain } from './Blockchain.js';
 import { delay, displayDiv, notDisplayDiv, textToDiv } from '../utils.js';
-import { getCookie } from '../userMgmt.js';
+import { getCookie, showNotification } from '../userMgmt.js';
 import { Stats } from './Stats.js';
 import { Profile } from './Profile.js';
 
@@ -138,7 +138,7 @@ class Game {
 			console.error('WebSocket error', error);
 		};
 
-		this.socket.onmessage = (e) => {
+		this.socket.onmessage = async (e) => {
 			this.socket_data = JSON.parse(e.data);
 			let data = this.socket_data;
 			
@@ -164,6 +164,20 @@ class Game {
 					console.log('Player connected:', data.player);
 				}
 			}
+			if (data.type === 'connection_over') {		
+				console.log('Received message:', this.socket_data);
+				if (this.running) {
+					this.running = false;
+					console.log('Connection lost after player disconnected');
+					if (this.socket)
+						this.socket.close();
+					this.userProfile.showNotification('Connection lost after player disconnected');
+					setTimeout(() => {
+						window.loadPage('game_mode');
+					}, 2500);
+				}
+				
+			}
 			if (data.type === 'game_state' && this.running) {
 				const player1 = this.match.players[0];
 				const myRole = player1.online_role;
@@ -179,7 +193,7 @@ class Game {
 	}}
 
 	handleDisconnection() {
-		console.log('!!! Connection lost !!!');
+		console.log('Connection is over');
 	}
 
 	async startVsOnline() {
