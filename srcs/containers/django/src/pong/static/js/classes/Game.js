@@ -11,7 +11,7 @@ import { Camera } from './Camera.js';
 import { Audio } from './Audio.js';
 import { Blockchain } from './Blockchain.js';
 import { delay, displayDiv, notDisplayDiv, textToDiv } from '../utils.js';
-import { getCookie } from '../userMgmt.js';
+import { getCookie, showNotification } from '../userMgmt.js';
 import { Stats } from './Stats.js';
 import { Profile } from './Profile.js';
 
@@ -168,6 +168,7 @@ class Game {
 				console.log('Received message:', this.socket_data);
 				console.log('Connection lost after player disconnected');
 				await windows.loadPage('game_mode');
+				showNotification('Connection lost after player disconnected');
 				
 			}
 			if (data.type === 'game_state' && this.running) {
