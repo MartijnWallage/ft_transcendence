@@ -55,30 +55,22 @@ class PongConsumer(AsyncWebsocketConsumer):
 
 	async def disconnect(self, close_code):
 		# Clear player data
+		PongConsumer.player_A = None
+		PongConsumer.player_B = None
 		logger.debug("********** Player disconnected **********") 
-		if PongConsumer.player_A:
-			await self.channel_layer.send(
-				PongConsumer.player_A['channel_name'],
-				{
-					'type': 'force_disconnect'
-				}
-			)
-			PongConsumer.player_A = None
-
-		if PongConsumer.player_B:
-			await self.channel_layer.send(
-				PongConsumer.player_B['channel_name'],
-				{
-					'type': 'force_disconnect'
-				}
-			)
-			PongConsumer.player_B = None
-
 		# Leave the room group
 		await self.channel_layer.group_discard(
 			self.room_group_name,
 			self.channel_name
 		)
+
+		await self.channel_layer.group_send(
+			self.room_group_name,
+			{
+				'type': 'force_disconnect'
+			}
+   		 )
+
 		await self.close()
 
 	async def force_disconnect(self, event):
