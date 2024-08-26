@@ -119,6 +119,21 @@ class PongConsumer(AsyncWebsocketConsumer):
 					}
 				)
 
+		elif message_type == 'score_update':
+			if 'score_A' in data:
+				PongConsumer.game_data['score_A'] = data['score_A']
+			if 'score_B' in data:
+				PongConsumer.game_data['score_B'] = data['score_B']
+			await self.channel_layer.group_send(
+				self.room_group_name,
+				{
+					'type': 'new_score',
+					'score_A': PongConsumer.game_data['score_A'],
+					'score_B': PongConsumer.game_data['score_B'],
+				}
+			)
+
+			
 		elif message_type == 'game_update':
 			# Update paddle positions based on player role
 			if self.player_role == 'A' and 'paddle_A' in data:
@@ -192,4 +207,12 @@ class PongConsumer(AsyncWebsocketConsumer):
 			'player': event['player'],
 			'player_role': event['player_role'],
 			'ready': event['ready']
+		}))
+
+	async def new_score(self, event):
+		# Send updated scores to WebSocket
+		await self.send(text_data=json.dumps({
+			'type': 'new_score',
+			'score_A': event['score_A'],
+			'score_B': event['score_B'],
 		}))

@@ -1,15 +1,15 @@
 import * as THREE from '../three-lib/three.module.js';
 
 class Paddle {
-	constructor (scene, court, left, width = 2) {
+	constructor (scene, field, left, width = 2) {
 		this.geometry = new THREE.BoxGeometry(0.3, 0.8, width);
 		this.material = new THREE.MeshStandardMaterial({
 			color: 0xc1d1db,
 			roughness: 0.5,
 			metalness: 0.5
 		});
-		this.offset = court.geometry.parameters.width / 15;
-		let distanceFromCentre = court.geometry.parameters.width / 2 - this.offset;
+		this.offset = field.geometry.parameters.width / 15;
+		let distanceFromCentre = field.geometry.parameters.width / 2 - this.offset;
 		if (left) {
 			distanceFromCentre *= -1;
 		}
@@ -22,7 +22,7 @@ class Paddle {
 	movePaddle(direction, field ) {
 		this.mesh.position.z += direction * this.speed;
    
-		// if paddle is beyond the edge of court, move it back in
+		// if paddle is beyond the edge of field, move it back in
 		const halfPaddle = this.geometry.parameters.depth / 2;
 		const halfField = field.geometry.parameters.depth / 2;
 		const topPaddle = this.mesh.position.z + halfPaddle;

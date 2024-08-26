@@ -55,7 +55,7 @@ else
     python3 manage.py migrate
 fi
 
-#for school
+#for school 
 exec daphne -b 0.0.0.0 -e ssl:8443:privateKey=/tmp/daphne/ssl/daphne.key:certKey=/tmp/daphne/ssl/daphne.crt transcendence.asgi:application
 
 # #for cloud

@@ -12,11 +12,11 @@ function bindUserEventListeners(userContent) {
     //     console.log('Event is binded to call dashboard');
 	// 	document.getElementById('user-name').addEventListener('click', () => window.loadPage('dashboard'));
 	// }
-    document.getElementById('js-logout-btn').addEventListener('click', handleLogout);
-	if (userContent) {
-        // userContent.removeEventListener('submit', handleFormSubmitWrapper);
-        userContent.addEventListener('submit', handleFormSubmitWrapper);
-    }
+    // document.getElementById('js-logout-btn').addEventListener('click', handleLogout);
+	// if (userContent) {
+    //     // userContent.removeEventListener('submit', handleFormSubmitWrapper);
+    //     userContent.addEventListener('submit', handleFormSubmitWrapper);
+    // }
 
 }
 
@@ -32,7 +32,8 @@ function handleFormSubmitWrapper(event) {
         console.log("User content register-form handling");
         url = '/api/register/';
     } else if (form.id === 'update-profile-form') {
-        console.log("User content register-form handling");window.loadPage('dashboard')
+        console.log("User content register-form handling");
+		window.loadPage('dashboard')
         url = '/api/update-profile/';
     } else if (form.id === 'update-password-form') {
         console.log("User content Password Change handling");

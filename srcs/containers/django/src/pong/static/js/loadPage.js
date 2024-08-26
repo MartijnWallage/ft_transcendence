@@ -1,4 +1,4 @@
-import { updateUI, bindUserEventListeners} from './userMgmt.js';
+import { updateUI, bindUserEventListeners, handleLogout } from './userMgmt.js';
 
 
 function loadPageClosure(game) {
@@ -74,7 +74,17 @@ function bindEventListeners(game) {
 	
 	var blockchainScore = document.getElementById('js-register-blockchain');
 	if (blockchainScore) {
-		blockchainScore.addEventListener('click', game.executeBlockchain.bind(game));
+        blockchainScore.addEventListener('click', game.executeBlockchain.bind(game));
+	}
+        
+	const saveSettings = document.getElementById('saveSettings');
+	if (saveSettings) {
+		saveSettings.addEventListener('click', game.saveSettings.bind(game));
+	}
+
+	const resetDefaults = document.getElementById('resetDefaults');
+	if (resetDefaults) {
+		resetDefaults.addEventListener('click', game.setSettingsMenuToDefault.bind(game));
 	}
 
 	// BETWEEN MATCH
@@ -92,25 +102,38 @@ function bindEventListeners(game) {
 
 function bindMenuEventListeners(game){
 	// OPTION MENU
-	let optionBtn = document.getElementById('js-option-btn');
-	if (optionBtn) {
-		optionBtn.addEventListener('click', game.viewOptionMenu.bind(game));
-	}
+	document.getElementById('js-option-btn').addEventListener('click', game.viewOptionMenu.bind(game));
 
-	let endGameBtn = document.getElementById('js-end-game-btn');
-	if (endGameBtn) {
-		endGameBtn.addEventListener('click', game.endGame.bind(game));
-	}
+	document.getElementById('js-login-btn').addEventListener('click', function() {
+		game.viewOptionMenu();
+		loadPage('login_user');
+	});
 
-	let soundBtn = document.getElementById('js-audio-btn');
-	if (soundBtn) {
-		soundBtn.addEventListener('click', game.muteAudio.bind(game));
-	}
+	document.getElementById('js-logout-btn').addEventListener('click', function() {
+		game.viewOptionMenu();
+		handleLogout()
+	});
 
-	let settingsBtn = document.getElementById('js-settings-btn');
-	if (settingsBtn) {
-		settingsBtn.addEventListener('click', game.viewSettingsMenu.bind(game));
-	}
+	document.getElementById('js-tournament_score-btn').addEventListener('click', function() {
+		game.viewOptionMenu();
+		loadPage('tournament_score');
+	});
+
+	document.getElementById('js-audio-btn').addEventListener('click', function() {
+		game.viewOptionMenu();
+		game.muteAudio();
+	});
+	
+	document.getElementById('js-settings-btn').addEventListener('click', async function() {
+		game.hideOptionMenu();
+		await loadPage('settings');
+		game.setSettingsMenuToCurrent();
+	});
+	
+	document.getElementById('js-end-game-btn').addEventListener('click', function() {
+		game.viewOptionMenu();
+		game.endGame();
+	});
 
 	document.getElementById('user-name').addEventListener('click', function() {
 		loadPage('dashboard');
@@ -119,6 +142,7 @@ function bindMenuEventListeners(game){
 	document.getElementById('user-avatar').addEventListener('click', function() {
 		loadPage('dashboard');
 	});
+
 }
 
 function fadeIn(element) {
@@ -145,4 +169,5 @@ function fadeOut(element) {
 		}, { once: true });
 	});
 }
+
 export { loadPageClosure, updateUI, bindMenuEventListeners };
