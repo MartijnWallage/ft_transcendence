@@ -1,10 +1,10 @@
 {% block content %}
+<h2 class="my-4 display-5 text-white">Dashboard</h2>
 <div id="menu" class="container-md mx-auto p-5">
-  <h2 class="my-4 display-5">Dashboard</h2>
 
   <div id="dashboard-view" class="container my-3 px-4">
     <div class="row gx-5">
-      <h2 class="mb-2">Change</h2>
+      <h2 class="mb-2 text-white">Change</h2>
       <div class="col d-flex justify-content-end">
         <button type="button" class="btn btn-outline-light" 
                 onclick="loadPage('update-password-page')">Password</button>
@@ -13,22 +13,17 @@
         <button type="button" class="btn btn-outline-light"
                 onclick="loadPage('update-profile-page')">Info</button>
       </div>
-      <div>
+      <div class="col d-flex justify-content-start">
         <button type="button" class="btn btn-outline-light mx-1" 
                 id="match-history-btn" style="display: none;">Match history</button>
       </div>
     </div>
   </div>
-  <div id="statistics-section" class="p-4 d-flex flex-column align-items-start bg-dark text-white" style="width: 100%; max-width: 650px; border-radius: 10px;">
-    <h4>Match Statistics</h4>
-    <p>Total Matches Played: <strong>{{ total_matches }}</strong></p>
-    <p>Matches Won: <strong>{{ won_matches }}</strong></p>
-    <p>Matches Lost: <strong>{{ lost_matches }}</strong></p>
-  </div>
+  
+
   <div id="friends-section" class="p-4 d-flex flex-column align-items-start bg-dark text-blue" style="width: 100%; max-width: 650px; border-radius: 10px; overflow-y: auto;">
     <h4>Friends</h4>
     
-    <!-- Suggested Friends Dropdown -->
     <div class="accordion" id="friendsAccordion">
       <div class="accordion-item">
         <h2 class="accordion-header" id="headingSuggested">
@@ -39,13 +34,11 @@
         <div id="collapseSuggested" class="accordion-collapse collapse" aria-labelledby="headingSuggested" data-bs-parent="#friendsAccordion">
           <div class="accordion-body">
             <ul id="suggested-friends-list" class="list-group">
-              <!-- Suggested friends will be dynamically loaded here -->
             </ul>
           </div>
         </div>
       </div>
 
-      <!-- Friend Requests Dropdown -->
       <div class="accordion-item">
         <h2 class="accordion-header" id="headingRequests">
           <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseRequests" aria-expanded="false" aria-controls="collapseRequests">
@@ -55,13 +48,11 @@
         <div id="collapseRequests" class="accordion-collapse collapse" aria-labelledby="headingRequests" data-bs-parent="#friendsAccordion">
           <div class="accordion-body">
             <ul id="friend-request-list" class="list-group">
-              <!-- Friend requests will be dynamically loaded here -->
             </ul>
           </div>
         </div>
       </div>
 
-      <!-- Online Friends Dropdown -->
       <div class="accordion-item">
         <h2 class="accordion-header" id="headingOnline">
           <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOnline" aria-expanded="false" aria-controls="collapseOnline">
@@ -71,13 +62,11 @@
         <div id="collapseOnline" class="accordion-collapse collapse" aria-labelledby="headingOnline" data-bs-parent="#friendsAccordion">
           <div class="accordion-body">
             <ul id="online-friends-list" class="list-group">
-              <!-- Online friends will be dynamically loaded here -->
             </ul>
           </div>
         </div>
       </div>
 
-      <!-- All Friends Dropdown -->
       <div class="accordion-item">
         <h2 class="accordion-header" id="headingAll">
           <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseAll" aria-expanded="false" aria-controls="collapseAll">
@@ -87,7 +76,6 @@
         <div id="collapseAll" class="accordion-collapse collapse" aria-labelledby="headingAll" data-bs-parent="#friendsAccordion">
           <div class="accordion-body">
             <ul id="all-friends-list" class="list-group">
-              <!-- All friends will be dynamically loaded here -->
             </ul>
           </div>
         </div>
@@ -95,55 +83,38 @@
     </div>
   </div>
 </div>
-{% endblock %}
+<div id="menu1" class="container-md mx-auto p-5">
+  <div id="statistics-section" class="p-4 bg-dark text-white d-flex flex-wrap align-items-center" style="width: 100%; max-width: 650px; border-radius: 10px;">
+    <div id="match-stats-text" class="col-8">
+      <h4>Match Statistics</h4>
+      <p id="total-matches">Total Matches Played: <strong>Loading...</strong></p>
+      <p id="matches-won">Matches Won: <strong>Loading...</strong></p>
+      <p id="matches-lost">Matches Lost: <strong>Loading...</strong></p>
+      <p id="win-rate">Win Rate: <strong>Loading...</strong></p>
+    </div>
+    <div id="match-stats-chart-container" class="col-4 text-center">
+      <canvas id="match-stats-chart" style="width: 100px; height: 100px;"></canvas>
+    </div>
+  </div>
+    
 
-<!-- 
-<script>
-  document.addEventListener('DOMContentLoaded', function () {
-      // Data for the charts
-      const matchData = {
-          total: {{ total_matches }},    // Total matches played
-          won: {{ won_matches }},        // Matches won
-          lost: {{ lost_matches }}       // Matches lost
-      };
-  
-      // Bar Chart for Total Matches
-      const ctxBar = document.getElementById('barChart').getContext('2d');
-      new Chart(ctxBar, {
-          type: 'bar',
-          data: {
-              labels: ['Total Matches', 'Won', 'Lost'],
-              datasets: [{
-                  label: '# of Matches',
-                  data: [matchData.total, matchData.won, matchData.lost],
-                  backgroundColor: ['#007bff', '#28a745', '#dc3545'],
-                  borderColor: ['#007bff', '#28a745', '#dc3545'],
-                  borderWidth: 1
-              }]
-          },
-          options: {
-              scales: {
-                  y: {
-                      beginAtZero: true
-                  }
-              }
-          }
-      });
-  
-      // Pie Chart for Win/Loss Ratio
-      const ctxPie = document.getElementById('pieChart').getContext('2d');
-      new Chart(ctxPie, {
-          type: 'pie',
-          data: {
-              labels: ['Won', 'Lost'],
-              datasets: [{
-                  label: 'Win/Loss Ratio',
-                  data: [matchData.won, matchData.lost],
-                  backgroundColor: ['#28a745', '#dc3545'],
-                  hoverOffset: 4
-              }]
-          }
-      });
-  });
-  </script>
-   -->
+  <div id="match-section" class="p-4 d-flex flex-column align-items-start bg-dark text-blue" style="width: 100%; max-width: 650px; border-radius: 10px; overflow-y: auto;">
+    <h4>Other User Matches</h4>
+    
+    <div class="accordion" id="userMatchAccordion">
+      <div class="accordion-item">
+        <h2 class="accordion-header" id="headingHistory">
+          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseHistory" aria-expanded="false" aria-controls="collapseSuggested">
+            Users Matches
+          </button>
+        </h2>
+        <div id="collapseHistory" class="accordion-collapse collapse" aria-labelledby="headingHistory" data-bs-parent="#userMatchAccordion">
+          <div class="accordion-body">
+            <ul id="user-match-list" class="list-group">
+            </ul>
+          </div>
+        </div>
+      </div>
+
+</div>
+{% endblock %}

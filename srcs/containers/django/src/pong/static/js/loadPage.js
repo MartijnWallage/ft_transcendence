@@ -1,4 +1,4 @@
-import { updateUI, bindUserEventListeners, handleLogout} from './userMgmt.js';
+// import { updateUI, bindUserEventListeners, handleLogout} from './userMgmt.js';
 
 function loadPageClosure(game) {
 	return async (page) => {
@@ -75,7 +75,7 @@ function bindEventListeners(game) {
 		console.log('creating tournament');
 		startTournamentBtn.addEventListener('click', game.tournament.start.bind(game.tournament));
 	}
-	        
+	    
 	const saveSettings = document.getElementById('saveSettings');
 	if (saveSettings) {
 		saveSettings.addEventListener('click', game.settings.save.bind(game.settings));
@@ -140,7 +140,10 @@ function bindEventListeners(game) {
 
 function bindMenuEventListeners(game){
 	// OPTION MENU
-	document.getElementById('js-option-btn').addEventListener('click', game.viewOptionMenu.bind(game));
+	let optionBtn = document.getElementById('js-option-btn');
+	if (optionBtn) {
+		optionBtn.addEventListener('click', game.viewOptionMenu.bind(game));
+	}
 
 	document.getElementById('js-login-btn').addEventListener('click', function() {
 		game.viewOptionMenu();
@@ -172,15 +175,19 @@ function bindMenuEventListeners(game){
 		game.viewOptionMenu();
 		game.endGame();
 	});
-
+	
+	document.getElementById('js-end-game-btn').addEventListener('click', function() {
+		game.viewOptionMenu();
+		game.endGame();
+	});
 	document.getElementById('user-name').addEventListener('click', function() {
-		if (game.userProfile.isUserLoggedIn) {
+		if (game.userProfile.isUserLoggedIn){
 			loadPage('dashboard');
 		}
 	});
-	
+
 	document.getElementById('user-avatar').addEventListener('click', function() {
-		if (game.userProfile.isUserLoggedIn) {
+		if (game.userProfile.isUserLoggedIn){
 			loadPage('dashboard');
 		}
 	});
@@ -193,6 +200,7 @@ function bindMenuEventListeners(game){
 		matchHistory.addEventListener('click', function() {
 			loadPage('match_history').then(() => {
 				// Now that the page content has been loaded, call showMatches directly
+				this.game.stats.statForUser = this.game.loggedUser;
 				game.stats.showMatches('UvU');
 			});
 		});
