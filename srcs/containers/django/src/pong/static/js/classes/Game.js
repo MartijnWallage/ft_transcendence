@@ -138,7 +138,7 @@ class Game {
 			console.error('WebSocket error', error);
 		};
 
-		this.socket.onmessage = (e) => {
+		this.socket.onmessage = async (e) => {
 			this.socket_data = JSON.parse(e.data);
 			let data = this.socket_data;
 			
