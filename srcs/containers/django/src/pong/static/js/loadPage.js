@@ -84,6 +84,30 @@ function bindEventListeners(game) {
 	const saveSettings = document.getElementById('saveSettings');
 	if (saveSettings) {
 		saveSettings.addEventListener('click', game.settings.save.bind(game.settings));
+
+        document.getElementById('fieldWidth').addEventListener('input', function(event) {
+            const inputField = event.target;
+            const minValue = parseInt(inputField.min, 10);
+            const maxValue = parseInt(inputField.max, 10);
+            
+            if (inputField.value < minValue) {
+                inputField.value = minValue;
+            } else if (inputField.value > maxValue) {
+                inputField.value = maxValue;
+            }
+        });
+
+        document.getElementById('fieldLength').addEventListener('input', function(event) {
+            const inputField = event.target;
+            const minValue = parseInt(inputField.min, 10);
+            const maxValue = parseInt(inputField.max, 10);
+            
+            if (inputField.value < minValue) {
+                inputField.value = minValue;
+            } else if (inputField.value > maxValue) {
+                inputField.value = maxValue;
+            }
+        });
 	}
 
 	const resetDefaults = document.getElementById('resetDefaults');
@@ -148,7 +172,7 @@ function bindMenuEventListeners(game){
 	});
 
 
-	// // Match History
+	// Match History
 
 	var matchHistory = document.getElementById('match-history-btn');
 	if (matchHistory) {
