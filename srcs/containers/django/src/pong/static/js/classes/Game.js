@@ -164,16 +164,18 @@ class Game {
 					console.log('Player connected:', data.player);
 				}
 			}
-			if (data.type === 'connection_lost') {		
-				this.running = false;
+			if (data.type === 'connection_over') {		
 				console.log('Received message:', this.socket_data);
-				console.log('Connection lost after player disconnected');
-				if (this.socket)
-					this.socket.close();
-				showNotification('Connection lost after player disconnected');
-				setTimeout(() => {
-					window.loadPage('game_mode');
-				}, 2000); // Hide after 2 seconds
+				this.running = false;
+				if (this.running) {
+					console.log('Connection lost after player disconnected');
+					if (this.socket)
+						this.socket.close();
+					showNotification('Connection lost after player disconnected');
+					setTimeout(() => {
+						window.loadPage('game_mode');
+					}, 2000);
+				}
 				
 			}
 			if (data.type === 'game_state' && this.running) {
