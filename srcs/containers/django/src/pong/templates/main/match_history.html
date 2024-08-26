@@ -2,9 +2,9 @@
 <div id="menu" class="container-md mx-auto p-5">
     <!-- Mode Selection -->
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2>Player Match History</h2>
+        <h2 class="text-white" style="padding-right: 50px;">Match History</h2>
         <div class="dropdown">
-            <button class="btn btn-primary dropdown-toggle" type="button" id="modeDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+            <button class="btn btn-outline-light dropdown-toggle" type="button" id="modeDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                 Select Mode
             </button>
             <ul class="dropdown-menu" aria-labelledby="modeDropdown">
@@ -20,11 +20,11 @@
         <!-- Match History Section -->
         <div id="match-history" class="card shadow-lg">
             <div class="card-header bg-primary text-white">
-                <h3 class="text-center" id="matchTitle">1 vs 1 Matches</h3>
+                <h5 class="text-center mt-2" id="matchTitle">1 vs 1 Matches</h5>
             </div>
             <div class="card-body">
                 <table class="table table-hover">
-                    <thead class="table-dark">
+                    <thead class="table-light">
                         <tr>
                             <th>#</th>
                             <th>Date</th>
@@ -43,11 +43,11 @@
         <!-- Tournament History Section -->
         <div id="tournament-history" class="card shadow-lg" style="display: none;">
             <div class="card-header bg-primary text-white">
-                <h3 class="text-center" id="tournamentTitle">Tournament Matches</h3>
+                <h5 class="text-center mt-2" id="tournamentTitle">Tournament Matches</h5>
             </div>
             <div class="card-body">
                 <table class="table table-hover">
-                    <thead class="table-dark">
+                    <thead class="table-light">
                         <tr>
                             <th>#</th>
                             <th>Date</th>

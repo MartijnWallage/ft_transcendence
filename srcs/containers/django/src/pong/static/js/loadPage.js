@@ -155,10 +155,10 @@ function bindMenuEventListeners(game){
 		handleLogout()
 	});
 
-	document.getElementById('js-tournament_score-btn').addEventListener('click', function() {
-		game.viewOptionMenu();
-		loadPage('tournament_score');
-	});
+	// document.getElementById('js-tournament_score-btn').addEventListener('click', function() {
+	// 	game.viewOptionMenu();
+	// 	loadPage('tournament_score');
+	// });
 
 	document.getElementById('js-audio-btn').addEventListener('click', function() {
 		game.viewOptionMenu();

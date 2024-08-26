@@ -1,35 +1,19 @@
 {% block content %}
-<h2 class="my-4 display-5 text-white">Dashboard</h2>
 <div id="menu" class="container-md mx-auto p-5">
+  <h2 class="text-white">Dashboard</h2>
 
-  <div id="dashboard-view" class="container my-3 px-4">
-    <div class="row gx-5">
-      <h2 class="mb-2 text-white">Change</h2>
-      <div class="col d-flex justify-content-end">
-        <button type="button" class="btn btn-outline-light" 
-                onclick="loadPage('update-password-page')">Password</button>
-      </div>
-      <div class="col d-flex justify-content-start">
-        <button type="button" class="btn btn-outline-light"
-                onclick="loadPage('update-profile-page')">Info</button>
-      </div>
-      <div class="col d-flex justify-content-start">
-        <button type="button" class="btn btn-outline-light mx-1" 
-                id="match-history-btn" style="display: none;">Match history</button>
-      </div>
-    </div>
-  </div>
-  
-
-  <div id="friends-section" class="p-4 d-flex flex-column align-items-start bg-dark text-blue" style="width: 100%; max-width: 650px; border-radius: 10px; overflow-y: auto;">
-    <h4>Friends</h4>
+  <div id="under-title" class="container my-3">
     
-    <div class="accordion" id="friendsAccordion">
-      <div class="accordion-item">
-        <h2 class="accordion-header" id="headingSuggested">
-          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSuggested" aria-expanded="false" aria-controls="collapseSuggested">
-            Suggested Friends
-          </button>
+    
+    <div id="friends-section" class="p-4 d-flex flex-column align-items-start bg-dark text-blue" style="width: 100%; max-width: 650px; border-radius: 10px; overflow-y: auto;">
+      <h4>Friends</h4>
+      
+      <div class="accordion" id="friendsAccordion">
+        <div class="accordion-item">
+          <h2 class="accordion-header" id="headingSuggested">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSuggested" aria-expanded="false" aria-controls="collapseSuggested">
+              Suggested Friends
+            </button>
         </h2>
         <div id="collapseSuggested" class="accordion-collapse collapse" aria-labelledby="headingSuggested" data-bs-parent="#friendsAccordion">
           <div class="accordion-body">
@@ -38,7 +22,7 @@
           </div>
         </div>
       </div>
-
+      
       <div class="accordion-item">
         <h2 class="accordion-header" id="headingRequests">
           <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseRequests" aria-expanded="false" aria-controls="collapseRequests">
@@ -52,7 +36,7 @@
           </div>
         </div>
       </div>
-
+      
       <div class="accordion-item">
         <h2 class="accordion-header" id="headingOnline">
           <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOnline" aria-expanded="false" aria-controls="collapseOnline">
@@ -66,7 +50,7 @@
           </div>
         </div>
       </div>
-
+      
       <div class="accordion-item">
         <h2 class="accordion-header" id="headingAll">
           <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseAll" aria-expanded="false" aria-controls="collapseAll">
@@ -82,39 +66,51 @@
       </div>
     </div>
   </div>
-</div>
-<div id="menu1" class="container-md mx-auto p-5">
-  <div id="statistics-section" class="p-4 bg-dark text-white d-flex flex-wrap align-items-center" style="width: 100%; max-width: 650px; border-radius: 10px;">
-    <div id="match-stats-text" class="col-8">
-      <h4>Match Statistics</h4>
-      <p id="total-matches">Total Matches Played: <strong>Loading...</strong></p>
-      <p id="matches-won">Matches Won: <strong>Loading...</strong></p>
-      <p id="matches-lost">Matches Lost: <strong>Loading...</strong></p>
-      <p id="win-rate">Win Rate: <strong>Loading...</strong></p>
-    </div>
-    <div id="match-stats-chart-container" class="col-4 text-center">
-      <canvas id="match-stats-chart" style="width: 100px; height: 100px;"></canvas>
-    </div>
-  </div>
-    
 
-  <div id="match-section" class="p-4 d-flex flex-column align-items-start bg-dark text-blue" style="width: 100%; max-width: 650px; border-radius: 10px; overflow-y: auto;">
-    <h4>Other User Matches</h4>
+  <div id="menu1" class="container-md mx-auto p-5">
+    <div id="statistics-section" class="p-4 bg-dark text-white d-flex flex-wrap align-items-center" style="width: 100%; max-width: 650px; border-radius: 10px;">
+      <div id="match-stats-text" class="col-8">
+        <h4>Match Statistics</h4>
+        <p id="total-matches">Total Matches Played: <strong>Loading...</strong></p>
+        <p id="matches-won">Matches Won: <strong>Loading...</strong></p>
+        <p id="matches-lost">Matches Lost: <strong>Loading...</strong></p>
+        <p id="win-rate">Win Rate: <strong>Loading...</strong></p>
+        <button type="button" class="btn btn-outline-light mx-1" 
+                      id="match-history-btn" style="display: none;">Match history</button>
+      </div>
+      <div id="match-stats-chart-container" class="col-4 text-center">
+        <canvas id="match-stats-chart" style="width: 100px; height: 100px;"></canvas>
+      </div>
+    </div>
     
-    <div class="accordion" id="userMatchAccordion">
-      <div class="accordion-item">
-        <h2 class="accordion-header" id="headingHistory">
-          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseHistory" aria-expanded="false" aria-controls="collapseSuggested">
-            Users Matches
-          </button>
-        </h2>
-        <div id="collapseHistory" class="accordion-collapse collapse" aria-labelledby="headingHistory" data-bs-parent="#userMatchAccordion">
-          <div class="accordion-body">
-            <ul id="user-match-list" class="list-group">
-            </ul>
+    
+    <div id="match-section" class="p-4 d-flex flex-column align-items-start bg-dark text-blue" style="width: 100%; max-width: 650px; border-radius: 10px; overflow-y: auto;">
+      <h4>Other User Matches</h4>
+      
+      <div class="accordion" id="userMatchAccordion">
+        <div class="accordion-item">
+          <h2 class="accordion-header" id="headingHistory">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseHistory" aria-expanded="false" aria-controls="collapseSuggested">
+              Users Matches
+            </button>
+          </h2>
+          <div id="collapseHistory" class="accordion-collapse collapse" aria-labelledby="headingHistory" data-bs-parent="#userMatchAccordion">
+            <div class="accordion-body">
+              <ul id="user-match-list" class="list-group">
+              </ul>
+            </div>
           </div>
         </div>
-      </div>
 
-</div>
-{% endblock %}
+        <div class="mt-3">
+              <button type="button" class="btn btn-link" 
+                      onclick="loadPage('update-password-page')">Change Password</button>
+              <button type="button" class="btn btn-link"
+                      onclick="loadPage('update-profile-page')">Change Info</button>
+            </div>
+              
+            </div>
+      </div>
+    </div>
+    {% endblock %}
+    

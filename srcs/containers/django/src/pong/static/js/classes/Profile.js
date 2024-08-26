@@ -445,7 +445,7 @@ class Profile{
 		console.log("userInfo: ", userInfo);
 	
 		if (userInfo && userInfo.username) {
-			userInfoElement.innerText = `Welcome, ${userInfo.username}`;
+			userInfoElement.innerText = `${userInfo.username}`;
 			game.loggedUser = userInfo.username;
 			// if (userInfo.avatar_url) {
 			userAvatar.src = userInfo.avatar_url;
