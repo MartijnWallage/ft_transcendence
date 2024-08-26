@@ -166,8 +166,8 @@ class Game {
 			}
 			if (data.type === 'connection_over') {		
 				console.log('Received message:', this.socket_data);
-				this.running = false;
 				if (this.running) {
+					this.running = false;
 					console.log('Connection lost after player disconnected');
 					if (this.socket)
 						this.socket.close();
