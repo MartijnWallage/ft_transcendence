@@ -174,7 +174,7 @@ class Game {
 					this.userProfile.showNotification('Connection lost after player disconnected');
 					setTimeout(() => {
 						window.loadPage('game_mode');
-					}, 2000);
+					}, 2500);
 				}
 				
 			}

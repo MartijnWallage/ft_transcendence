@@ -330,7 +330,7 @@ class Profile{
 			notificationElement.style.display = 'block';
 			setTimeout(() => {
 				notificationElement.style.display = 'none';
-			}, 2000); // Hide after 2 seconds
+			}, 2500); // Hide after 2 seconds
 		}
 	}
 	
