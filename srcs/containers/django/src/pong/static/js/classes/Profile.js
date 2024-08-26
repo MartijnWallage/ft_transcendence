@@ -340,7 +340,7 @@ class Profile{
 		const userAvatar = document.getElementById('user-avatar');
 	
 		if (userInfo && userInfo.username) {
-			userInfoElement.innerText = `Welcome, ${userInfo.username}`;
+			userInfoElement.innerText = `${userInfo.username}`;
 			game.loggedUser = userInfo.username;
 			if (userInfo.avatar_url) {
 				userAvatar.src = userInfo.avatar_url;
