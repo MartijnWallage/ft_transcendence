@@ -76,6 +76,9 @@ class PongConsumer(AsyncWebsocketConsumer):
 
 	async def force_disconnect(self, event):
 		# Forcefully close the WebSocket connection
+		await self.safe_send(text_data=json.dumps({
+			'type': 'connection_lost',
+		}))
 		await self.close()
 
 	async def receive(self, text_data):
