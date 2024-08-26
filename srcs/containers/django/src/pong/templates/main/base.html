@@ -3,7 +3,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="csrf-token" content="{% csrf_token %}">
+    <!-- <meta name="csrf-token" content="{% csrf_token %}"> -->
     <title>transcendence</title>
     <meta name="viewport"
       content="width=device-width, initial-scale=1, shrink-to-fit=no, user-scalable=no"/>
@@ -33,12 +33,12 @@
   <div id="header" class="fixed-top d-flex justify-content-between align-items-center p-4">
     <div id="gameButtons" class="d-flex align-items-start">
         <button type="button" class="btn btn-outline-light mx-1" id="js-option-btn">=</button>
-        <button type="button" class="btn btn-outline-light mx-1" id="js-login-btn" onclick="loadPage('login_user')" style="display: none;">Login</button>
+        <button type="button" class="btn btn-outline-light mx-1" id="js-login-btn" style="display: none;">Login</button>
         <button type="button" class="btn btn-outline-light mx-1" id="js-logout-btn" style="display: none;">Logout</button>
-        <button type="button" class="btn btn-outline-light mx-1" id="js-tournament_score-btn" onclick="loadPage('tournament_score')" style="display: none;">Score Tournament</button>
+        <button type="button" class="btn btn-outline-light mx-1" id="js-tournament_score-btn" style="display: none;">Score Tournament</button>
         <button type="button" class="btn btn-outline-light mx-1" id="js-audio-btn" style="display: none;">Audio on</button>
 		<button type="button" class="btn btn-outline-light mx-1" id="js-settings-btn" style="display: none;">Settings</button>
-        <button type="button" class="btn btn-outline-light mx-1" id="js-end-game-btn" style="display: none;">Exit</button>
+        <button type="button" class="btn btn-outline-light mx-1" id="js-end-game-btn" style="display: none;">Home</button>
     </div>
     <div id="user-info" class="d-flex align-items-center">
         <div id="user-name" class="text-white pr-2" style="cursor: pointer;">Guest</div>

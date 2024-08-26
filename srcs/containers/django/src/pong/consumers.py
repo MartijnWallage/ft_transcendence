@@ -55,34 +55,29 @@ class PongConsumer(AsyncWebsocketConsumer):
 
 	async def disconnect(self, close_code):
 		# Clear player data
+		PongConsumer.player_A = None
+		PongConsumer.player_B = None
 		logger.debug("********** Player disconnected **********") 
-		if PongConsumer.player_A:
-			await self.channel_layer.send(
-				PongConsumer.player_A['channel_name'],
-				{
-					'type': 'force_disconnect'
-				}
-			)
-			PongConsumer.player_A = None
-
-		if PongConsumer.player_B:
-			await self.channel_layer.send(
-				PongConsumer.player_B['channel_name'],
-				{
-					'type': 'force_disconnect'
-				}
-			)
-			PongConsumer.player_B = None
-
 		# Leave the room group
 		await self.channel_layer.group_discard(
 			self.room_group_name,
 			self.channel_name
 		)
 
-	async def force_disconnect(self, event):
-		# Forcefully close the WebSocket connection
+		await self.channel_layer.group_send(
+			self.room_group_name,
+			{
+				'type': 'force_disconnect'
+			}
+   		 )
+
 		await self.close()
+
+	async def force_disconnect(self, event):
+
+		await self.send(text_data=json.dumps({
+			'type': 'connection_over',
+		}))
 
 	async def receive(self, text_data):
 		try:
@@ -115,6 +110,20 @@ class PongConsumer(AsyncWebsocketConsumer):
 						'type': 'game_start'
 					}
 				)
+
+		elif message_type == 'score_update':
+			if 'score_A' in data:
+				PongConsumer.game_data['score_A'] = data['score_A']
+			if 'score_B' in data:
+				PongConsumer.game_data['score_B'] = data['score_B']
+			await self.channel_layer.group_send(
+				self.room_group_name,
+				{
+					'type': 'new_score',
+					'score_A': PongConsumer.game_data['score_A'],
+					'score_B': PongConsumer.game_data['score_B'],
+				}
+			)
 
 		elif message_type == 'game_update':
 			# Update paddle positions based on player role
@@ -155,6 +164,11 @@ class PongConsumer(AsyncWebsocketConsumer):
 			'type': 'game_start',
 		}))
 
+	async def connection_over(self, event):
+		await self.send(text_data=json.dumps({
+			'type': 'connection_over',
+		}))
+
 	async def broadcast_player_info(self):
 		# Broadcast player information to all clients in the group
 		player_info_A = PongConsumer.player_A
@@ -189,4 +203,12 @@ class PongConsumer(AsyncWebsocketConsumer):
 			'player': event['player'],
 			'player_role': event['player_role'],
 			'ready': event['ready']
+		}))
+
+	async def new_score(self, event):
+		# Send updated scores to WebSocket
+		await self.send(text_data=json.dumps({
+			'type': 'new_score',
+			'score_A': event['score_A'],
+			'score_B': event['score_B'],
 		}))

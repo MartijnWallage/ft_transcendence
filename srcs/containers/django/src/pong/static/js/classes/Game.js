@@ -1,4 +1,5 @@
 import * as THREE from '../three-lib/three.module.js';
+import { Settings } from './Settings.js';
 import { Tournament } from './Tournament.js';
 import { Player } from './Player.js';
 import { Match } from './Match.js';
@@ -15,27 +16,40 @@ import { Profile } from './Profile.js';
 
 class Game {
 	constructor() {
+        // Settings
+        this.settings = new Settings(this);
+        
+		// Game state
+		this.running = false;
+		this.match = null;
+		this.tournament = null;
+		this.readyForNextMatch = false;
+		this.isOptionMenuVisible = false;
+		this.isSettingsMenuVisible = false;
+		this.mode = 'none';
+		this.loggedUser = 'Guest';
+		this.socket = null;
+		this.socket_data = null;
+        
 		// Scene
 		const container = document.getElementById('threejs-container');
 		this.scene = new THREE.Scene();
 		this.renderer = new THREE.WebGLRenderer({ antialias: true });
-		this.cam1 = new Camera;
-		this.cam2 = new Camera;
+		this.cam1 = new Camera(this);
+		this.cam2 = new Camera(this);
 		this.renderer.setSize(window.innerWidth, window.innerHeight);
 		this.renderer.setClearColor(0xc1d1db);
 		container.appendChild(this.renderer.domElement);
-
+        
 		// Objects
-		this.field = new Field(this.scene, 16, 12);
-		this.paddle1 = new Paddle(this.scene, this.field, true);
-		this.paddle2 = new Paddle(this.scene, this.field, false);
+		this.field = new Field(this.scene, this.settings.fieldLength, this.settings.fieldWidth);
+		this.paddle1 = new Paddle(this, true);
+		this.paddle2 = new Paddle(this, false);
 		this.ball = new Ball(this);
 		this.environment = new Environment(this.scene);
 		this.audio = null;
-
+        
 		// Game state
-		this.scoreToWin = 1;
-		this.aiLevel = 2;
 		this.running = false;
 		this.match = null;
 		this.tournament = null;
@@ -58,18 +72,8 @@ class Game {
 
 		this.stats = new Stats(this);
 		this.userProfile = new Profile(this);
-}
+    }
 
-	updateField(length, width) {
-		this.scene.remove(this.field.mesh);
-		this.scene.remove(this.field.net);
-		this.scene.remove(this.paddle1.mesh);
-		this.scene.remove(this.paddle2.mesh);
-		this.field = new Field(this.scene, length, width);
-		this.paddle1 = new Paddle(this.scene, this.field, true);
-		this.paddle2 = new Paddle(this.scene, this.field, false);
-	}
-	
 	// Create audio audio context once there is a first interaction with the website to comply with internet rules
 	async createAudioContext() {
 		const audio = document.createElement("audio");
@@ -126,16 +130,15 @@ class Game {
 
 		this.socket.onclose = (event) => {
 			console.log('WebSocket closed', event);
-			// this.handleReconnection();
+			this.handleDisconnection();
 		};
 
 		this.socket.onerror = (error) => {
 			console.error('WebSocket error', error);
 		};
 
-		this.socket.onmessage = (e) => {
+		this.socket.onmessage = async (e) => {
 			this.socket_data = JSON.parse(e.data);
-			// console.log('Received message:', this.socket_data);
 			let data = this.socket_data;
 			
 			if (data.type === 'player_role') {
@@ -143,13 +146,36 @@ class Game {
 				console.log('local role assigned to ' + data.player_role);
 			}
 			if (data.type === 'new_score') {
-				this.match.updateScore(data.player, data.score); //somehting like taht
+				const player1 = this.match.players[0];
+				const myRole = player1.online_role;
+				if (myRole === 'B') {
+					console.log('Received message:', data.score_A, '  ', data.score_B);
+					this.match.score.result = [data.score_B, data.score_A];
+					this.match.score.onlineUpdate = true;
+					textToDiv(this.match.score.result[0], `player${1}-score`);
+					textToDiv(this.match.score.result[1], `player${2}-score`);
+				}
 			}
 			if (data.type === 'player_connected') {		
+				console.log('Received message:', this.socket_data);
 				if (data.player_role !== player1.online_role) {
 					player1.oponent = new Player(this.socket_data.player);
 					console.log('Player connected:', data.player);
 				}
+			}
+			if (data.type === 'connection_over') {		
+				console.log('Received message:', this.socket_data);
+				if (this.running) {
+					this.running = false;
+					console.log('Connection lost after player disconnected');
+					if (this.socket)
+						this.socket.close();
+					this.userProfile.showNotification('Connection lost after player disconnected');
+					setTimeout(() => {
+						window.loadPage('game_mode');
+					}, 2500);
+				}
+				
 			}
 			if (data.type === 'game_state' && this.running) {
 				const player1 = this.match.players[0];
@@ -165,18 +191,19 @@ class Game {
 			}
 	}}
 
-	handleReconnection() {
-		setTimeout(() => {
-			console.log('Reconnecting...');
-			this.initSocket();
-		}, this.reconnectInterval);
+	handleDisconnection() {
+		console.log('Connection is over');
 	}
 
 	async startVsOnline() {
 		this.mode = 'vsOnline';
 		this.audio.playSound(this.audio.select_2);
+    
+        // set settings to default
+        this.settings.reset();
+    
 		const player1 = new Player(this.loggedUser);
-		var player2 = null;
+		let player2 = null;
 		this.initSocket(player1);
 	
 		// Create a promise to handle player2 connection
@@ -238,14 +265,18 @@ class Game {
 			console.log('displaying option menu');
 			displayDiv('js-tournament_score-btn');
 			displayDiv('js-audio-btn');
-			displayDiv('js-settings-btn');
+			displayDiv('js-end-game-btn');
 			if (this.loggedUser === 'Guest') {
 				displayDiv('js-login-btn');
 			}
 			else {
 				displayDiv('js-logout-btn');
 			}
-			displayDiv('js-end-game-btn');
+			if (this.running)
+				displayDiv('js-end-game-btn');
+            else {
+                displayDiv('js-settings-btn');
+            }
 			displayDiv('match-history-btn');
 			textToDiv('-', 'js-option-btn');
 			this.isOptionMenuVisible = true;
@@ -263,42 +294,31 @@ class Game {
 		}
 	}
 
-	// Settings menu
-
-	// Function to reset settings to default values
-	resetToDefaults() {
-		document.getElementById('ballSpeed').value = 4;
-		document.getElementById('paddleSpeed').value = 4;
-		document.getElementById('fieldWidth').value = 12;
-		document.getElementById('fieldLength').value = 16;
-		document.getElementById('aiLevel').value = 'medium';
+	hideOptionMenu() {
+		console.log('hiding option menu');
+		notDisplayDiv('js-tournament_score-btn');
+		notDisplayDiv('js-audio-btn');
+		notDisplayDiv('js-login-btn');
+		notDisplayDiv('js-logout-btn');
+		notDisplayDiv('js-settings-btn');
+		notDisplayDiv('js-end-game-btn');
+		textToDiv('=', 'js-option-btn');
+		this.isOptionMenuVisible = false;
 	}
 
-	saveSettings() {
-		const ballSpeed = document.getElementById('ballSpeed').value;
-		const paddleSpeed = document.getElementById('paddleSpeed').value;
-		const fieldWidth = document.getElementById('fieldWidth').value;
-		const fieldLength = document.getElementById('fieldLength').value;
-		const aiLevel = document.getElementById('aiLevel').value;
-
-		this.updateField(fieldLength, fieldWidth);
-		this.ball.initialSpeed = ballSpeed / 40;
-		this.paddle1.speed = paddleSpeed / 40;
-		this.paddle2.speed = paddleSpeed / 40;
-		this.aiLevel = aiLevel === 'easy' ? 1 : aiLevel === 'medium' ? 2 : 3;
-
-		console.log(`Ball Speed: ${ballSpeed}`, this.ball.initialSpeed);
-		console.log(`Paddle Speed: ${paddleSpeed}`, this.paddle1.speed);
-		console.log(`Field Width: ${fieldWidth}`, this.field.geometry.parameters.width);
-		console.log(`Field Length: ${fieldLength}`, this.field.geometry.parameters.depth);
-		console.log(`AI Level: ${aiLevel}`, this.aiLevel);
-
-		// updateBallSpeed(ballSpeed);
-		// updatePaddleSpeed(paddleSpeed);
-		// updateFieldDimensions(fieldWidth, fieldHeight);
-		// updateAILevel(aiLevel);
-	
-		loadPage('game_mode');
+    // update scene for when settings have changed
+    updateScene(length, width) {
+        this.field.remove();
+        this.paddle1.remove();
+        this.paddle2.remove();
+        this.ball.remove();
+		this.field = new Field(this.scene, length, width);
+		this.paddle1 = new Paddle(this, true);
+		this.paddle2 = new Paddle(this, false);
+        if (this.match && this.match.players[1].ai) {
+            this.scene.remove(this.match.players[1].ai.mesh);
+        }
+        this.ball = new Ball(this);
 	}
 	
 	muteAudio() {

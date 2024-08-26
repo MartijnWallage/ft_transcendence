@@ -26,10 +26,21 @@ RUN usermod -aG sudo myuser
 COPY requirements.txt .
 RUN pip install --upgrade pip && pip install -r requirements.txt;
 
-RUN mkdir -p $APP_HOME
-RUN mkdir $APP_HOME/static
+# Create necessary directories
+RUN mkdir -p $APP_HOME/static $APP_HOME/media/ /tmp/daphne/ssl
 
-# Create the media directory to be able to upload avatars
+# Create SSL certificates
+RUN openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
+    -keyout /tmp/daphne/ssl/daphne.key \
+    -out /tmp/daphne/ssl/daphne.crt \
+    -subj "/C=DE/L=Berlin/O=42Berlin/CN=nginx"
+
+# Set permissions for SSL certificates
+RUN chmod 700 /tmp/daphne/ssl && \
+    chmod 600 /tmp/daphne/ssl/daphne.key /tmp/daphne/ssl/daphne.crt
+
+# Set file permissions
+RUN chown -R myuser:mygroup $APP_HOME/static $APP_HOME/media /tmp/daphne/ssl
 
 COPY tools/docker-entrypoint.sh /docker-entrypoint.sh
 RUN chmod +x /docker-entrypoint.sh
@@ -37,7 +48,7 @@ RUN chmod +x /docker-entrypoint.sh
 # Set the working directory in the container
 WORKDIR $APP_HOME
 # Copy the entire Django project directory into the Docker image workdir
-COPY src/ .
+COPY src/ $APP_HOME
 
 RUN echo 'myuser ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 # Set the user for subsequent instructions

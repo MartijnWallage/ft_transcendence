@@ -92,18 +92,15 @@ class Match {
 		const socket = game.socket;
 
 		if (game.mode === 'vsOnline') {
+			this.timeToSend = !this.timeToSend;
 			if (this.timeToSend) {
 				this.sendGameState(socket);
-				this.timeToSend = false;
-			}
-			else {
-				this.timeToSend = true;
 			}
 		}
 
 		// move left paddle
 		let direction = this.keys['a'] ? -1 : this.keys['d'] ? 1 : 0;
-		paddle1.movePaddle(direction, field);
+		paddle1.movePaddle(direction);
 		
 		// move right paddle
 		if (game.mode !==  'vsOnline') {
@@ -111,7 +108,7 @@ class Match {
 				this.keys['ArrowRight'] ? -1 :
 				this.keys['ArrowLeft'] ? 1 :
 				0;
-				paddle2.movePaddle(direction, field);
+				paddle2.movePaddle(direction);
 		}
 		// move and bounce ball
 		ball.animateBall();
@@ -121,10 +118,10 @@ class Match {
 		this.score.update();
 
 		if (this.players[1].ai || game.mode === 'vsOnline') {
-			cam1.renderSingleView(game);
+			cam1.renderSingleView();
 		} else {
-			cam1.renderSplitView(game, 0);
-			cam2.renderSplitView(game, 1);
+			cam1.renderSplitView(0);
+			cam2.renderSplitView(1);
 			displayDiv('vertical-line');
 		}
 	}
@@ -132,14 +129,14 @@ class Match {
 	sendGameState(socket) {
 		if (socket.readyState === WebSocket.OPEN) {
 			// Construct the game state data
-			const player1 = this.game.match.players[0]; // Assuming player1 is always the logged-in user
+			const player1 = this.game.match.players[0];
 			const myRole = player1.online_role;
 			let gameState;
 			if (myRole === 'A') {
 				gameState = {
 					type: 'game_update',
 					paddle_A: this.game.paddle1.mesh.position.z,
-					ball_x: this.game.ball.mesh.position.x, // Assuming getPosition() returns {x, z}
+					ball_x: this.game.ball.mesh.position.x,
 					ball_z: this.game.ball.mesh.position.z,
 				};
 			}
@@ -148,9 +145,7 @@ class Match {
 					type: 'game_update',
 					paddle_B: this.game.paddle1.mesh.position.z,
 				};
-
 			}
-
 			// Send the game state to the server
 			socket.send(JSON.stringify(gameState));
 		} else {

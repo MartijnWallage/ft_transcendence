@@ -57,15 +57,15 @@ function main() {
 	bindMenuEventListeners(this_game);
 	window.addEventListener('resize', () => this_game.onWindowResize());
 	requestAnimationFrame(animate.bind(null, this_game));
-	}
+}
 
 	function animate(game) {
 		if (game.running === false) {
-			game.cam1.renderMenuView(game);
+			game.cam1.renderMenuView();
 		} else {
 			game.match.update(game);
 		}
 		requestAnimationFrame(animate.bind(null, game));
-		}
+    }
 
 main();

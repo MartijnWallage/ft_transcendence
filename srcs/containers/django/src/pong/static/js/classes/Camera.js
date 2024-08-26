@@ -2,7 +2,9 @@ import * as THREE from '../three-lib/three.module.js';
 import { notDisplayDiv } from '../utils.js';
 
 class Camera {
-	constructor() {
+	constructor(game) {
+        this.game = game;
+        this.settings = game.settings;
 		this.camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 1000);
 		this.camera.position.set(0, 200, 0);
 		this.camera.lookAt(0, 1, 0);
@@ -54,68 +56,72 @@ class Camera {
 		}
 	}
 
-	renderMenuView(scene) {
+	renderMenuView() {
 		notDisplayDiv('vertical-line');
 		this.orbitCamera();
 		const left = 0;
 		const bottom = 0;
 		const width = Math.floor( window.innerWidth * 1 );
 		const height = Math.floor( window.innerHeight * 1 );
-		scene.renderer.setViewport( left, bottom, width, height );
-		scene.renderer.setScissor( left, bottom, width, height );
-		scene.renderer.setScissorTest(true);
+		this.game.renderer.setViewport( left, bottom, width, height );
+		this.game.renderer.setScissor( left, bottom, width, height );
+		this.game.renderer.setScissorTest(true);
 		this.camera.aspect = width / height;
 		this.camera.updateProjectionMatrix();
-		scene.renderer.render(scene.scene, this.camera);
+		this.game.renderer.render(this.game.scene, this.camera);
 	}
 
-	renderSingleView(scene) {
+	renderSingleView() {
 		const left = 0;
 		const bottom = 0;
 		const width = window.innerWidth;
 		const height = window.innerHeight;
-		this.camera.position.set(-14, 14, 0);
+        const longestSide = Math.max(this.settings.fieldLength, this.settings.fieldWidth)* 0.75;
+        const shortestSide = Math.min(this.settings.fieldLength, this.settings.fieldWidth)* 1.1;
+		this.camera.position.set(-longestSide, longestSide, 0);
 		if (width < height){
-			const objectWidth = 13;
-			const cameraDistance = this.camera.position.distanceTo(new THREE.Vector3(-12, 0, 0));
+			const objectWidth = shortestSide;
+			const cameraDistance = this.camera.position.distanceTo(new THREE.Vector3(-shortestSide, 0, 0));
 			this.calculateFovToFitObject(objectWidth, cameraDistance, width / height);
 		}
 		else {
 			this.camera.fov = 50;
 		}
 		this.camera.lookAt(0, -0.5, 0);
-		scene.renderer.setViewport( left, bottom, width, height );
-		scene.renderer.setScissor( left, bottom, width, height );
-		scene.renderer.setScissorTest(true);
+		this.game.renderer.setViewport( left, bottom, width, height );
+		this.game.renderer.setScissor( left, bottom, width, height );
+		this.game.renderer.setScissorTest(true);
 		this.camera.aspect = width / height;
 		this.camera.updateProjectionMatrix();
-		scene.renderer.render(scene.scene, this.camera);
+		this.game.renderer.render(this.game.scene, this.camera);
 	}
 
-	renderSplitView(scene, position) {
+	renderSplitView(position) {
+        const longestSide = Math.max(this.settings.fieldLength, this.settings.fieldWidth)* 0.75;
+        const shortestSide = Math.min(this.settings.fieldLength, this.settings.fieldWidth)* 1.1;
 		const offset = position === 0 ? 0 : 0.5;
-		const x = position === 0 ? -14 : 14;
-		const dx = position === 0 ? -12 : 12;
+		const x = position === 0 ? -longestSide : longestSide;
+		const dx = position === 0 ? -shortestSide : shortestSide;
 		const left = Math.floor( window.innerWidth * offset);
 		const bottom = 0;
 		const width = Math.floor( window.innerWidth * 0.5 );
 		const height = window.innerHeight;
 		if (width < height){
-			const objectWidth = 13;
+			const objectWidth = shortestSide;
 			const cameraDistance = this.camera.position.distanceTo(new THREE.Vector3(dx, 0, 0));
 			this.calculateFovToFitObject(objectWidth, cameraDistance, width / height);
 		}
 		else {
 			this.camera.fov = 50;
 		}
-		this.camera.position.set(x, 14, 0);
+		this.camera.position.set(x, longestSide, 0);
 		this.camera.lookAt(0, -0.5, 0);
-		scene.renderer.setViewport( left, bottom, width, height );
-		scene.renderer.setScissor( left, bottom, width, height );
-		scene.renderer.setScissorTest(true);
+		this.game.renderer.setViewport( left, bottom, width, height );
+		this.game.renderer.setScissor( left, bottom, width, height );
+		this.game.renderer.setScissorTest(true);
 		this.camera.aspect = width / height;
 		this.camera.updateProjectionMatrix();
-		scene.renderer.render(scene.scene, this.camera);
+		this.game.renderer.render(this.game.scene, this.camera);
 	}
 }
 

@@ -37,16 +37,16 @@ class Blockchain {
 			console.log('Server response:', result);
 	
 			if (result.success) {
-            const transactionInfoElement = document.getElementById('transaction-info');
-            const txHash = result.tx_hash;
-            const etherscanUrl = `https://sepolia.etherscan.io/tx/${txHash}`;
-            alert(`Matches registered successfully! Transaction Hash: ${txHash}`);
+				const transactionInfoElement = document.getElementById('transaction-info');
+				const txHash = result.tx_hash;
+				const etherscanUrl = `https://sepolia.etherscan.io/tx/${txHash}`;
+				alert(`Matches registered successfully! Transaction Hash: ${txHash}`);
 
-            transactionInfoElement.innerHTML = 
-                `Transaction Hash: <a href="${etherscanUrl}" target="_blank">${txHash}</a>`;
+				transactionInfoElement.innerHTML = 
+					`Transaction Hash: <a href="${etherscanUrl}" target="_blank">${txHash}</a>`;
 
-            // Update the button to show it's registered and keep it disabled
-            registerButton.textContent = 'Registered';
+				// Update the button to show it's registered and keep it disabled
+				registerButton.textContent = 'Registered';
 			} else {
 				alert('Error registering matches: ' + result.error);
 
@@ -58,7 +58,9 @@ class Blockchain {
 			}
 		} catch (error) {
 			console.error(error);
-			alert('Error registering matches.');
+			if (error.message !== 'Transaction timed out') {
+				alert('The Sepolia network may be overloaded. Please try again.');
+			}
 			registerButton.classList.remove('btn-secondary');
 			registerButton.classList.add('btn-success');
 			registerButton.textContent = 'Register on Blockchain';

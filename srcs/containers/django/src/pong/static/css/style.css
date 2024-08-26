@@ -28,6 +28,17 @@
 	transition: opacity 1.5s ease-out;
 }
 
+#settings-menu {
+	border-radius: 10px;
+	box-shadow: 15px 15px 35px rgba(0, 0, 0, 0.5);
+	background-color: rgba(230, 230, 230, 0.1);
+	border-top: 1px solid rgba(255, 255, 255, 0.5);
+	border-left: 1px solid rgba(255, 255, 255, 0.5);
+	backdrop-filter: blur(5px);
+	opacity: 1;
+	transition: opacity 1.5s ease-out;
+}
+
 #main-content {
 	height: 100vh;
 	display: flex;
@@ -53,7 +64,11 @@
 		font-size: 0.9rem !important;
 	}
 
-	#menu {
+    #menu {
+		padding: 2rem !important;
+	}
+
+	#settings-menu {
 		padding: 2rem !important;
 	}
 
@@ -75,12 +90,12 @@
     }
 
 
-* {
+/* * {
 	user-select: none;
 	-webkit-user-select: none;
 	-moz-user-select: none;
 	-ms-user-select: none;
-}
+} */
 
 #user-name, #user-avatar {
 	cursor: pointer;
@@ -104,6 +119,14 @@
 }
 
 #menu.hidden {
+	display: none;
+}
+
+#settings-menu.fade-out {
+	opacity: 0;
+}
+
+#settings-menu.hidden {
 	display: none;
 }
 
@@ -146,6 +169,7 @@ h1 {
 }
 
 .form-label,
+.form-group,
 .form-text,
 .btn-link {
 	color: white !important;

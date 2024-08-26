@@ -4,6 +4,8 @@ class Stats {
     constructor(game) {
         this.game = game;
         this.statForUser = null;
+        this.tournamentsData = [];
+        this.tournamentId = null;
     }
 
     // init() {
@@ -131,6 +133,9 @@ class Stats {
             } else if (mode === 'solo') {
                 matchTitle.textContent = 'Player vs AI Matches';
             }
+            else if (mode === 'vsOnline') {
+                matchTitle.textContent = 'Player vs Online users';
+            }
 
             if (matches.length === 0) {
                 // Show a message when there are no matches
@@ -168,7 +173,7 @@ class Stats {
             tableBody.innerHTML = '';
         
             // Store tournaments data in a variable
-            window.tournamentsData = tournaments;
+            this.tournamentsData = tournaments;
         
             // Update the title
             tournamentTitle.textContent = 'Tournament Matches';
@@ -185,11 +190,12 @@ class Stats {
                 const tournament_result = this.determineTournamentResult(tournament, username);
                 const tournament_result_class = tournament_result === "Win" ? "bg-success" : "bg-danger";
                 const row = document.createElement('tr');
-                row.setAttribute('data-bs-toggle', 'modal');
-                row.setAttribute('data-bs-target', '#tournamentMatchDetailModal');
-                row.setAttribute('data-tournament-id', tournament.id);
+                // row.setAttribute('data-bs-toggle', 'modal');
+                // row.setAttribute('data-bs-target', '#tournamentMatchDetailModal');
+                // row.setAttribute('data-tournament-id', tournament.id);
                 row.addEventListener('click', () => {
                     console.log("LOG Tournament ID:", tournament.id);
+                    this.tournamentId = tournament.id;
                     this.showTournamentDetails(tournament.id, username);
                 });
                 row.innerHTML = `
@@ -215,7 +221,7 @@ class Stats {
             console.log("showTournamentDetails called with ID:", tournamentId);
         
             // Find the specific tournament using its ID
-            const tournament = window.tournamentsData.find(t => t.id === parseInt(tournamentId));
+            const tournament = this.tournamentsData.find(t => t.id === parseInt(tournamentId));
             
             if (!tournament) {
                 console.error("Tournament not found");
@@ -265,18 +271,22 @@ class Stats {
                 }
         
             // Show the modal
-            // const modal = new bootstrap.Modal(document.getElementById('tournamentDetailsModal'));
-            // modal.show();
             const modalElement = document.getElementById('tournamentDetailsModal');
+            if (!modalElement) {
+                console.error("Modal element not found.");
+                return;
+            }
+
             const modal = bootstrap.Modal.getOrCreateInstance(modalElement);
             modal.show();
-
         
-            if (registerButton) {
-                registerButton.addEventListener('click', () => {
-                    this.game.executeBlockchain(tournamentId);
-                });
-            }
+            // if (registerButton) {
+            //     registerButton.addEventListener('click', () => {
+            //         console.log("Registering on blockchain button clicked...");
+            //         console.log("test...");
+            //         this.game.executeBlockchain(tournamentId);
+            //     });
+            // }
         }
 }
 

@@ -75,26 +75,47 @@ function bindEventListeners(game) {
 		console.log('creating tournament');
 		startTournamentBtn.addEventListener('click', game.tournament.start.bind(game.tournament));
 	}
-	
-	var blockchainScore = document.getElementById('js-register-blockchain');
-	if (blockchainScore) {
-		blockchainScore.addEventListener('click', game.executeBlockchain.bind(game));
-	}
-
+	    
 	const saveSettings = document.getElementById('saveSettings');
 	if (saveSettings) {
-		saveSettings.addEventListener('click', game.saveSettings.bind(game));
+		saveSettings.addEventListener('click', game.settings.save.bind(game.settings));
+
+        document.getElementById('fieldWidth').addEventListener('input', function(event) {
+            const inputField = event.target;
+            const minValue = parseInt(inputField.min, 10);
+            const maxValue = parseInt(inputField.max, 10);
+            
+            if (inputField.value < minValue) {
+                inputField.value = minValue;
+            } else if (inputField.value > maxValue) {
+                inputField.value = maxValue;
+            }
+        });
+
+        document.getElementById('fieldLength').addEventListener('input', function(event) {
+            const inputField = event.target;
+            const minValue = parseInt(inputField.min, 10);
+            const maxValue = parseInt(inputField.max, 10);
+            
+            if (inputField.value < minValue) {
+                inputField.value = minValue;
+            } else if (inputField.value > maxValue) {
+                inputField.value = maxValue;
+            }
+        });
 	}
 
 	const resetDefaults = document.getElementById('resetDefaults');
 	if (resetDefaults) {
-		resetDefaults.addEventListener('click', game.resetToDefaults.bind(game));
+		resetDefaults.addEventListener('click', game.settings.resetMenu.bind(game.settings));
 	}
-	
-/* 	const closeSettings = document.getElementById('closeSettingsMenu');
-	if (closeSettings) {
-		closeSettings.addEventListener('click', loadPage('game_mode'));
-	} */
+
+	//Blockchain interaction
+
+	// var blockchainScore = document.getElementById('js-register-blockchain');
+	// if (blockchainScore) {
+    //     blockchainScore.addEventListener('click', game.executeBlockchain.bind(game));
+	// }
 
 	// BETWEEN MATCH
 
@@ -107,7 +128,14 @@ function bindEventListeners(game) {
 	if (replayBtn) {
 		replayBtn.addEventListener('click', game.replayGame.bind(game));
 	}
-
+	
+	var registerButton = document.getElementById('registerOnBlockchainBtn');
+	if (registerButton) {
+		registerButton.addEventListener('click', () => {
+			console.log("Registering on blockchain button clicked...");
+			game.executeBlockchain(game.stats.tournamentId);
+		});
+	}
 }
 
 function bindMenuEventListeners(game){
@@ -117,18 +145,40 @@ function bindMenuEventListeners(game){
 		optionBtn.addEventListener('click', game.viewOptionMenu.bind(game));
 	}
 
-	let endGameBtn = document.getElementById('js-end-game-btn');
-	if (endGameBtn) {
-		endGameBtn.addEventListener('click', game.endGame.bind(game));
-	}
+	document.getElementById('js-login-btn').addEventListener('click', function() {
+		game.viewOptionMenu();
+		loadPage('login_user');
+	});
 
-	let soundBtn = document.getElementById('js-audio-btn');
-	if (soundBtn) {
-		soundBtn.addEventListener('click', game.muteAudio.bind(game));
-	}
+	document.getElementById('js-logout-btn').addEventListener('click', function() {
+		game.viewOptionMenu();
+		handleLogout()
+	});
 
-	document.getElementById('js-settings-btn').addEventListener('click', function() {
-		loadPage('settings');
+	document.getElementById('js-tournament_score-btn').addEventListener('click', function() {
+		game.viewOptionMenu();
+		loadPage('tournament_score');
+	});
+
+	document.getElementById('js-audio-btn').addEventListener('click', function() {
+		game.viewOptionMenu();
+		game.muteAudio();
+	});
+	
+	document.getElementById('js-settings-btn').addEventListener('click', async function() {
+		game.hideOptionMenu();
+		await loadPage('settings');
+		game.settings.updateMenu();
+	});
+	
+	document.getElementById('js-end-game-btn').addEventListener('click', function() {
+		game.viewOptionMenu();
+		game.endGame();
+	});
+	
+	document.getElementById('js-end-game-btn').addEventListener('click', function() {
+		game.viewOptionMenu();
+		game.endGame();
 	});
 	document.getElementById('user-name').addEventListener('click', function() {
 		if (game.userProfile.isUserLoggedIn){
@@ -143,6 +193,8 @@ function bindMenuEventListeners(game){
 	});
 
 
+	// Match History
+
 	var matchHistory = document.getElementById('match-history-btn');
 	if (matchHistory) {
 		matchHistory.addEventListener('click', function() {
@@ -154,11 +206,12 @@ function bindMenuEventListeners(game){
 		});
 	}
 
+	// User 
+
 	let logout_btn = document.getElementById('js-logout-btn');
 	if (logout_btn) {
 		logout_btn.addEventListener('click', game.userProfile.handleLogout.bind(game.userProfile));
-	} 
-
+	}
 
 }
 
@@ -172,6 +225,16 @@ function dropDownEventListeners(game) {
             document.getElementById('tournament-history').style.display = 'none';
             document.getElementById('match-history').style.display = 'block';
             game.stats.showMatches('UvU');
+        });
+    }
+
+	var dropdown1vOnline = document.getElementById('dropdown-vs-online');
+    if (dropdown1vOnline) {
+        dropdown1vOnline.addEventListener('click', (event) => {
+            event.preventDefault(); // Prevent default link behavior
+            document.getElementById('tournament-history').style.display = 'none';
+            document.getElementById('match-history').style.display = 'block';
+            game.stats.showMatches('vsOnline');
         });
     }
 

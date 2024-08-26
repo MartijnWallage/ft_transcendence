@@ -1,46 +1,45 @@
 {% block content %}
 <div id="menu" class="container-md mx-auto p-5">
-        <!-- Mode Selection -->
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2>Player Match History</h2>
-            <div class="dropdown">
-                <button class="btn btn-primary dropdown-toggle" type="button" id="modeDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                    Select Mode
-                </button>
-                <ul class="dropdown-menu" aria-labelledby="modeDropdown">
-                    <li><a class="dropdown-item" id="dropdown-1v1" href="#">1 vs 1</a></li>
-                    <li><a class="dropdown-item" id="dropdown-vs-ai"  href="#">Player vs AI</a></li>
-                    <li><a class="dropdown-item" id="dropdown-tournament"  href="#">Tournament</a></li>
-                </ul>
-            </div>
+    <!-- Mode Selection -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Player Match History</h2>
+        <div class="dropdown">
+            <button class="btn btn-primary dropdown-toggle" type="button" id="modeDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                Select Mode
+            </button>
+            <ul class="dropdown-menu" aria-labelledby="modeDropdown">
+                <li><a class="dropdown-item" id="dropdown-1v1" href="#">1 vs 1</a></li>
+                <li><a class="dropdown-item" id="dropdown-vs-online" href="#">1 vs Online user</a></li>
+                <li><a class="dropdown-item" id="dropdown-vs-ai"  href="#">Player vs AI</a></li>
+                <li><a class="dropdown-item" id="dropdown-tournament"  href="#">Tournament</a></li>
+            </ul>
         </div>
-        <div>
-            <!-- Match History Section -->
-            <div id="match-history" class="card shadow-lg">
-                <div class="card-header bg-primary text-white">
-                    <h3 class="text-center" id="matchTitle">1 vs 1 Matches</h3>
-                </div>
-                <div class="card-body">
-                    <table class="table table-hover">
-                        <thead class="table-dark">
-                            <tr>
-                                <th>#</th>
-                                <th>Date</th>
-                                <th>Opponent</th>
-                                <th>Score</th>
-                                <th>Result</th>
-                            </tr>
-                        </thead>
-                        <tbody id="matchTableBody"></tbody>
-                    </table>
-                </div>
-                <div class="card-footer text-muted text-center">
-                    Transcendence
-                </div>
-            </div>
-        </div>
+    </div>
 
-    
+    <div>
+        <!-- Match History Section -->
+        <div id="match-history" class="card shadow-lg">
+            <div class="card-header bg-primary text-white">
+                <h3 class="text-center" id="matchTitle">1 vs 1 Matches</h3>
+            </div>
+            <div class="card-body">
+                <table class="table table-hover">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>#</th>
+                            <th>Date</th>
+                            <th>Opponent</th>
+                            <th>Score</th>
+                            <th>Result</th>
+                        </tr>
+                    </thead>
+                    <tbody id="matchTableBody"></tbody>
+                </table>
+            </div>
+            <div class="card-footer text-muted text-center">
+                Transcendence
+            </div>
+        </div>
         <!-- Tournament History Section -->
         <div id="tournament-history" class="card shadow-lg" style="display: none;">
             <div class="card-header bg-primary text-white">

@@ -40,14 +40,14 @@ services:
       - .env 
     networks:
        - ts-network
-    # # For School
-    # ports:
-    #   - "8443:443"   # For HTTPS
-    #   - "8080:80"   # For HTTP redirection
-    #For Cloud
+    # For School
     ports:
       - "8443:443"   # For HTTPS
-#      - "8080:80"   # For HTTP redirection 
+      - "8080:80"   # For HTTP redirection
+    # #For Cloud
+    # ports:
+    #   - "443:443"   # For HTTPS
+    #   - "80:80"   # For HTTP redirection
     restart: on-failure #always
     depends_on:
       - django
