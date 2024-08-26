@@ -54,28 +54,22 @@ class PongConsumer(AsyncWebsocketConsumer):
 		}))
 
 	async def disconnect(self, close_code):
-		# Clear player data
-		logger.debug("********** Player disconnected **********") 
-		if PongConsumer.player_A:
-			await self.channel_layer.send(
-				PongConsumer.player_A['channel_name'],
-				{
-					'type': 'force_disconnect'
-				}
-			)
+		logger.debug("********** Player disconnected **********")
+		
+		# Handle player disconnection and clean up
+		if self.player_role == 'A':
 			PongConsumer.player_A = None
-
-		if PongConsumer.player_B:
-			await self.channel_layer.send(
-				PongConsumer.player_B['channel_name'],
-				{
-					'type': 'force_disconnect'
-				}
-			)
+		elif self.player_role == 'B':
 			PongConsumer.player_B = None
 
-		# Leave the room group
-		await self.channel_layer.group_discard(
+		# Notify other players to forcefully disconnect
+		await self.channel_layer.group_send(
+			self.room_group_name,
+			{'type': 'force_disconnect'}
+		)
+
+		# Leave room group
+		await self.channel_layer.group_discard(a
 			self.room_group_name,
 			self.channel_name
 		)
@@ -129,8 +123,6 @@ class PongConsumer(AsyncWebsocketConsumer):
 					'score_B': PongConsumer.game_data['score_B'],
 				}
 			)
-
-			django       |   File "/home/app/web/./pong/consumers.py", line 211, in new_score
 
 		elif message_type == 'game_update':
 			# Update paddle positions based on player role
