@@ -360,7 +360,7 @@ import traceback
 @api_view(['GET'])
 def get_contract_address(request):
     contract_address = settings.SMART_CONTRACT_ADDRESS
-    return JsonResponse({'contract_address': contract_address})
+    return Response({'contract_address': contract_address})
 
 
 @api_view(['POST'])
@@ -405,21 +405,25 @@ def register_matches(request):
 
         # Send transaction
         tx_hash = web3.eth.send_raw_transaction(signed_tx.rawTransaction)
+        print(f"Transaction sent, hash: {tx_hash.hex()}")
 
         # Wait for the transaction receipt
         try:
-            receipt = web3.eth.wait_for_transaction_receipt(tx_hash, timeout=120)  # Increased timeout
+            receipt = web3.eth.wait_for_transaction_receipt(tx_hash, timeout=2)  # Increased timeout
+            print(f"Transaction receipt received: {receipt.transactionHash.hex()}")
         except TimeoutError:
+            print("Transaction timed out")
             return Response({'success': False, 'error': 'Transaction timed out'}, status=408)
-
 
         # Store the transaction hash in the database
         tournament.transaction_hash = receipt.transactionHash.hex()
         tournament.save()
+        print(f"Transaction hash saved in database for tournament {tournament_id}")
 
         # Update the tournament with the transaction hash
         return Response({'success': True, 'tx_hash': receipt.transactionHash.hex()})
     except Exception as e:
+        print(f"Error occurred: {str(e)}")
         return Response({'success': False, 'error': str(e)}, status=500)
 
 

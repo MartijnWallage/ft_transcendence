@@ -4,6 +4,7 @@ class Stats {
     constructor(game) {
         this.game = game;
         this.tournamentsData = [];
+        this.tournamentId = null;
     }
 
     formatTimestamp(timestamp) {
@@ -176,11 +177,12 @@ class Stats {
                 const tournament_result = this.determineTournamentResult(tournament, username);
                 const tournament_result_class = tournament_result === "Win" ? "bg-success" : "bg-danger";
                 const row = document.createElement('tr');
-                row.setAttribute('data-bs-toggle', 'modal');
-                row.setAttribute('data-bs-target', '#tournamentMatchDetailModal');
-                row.setAttribute('data-tournament-id', tournament.id);
+                // row.setAttribute('data-bs-toggle', 'modal');
+                // row.setAttribute('data-bs-target', '#tournamentMatchDetailModal');
+                // row.setAttribute('data-tournament-id', tournament.id);
                 row.addEventListener('click', () => {
                     console.log("LOG Tournament ID:", tournament.id);
+                    this.tournamentId = tournament.id;
                     this.showTournamentDetails(tournament.id, username);
                 });
                 row.innerHTML = `
@@ -265,11 +267,13 @@ class Stats {
             const modal = bootstrap.Modal.getOrCreateInstance(modalElement);
             modal.show();
         
-            if (registerButton) {
-                registerButton.addEventListener('click', () => {
-                    this.game.executeBlockchain(tournamentId);
-                });
-            }
+            // if (registerButton) {
+            //     registerButton.addEventListener('click', () => {
+            //         console.log("Registering on blockchain button clicked...");
+            //         console.log("test...");
+            //         this.game.executeBlockchain(tournamentId);
+            //     });
+            // }
         }
 }
 

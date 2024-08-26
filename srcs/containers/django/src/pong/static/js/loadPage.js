@@ -104,6 +104,14 @@ function bindEventListeners(game) {
 	if (replayBtn) {
 		replayBtn.addEventListener('click', game.replayGame.bind(game));
 	}
+	
+	var registerButton = document.getElementById('registerOnBlockchainBtn');
+	if (registerButton) {
+		registerButton.addEventListener('click', () => {
+			console.log("Registering on blockchain button clicked...");
+			game.executeBlockchain(game.stats.tournamentId);
+		});
+	}
 }
 
 function bindMenuEventListeners(game){
@@ -142,11 +150,15 @@ function bindMenuEventListeners(game){
 	});
 
 	document.getElementById('user-name').addEventListener('click', function() {
-		loadPage('dashboard');
+		if (game.userProfile.isUserLoggedIn) {
+			loadPage('dashboard');
+		}
 	});
 	
 	document.getElementById('user-avatar').addEventListener('click', function() {
-		loadPage('dashboard');
+		if (game.userProfile.isUserLoggedIn) {
+			loadPage('dashboard');
+		}
 	});
 
 
