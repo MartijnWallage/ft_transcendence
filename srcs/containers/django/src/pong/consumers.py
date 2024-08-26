@@ -107,23 +107,7 @@ class PongConsumer(AsyncWebsocketConsumer):
 					self.room_group_name,
 					{
 						'type': 'game_start'
-					}		if PongConsumer.player_A:
-			await self.channel_layer.send(
-				PongConsumer.player_A['channel_name'],
-				{
-					'type': 'force_disconnect'
-				}
-			)
-			PongConsumer.player_A = None
-
-		if PongConsumer.player_B:
-			await self.channel_layer.send(
-				PongConsumer.player_B['channel_name'],
-				{
-					'type': 'force_disconnect'
-				}
-			)
-			PongConsumer.player_B = None
+					}
 				)
 
 		elif message_type == 'score_update':
