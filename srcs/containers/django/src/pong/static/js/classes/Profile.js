@@ -1,3 +1,5 @@
+import { getCookie } from "../utils.js";
+
 class Profile{
 	constructor(game) {
 		this.game = game;
@@ -8,7 +10,7 @@ class Profile{
 		window.addEventListener('beforeunload', () => {
 			if (this.isUserLoggedIn === true) {
 				const formData = new FormData();
-				formData.append('csrfmiddlewaretoken', this.getCookie('csrftoken'));
+				formData.append('csrfmiddlewaretoken', getCookie('csrftoken'));
 				navigator.sendBeacon('/api/logout/', formData);
 			}
 		});
@@ -47,6 +49,7 @@ class Profile{
 			// if (matchHistory) {
 			matchHistory.addEventListener('click', () => {
 				loadPage('match_history').then(() => {
+					this.game.stats.statForUser = this.game.loggedUser;
 					// Here, 'this' refers to the Profile instance because of the arrow function
 					this.game.stats.showMatches('UvU');
 				});
@@ -55,6 +58,10 @@ class Profile{
 			this.updateSuggestedFriends();
 			this.updateFriendList();
 			this.updateFriendRequestList();
+			this.updateMatchStats();
+			this.getAllFriends();
+
+
 		}
 		
 		if (userContent) {
@@ -69,7 +76,7 @@ class Profile{
 			method: 'POST',
 			body: formData,
 			headers: {
-				'X-CSRFToken': this.getCookie('csrftoken'),
+				'X-CSRFToken': getCookie('csrftoken'),
 			},
 			credentials: 'include'
 		})
@@ -148,7 +155,7 @@ class Profile{
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
-					'X-CSRFToken': this.getCookie('csrftoken')
+					'X-CSRFToken': getCookie('csrftoken')
 				},
 				credentials: 'include'
 			})
@@ -170,6 +177,88 @@ class Profile{
 		}
 	}
 	
+
+	updateMatchStats() {
+		fetch('/api/dashboard_score/')
+			.then(response => response.json())
+			.then(data => {
+				// console.log('Match statistics:', data);
+				const totalMatches = data.total_matches;
+				const totalWins = data.won_matches;
+				const winRate = (totalWins / totalMatches) * 100;
+				const totalLost = totalMatches - totalWins;
+				document.getElementById('total-matches').innerHTML = `Total Matches Played: <strong>${totalMatches}</strong>`;
+            	document.getElementById('matches-won').innerHTML = `Matches Won: <strong>${totalWins}</strong>`;
+            	document.getElementById('matches-lost').innerHTML = `Matches Lost: <strong>${totalLost}</strong>`;
+				document.getElementById('win-rate').innerHTML = `Win Rate: <strong>${winRate.toFixed(2)}%</strong>`;
+				const ctx = document.getElementById('match-stats-chart').getContext('2d');
+				new Chart(ctx, {
+					type: 'pie',
+					data: {
+						labels: ['Wins', 'Losses'],
+						datasets: [{
+							data: [totalWins, totalLost],
+							backgroundColor: ['#4caf50', '#f44336'],  // Green for wins, Red for losses
+							borderColor: ['#4caf50', '#f44336'],
+							borderWidth: 1
+						}]
+					},
+					options: {
+						responsive: true,
+						plugins: {
+							legend: {
+								position: 'bottom',
+							},
+							tooltip: {
+								callbacks: {
+									label: function(tooltipItem) {
+										return tooltipItem.label + ': ' + tooltipItem.raw;
+									}
+								}
+							}
+						}
+					}
+				});
+			})
+        .catch(error => {
+            console.error('Error fetching match statistics:', error);
+            document.getElementById('statistics-section').innerHTML = '<p>Error loading statistics or There is no data.</p>';
+        });
+    }
+
+
+	getAllFriends() {
+		fetch('/api/all-users/')
+			.then(response => response.json())
+			.then(data => {
+				// console.log("All Users:", data.suggested_friends);
+				const allUserList = document.getElementById('user-match-list');
+				allUserList.innerHTML = '';
+				
+				data.suggested_friends.forEach(user => {
+					// console.log("User with names:", user.username);
+					const listItem = document.createElement('li');
+					listItem.className = 'list-group-item d-flex justify-content-between align-items-center';
+					listItem.textContent = user.username;
+	
+					const listHistoryButton = document.createElement('button');
+					listHistoryButton.textContent = 'Matches';
+					listHistoryButton.className = 'btn btn-success btn-sm';
+					listHistoryButton.onclick = () => {
+						loadPage('match_history').then(() => {
+							this.game.stats.statForUser = user.username;
+							// new Stats(user.username);
+							this.game.stats.showMatches('UvU');
+						});
+					};
+						// this.game.stats.showMatches('UvU', user.username);
+	
+					listItem.appendChild(listHistoryButton);
+					allUserList.appendChild(listItem);
+				});
+			})
+			.catch(error => console.error("Error updating suggested friends:", error));
+	}	
 	updateSuggestedFriends() {
 		fetch('/api/suggested-friends/')
 			.then(response => response.json())
@@ -183,7 +272,7 @@ class Profile{
 					listItem.textContent = user.username;
 	
 					const addButton = document.createElement('button');
-					addButton.textContent = 'Add Friend';
+					addButton.textContent = 'Add';
 					addButton.className = 'btn btn-success btn-sm';
 					addButton.onclick = () => this.sendFriendRequest(user.username, listItem);
 	
@@ -199,7 +288,7 @@ class Profile{
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
-				'X-CSRFToken': this.getCookie('csrftoken'),
+				'X-CSRFToken': getCookie('csrftoken'),
 			},
 			body: JSON.stringify({ friend_username: username }),
 			credentials: 'include'
@@ -238,6 +327,7 @@ class Profile{
 	
 					const avatarImg = document.createElement('img');
 					avatarImg.src = friend.avatar || 'static/images/guest.png'; 
+					// avatarImg.src = friend.avatar || 'static/images/guest.png'; 
 					avatarImg.alt = `${friend.username}'s avatar`;
 					avatarImg.className = 'avatar-img'; 
 					listItem.appendChild(avatarImg);
@@ -259,10 +349,13 @@ class Profile{
 						avatarImg.classList.add('online');
 						onlineItem.appendChild(avatarImg);
 						
-						const onlineStatusSpan = document.createElement('span');
-						onlineStatusSpan.textContent = 'Online';
-						onlineStatusSpan.className = 'online-status online'; 
-						onlineItem.appendChild(onlineStatusSpan);
+						// const onlineStatusSpan = document.createElement('span');
+						// onlineStatusSpan.textContent = 'Online';
+						// onlineStatusSpan.className = 'online-status online'; 
+						// onlineItem.appendChild(onlineStatusSpan);
+						const onlineDot = document.createElement('span');
+						onlineDot.className = 'online-dot'; 
+						onlineItem.appendChild(onlineDot);
 	
 						onlineFriendsList.appendChild(onlineItem);
 					}
@@ -285,12 +378,12 @@ class Profile{
 					const acceptButton = document.createElement('button');
 					acceptButton.textContent = 'Accept';
 					acceptButton.classList.add('btn', 'btn-success', 'btn-sm');
-					acceptButton.onclick = () => handleFriendRequest(request.username ,'accept');
+					acceptButton.onclick = () => this.handleFriendRequest(request.username ,'accept');
 	
 					const rejectButton = document.createElement('button');
 					rejectButton.textContent = 'Reject';
 					rejectButton.classList.add('btn', 'btn-danger', 'btn-sm');
-					rejectButton.onclick = () => handleFriendRequest(request.username, 'reject');
+					rejectButton.onclick = () => this.handleFriendRequest(request.username, 'reject');
 	
 					listItem.appendChild(acceptButton);
 					listItem.appendChild(rejectButton);
@@ -305,7 +398,7 @@ class Profile{
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
-				'X-CSRFToken': this.getCookie('csrftoken'),
+				'X-CSRFToken': getCookie('csrftoken'),
 			},
 			body: JSON.stringify({ action: action, friend_username: username }),
 			credentials: 'include'
@@ -338,13 +431,14 @@ class Profile{
 		const userInfo = await this.fetchUserInfo();
 		const userInfoElement = document.getElementById('user-name');
 		const userAvatar = document.getElementById('user-avatar');
+		console.log("userInfo: ", userInfo);
 	
 		if (userInfo && userInfo.username) {
 			userInfoElement.innerText = `Welcome, ${userInfo.username}`;
 			game.loggedUser = userInfo.username;
-			if (userInfo.avatar_url) {
-				userAvatar.src = userInfo.avatar_url;
-			}
+			// if (userInfo.avatar_url) {
+			userAvatar.src = userInfo.avatar_url;
+			// }
 		} else if (!this.isUserLoggedIn) {
 			game.loggedUser = 'Guest';
 			userInfoElement.innerText = 'Guest';
@@ -381,20 +475,6 @@ class Profile{
 		return null;
 	}
 	
-	getCookie(name) {
-		let cookieValue = null;
-		if (document.cookie && document.cookie !== '') {
-			const cookies = document.cookie.split(';');
-			for (let i = 0; i < cookies.length; i++) {
-				const cookie = cookies[i].trim();
-				if (cookie.substring(0, name.length + 1) === (name + '=')) {
-					cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-					break;
-				}
-			}
-		}
-		return cookieValue;
-	}
 }
 
 export { Profile };

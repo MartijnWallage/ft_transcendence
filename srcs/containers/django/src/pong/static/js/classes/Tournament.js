@@ -1,7 +1,7 @@
 import { Player } from './Player.js';
 import { Match } from './Match.js';
 import { displayDiv, HTMLToDiv, notDisplayDiv } from '../utils.js';
-import { getCookie } from '../userMgmt.js';
+import { getCookie } from '../utils.js';
 class Tournament {
 
 	constructor(game) {

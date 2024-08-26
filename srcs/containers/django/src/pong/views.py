@@ -29,6 +29,16 @@ from rest_framework.response import Response
 
 @api_view(['GET'])
 @login_required
+def all_users(request):
+    all_users = UserProfile.objects.all()
+
+    serializer = UserProfileSerializer(all_users, many=True)
+    # print(serializer.data)
+    return JsonResponse({"suggested_friends": serializer.data})
+
+
+@api_view(['GET'])
+@login_required
 def suggested_friends(request):
     all_users = User.objects.exclude(id=request.user.id)
     friend_ids = Friendship.objects.filter(
@@ -173,9 +183,34 @@ def settings_view(request):
 
 @api_view(['GET'])
 def dashboard_view(request):
+    # username_to_check = request.user.username
+    # # if not username:
+    # #     return JsonResponse({"status": "error", "message": "D Username is required"}, status=400)
+    # username = User.objects.get(username=username_to_check).username
+    # matches = get_user_matches(username, None)
+    # if matches is None:
+    #     return JsonResponse({"status": "error", "message": "D Player not found"}, status=404)
+
+    # total_matches = matches['total_matches']
+    # won_matches = matches['won_matches']
+    # lost_matches = matches['lost_matches']
+
+    # # Pass statistics to the template
+    # data = {
+    #     'content': render_to_string("partials/dashboard.html", {
+    #         'total_matches': total_matches,
+    #         'won_matches': won_matches,
+    #         'lost_matches': lost_matches
+    #     }, request=request)
+    # }
+    data = {
+        'content': render_to_string("partials/dashboard.html", request=request)
+    }
+    return JsonResponse(data)
+
+@api_view(['GET'])
+def score_view(request):
     username_to_check = request.user.username
-    # if not username:
-    #     return JsonResponse({"status": "error", "message": "D Username is required"}, status=400)
     username = User.objects.get(username=username_to_check).username
     matches = get_user_matches(username, None)
     if matches is None:
@@ -185,17 +220,11 @@ def dashboard_view(request):
     won_matches = matches['won_matches']
     lost_matches = matches['lost_matches']
 
-    # Pass statistics to the template
     data = {
-        'content': render_to_string("partials/dashboard.html", {
-            'total_matches': total_matches,
-            'won_matches': won_matches,
-            'lost_matches': lost_matches
-        }, request=request)
+        'total_matches': total_matches,
+        'won_matches': won_matches,
+        'lost_matches': lost_matches
     }
-    # data = {
-    #     'content': render_to_string("partials/dashboard.html", request=request)
-    # }
     return JsonResponse(data)
 
 @api_view(['GET'])
@@ -593,22 +622,8 @@ def get_logged_in_user(request):
 def get_user_matches(username, mode):
     try:
 
-        # try:
-        #     user = User.objects.get(username=username)
-        #     player = Player.objects.get(user_profile=user)  # Assuming `user_profile` links Player to User
-        # except User.DoesNotExist:
-        #     # If the User doesn't exist, try to find the Player by name
-        #     player = Player.objects.get(name=username)
-
-        # Retrieve the Player instance associated with the given username
         player = Player.objects.get(name=username)
-        print("player: ", player)
 
-
-        # Retrieve all matches where the given player is either player1 or player2 and with the given mode
-        print(Q(player1=player))
-        print(Q(player2=player))
-        print(Q(mode=mode))
         if mode is None:
             matches = Match.objects.filter(
                 (Q(player1=player) | Q(player2=player))
@@ -617,16 +632,9 @@ def get_user_matches(username, mode):
             matches = Match.objects.filter(
                 (Q(player1=player) | Q(player2=player)) & Q(mode=mode)
             )
-        print("matches: ", matches)
 
-        # matches = Match.objects.filter(
-        #     (Q(player1=player) | Q(player2=player)) & Q(mode=mode)
-        # )
-        # print("matches: ", matches)
-        # return matches
         total_matches = matches.count()
 
-        # Calculate matches won and lost by the player
         won_matches = matches.filter(
             (Q(player1=player) & Q(player1_score__gt=F('player2_score'))) |
             (Q(player2=player) & Q(player2_score__gt=F('player1_score')))
@@ -641,7 +649,6 @@ def get_user_matches(username, mode):
             'lost_matches': lost_matches
         }
     except Player.DoesNotExist:
-        # Handle the case where the player does not exist
         return {
             'matches': [],
             'total_matches': 0,
@@ -651,18 +658,15 @@ def get_user_matches(username, mode):
 
 @api_view(['POST'])
 def user_matches(request):
-    # username = request.user.username
     username = request.data.get('username')
     mode = request.data.get('mode')
     
-    # Make sure username and mode are provided
     if not username or not mode:
         return Response({'error': 'Username and mode are required.'}, status=400)
     
     result = get_user_matches(username, mode)
     matches = result.get('matches', [])
     
-    # Serialize the matches if you want to return them in a JSON response
     matches_data = [
         {
             'player1': match.player1.name,
@@ -678,29 +682,24 @@ def user_matches(request):
 
     return Response({'matches': matches_data}, status=200)
 
-# retrieve user tournaments
 
 def get_user_tournaments(username):
     try:
-        # Retrieve the Player instance associated with the given username
         player = Player.objects.get(name=username)
         print("Player:", player)
 
-        # Retrieve all tournaments where the given player is a participant
         tournaments = Tournament.objects.filter(players=player).prefetch_related('match')
         print("Tournaments:", tournaments)
 
         return tournaments
     
     except Player.DoesNotExist:
-        # Handle the case where the player does not exist
         return None
 
 @api_view(['POST'])
 def user_tournaments(request):
     username = request.data.get('username')
     
-    # Ensure the username is provided
     if not username:
         return Response({'error': 'Username is required.'}, status=400)
     
@@ -708,7 +707,6 @@ def user_tournaments(request):
     if tournaments is None:
         tournaments = []
 
-    # Serialize the tournaments and their match details
     tournaments_data = [
         {
             'date': tournament.date,

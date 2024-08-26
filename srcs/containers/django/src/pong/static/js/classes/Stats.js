@@ -1,10 +1,15 @@
-import { getCookie } from '../userMgmt.js';
+import { getCookie } from '../utils.js';
 
 class Stats {
     constructor(game) {
         this.game = game;
+        this.statForUser = null;
     }
 
+    // init() {
+    //     this.statForUser = this.game.loggedUser;
+    // }
+        
     formatTimestamp(timestamp) {
         const date = new Date(timestamp);
         const year = date.getFullYear();
@@ -53,6 +58,7 @@ class Stats {
     }
         
         async fetchUserMatches(username, mode) {
+            console.log("Fetching user matches...username", username);
             try {
                 const url = `/api/user_matches/`;
                 
@@ -103,15 +109,19 @@ class Stats {
                 return null;
             }
         }
+
         
         async showMatches(mode) {
-            console.log("showMatches");
+            
+            // console.log("1. showMatches username: ", username);
             console.log("mode: ", mode);
             const tableBody = document.getElementById('matchTableBody');
             const matchTitle = document.getElementById('matchTitle');
-            const username = await this.game.loggedUser;
+
+            // console.log("2. showMatches username: ", username);
+
             // const username = await this.fetchLoggedInUser();
-            const matches = await this.fetchUserMatches(username, mode);
+            const matches = await this.fetchUserMatches(this.statForUser, mode);
         
             // Clear existing rows
             tableBody.innerHTML = '';

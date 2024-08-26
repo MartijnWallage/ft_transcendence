@@ -9,8 +9,7 @@ import { Environment } from './Environment.js';
 import { Camera } from './Camera.js';
 import { Audio } from './Audio.js';
 import { Blockchain } from './Blockchain.js';
-import { delay, displayDiv, notDisplayDiv, textToDiv } from '../utils.js';
-import { getCookie } from '../userMgmt.js';
+import { delay, displayDiv, notDisplayDiv, textToDiv, getCookie } from '../utils.js';
 import { Stats } from './Stats.js';
 import { Profile } from './Profile.js';
 

@@ -61,18 +61,13 @@ class RegisterSerializer(serializers.ModelSerializer):
         if avatar is not None:
             user_profile.avatar = avatar
             
-        # Always update the online_status
         user_profile.online_status = True
         user_profile.save()
-        # UserProfile.objects.create(user=user, avatar=avatar, online_status=True)
-        # if 'avatar' in validated_data:
-        #     UserProfile.objects.create(user=user, avatar=validated_data['avatar'])
         return user
 
 
 class UpdateUserSerializer(serializers.ModelSerializer):
-    # required must be True
-    # password = serializers.CharField(write_only=True, required=True)
+
     avatar = serializers.ImageField(required=False)
     username = serializers.CharField(read_only=True)
 

@@ -1,4 +1,4 @@
-import { updateUI, bindUserEventListeners, handleLogout} from './userMgmt.js';
+// import { updateUI, bindUserEventListeners, handleLogout} from './userMgmt.js';
 
 function loadPageClosure(game) {
 	return async (page) => {
@@ -107,6 +107,7 @@ function bindEventListeners(game) {
 	if (replayBtn) {
 		replayBtn.addEventListener('click', game.replayGame.bind(game));
 	}
+
 }
 
 function bindMenuEventListeners(game){
@@ -129,28 +130,29 @@ function bindMenuEventListeners(game){
 	document.getElementById('js-settings-btn').addEventListener('click', function() {
 		loadPage('settings');
 	});
-
 	document.getElementById('user-name').addEventListener('click', function() {
-		loadPage('dashboard');
+		if (game.userProfile.isUserLoggedIn){
+			loadPage('dashboard');
+		}
 	});
-	
+
 	document.getElementById('user-avatar').addEventListener('click', function() {
-		loadPage('dashboard');
+		if (game.userProfile.isUserLoggedIn){
+			loadPage('dashboard');
+		}
 	});
 
-
-	// // Match History
 
 	var matchHistory = document.getElementById('match-history-btn');
 	if (matchHistory) {
 		matchHistory.addEventListener('click', function() {
 			loadPage('match_history').then(() => {
 				// Now that the page content has been loaded, call showMatches directly
+				this.game.stats.statForUser = this.game.loggedUser;
 				game.stats.showMatches('UvU');
 			});
 		});
 	}
-	// User 
 
 	let logout_btn = document.getElementById('js-logout-btn');
 	if (logout_btn) {
