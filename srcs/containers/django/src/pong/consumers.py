@@ -48,7 +48,7 @@ class PongConsumer(AsyncWebsocketConsumer):
 		)
 
 		await self.accept()
-		await self.send(text_data=json.dumps({
+		await self.safe_send(text_data=json.dumps({
 			'type': 'player_role',
 			'player_role': self.player_role,
 		}))
@@ -82,7 +82,7 @@ class PongConsumer(AsyncWebsocketConsumer):
 		try:
 			data = json.loads(text_data)
 		except json.JSONDecodeError:
-			await self.send(text_data=json.dumps({
+			await self.safe_send(text_data=json.dumps({
 				'type': 'error',
 				'message': 'Invalid JSON data received'
 			}))
@@ -150,7 +150,7 @@ class PongConsumer(AsyncWebsocketConsumer):
 
 	async def game_state(self, event):
 		# Send the updated game state to WebSocket directly
-		await self.send(text_data=json.dumps({
+		await self.safe_send(text_data=json.dumps({
 			'type': 'game_state',
 			'paddle_A': event.get('paddle_A', None),
 			'paddle_B': event.get('paddle_B', None),
@@ -159,7 +159,7 @@ class PongConsumer(AsyncWebsocketConsumer):
 		}))
 
 	async def game_start(self, event):
-		await self.send(text_data=json.dumps({
+		await self.safe_send(text_data=json.dumps({
 			'type': 'game_start',
 		}))
 
@@ -192,7 +192,7 @@ class PongConsumer(AsyncWebsocketConsumer):
 
 	async def player_connected(self, event):
 		# Send player info to WebSocket
-		await self.send(text_data=json.dumps({
+		await self.safe_send(text_data=json.dumps({
 			'type': 'player_connected',
 			'player': event['player'],
 			'player_role': event['player_role'],
@@ -201,8 +201,18 @@ class PongConsumer(AsyncWebsocketConsumer):
 
 	async def new_score(self, event):
 		# Send updated scores to WebSocket
-		await self.send(text_data=json.dumps({
+		await self.safe_send(text_data=json.dumps({
 			'type': 'new_score',
 			'score_A': event['score_A'],
 			'score_B': event['score_B'],
 		}))
+
+	async def safe_send(self, message):
+	# Check if the connection is still open
+		if self.scope['type'] == 'websocket' and self.channel_name in self.channel_layer.channels:
+			try:
+				await self.send(text_data=json.dumps(message))
+			except Exception as e:
+				logger.error(f"Failed to send message: {e}")
+		else:
+			logger.warning("Attempted to send a message to a disconnected client.")
