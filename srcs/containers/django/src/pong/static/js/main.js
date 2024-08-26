@@ -61,7 +61,7 @@ function main() {
 
 	function animate(game) {
 		if (game.running === false) {
-			game.cam1.renderMenuView(game);
+			game.cam1.renderMenuView();
 		} else {
 			game.match.update(game);
 		}

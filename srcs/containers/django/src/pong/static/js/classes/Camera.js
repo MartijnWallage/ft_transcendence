@@ -2,7 +2,9 @@ import * as THREE from '../three-lib/three.module.js';
 import { notDisplayDiv } from '../utils.js';
 
 class Camera {
-	constructor() {
+	constructor(game) {
+        this.game = game;
+        this.settings = game.settings;
 		this.camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 1000);
 		this.camera.position.set(0, 200, 0);
 		this.camera.lookAt(0, 1, 0);
@@ -54,22 +56,22 @@ class Camera {
 		}
 	}
 
-	renderMenuView(scene) {
+	renderMenuView() {
 		notDisplayDiv('vertical-line');
 		this.orbitCamera();
 		const left = 0;
 		const bottom = 0;
 		const width = Math.floor( window.innerWidth * 1 );
 		const height = Math.floor( window.innerHeight * 1 );
-		scene.renderer.setViewport( left, bottom, width, height );
-		scene.renderer.setScissor( left, bottom, width, height );
-		scene.renderer.setScissorTest(true);
+		this.game.renderer.setViewport( left, bottom, width, height );
+		this.game.renderer.setScissor( left, bottom, width, height );
+		this.game.renderer.setScissorTest(true);
 		this.camera.aspect = width / height;
 		this.camera.updateProjectionMatrix();
-		scene.renderer.render(scene.scene, this.camera);
+		this.game.renderer.render(this.game.scene, this.camera);
 	}
 
-	renderSingleView(scene) {
+	renderSingleView() {
 		const left = 0;
 		const bottom = 0;
 		const width = window.innerWidth;
@@ -84,15 +86,15 @@ class Camera {
 			this.camera.fov = 50;
 		}
 		this.camera.lookAt(0, -0.5, 0);
-		scene.renderer.setViewport( left, bottom, width, height );
-		scene.renderer.setScissor( left, bottom, width, height );
-		scene.renderer.setScissorTest(true);
+		this.game.renderer.setViewport( left, bottom, width, height );
+		this.game.renderer.setScissor( left, bottom, width, height );
+		this.game.renderer.setScissorTest(true);
 		this.camera.aspect = width / height;
 		this.camera.updateProjectionMatrix();
-		scene.renderer.render(scene.scene, this.camera);
+		this.game.renderer.render(this.game.scene, this.camera);
 	}
 
-	renderSplitView(scene, position) {
+	renderSplitView(position) {
 		const offset = position === 0 ? 0 : 0.5;
 		const x = position === 0 ? -14 : 14;
 		const dx = position === 0 ? -12 : 12;
@@ -110,12 +112,12 @@ class Camera {
 		}
 		this.camera.position.set(x, 14, 0);
 		this.camera.lookAt(0, -0.5, 0);
-		scene.renderer.setViewport( left, bottom, width, height );
-		scene.renderer.setScissor( left, bottom, width, height );
-		scene.renderer.setScissorTest(true);
+		this.game.renderer.setViewport( left, bottom, width, height );
+		this.game.renderer.setScissor( left, bottom, width, height );
+		this.game.renderer.setScissorTest(true);
 		this.camera.aspect = width / height;
 		this.camera.updateProjectionMatrix();
-		scene.renderer.render(scene.scene, this.camera);
+		this.game.renderer.render(this.game.scene, this.camera);
 	}
 }
 

@@ -121,10 +121,10 @@ class Match {
 		this.score.update();
 
 		if (this.players[1].ai || game.mode === 'vsOnline') {
-			cam1.renderSingleView(game);
+			cam1.renderSingleView();
 		} else {
-			cam1.renderSplitView(game, 0);
-			cam2.renderSplitView(game, 1);
+			cam1.renderSplitView(0);
+			cam2.renderSplitView(1);
 			displayDiv('vertical-line');
 		}
 	}
