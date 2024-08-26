@@ -81,6 +81,9 @@ class Profile{
 	
 				if (form.id === 'login-form' || form.id === 'register-form') {
 					this.isUserLoggedIn = true;
+					// console.log('checking form data', formData);
+					console.log('only form', data.username);
+					this.game.loggedUser = data.username;
 					const nextPage = this.checkForNextPage() || 'game_mode';
 					console.log("Next page:", nextPage);
 					window.loadPage(nextPage);

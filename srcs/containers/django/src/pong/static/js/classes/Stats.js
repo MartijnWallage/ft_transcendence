@@ -109,7 +109,8 @@ class Stats {
             console.log("mode: ", mode);
             const tableBody = document.getElementById('matchTableBody');
             const matchTitle = document.getElementById('matchTitle');
-            const username = await this.fetchLoggedInUser();
+            const username = await this.game.loggedUser;
+            // const username = await this.fetchLoggedInUser();
             const matches = await this.fetchUserMatches(username, mode);
         
             // Clear existing rows
@@ -148,7 +149,9 @@ class Stats {
             console.log("showTournaments");
             const tableBody = document.getElementById('tournamentTableBody');
             const tournamentTitle = document.getElementById('tournamentTitle');
-            const username = await this.fetchLoggedInUser();
+            const username = this.game.loggedUser;
+            // const username = await this.fetchLoggedInUser();
+            console.log("Username in stats: ", username);
             const tournaments = await this.fetchUserTournaments(username);
             console.log("LOG Tournaments:", tournaments);
             // Clear existing rows
@@ -252,8 +255,12 @@ class Stats {
                 }
         
             // Show the modal
-            const modal = new bootstrap.Modal(document.getElementById('tournamentDetailsModal'));
+            // const modal = new bootstrap.Modal(document.getElementById('tournamentDetailsModal'));
+            // modal.show();
+            const modalElement = document.getElementById('tournamentDetailsModal');
+            const modal = bootstrap.Modal.getOrCreateInstance(modalElement);
             modal.show();
+
         
             if (registerButton) {
                 registerButton.addEventListener('click', () => {

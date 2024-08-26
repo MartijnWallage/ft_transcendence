@@ -237,10 +237,11 @@ def register(request):
     if serializer.is_valid():
         user = serializer.save()
         # Create a Player instance associated with the new User
-        Player.objects.create(name=user.username, user_profile=user)
+        username = user.username
+        Player.objects.create(name=username, user_profile=user)
         print("user created: ", user)
         django_login(request, user)
-        return JsonResponse({'status': 'success'}, status=201)
+        return JsonResponse({'status': 'success', 'username': username}, status=201)
     return JsonResponse(serializer.errors, status=400)
 
 @api_view(['POST'])
@@ -273,8 +274,8 @@ def login(request):
     if form.is_valid():
         user = form.get_user()
         django_login(request, user)
-        print("login worked")
-        return JsonResponse({'status': 'success'})
+        print("login worked", user)
+        return JsonResponse({'status': 'success', 'username': user.username})
     return JsonResponse({'status': 'error', 'errors': form.errors}, status=400)
 
 @csrf_exempt
