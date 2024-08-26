@@ -133,7 +133,6 @@ class PongConsumer(AsyncWebsocketConsumer):
 				}
 			)
 
-			z
 		elif message_type == 'game_update':
 			# Update paddle positions based on player role
 			if self.player_role == 'A' and 'paddle_A' in data:
