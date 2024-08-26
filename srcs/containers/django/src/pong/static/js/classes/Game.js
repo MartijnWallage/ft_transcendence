@@ -164,6 +164,12 @@ class Game {
 					console.log('Player connected:', data.player);
 				}
 			}
+			if (data.type === 'connection_lost') {		
+				console.log('Received message:', this.socket_data);
+				console.log('Connection lost after player disconnected');
+				await windows.loadPage('game_mode');
+				
+			}
 			if (data.type === 'game_state' && this.running) {
 				const player1 = this.match.players[0];
 				const myRole = player1.online_role;

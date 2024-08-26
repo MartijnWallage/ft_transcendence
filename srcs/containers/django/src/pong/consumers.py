@@ -211,10 +211,10 @@ class PongConsumer(AsyncWebsocketConsumer):
 		}))
 
 	async def safe_send(self, message):
-	# Check if the connection is still open
+		# Check if the connection is still open
 		if self.scope['type'] == 'websocket' and self.channel_name in self.channel_layer.channels:
 			try:
-				await self.send(text_data=json.dumps(message))
+				await self.send(json.dumps(message))
 			except Exception as e:
 				logger.error(f"Failed to send message: {e}")
 		else:
