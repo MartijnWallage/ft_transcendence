@@ -78,9 +78,9 @@ function bindEventListeners(game) {
 	
 	var blockchainScore = document.getElementById('js-register-blockchain');
 	if (blockchainScore) {
-		blockchainScore.addEventListener('click', game.executeBlockchain.bind(game));
+        blockchainScore.addEventListener('click', game.executeBlockchain.bind(game));
 	}
-
+        
 	const saveSettings = document.getElementById('saveSettings');
 	if (saveSettings) {
 		saveSettings.addEventListener('click', game.saveSettings.bind(game));
@@ -88,13 +88,8 @@ function bindEventListeners(game) {
 
 	const resetDefaults = document.getElementById('resetDefaults');
 	if (resetDefaults) {
-		resetDefaults.addEventListener('click', game.resetToDefaults.bind(game));
+		resetDefaults.addEventListener('click', game.setSettingsMenuToDefault.bind(game));
 	}
-	
-/* 	const closeSettings = document.getElementById('closeSettingsMenu');
-	if (closeSettings) {
-		closeSettings.addEventListener('click', loadPage('game_mode'));
-	} */
 
 	// BETWEEN MATCH
 
@@ -111,23 +106,37 @@ function bindEventListeners(game) {
 
 function bindMenuEventListeners(game){
 	// OPTION MENU
-	let optionBtn = document.getElementById('js-option-btn');
-	if (optionBtn) {
-		optionBtn.addEventListener('click', game.viewOptionMenu.bind(game));
-	}
+	document.getElementById('js-option-btn').addEventListener('click', game.viewOptionMenu.bind(game));
 
-	let endGameBtn = document.getElementById('js-end-game-btn');
-	if (endGameBtn) {
-		endGameBtn.addEventListener('click', game.endGame.bind(game));
-	}
+	document.getElementById('js-login-btn').addEventListener('click', function() {
+		game.viewOptionMenu();
+		loadPage('login_user');
+	});
 
-	let soundBtn = document.getElementById('js-audio-btn');
-	if (soundBtn) {
-		soundBtn.addEventListener('click', game.muteAudio.bind(game));
-	}
+	document.getElementById('js-logout-btn').addEventListener('click', function() {
+		game.viewOptionMenu();
+		handleLogout()
+	});
 
-	document.getElementById('js-settings-btn').addEventListener('click', function() {
-		loadPage('settings');
+	document.getElementById('js-tournament_score-btn').addEventListener('click', function() {
+		game.viewOptionMenu();
+		loadPage('tournament_score');
+	});
+
+	document.getElementById('js-audio-btn').addEventListener('click', function() {
+		game.viewOptionMenu();
+		game.muteAudio();
+	});
+	
+	document.getElementById('js-settings-btn').addEventListener('click', async function() {
+		game.hideOptionMenu();
+		await loadPage('settings');
+		game.setSettingsMenuToCurrent();
+	});
+	
+	document.getElementById('js-end-game-btn').addEventListener('click', function() {
+		game.viewOptionMenu();
+		game.endGame();
 	});
 
 	document.getElementById('user-name').addEventListener('click', function() {

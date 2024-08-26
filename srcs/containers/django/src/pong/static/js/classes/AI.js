@@ -8,7 +8,7 @@ class AI {
 		// settings
 		this.level = this.game.aiLevel;
 		this.side = 1; // Not used right now. But ideally, the AI should be able to play on either side
-		const divider = this.level > 3 ? this.level - 2 : 1;
+		const divider = this.level >= 3 ? this.level : 1;
         this.updateInterval = 1000 / divider; // 1000 milliseconds = 1 second
 		this.visualizePrediction = true;
 		
@@ -85,29 +85,28 @@ class AI {
 		// simulate animate ball
 		ball.x += ball.dx;
 		ball.z += ball.dz;
-		const leftSidePaddle = this.AIPaddle.x - this.AIPaddle.geometry.parameters.width / 2;
+		const leftSideAIPaddle = this.AIPaddle.x - this.AIPaddle.geometry.parameters.width / 2;
 		// if ball is at the AI's side, return the ball's z position
-		if (ball.dx > 0 && ball.x + ball.radius > leftSidePaddle) {
+		if (ball.dx > 0 && ball.x + ball.radius > leftSideAIPaddle) {
 			return ball.z;
 		}
 		const halfCourt = this.game.field.geometry.parameters.depth / 2;
-		const rightSidePaddle = humanPaddle.x + humanPaddle.width / 2;
-		if (ball.x + ball.radius < rightSidePaddle) {
+		const rightSideHumanPaddle = humanPaddle.x + humanPaddle.width / 2;
+		if (ball.x + ball.radius < rightSideHumanPaddle) {
 			const paddleTop = humanPaddle.z - humanPaddle.depth / 2;
 			const paddleBottom = humanPaddle.z + humanPaddle.depth / 2;
 			const paddleHalfDepth = humanPaddle.depth / 2;
 			// Assume the human paddle will reach the ball
 			if (paddleTop > ball.z + ball.radius) {
 				humanPaddle.z = ball.z + paddleHalfDepth / 2;
-				// if ball is in upper corner, move paddle to corner
-				if (ball.z < -halfCourt + paddleHalfDepth)
-					humanPaddle.z = -halfCourt + paddleHalfDepth;
 			} else if (paddleBottom < ball.z - ball.radius) {
 				humanPaddle.z = ball.z - paddleHalfDepth / 2;
-				// if ball is in lower corner, move paddle to corner
-				if (ball.z > halfCourt - paddleHalfDepth)
-					humanPaddle.z = halfCourt - paddleHalfDepth;
 			}		
+			// if ball is in upper corner, move paddle to corner
+			if (ball.z < -halfCourt + paddleHalfDepth)
+				humanPaddle.z = -halfCourt + paddleHalfDepth;
+			else if (ball.z > halfCourt - paddleHalfDepth)
+				humanPaddle.z = halfCourt - paddleHalfDepth;
 			// simulate ball hitting paddle
 			ball.dz = (ball.z - humanPaddle.z) * ball.angleMultiplier;
 			ball.dx *= (abs(ball.dx) < ball.initialSpeed / 1.5) ? -2 : -ball.accelerate;
