@@ -165,10 +165,15 @@ class Game {
 				}
 			}
 			if (data.type === 'connection_lost') {		
+				this.running = false;
 				console.log('Received message:', this.socket_data);
 				console.log('Connection lost after player disconnected');
+				if (this.socket)
+					this.socket.close();
+				setTimeout(() => {
+					showNotification('Connection lost after player disconnected');
+				}, 2000); // Hide after 2 seconds
 				await window.loadPage('game_mode');
-				showNotification('Connection lost after player disconnected');
 				
 			}
 			if (data.type === 'game_state' && this.running) {
