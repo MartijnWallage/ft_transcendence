@@ -329,7 +329,8 @@ class Profile{
 			notificationElement.innerText = message;
 			notificationElement.style.display = 'block';
 			setTimeout(() => {
-				$(notificationElement).alert('close');
+				notificationElement.style.display = 'none';
+				// $(notificationElement).alert('close');
 			}, 2000); // Hide after 2 seconds
 		}
 	}
