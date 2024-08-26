@@ -81,7 +81,10 @@ class PongConsumer(AsyncWebsocketConsumer):
 		)
 
 	async def force_disconnect(self, event):
-		# Forcefully close the WebSocket connection
+
+		await self.send(text_data=json.dumps({
+			'type': 'connection_lost',
+		}))
 		await self.close()
 
 	async def receive(self, text_data):
@@ -168,6 +171,11 @@ class PongConsumer(AsyncWebsocketConsumer):
 	async def game_start(self, event):
 		await self.send(text_data=json.dumps({
 			'type': 'game_start',
+		}))
+
+	async def connection_lost(self, event):
+		await self.send(text_data=json.dumps({
+			'type': 'connection_lost',
 		}))
 
 	async def broadcast_player_info(self):
