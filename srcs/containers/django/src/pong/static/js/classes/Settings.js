@@ -22,7 +22,6 @@ class Settings {
         this.fieldWidth = this.#fieldWidth;
         this.fieldLength = this.#fieldLength;
         this.aiLevel = this.#aiLevel;
-        console.log('In Settings: initialized with defaults:', this.scoreToWin, this.ballSpeed, this.paddleSpeed, this.fieldWidth, this.fieldLength, this.aiLevel);
     }
 
 	// Functions to reset settings to default values
