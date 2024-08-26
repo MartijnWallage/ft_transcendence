@@ -1,30 +1,38 @@
 import * as THREE from '../three-lib/three.module.js';
 
 class Paddle {
-	constructor (scene, field, left, width = 2) {
+	constructor (game, left, width = 2) {
+        this.game = game;
+        this.field = this.game.field;
+        this.scene = this.game.scene;
 		this.geometry = new THREE.BoxGeometry(0.3, 0.8, width);
+        console.log('In Paddle: added new geometry');
 		this.material = new THREE.MeshStandardMaterial({
 			color: 0xc1d1db,
 			roughness: 0.5,
 			metalness: 0.5
 		});
-		this.offset = field.geometry.parameters.width / 15;
-		let distanceFromCentre = field.geometry.parameters.width / 2 - this.offset;
+		this.offset = this.field.geometry.parameters.width / 15;
+		let distanceFromCentre = this.field.geometry.parameters.width / 2 - this.offset;
 		if (left) {
 			distanceFromCentre *= -1;
 		}
 		this.mesh = new THREE.Mesh(this.geometry, this.material);
+        console.log('In Paddle: added new mesh');
 		this.mesh.position.set(distanceFromCentre, 0.9, 0);
-		scene.add(this.mesh);
-		this.speed = 0.14; // was 0.16
+		this.scene.add(this.mesh);
 	}
+
+    remove() {
+        this.scene.remove(this.mesh);
+    }
 	
-	movePaddle(direction, field ) {
-		this.mesh.position.z += direction * this.speed;
+	movePaddle(direction) {
+		this.mesh.position.z += direction * this.game.settings.paddleSpeed;
    
 		// if paddle is beyond the edge of field, move it back in
 		const halfPaddle = this.geometry.parameters.depth / 2;
-		const halfField = field.geometry.parameters.depth / 2;
+		const halfField = this.field.geometry.parameters.depth / 2;
 		const topPaddle = this.mesh.position.z + halfPaddle;
 		const bottomPaddle = this.mesh.position.z - halfPaddle;
 	

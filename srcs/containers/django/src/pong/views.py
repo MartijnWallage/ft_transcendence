@@ -409,7 +409,7 @@ def register_matches(request):
 
         # Wait for the transaction receipt
         try:
-            receipt = web3.eth.wait_for_transaction_receipt(tx_hash, timeout=2)  # Increased timeout
+            receipt = web3.eth.wait_for_transaction_receipt(tx_hash, timeout=60 )  # Increased timeout
             print(f"Transaction receipt received: {receipt.transactionHash.hex()}")
         except TimeoutError:
             print("Transaction timed out")
