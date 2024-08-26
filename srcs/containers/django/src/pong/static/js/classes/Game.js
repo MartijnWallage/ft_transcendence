@@ -167,7 +167,7 @@ class Game {
 			if (data.type === 'connection_lost') {		
 				console.log('Received message:', this.socket_data);
 				console.log('Connection lost after player disconnected');
-				await windows.loadPage('game_mode');
+				await window.loadPage('game_mode');
 				showNotification('Connection lost after player disconnected');
 				
 			}
