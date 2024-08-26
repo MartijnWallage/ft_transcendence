@@ -18,6 +18,7 @@ import { Profile } from './Profile.js';
 class Game {
 	constructor() {
         // Settings
+        this.settings = new Settings(this);
         
 		// Game state
 		this.running = false;
@@ -35,14 +36,13 @@ class Game {
 		const container = document.getElementById('threejs-container');
 		this.scene = new THREE.Scene();
 		this.renderer = new THREE.WebGLRenderer({ antialias: true });
-		this.cam1 = new Camera;
-		this.cam2 = new Camera;
+		this.cam1 = new Camera(this);
+		this.cam2 = new Camera(this);
 		this.renderer.setSize(window.innerWidth, window.innerHeight);
 		this.renderer.setClearColor(0xc1d1db);
 		container.appendChild(this.renderer.domElement);
         
 		// Objects
-        this.settings = new Settings(this);
 		this.field = new Field(this.scene, this.settings.fieldLength, this.settings.fieldWidth);
 		this.paddle1 = new Paddle(this, true);
 		this.paddle2 = new Paddle(this, false);
@@ -302,6 +302,9 @@ class Game {
 		this.field = new Field(this.scene, length, width);
 		this.paddle1 = new Paddle(this, true);
 		this.paddle2 = new Paddle(this, false);
+        if (this.match && this.match.players[1].ai) {
+            this.scene.remove(this.match.players[1].ai.mesh);
+        }
         this.ball = new Ball(this);
 	}
 	

@@ -195,6 +195,7 @@ CSRF_TRUSTED_ORIGINS = [
     'https://42.42.42.42',
 	'https://10.14.8.2',
 	'https://10.14.8.2:8443',
+    'https://10.14.8.1:8443',
 ]
 
 # APPEND_SLASH=False
