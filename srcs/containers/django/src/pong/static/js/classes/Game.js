@@ -10,6 +10,9 @@ import { Camera } from './Camera.js';
 import { Audio } from './Audio.js';
 import { Blockchain } from './Blockchain.js';
 import { delay, displayDiv, notDisplayDiv, textToDiv } from '../utils.js';
+import { getCookie } from '../userMgmt.js';
+import { Stats } from './Stats.js';
+import { Profile } from './Profile.js';
 
 class Game {
 	constructor() {
@@ -53,11 +56,41 @@ class Game {
 		this.environment = new Environment(this.scene);
 		this.audio = null;
 
+		// Game state
+		this.scoreToWin = 1;
+		this.aiLevel = 2;
+		this.running = false;
+		this.match = null;
+		this.tournament = null;
+		this.readyForNextMatch = false;
+		this.isOptionMenuVisible = false;
+		this.isSettingsMenuVisible = false;
+		this.mode = 'none';
+		this.loggedUser = 'Guest';
+
+		this.socket = null;
+		this.socket_data = null;
+
 		// this.socket = new WebSocket('wss://' + window.location.host + '/ws/pong/');
 
 		console.log('Game class created');
 		this.boundCreateAudioContext = this.createAudioContext.bind(this);
 		document.addEventListener('click', this.boundCreateAudioContext);
+
+		// Statistics and user profile
+
+		this.stats = new Stats(this);
+		this.userProfile = new Profile(this);
+}
+
+	updateField(length, width) {
+		this.scene.remove(this.field.mesh);
+		this.scene.remove(this.field.net);
+		this.scene.remove(this.paddle1.mesh);
+		this.scene.remove(this.paddle2.mesh);
+		this.field = new Field(this.scene, length, width);
+		this.paddle1 = new Paddle(this.scene, this.field, true);
+		this.paddle2 = new Paddle(this.scene, this.field, false);
 	}
 	
 	// Create audio audio context once there is a first interaction with the website to comply with internet rules
@@ -172,7 +205,7 @@ class Game {
 		this.audio.playSound(this.audio.select_2);
     
         // set settings to default
-        this.setSettingsToDefault();
+        // this.setSettingsToDefault();
     
 		const player1 = new Player(this.loggedUser);
 		var player2 = null;
@@ -202,6 +235,7 @@ class Game {
 	createTournament() {
 		this.mode = 'tournament';
 		const tournament = new Tournament(this);
+		tournament.initializeTournament();
 		this.tournament = tournament;
 	}
 
@@ -236,6 +270,7 @@ class Game {
 			console.log('displaying option menu');
 			displayDiv('js-tournament_score-btn');
 			displayDiv('js-audio-btn');
+			displayDiv('js-end-game-btn');
 			if (this.loggedUser === 'Guest') {
 				displayDiv('js-login-btn');
 			}
@@ -247,6 +282,7 @@ class Game {
             else {
                 displayDiv('js-settings-btn');
             }
+			displayDiv('match-history-btn');
 			textToDiv('-', 'js-option-btn');
 			this.isOptionMenuVisible = true;
 		}
@@ -279,12 +315,12 @@ class Game {
 
 	// Functions to reset settings to default values
     setSettingsToDefault() {
-        this.updateField(fieldLength, fieldWidth);
-        this.game.ball.initialSpeed = this.ballSpeed;
+		this.game.ball.initialSpeed = this.ballSpeed;
         this.game.paddle1.speed = this.paddleSpeed;
         this.game.paddle2.speed = this.paddleSpeed;
         const fieldWidth = this.fieldWidth;
         const fieldLength = this.fieldLength;
+        this.updateField(fieldLength, fieldWidth);
         this.game.aiLevel = this.aiLevel;
     }
 
@@ -352,9 +388,78 @@ class Game {
 		}
 	}
 
-	executeBlockchain() {
+	executeBlockchain(tournamentId) {
 		this.audio.playSound(this.audio.select_1);
-		new Blockchain(this.tournament.tournamentId);
+		new Blockchain(tournamentId);
+	}
+	
+	// register in database {
+
+	registerInDatabase() {
+		console.log('registerInDatabase');
+		this.createMatch();
+	}
+
+	getCsrfToken() {
+		const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+		return token;
+	}
+
+	async createPlayer(playerName) {
+		console.log('Create player in database:', playerName);
+	
+		try {
+			const response = await fetch('/api/create_player/', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json; charset=utf-8',
+					'X-CSRFToken': getCookie('csrftoken'),
+				},
+				body: JSON.stringify({
+					'player_name': playerName,
+				}),
+			});
+	
+			if (!response.ok) {
+				throw new Error(`Error creating player: ${response.statusText}`);
+			}
+	
+			const data = await response.json();
+			console.log('Player added:', data);
+		} catch (error) {
+			console.error('Error adding player:', error);
+		}
+	}
+
+	async createMatch() {
+		console.log('Creating Match...');
+	
+		try {
+			const response = await fetch('/api/create_match/', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json; charset=utf-8',
+					'X-CSRFToken': getCookie('csrftoken'),
+				},
+				body: JSON.stringify({
+					'player1': this.match.players[0].name,
+					'player2': this.match.players[1].name,
+					'player1_score': this.match.score.result[0],
+					'player2_score': this.match.score.result[1],
+					'timestamp': this.match.timestamp,
+					'mode': this.mode,
+				}),
+			});
+	
+			if (!response.ok) {
+				throw new Error(`Error creating match: ${response.statusText}`);
+			}
+	
+			const data = await response.json();
+			console.log('Match created successfully:', data);
+		} catch (error) {
+			console.error('Error creating match:', error);
+		}
 	}
 }
 

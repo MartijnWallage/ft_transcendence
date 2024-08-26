@@ -20,7 +20,8 @@ class Ball {
 		this.serve = 1;
 		this.dx = 0;
 		this.dz = 0;
-		this.initialSpeed = this.game.ballSpeed;
+		// this.initialSpeed = this.game.ballSpeed;
+		this.initialSpeed = 0.2;
 		this.angleMultiplier = 0.2;
 		this.accelerate = 1.01;
 		this.scene.add(this.mesh);

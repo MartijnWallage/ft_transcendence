@@ -1,15 +1,26 @@
 import { Player } from './Player.js';
 import { Match } from './Match.js';
 import { displayDiv, HTMLToDiv, notDisplayDiv } from '../utils.js';
-
+import { getCookie } from '../userMgmt.js';
 class Tournament {
 
 	constructor(game) {
-		this.game = game;
 		this.players = [];
+		this.game = game;
 		this.matchResult = [];
 		this.tournamentId = null;
 	}
+
+    async initializeTournament() {
+        try {
+            const playerName = await this.game.stats.fetchLoggedInUser();
+            const newPlayer = new Player(playerName);
+            this.players.push(newPlayer);
+			this.displayPlayers();
+        } catch (error) {
+            console.error('Error initializing tournament:', error);
+        }
+    }
 
 	async start() {
 		const game = this.game;
@@ -52,7 +63,7 @@ class Tournament {
 		}
 	}
 
-	addPlayer() {
+	async addPlayer() {
 		this.game.audio.playSound(this.game.audio.select_1);
 		const playerName = document.getElementById('playerNameInput').value.trim();
 		console.log(playerName);
@@ -69,7 +80,7 @@ class Tournament {
 		document.getElementById('playerNameInput').value = '';
 	}
 
-	displayPlayers() {
+	async displayPlayers() {
 		const game = this.game;
 	
 		const playerListDiv = document.getElementById('playerList');
@@ -90,90 +101,107 @@ class Tournament {
 		return now.toISOString();  // Format ISO 8601
 	}
 	
-	async addParticipant(playerName, tournamentId) {
+	async addParticipantInTournament(playerName, tournamentId) {
 		console.log('Adding participant:', playerName);
-		$.ajax({
-			url: '/api/add_participant/',
-			type: 'POST',
 	
-			data: JSON.stringify({
-				'tournament_id': tournamentId,
-				'player_name': playerName
-			}),
+		try {
+			const response = await fetch('/api/add_participant_to_tournament/', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					'X-CSRFToken': getCookie('csrftoken'), // Include CSRF token
+				},
+				body: JSON.stringify({
+					tournament_id: tournamentId,
+					player_name: playerName,
+				}),
+			});
 	
-			contentType: 'application/json; charset=utf-8',
-	
-			dataType: 'json',
-	
-			success: function(response) {
-				console.log('Participant added:', response);
-			},
-	
-			error: function(error) {
-				console.log('Error addParicipant:', error);
+			if (!response.ok) {
+				throw new Error(`Error adding participant: ${response.statusText}`);
 			}
 	
-		});
+			const data = await response.json();
+			console.log('Participant added:', data);
+	
+		} catch (error) {
+			console.error('Error addParticipant:', error);
+		}
 	}
+	
 	
 	async createTournament() {
 		console.log('Creating tournament...');
-		const currentDate = this.getCurrentDateISO();
+		const currentDate = Date.now();
 		console.log('Current Date:', currentDate);
 	
-		return new Promise((resolve, reject) => {
-			$.ajax({
-				url: '/api/create_tournament/',
-				type: 'POST',
-				data: JSON.stringify({
-					'date': currentDate,
-					'transaction_hash' : null
-				}),
-				contentType: 'application/json; charset=utf-8',
-				dataType: 'json',
-	
-				success: function(response) {
-					console.log('Tournament created successfully:', response);
-					if (response && response.tournament_id) {
-						console.log('Tournament ID:', response.tournament_id);
-						resolve(response.tournament_id);
-					} else {
-						console.log('Tournament ID not found in the response.');
-						resolve(null);
-					}
+		try {
+			const response = await fetch('/api/create_tournament/', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					'X-CSRFToken': getCookie('csrftoken'), // Include CSRF token
 				},
-				error: function(error) {
-					console.error('Error creating tournament:', error);
-					reject(error);
-				}
+				body: JSON.stringify({
+					date: currentDate,
+					transaction_hash: null,
+				}),
 			});
-		});
-	}
 	
-	async createMatch(tournamentId, matchResult) {
-		console.log('Creating Match...');
-		$.ajax({
-			url: '/api/create_match/',
-			type: 'POST',
-			data: JSON.stringify({
-				'tournament_id': tournamentId,
-				'player1' : matchResult.player1,
-				'player2' : matchResult.player2,
-				'player1_score' : matchResult.player1Score,
-				'player2_score' : matchResult.player2Score,
-				'timestamp' : matchResult.timestamp
-			}),
-			contentType: 'application/json; charset=utf-8',
-			dataType: 'json',
-	
-			success: function(response) {
-				console.log('Match created successfully:', response);
-			},
-			error: function(error) {
-				console.error('Error creating match:', error);
+			if (!response.ok) {
+				throw new Error(`Error creating tournament: ${response.statusText}`);
 			}
-		});
+	
+			const data = await response.json();
+			console.log('Tournament created successfully:', data);
+			if (data && data.tournament_id) {
+				console.log('Tournament ID:', data.tournament_id);
+				return data.tournament_id;
+			} else {
+				console.log('Tournament ID not found in the response.');
+				return null;
+			}
+	
+		} catch (error) {
+			console.error('Error creating tournament:', error);
+			throw error;
+		}
 	}
+	
+	
+	async createMatchInTournament(tournamentId, matchResult, mode) {
+		console.log('Creating Match...');
+	
+		try {
+			const response = await fetch('/api/create_match_in_tournament/', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					'X-CSRFToken': getCookie('csrftoken'), // Include CSRF token
+				},
+				body: JSON.stringify({
+					tournament_id: tournamentId,
+					player1: matchResult.player1,
+					player2: matchResult.player2,
+					player1_score: matchResult.player1Score,
+					player2_score: matchResult.player2Score,
+					timestamp: matchResult.timestamp,
+					mode: mode,
+				}),
+			});
+	
+			if (!response.ok) {
+				throw new Error(`Error creating match: ${response.statusText}`);
+			}
+	
+			const data = await response.json();
+			console.log('Match created successfully:', data);
+	
+		} catch (error) {
+			console.error('Error creating match:', error);
+		}
+	}
+	
 
 	// Tournament End
 
@@ -191,7 +219,8 @@ class Tournament {
 			this.tournamentId = await this.createTournament();
 
 			for (let player of this.players) {
-				await this.addParticipant(player.name, this.tournamentId);
+				await this.game.createPlayer(player.name);
+				await this.addParticipantInTournament(player.name, this.tournamentId);
 			}
 
 			console.log('Match Result:', this.matchResult);
@@ -199,7 +228,7 @@ class Tournament {
 			for (let index = 0; index < this.matchResult.length; index++) {
 				const currentMatchResult = this.matchResult[index];
 				console.log('Match:', index, ': ', currentMatchResult);
-				await this.createMatch(this.tournamentId, currentMatchResult);
+				await this.createMatchInTournament(this.tournamentId, currentMatchResult, 'tournament');
 			}
 
 		} catch (error) {
