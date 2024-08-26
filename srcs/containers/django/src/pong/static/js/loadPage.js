@@ -220,6 +220,16 @@ function dropDownEventListeners(game) {
         });
     }
 
+	var dropdown1vOnline = document.getElementById('dropdown-vs-online');
+    if (dropdown1vOnline) {
+        dropdown1vOnline.addEventListener('click', (event) => {
+            event.preventDefault(); // Prevent default link behavior
+            document.getElementById('tournament-history').style.display = 'none';
+            document.getElementById('match-history').style.display = 'block';
+            game.stats.showMatches('vsOnline');
+        });
+    }
+
     var dropdownTournament = document.getElementById('dropdown-tournament');
     if (dropdownTournament) {
         dropdownTournament.addEventListener('click', (event) => {
