@@ -75,12 +75,7 @@ function bindEventListeners(game) {
 		console.log('creating tournament');
 		startTournamentBtn.addEventListener('click', game.tournament.start.bind(game.tournament));
 	}
-	
-	var blockchainScore = document.getElementById('js-register-blockchain');
-	if (blockchainScore) {
-        blockchainScore.addEventListener('click', game.executeBlockchain.bind(game));
-	}
-        
+	        
 	const saveSettings = document.getElementById('saveSettings');
 	if (saveSettings) {
 		saveSettings.addEventListener('click', game.settings.save.bind(game.settings));
@@ -115,6 +110,13 @@ function bindEventListeners(game) {
 		resetDefaults.addEventListener('click', game.settings.resetMenu.bind(game.settings));
 	}
 
+	//Blockchain interaction
+
+	// var blockchainScore = document.getElementById('js-register-blockchain');
+	// if (blockchainScore) {
+    //     blockchainScore.addEventListener('click', game.executeBlockchain.bind(game));
+	// }
+
 	// BETWEEN MATCH
 
 	let exitBtn = document.getElementById('js-exit-btn');
@@ -125,6 +127,14 @@ function bindEventListeners(game) {
 	let replayBtn = document.getElementById('js-replay-btn');
 	if (replayBtn) {
 		replayBtn.addEventListener('click', game.replayGame.bind(game));
+	}
+	
+	var registerButton = document.getElementById('registerOnBlockchainBtn');
+	if (registerButton) {
+		registerButton.addEventListener('click', () => {
+			console.log("Registering on blockchain button clicked...");
+			game.executeBlockchain(game.stats.tournamentId);
+		});
 	}
 }
 
@@ -164,11 +174,15 @@ function bindMenuEventListeners(game){
 	});
 
 	document.getElementById('user-name').addEventListener('click', function() {
-		loadPage('dashboard');
+		if (game.userProfile.isUserLoggedIn) {
+			loadPage('dashboard');
+		}
 	});
 	
 	document.getElementById('user-avatar').addEventListener('click', function() {
-		loadPage('dashboard');
+		if (game.userProfile.isUserLoggedIn) {
+			loadPage('dashboard');
+		}
 	});
 
 
@@ -183,13 +197,13 @@ function bindMenuEventListeners(game){
 			});
 		});
 	}
+
 	// User 
 
 	let logout_btn = document.getElementById('js-logout-btn');
 	if (logout_btn) {
 		logout_btn.addEventListener('click', game.userProfile.handleLogout.bind(game.userProfile));
-	} 
-
+	}
 
 }
 
