@@ -92,12 +92,9 @@ class Match {
 		const socket = game.socket;
 
 		if (game.mode === 'vsOnline') {
+			this.timeToSend = !this.timeToSend;
 			if (this.timeToSend) {
 				this.sendGameState(socket);
-				this.timeToSend = false;
-			}
-			else {
-				this.timeToSend = true;
 			}
 		}
 
@@ -148,9 +145,7 @@ class Match {
 					type: 'game_update',
 					paddle_B: this.game.paddle1.mesh.position.z,
 				};
-
 			}
-
 			// Send the game state to the server
 			socket.send(JSON.stringify(gameState));
 		} else {
