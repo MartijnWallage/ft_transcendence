@@ -366,4 +366,4 @@ function getCookie(name) {
     return cookieValue;
 }
 
-export { handleLogout, bindUserEventListeners, updateUI, getCookie }
+export { handleLogout, bindUserEventListeners, updateUI, getCookie, showNotification }
