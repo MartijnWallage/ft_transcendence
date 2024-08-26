@@ -79,13 +79,13 @@ class PongConsumer(AsyncWebsocketConsumer):
 			self.room_group_name,
 			self.channel_name
 		)
+		await self.close()
 
 	async def force_disconnect(self, event):
 
 		await self.send(text_data=json.dumps({
 			'type': 'connection_lost',
 		}))
-		await self.close()
 
 	async def receive(self, text_data):
 		try:
