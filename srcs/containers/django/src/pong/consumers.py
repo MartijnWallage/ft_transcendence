@@ -67,7 +67,7 @@ class PongConsumer(AsyncWebsocketConsumer):
 			self.room_group_name,
 			{'type': 'force_disconnect'}
 		)
-
+ 
 		# Leave room group
 		await self.channel_layer.group_discard(
 			self.room_group_name,
