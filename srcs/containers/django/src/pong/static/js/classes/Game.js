@@ -170,10 +170,10 @@ class Game {
 				console.log('Connection lost after player disconnected');
 				if (this.socket)
 					this.socket.close();
+				showNotification('Connection lost after player disconnected');
 				setTimeout(() => {
-					showNotification('Connection lost after player disconnected');
+					window.loadPage('game_mode');
 				}, 2000); // Hide after 2 seconds
-				await window.loadPage('game_mode');
 				
 			}
 			if (data.type === 'game_state' && this.running) {
