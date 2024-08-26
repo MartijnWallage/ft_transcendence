@@ -19,12 +19,21 @@
       </div>
     </div>
   </div>
-  <div id="statistics-section" class="p-4 d-flex flex-column align-items-start bg-dark text-white" style="width: 100%; max-width: 650px; border-radius: 10px;">
+
+  <div id="statistics-section" class="p-4 d-flex flex-column align-items-start bg-dark text-blue" style="width: 100%; max-width: 650px; border-radius: 10px;">
     <h4>Match Statistics</h4>
-    <p>Total Matches Played: <strong>{{ total_matches }}</strong></p>
-    <p>Matches Won: <strong>{{ won_matches }}</strong></p>
-    <p>Matches Lost: <strong>{{ lost_matches }}</strong></p>
+    
+    <!-- Bar Chart for Matches Played -->
+    <div class="mb-4" style="width: 100%; max-width: 600px;">
+      <canvas id="barChart"></canvas>
+    </div>
+
+    <!-- Pie Chart for Matches Won and Lost -->
+    <div class="mb-4" style="width: 100%; max-width: 600px;">
+      <canvas id="pieChart"></canvas>
+    </div>
   </div>
+
   <div id="friends-section" class="p-4 d-flex flex-column align-items-start bg-dark text-blue" style="width: 100%; max-width: 650px; border-radius: 10px; overflow-y: auto;">
     <h4>Friends</h4>
     
@@ -96,54 +105,3 @@
   </div>
 </div>
 {% endblock %}
-
-<!-- 
-<script>
-  document.addEventListener('DOMContentLoaded', function () {
-      // Data for the charts
-      const matchData = {
-          total: {{ total_matches }},    // Total matches played
-          won: {{ won_matches }},        // Matches won
-          lost: {{ lost_matches }}       // Matches lost
-      };
-  
-      // Bar Chart for Total Matches
-      const ctxBar = document.getElementById('barChart').getContext('2d');
-      new Chart(ctxBar, {
-          type: 'bar',
-          data: {
-              labels: ['Total Matches', 'Won', 'Lost'],
-              datasets: [{
-                  label: '# of Matches',
-                  data: [matchData.total, matchData.won, matchData.lost],
-                  backgroundColor: ['#007bff', '#28a745', '#dc3545'],
-                  borderColor: ['#007bff', '#28a745', '#dc3545'],
-                  borderWidth: 1
-              }]
-          },
-          options: {
-              scales: {
-                  y: {
-                      beginAtZero: true
-                  }
-              }
-          }
-      });
-  
-      // Pie Chart for Win/Loss Ratio
-      const ctxPie = document.getElementById('pieChart').getContext('2d');
-      new Chart(ctxPie, {
-          type: 'pie',
-          data: {
-              labels: ['Won', 'Lost'],
-              datasets: [{
-                  label: 'Win/Loss Ratio',
-                  data: [matchData.won, matchData.lost],
-                  backgroundColor: ['#28a745', '#dc3545'],
-                  hoverOffset: 4
-              }]
-          }
-      });
-  });
-  </script>
-   -->

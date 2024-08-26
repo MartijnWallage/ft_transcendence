@@ -1,4 +1,4 @@
-import { updateUI, bindUserEventListeners, handleLogout } from './userMgmt.js';
+import { updateUI, bindUserEventListeners, handleLogout} from './userMgmt.js';
 
 function loadPageClosure(game) {
 	return async (page) => {
@@ -21,16 +21,23 @@ function loadPageClosure(game) {
 			
 			const data = await response.json();
 			mainContent.innerHTML = data.content;
+			console.log('LOG: Page content loaded:', page);
 			history.pushState({ page: page }, "", "#" + page);
+			// localStorage.setItem("currentPageState", JSON.stringify({ page: page }));
+
 			
 			const updatedUnderTitle = document.getElementById('under-title');
 			if (updatedUnderTitle) {
 				await fadeIn(updatedUnderTitle);
 			}
-			await updateUI(game);
+			await game.userProfile.updateUI(game);
 			console.log('Page UI updated:', page);
-			bindUserEventListeners(mainContent);
+			game.userProfile.bindUserEventListeners(mainContent, page);
 			bindEventListeners(game);
+			if (page === 'match_history') {
+				// document.getElementById('lastModified').textContent = new Date(document.lastModified).toLocaleString();
+				dropDownEventListeners(game);
+			}
 			
 		} catch (error) {
 			console.error('Error loading page:', error);
@@ -93,7 +100,7 @@ function bindEventListeners(game) {
 
 	let replayBtn = document.getElementById('js-replay-btn');
 	if (replayBtn) {
-			replayBtn.addEventListener('click', game.replayGame.bind(game));
+		replayBtn.addEventListener('click', game.replayGame.bind(game));
 	}
 }
 
@@ -140,6 +147,60 @@ function bindMenuEventListeners(game){
 		loadPage('dashboard');
 	});
 
+
+	// // Match History
+
+	var matchHistory = document.getElementById('match-history-btn');
+	if (matchHistory) {
+		matchHistory.addEventListener('click', function() {
+			loadPage('match_history').then(() => {
+				// Now that the page content has been loaded, call showMatches directly
+				game.stats.showMatches('UvU');
+			});
+		});
+	}
+	// User 
+
+	let logout_btn = document.getElementById('js-logout-btn');
+	if (logout_btn) {
+		logout_btn.addEventListener('click', game.userProfile.handleLogout.bind(game.userProfile));
+	} 
+
+
+}
+
+function dropDownEventListeners(game) {
+    console.log("LOG: dropDownEventListeners");
+
+    var dropdown1v1 = document.getElementById('dropdown-1v1');
+    if (dropdown1v1) {
+        dropdown1v1.addEventListener('click', (event) => {
+            event.preventDefault(); // Prevent default link behavior
+            document.getElementById('tournament-history').style.display = 'none';
+            document.getElementById('match-history').style.display = 'block';
+            game.stats.showMatches('UvU');
+        });
+    }
+
+    var dropdownTournament = document.getElementById('dropdown-tournament');
+    if (dropdownTournament) {
+        dropdownTournament.addEventListener('click', (event) => {
+            event.preventDefault();
+            document.getElementById('tournament-history').style.display = 'block';
+            document.getElementById('match-history').style.display = 'none';
+            game.stats.showTournaments();
+        });
+    }
+
+    var dropdownVsAI = document.getElementById('dropdown-vs-ai');
+    if (dropdownVsAI) {
+        dropdownVsAI.addEventListener('click', (event) => {
+            event.preventDefault();
+            document.getElementById('tournament-history').style.display = 'none';
+            document.getElementById('match-history').style.display = 'block';
+            game.stats.showMatches('solo');
+        });
+    }
 }
 
 function fadeIn(element) {
@@ -166,5 +227,4 @@ function fadeOut(element) {
 		}, { once: true });
 	});
 }
-
-export { loadPageClosure, updateUI, bindMenuEventListeners };
+export { loadPageClosure, bindMenuEventListeners };

@@ -30,8 +30,8 @@ SECRET_KEY = os.environ.get("SECRET_KEY")
 #DEBUG = False
 DEBUG = True
 
-#ALLOWED_HOSTS = ['*']  # For development, allow all hosts
-ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS", "").split(" ")
+ALLOWED_HOSTS = ['*']  # For development, allow all hosts
+# ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS", "").split(" ")
 #ALLOWED_HOSTS = []
 
 print("ALLOWED_HOSTS:", ALLOWED_HOSTS)
@@ -76,7 +76,11 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'pong.urls'
+# to include django admin page
+ROOT_URLCONF = 'transcendence.urls'
+
+# to exclude django admin page during deployment
+# ROOT_URLCONF = 'pong.urls'
 
 TEMPLATES = [
     {
@@ -178,6 +182,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # LOGIN_REDIRECT_URL = '/pong'
 # LOGOUT_REDIRECT_URL = '/login'
+# LOGIN_URL = '/api/login'
 
 # Cross-Site Request Forgery (CSRF) protection mechanism has blocked a request, so it just opend 
 CSRF_TRUSTED_ORIGINS = [
@@ -187,10 +192,11 @@ CSRF_TRUSTED_ORIGINS = [
     'https://127.0.0.1:8443',
     'https://159.89.8.55',
     'https://144.126.245.86',
-    'https://42.42.42.42'
+    'https://42.42.42.42',
+	'https://10.14.8.2',
 ]
 
-
+# APPEND_SLASH=False
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 # to upload avatar for the user
