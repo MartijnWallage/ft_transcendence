@@ -193,7 +193,7 @@ class Game {
 	}}
 
 	handleDisconnection() {
-		console.log('!!! Connection lost !!!');
+		console.log('Connection is over');
 	}
 
 	async startVsOnline() {
