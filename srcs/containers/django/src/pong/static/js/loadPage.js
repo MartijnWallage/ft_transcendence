@@ -1,6 +1,5 @@
 import { updateUI, bindUserEventListeners, handleLogout } from './userMgmt.js';
 
-
 function loadPageClosure(game) {
 	return async (page) => {
 		console.log("loading page :", page);
@@ -40,8 +39,6 @@ function loadPageClosure(game) {
 	};
 }
 
-
-
 function bindEventListeners(game) {
 
 	const startVsOnline = document.getElementById('js-start-vs-online-btn');
@@ -79,12 +76,12 @@ function bindEventListeners(game) {
         
 	const saveSettings = document.getElementById('saveSettings');
 	if (saveSettings) {
-		saveSettings.addEventListener('click', game.settings.saveSettings.bind(game));
+		saveSettings.addEventListener('click', game.settings.saveSettings.bind(game.settings));
 	}
 
 	const resetDefaults = document.getElementById('resetDefaults');
 	if (resetDefaults) {
-		resetDefaults.addEventListener('click', game.settings.resetMenu.bind(game));
+		resetDefaults.addEventListener('click', game.settings.resetMenu.bind(game.settings));
 	}
 
 	// BETWEEN MATCH
