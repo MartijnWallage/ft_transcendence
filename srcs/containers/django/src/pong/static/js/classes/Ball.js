@@ -20,7 +20,6 @@ class Ball {
 		this.serve = 1;
 		this.dx = 0;
 		this.dz = 0;
-		this.initialSpeed = this.game.ballSpeed;
 		this.angleMultiplier = 0.2;
 		this.accelerate = 1.01;
 		this.scene.add(this.mesh);
@@ -50,7 +49,8 @@ class Ball {
 
 		if (this.checkPaddleCollision(paddle)) {
 			this.dz = (this.position.z - paddle.position.z) * this.angleMultiplier;
-			this.dx *= (abs(this.dx) < this.initialSpeed / 1.5) ? -2 : -this.accelerate;
+            const speed = this.game.settings.ballSpeed;
+			this.dx *= (abs(this.dx) < speed / 1.5) ? -2 : -this.accelerate;
 			if (this.audio && paddle === paddle_p1) {
 				this.audio.playSound(this.audio.ping);
 			} else if (this.audio) {
@@ -95,7 +95,7 @@ class Ball {
 		this.position.x = 0;
 		this.position.z = 0;
 		this.serve *= -1;
-		this.dx = this.initialSpeed * this.serve / 2;
+		this.dx = this.game.settings.ballSpeed * this.serve / 2;
 		this.dz = getRandomInt(-7.5, 7.5) / 100;
 	}
 

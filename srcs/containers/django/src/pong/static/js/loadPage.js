@@ -79,12 +79,12 @@ function bindEventListeners(game) {
         
 	const saveSettings = document.getElementById('saveSettings');
 	if (saveSettings) {
-		saveSettings.addEventListener('click', game.saveSettings.bind(game));
+		saveSettings.addEventListener('click', game.settings.saveSettings.bind(game));
 	}
 
 	const resetDefaults = document.getElementById('resetDefaults');
 	if (resetDefaults) {
-		resetDefaults.addEventListener('click', game.setSettingsMenuToDefault.bind(game));
+		resetDefaults.addEventListener('click', game.settings.resetMenu.bind(game));
 	}
 
 	// BETWEEN MATCH
@@ -127,7 +127,7 @@ function bindMenuEventListeners(game){
 	document.getElementById('js-settings-btn').addEventListener('click', async function() {
 		game.hideOptionMenu();
 		await loadPage('settings');
-		game.setSettingsMenuToCurrent();
+		game.settings.updateMenu();
 	});
 	
 	document.getElementById('js-end-game-btn').addEventListener('click', function() {

@@ -5,7 +5,6 @@ class Score {
 		this.game = game;
 		this.players = players;
 		console.log('In Score: Players:', this.players);
-		this.scoreToWin = this.game.scoreToWin;
 		this.result = [0, 0];
 		this.winner = null;
 		this.onlineUpdate = false;
@@ -43,9 +42,9 @@ class Score {
 		if (match.players[1].isAI())
 			match.players[1].ai.refreshView();
 		
-		if (this.result[0] === this.scoreToWin)
+		if (this.result[0] === this.game.settings.scoreToWin)
 			this.winner = 0;
-		else if (this.result[1] === this.scoreToWin)
+		else if (this.result[1] === this.game.settings.scoreToWin)
 			this.winner = 1;
 		else 
 			return;
