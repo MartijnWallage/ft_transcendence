@@ -16,6 +16,8 @@ class PongConsumer(AsyncWebsocketConsumer):
 		'score_B': 0,
 	}
 
+	
+
 	async def connect(self):
 		self.room_group_name = 'game_room'
 
@@ -36,6 +38,7 @@ class PongConsumer(AsyncWebsocketConsumer):
 				'ready': False,
 			}
 			self.player_role = 'B'
+		
 		else:
 			# If both player slots are filled, close the connection or handle it accordingly
 			await self.close()

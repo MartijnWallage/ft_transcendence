@@ -83,8 +83,6 @@ class Match {
 	}
 
 	update(game) {
-		this.frameCount++;
-		console.log('frameCount:', this.frameCount);
 		const field = game.field;
 		const paddle1 = game.paddle1;
 		const paddle2 = game.paddle2;
