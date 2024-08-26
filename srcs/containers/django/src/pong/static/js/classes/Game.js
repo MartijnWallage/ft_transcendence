@@ -13,6 +13,28 @@ import { delay, displayDiv, notDisplayDiv, textToDiv } from '../utils.js';
 
 class Game {
 	constructor() {
+		// Game state
+		this.scoreToWin = 6;
+		this.aiLevel = 2;
+		this.running = false;
+		this.match = null;
+		this.tournament = null;
+		this.readyForNextMatch = false;
+		this.isOptionMenuVisible = false;
+		this.isSettingsMenuVisible = false;
+		this.mode = 'none';
+		this.loggedUser = 'Guest';
+
+		this.socket = null;
+		this.socket_data = null;
+
+        // Default Settings
+        this.ballSpeed = 0.2;
+        this.paddleSpeed = 0.15;
+        this.fieldWidth = 12;
+        this.fieldLength = 16;
+        this.aiLevel = 2;
+
 		// Scene
 		const container = document.getElementById('threejs-container');
 		this.scene = new THREE.Scene();
@@ -31,36 +53,11 @@ class Game {
 		this.environment = new Environment(this.scene);
 		this.audio = null;
 
-		// Game state
-		this.scoreToWin = 6;
-		this.aiLevel = 2;
-		this.running = false;
-		this.match = null;
-		this.tournament = null;
-		this.readyForNextMatch = false;
-		this.isOptionMenuVisible = false;
-		this.isSettingsMenuVisible = false;
-		this.mode = 'none';
-		this.loggedUser = 'Guest';
-
-		this.socket = null;
-		this.socket_data = null;
-
 		// this.socket = new WebSocket('wss://' + window.location.host + '/ws/pong/');
 
 		console.log('Game class created');
 		this.boundCreateAudioContext = this.createAudioContext.bind(this);
 		document.addEventListener('click', this.boundCreateAudioContext);
-	}
-
-	updateField(length, width) {
-		this.scene.remove(this.field.mesh);
-		this.scene.remove(this.field.net);
-		this.scene.remove(this.paddle1.mesh);
-		this.scene.remove(this.paddle2.mesh);
-		this.field = new Field(this.scene, length, width);
-		this.paddle1 = new Paddle(this.scene, this.field, true);
-		this.paddle2 = new Paddle(this.scene, this.field, false);
 	}
 	
 	// Create audio audio context once there is a first interaction with the website to comply with internet rules
@@ -173,6 +170,10 @@ class Game {
 	async startVsOnline() {
 		this.mode = 'vsOnline';
 		this.audio.playSound(this.audio.select_2);
+    
+        // set settings to default
+        this.setSettingsToDefault();
+    
 		const player1 = new Player(this.loggedUser);
 		var player2 = null;
 		this.initSocket(player1);
@@ -235,7 +236,6 @@ class Game {
 			console.log('displaying option menu');
 			displayDiv('js-tournament_score-btn');
 			displayDiv('js-audio-btn');
-			displayDiv('js-settings-btn');
 			if (this.loggedUser === 'Guest') {
 				displayDiv('js-login-btn');
 			}
@@ -244,6 +244,9 @@ class Game {
 			}
 			if (this.running)
 				displayDiv('js-end-game-btn');
+            else {
+                displayDiv('js-settings-btn');
+            }
 			textToDiv('-', 'js-option-btn');
 			this.isOptionMenuVisible = true;
 		}
@@ -260,15 +263,45 @@ class Game {
 		}
 	}
 
+	hideOptionMenu() {
+		console.log('hiding option menu');
+		notDisplayDiv('js-tournament_score-btn');
+		notDisplayDiv('js-audio-btn');
+		notDisplayDiv('js-login-btn');
+		notDisplayDiv('js-logout-btn');
+		notDisplayDiv('js-settings-btn');
+		notDisplayDiv('js-end-game-btn');
+		textToDiv('=', 'js-option-btn');
+		this.isOptionMenuVisible = false;
+	}
+
 	// Settings menu
 
-	// Function to reset settings to default values
-	resetToDefaults() {
-		document.getElementById('ballSpeed').value = 4;
-		document.getElementById('paddleSpeed').value = 4;
-		document.getElementById('fieldWidth').value = 12;
-		document.getElementById('fieldLength').value = 16;
-		document.getElementById('aiLevel').value = 'medium';
+	// Functions to reset settings to default values
+    setSettingsToDefault() {
+        this.updateField(fieldLength, fieldWidth);
+        this.game.ball.initialSpeed = this.ballSpeed;
+        this.game.paddle1.speed = this.paddleSpeed;
+        this.game.paddle2.speed = this.paddleSpeed;
+        const fieldWidth = this.fieldWidth;
+        const fieldLength = this.fieldLength;
+        this.game.aiLevel = this.aiLevel;
+    }
+
+	setSettingsMenuToDefault() {
+		document.getElementById('ballSpeed').value = this.ballSpeed * 20;
+		document.getElementById('paddleSpeed').value = this.paddleSpeed * 20;
+		document.getElementById('fieldWidth').value = this.fieldWidth;
+		document.getElementById('fieldLength').value = this.fieldLength;
+		document.getElementById('aiLevel').value = this.aiLevel == 1 ? 'easy' : this.aiLevel == 2 ? 'medium' : 'hard'; 
+	}
+
+	setSettingsMenuToCurrent() {
+		document.getElementById('ballSpeed').value = this.ball.initialSpeed * 20;
+		document.getElementById('paddleSpeed').value = this.paddle1.speed * 20;
+		document.getElementById('fieldWidth').value = this.field.geometry.parameters.depth;
+		document.getElementById('fieldLength').value = this.field.geometry.parameters.width;
+		document.getElementById('aiLevel').value = this.aiLevel == 1 ? 'easy' : this.aiLevel == 2 ? 'medium' : 'hard'; 
 	}
 
 	saveSettings() {
@@ -279,9 +312,9 @@ class Game {
 		const aiLevel = document.getElementById('aiLevel').value;
 
 		this.updateField(fieldLength, fieldWidth);
-		this.ball.initialSpeed = ballSpeed / 40;
-		this.paddle1.speed = paddleSpeed / 40;
-		this.paddle2.speed = paddleSpeed / 40;
+		this.ball.initialSpeed = ballSpeed / 20;
+		this.paddle1.speed = paddleSpeed / 20;
+		this.paddle2.speed = paddleSpeed / 20;
 		this.aiLevel = aiLevel === 'easy' ? 1 : aiLevel === 'medium' ? 2 : 3;
 
 		console.log(`Ball Speed: ${ballSpeed}`, this.ball.initialSpeed);
@@ -296,6 +329,16 @@ class Game {
 		// updateAILevel(aiLevel);
 	
 		loadPage('game_mode');
+	}
+
+    updateField(length, width) {
+		this.scene.remove(this.field.mesh);
+		this.scene.remove(this.field.net);
+		this.scene.remove(this.paddle1.mesh);
+		this.scene.remove(this.paddle2.mesh);
+		this.field = new Field(this.scene, length, width);
+		this.paddle1 = new Paddle(this.scene, this.field, true);
+		this.paddle2 = new Paddle(this.scene, this.field, false);
 	}
 	
 	muteAudio() {
