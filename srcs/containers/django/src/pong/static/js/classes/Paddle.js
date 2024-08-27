@@ -6,7 +6,6 @@ class Paddle {
         this.field = this.game.field;
         this.scene = this.game.scene;
 		this.geometry = new THREE.BoxGeometry(0.3, 0.8, width);
-        console.log('In Paddle: added new geometry');
 		this.material = new THREE.MeshStandardMaterial({
 			color: 0xc1d1db,
 			roughness: 0.5,
@@ -18,7 +17,6 @@ class Paddle {
 			distanceFromCentre *= -1;
 		}
 		this.mesh = new THREE.Mesh(this.geometry, this.material);
-        console.log('In Paddle: added new mesh');
 		this.mesh.position.set(distanceFromCentre, 0.9, 0);
 		this.scene.add(this.mesh);
 	}

@@ -315,9 +315,6 @@ class Game {
 		this.field = new Field(this.scene, length, width);
 		this.paddle1 = new Paddle(this, true);
 		this.paddle2 = new Paddle(this, false);
-        if (this.match && this.match.players[1].ai) {
-            this.scene.remove(this.match.players[1].ai.mesh);
-        }
         this.ball = new Ball(this);
 	}
 	
