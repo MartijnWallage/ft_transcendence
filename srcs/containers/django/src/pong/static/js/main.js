@@ -17,7 +17,7 @@ function main() {
 	// Load homepage when document is ready
 	const DOMContentLoadedHandler = async function() {
 		console.log('DOMContentLoaded event');
-		let page = location.hash.replace('#', '') || 'home';
+		const page = location.hash.replace('#', '') || 'home';
 		await window.loadPage(page); // await is added to properly handle the updateUI function
 		this_game.userProfile.IdleTimerModule.init();
 	};
