@@ -10,7 +10,7 @@ function main() {
 	// Popstate event listener
 	window.onpopstate = function (event) {
 		console.log('popstate event');
-		const page = event.state ? event.state.page : 'game_mode';
+		const page = event.state ? event.state.page : 'home';
 		window.loadPage(page);
 	};
 	
