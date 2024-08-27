@@ -6,21 +6,33 @@
 			<form id="settingsForm">
 
                 <!-- Points Needed to Win Game -->
-				<div class="form-group mb-1">
-					<label for="scoreToWin">Score to Win</label>
-					<input type="range" class="form-control-range custom-range" id="scoreToWin" min="1" max="10" value="6">
-				</div>
-
-				<!-- Ball Speed -->
-				<div class="form-group mb-1">
-					<label for="ballSpeed">Ball Speed</label>
-					<input type="range" class="form-control-range custom-range" id="ballSpeed" min="1" max="10" value="4">
+				<div class="form-group mb-2 row">
+					<div class="col">
+						<label for="scoreToWin">Score to Win</label>
+					</div>
+					<div class="col">
+						<input type="range" class="form-control-range custom-range" id="scoreToWin" min="1" max="10" value="6">
+					</div>
 				</div>
 
 				<!-- Paddle Speed -->
-				<div class="form-group mb-3">
-					<label for="paddleSpeed">Paddle Speed</label>
-					<input type="range" class="form-control-range custom-range" id="paddleSpeed" min="1" max="10" value="3">
+				<div class="form-group mb-3 row">
+					<div class="col">
+						<label for="paddleSpeed">Paddle Speed</label>
+					</div>
+					<div class="col">
+						<input type="range" class="form-control-range custom-range" id="paddleSpeed" min="1" max="10" value="3">
+					</div>
+				</div>
+				
+				<!-- Ball Speed -->
+				<div class="form-group mb-2 row">
+					<div class="col">
+						<label for="ballSpeed">Ball Speed</label>
+					</div>
+					<div class="col">
+						<input type="range" class="form-control-range custom-range" id="ballSpeed" min="1" max="10" value="4">
+					</div>
 				</div>
 
 				<!-- Field Dimensions -->

@@ -48,21 +48,6 @@ class Game {
 		this.ball = new Ball(this);
 		this.environment = new Environment(this.scene);
 		this.audio = null;
-        
-		// Game state
-		this.running = false;
-		this.match = null;
-		this.tournament = null;
-		this.readyForNextMatch = false;
-		this.isOptionMenuVisible = false;
-		this.isSettingsMenuVisible = false;
-		this.mode = 'none';
-		this.loggedUser = 'Guest';
-
-		this.socket = null;
-		this.socket_data = null;
-
-		// this.socket = new WebSocket('wss://' + window.location.host + '/ws/pong/');
 
 		console.log('Game class created');
 		this.boundCreateAudioContext = this.createAudioContext.bind(this);
@@ -107,6 +92,7 @@ class Game {
 	startUserVsUser() {
 		this.mode = 'UvU';
 		this.audio.playSound(this.audio.select_2);
+		console.log('Starting User vs User');
 		const player1 = new Player(this.loggedUser);
 		const player2 = new Player('Guest 2');
 		this.match = new Match(this, [player1, player2]);
@@ -282,15 +268,7 @@ class Game {
 			this.isOptionMenuVisible = true;
 		}
 		else {
-			console.log('hiding option menu');
-			notDisplayDiv('js-tournament_score-btn');
-			notDisplayDiv('js-audio-btn');
-			notDisplayDiv('js-login-btn');
-			notDisplayDiv('js-logout-btn');
-			notDisplayDiv('js-settings-btn');
-			notDisplayDiv('js-end-game-btn');
-			textToDiv('=', 'js-option-btn');
-			this.isOptionMenuVisible = false;
+			this.hideOptionMenu();
 		}
 	}
 
@@ -339,11 +317,6 @@ class Game {
 	registerInDatabase() {
 		console.log('registerInDatabase');
 		this.createMatch();
-	}
-
-	getCsrfToken() {
-		const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-		return token;
 	}
 
 	async createPlayer(playerName) {
