@@ -209,7 +209,7 @@ class Profile{
 						labels: ['Wins', 'Losses'],
 						datasets: [{
 							data: [totalWins, totalLost],
-							backgroundColor: ['#ffffff', '#a8a8a8'],  // Green for wins, Red for losses
+							backgroundColor: ['#7fcf67', '#a8a8a8'],  // Green for wins, Red for losses
 							borderWidth: 1
 						}]
 					},
