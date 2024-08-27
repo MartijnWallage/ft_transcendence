@@ -1,5 +1,6 @@
 // import { updateUI, bindUserEventListeners, handleLogout} from './userMgmt.js';
 
+
 function loadPageClosure(game) {
 	return async (page) => {
 		console.log("loading page :", page);
@@ -22,9 +23,16 @@ function loadPageClosure(game) {
 			const data = await response.json();
 			mainContent.innerHTML = data.content;
 			console.log('LOG: Page content loaded:', page);
-			history.pushState({ page: page }, "", "#" + page);
+			// history.pushState({ page: page }, "", "#" + page);
 			// localStorage.setItem("currentPageState", JSON.stringify({ page: page }));
-
+			
+			// Use pushState if it's a new page, otherwise use replaceState
+            const state = { page: page };
+            if (location.hash !== `#${page}`) {
+                history.pushState(state, "", `#${page}`);
+            } else {
+                history.replaceState(state, "", `#${page}`);
+            }
 			
 			const updatedUnderTitle = document.getElementById('under-title');
 			if (updatedUnderTitle) {
@@ -168,9 +176,17 @@ function bindMenuEventListeners(game){
 	});
 
 	document.getElementById('js-logout-btn').addEventListener('click', function() {
-		game.hideOptionMenu();
-		handleLogout()
+		game.viewOptionMenu();
+		// handleLogout(); //error when you log out from the dashboard
+		game.userProfile.handleLogout();
 	});
+
+	// document.getElementById('js-tournament_score-btn').addEventListener('click', function() {
+	// 	game.viewOptionMenu();
+	// 	loadPage('tournament_score');
+	// });
+
+	
 
 	document.getElementById('js-audio-btn').addEventListener('click', function() {
 		game.hideOptionMenu();

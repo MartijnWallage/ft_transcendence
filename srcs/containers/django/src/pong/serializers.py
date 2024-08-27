@@ -41,10 +41,10 @@ class RegisterSerializer(serializers.ModelSerializer):
 
         if password1 != password2:
             raise serializers.ValidationError("Passwords do not match.")
-        # if len(password1) < 8:
-        #     raise serializers.ValidationError("Passwords is too short")
-        # if validate_password(password1) != None:
-        #     raise serializers.ValidationError("Passwords is not good enough")
+        if len(password1) < 8:
+            raise serializers.ValidationError("Passwords is too short")
+        if validate_password(password1) != None:
+            raise serializers.ValidationError("Passwords is not good enough")
         return data
 
     def create(self, validated_data):
@@ -56,13 +56,14 @@ class RegisterSerializer(serializers.ModelSerializer):
             password=validated_data['password1']
         )
         print("User created:", user)
-        user_profile, created = UserProfile.objects.get_or_create(user=user)
+        UserProfile.objects.get_or_create(user=user, avatar=avatar)
     
-        if avatar is not None:
-            user_profile.avatar = avatar
-            
-        user_profile.online_status = True
-        user_profile.save()
+        # if avatar is not None:
+        #     user_profile.avatar = avatar
+        # print("User profile created:", user_profile)
+        # print('this is avatar', user_profile.avatar) 
+        # user_profile.online_status = True
+        # user_profile.save()
         return user
 
 
