@@ -83,29 +83,39 @@ function bindEventListeners(game) {
 	if (saveSettings) {
 		saveSettings.addEventListener('click', game.settings.save.bind(game.settings));
 
-        document.getElementById('fieldWidth').addEventListener('input', function(event) {
-            const inputField = event.target;
-            const minValue = parseInt(inputField.min, 10);
-            const maxValue = parseInt(inputField.max, 10);
-            
-            if (inputField.value < minValue) {
-                inputField.value = minValue;
-            } else if (inputField.value > maxValue) {
-                inputField.value = maxValue;
-            }
-        });
+		function enforceMinMax(inputField) {
+			const minValue = parseInt(inputField.min, 10);
+			const maxValue = parseInt(inputField.max, 10);
 
-        document.getElementById('fieldLength').addEventListener('input', function(event) {
-            const inputField = event.target;
-            const minValue = parseInt(inputField.min, 10);
-            const maxValue = parseInt(inputField.max, 10);
-            
-            if (inputField.value < minValue) {
-                inputField.value = minValue;
-            } else if (inputField.value > maxValue) {
-                inputField.value = maxValue;
-            }
-        });
+			if (inputField.value < minValue) {
+				inputField.value = minValue;
+			} else if (inputField.value > maxValue) {
+				inputField.value = maxValue;
+			}
+		}
+
+		function enforceWidthLengthConstraint() {
+			const widthInput = document.getElementById('fieldWidth');
+			const lengthInput = document.getElementById('fieldLength');
+			const widthValue = parseInt(widthInput.value, 10);
+			const lengthValue = parseInt(lengthInput.value, 10);
+
+			if (widthValue > lengthValue) {
+				widthInput.value = lengthValue;  // Adjust width to be no larger than length
+			}
+		}
+
+		document.getElementById('fieldWidth').addEventListener('input', function(event) {
+			const inputField = event.target;
+			enforceMinMax(inputField);
+			enforceWidthLengthConstraint();
+		});
+
+		document.getElementById('fieldLength').addEventListener('input', function(event) {
+			const inputField = event.target;
+			enforceMinMax(inputField);
+			enforceWidthLengthConstraint();
+		});
 	}
 
 	const resetDefaults = document.getElementById('resetDefaults');
