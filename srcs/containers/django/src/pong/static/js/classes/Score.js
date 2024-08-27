@@ -57,12 +57,14 @@ class Score {
 		ball.resetBall();
 		await this.displayWinMessage(`${this.players[this.winner].name}`);
 		console.log('LOG: mode:', this.game.mode);
-		if (this.game.mode === 'solo' || this.game.mode === 'UvU' || this.game.mode === 'vsOnline') {
-			if (playerRole === 'A') {
-				console.log('Registering inside the database...');
-				this.game.registerInDatabase();
-			}
+		if (this.game.mode === 'solo' || this.game.mode === 'UvU') {
+            console.log('Registering inside the database...');
+            this.game.registerInDatabase();
 		}
+        else if (this.game.mode === 'vsOnline' && playerRole === 'A') {
+            console.log('Registering inside the database...');
+            this.game.registerInDatabase();
+        }
 		this.game.readyForNextMatch = true;
 	}
 
