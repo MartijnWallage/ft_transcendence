@@ -48,7 +48,12 @@ class Blockchain {
 				// Update the button to show it's registered and keep it disabled
 				registerButton.textContent = 'Registered';
 			} else {
-				alert('Error registering matches: ' + result.error);
+				// Handle specific errors returned by the backend
+				if (result.error === 'Insufficient funds')
+					alert('Error: Insufficient funds to cover the gas fees. Please add more ETH and try again.');
+				else {
+					alert('Please try again later. ' + result.error);
+				}
 
 				// Re-enable the button if the registration failed
 				registerButton.classList.remove('btn-secondary');
@@ -58,8 +63,12 @@ class Blockchain {
 			}
 		} catch (error) {
 			console.error(error);
-			if (error.message !== 'Transaction timed out') {
+			if (error.message === 'Transaction timed out') {
+				console.log('Transaction timed out');
 				alert('The Sepolia network may be overloaded. Please try again.');
+			} else {
+				console.log('Unexpected error:', error.message);
+				alert('The gas fees are too high. Please try again later.');
 			}
 			registerButton.classList.remove('btn-secondary');
 			registerButton.classList.add('btn-success');

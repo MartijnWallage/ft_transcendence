@@ -422,11 +422,32 @@ def register_matches(request):
     account = web3.eth.account.from_key(private_key)
     web3.eth.defaultAccount = account.address
 
+    # Check if the account has enough balance to cover the gas fees
+    # estimated_gas_limit = 200000  # Estimate or adjust
+
+    try:
+        # Estimate gas
+        estimated_gas_limit = contract.functions.recordMatches(match_data).estimate_gas({
+            'from': account.address,
+        })
+    except Exception as e:
+        print(f"Error estimating gas: {str(e)}")
+        return Response({'success': False, 'error': 'Error estimating gas'})
+
+    estimated_gas_price = web3.eth.gas_price
+    required_balance = estimated_gas_limit * estimated_gas_price
+    current_balance = web3.eth.get_balance(account.address)
+    print(f"Current balance: {current_balance}, required balance: {required_balance}")
+
+    if current_balance < required_balance:
+        return Response({'success': False, 'error': 'Insufficient funds'}, status=400)
+
+
     try:
         # Sign transaction
         tx = contract.functions.recordMatches(match_data).build_transaction({
             'from': account.address,
-            'gas': 3000000,  # or any estimate
+            'gas': estimated_gas_limit,  # or any estimate
             'gasPrice': web3.eth.gas_price,
             'nonce': web3.eth.get_transaction_count(account.address),
         })
@@ -435,6 +456,7 @@ def register_matches(request):
         # Send transaction
         tx_hash = web3.eth.send_raw_transaction(signed_tx.rawTransaction)
         print(f"Transaction sent, hash: {tx_hash.hex()}")
+        
 
         # Wait for the transaction receipt
         try:
