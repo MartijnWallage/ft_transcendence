@@ -1,30 +1,13 @@
 import { getCookie } from "../utils.js";
+// import { loadPage } from './loadPage.js';
 
 class Profile{
 	constructor(game) {
 		this.game = game;
-		this.isUserLoggedIn = false;
+		// this.isUserLoggedIn = false;
+		this.isUserLoggedIn = localStorage.getItem('isUserLoggedIn') === 'true';
 
 		this.handleFormSubmitWrapper = this.handleFormSubmitWrapper.bind(this);
-
-		// window.addEventListener('beforeunload', (event) => {
-		// 	// Check if the navigation type is a reload or back-forward
-		// 	const navigationType = performance.getEntriesByType('navigation')[0]?.type;
-			
-		// 	if (navigationType !== 'reload' && navigationType !== 'back_forward' && this.isUserLoggedIn === true) {
-		// 		const formData = new FormData();
-		// 		formData.append('csrfmiddlewaretoken', getCookie('csrftoken'));
-		// 		navigator.sendBeacon('/api/logout/', formData);
-		// 	}
-		// });
-		
-		window.addEventListener('beforeunload', () => {
-			if (this.isUserLoggedIn === true) {
-				const formData = new FormData();
-				formData.append('csrfmiddlewaretoken', getCookie('csrftoken'));
-				navigator.sendBeacon('/api/logout/', formData);
-			}
-		});
 
 		this.IdleTimerModule = (() => {
 			let idleTime = 0;
@@ -49,7 +32,9 @@ class Profile{
 					startIdleTimer();
 				}
 			};
+
 		})();
+        
 	}
 
 	bindUserEventListeners(userContent, page) {
@@ -57,22 +42,20 @@ class Profile{
 			console.log('Event is binded to call dashboard');
 			var matchHistory = document.getElementById('match-history-btn')
 			matchHistory.style.display = 'block';
-			// if (matchHistory) {
-			matchHistory.addEventListener('click', () => {
-				loadPage('match_history').then(() => {
-					this.game.stats.statForUser = this.game.loggedUser;
-					// Here, 'this' refers to the Profile instance because of the arrow function
-					this.game.stats.showMatches('UvU');
+			if (matchHistory) {
+				matchHistory.addEventListener('click', () => {
+					loadPage('match_history').then(() => {
+						this.game.stats.statForUser = this.game.loggedUser;
+						// Here, 'this' refers to the Profile instance because of the arrow function
+						this.game.stats.showMatches('UvU');
+					});
 				});
-			});
-		// }
+			}
 			this.updateSuggestedFriends();
 			this.updateFriendList();
 			this.updateFriendRequestList();
 			this.updateMatchStats();
 			this.getAllFriends();
-
-
 		}
 		
 		if (userContent) {
@@ -100,6 +83,7 @@ class Profile{
 				if (form.id === 'login-form' || form.id === 'register-form') {
 					this.isUserLoggedIn = true;
 					// console.log('checking form data', formData);
+					localStorage.setItem('isUserLoggedIn', 'true');
 					console.log('only form', data.username);
 					this.game.loggedUser = data.username;
 					const nextPage = this.checkForNextPage() || 'game_mode';
@@ -174,9 +158,11 @@ class Profile{
 			.then(data => {
 				if (data.status === 'success') {
 					console.log('logout worked for user.');
-					this.showNotification('You are successfully logged out');
-					history.pushState(null, '', '');
 					this.isUserLoggedIn = false;
+					localStorage.setItem('isUserLoggedIn', 'false');
+					this.showNotification('You are successfully logged out');
+					// history.pushState(null, '', '');
+					// this.isUserLoggedIn = false;
 					window.loadPage('game_mode');
 				} else {
 					console.error('Logout failed:', data);
