@@ -423,7 +423,7 @@ def register_matches(request):
     web3.eth.defaultAccount = account.address
 
     # Check if the account has enough balance to cover the gas fees
-    # estimated_gas_limit = 300  # Estimate or adjust
+    # estimated_gas_limit = 200000  # Estimate or adjust
 
     try:
         # Estimate gas
@@ -437,6 +437,7 @@ def register_matches(request):
     estimated_gas_price = web3.eth.gas_price
     required_balance = estimated_gas_limit * estimated_gas_price
     current_balance = web3.eth.get_balance(account.address)
+    print(f"Current balance: {current_balance}, required balance: {required_balance}")
 
     if current_balance < required_balance:
         return Response({'success': False, 'error': 'Insufficient funds'}, status=400)
