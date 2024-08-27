@@ -10,7 +10,6 @@ class AI {
         const level = this.game.settings.aiLevel;
 		const divider = level >= 3 ? level : 1;
         this.updateInterval = 1000 / divider; // 1000 milliseconds = 1 second
-		this.visualizePrediction = true;
 		
 		this.predictionBallZ = 0;
         this.lastUpdateTime = 0;
@@ -19,7 +18,7 @@ class AI {
 		this.AIPaddle = this.game.paddle2;
 		this.bestPaddlePosition = 0;
 		
-		// visualize prediction
+		/* // visualize prediction
 		this.radius = 0.1;
 		this.geometry = new THREE.SphereGeometry(this.radius);
 		this.material = new THREE.MeshStandardMaterial({
@@ -29,8 +28,7 @@ class AI {
 		});
 		this.mesh = new THREE.Mesh(this.geometry, this.material);
 		this.mesh.position.set(this.AIPaddle.x - this.AIPaddle.geometry.parameters.width / 2, 0.7, this.predictionBallZ);
-		if (this.visualizePrediction)
-			this.game.scene.add(this.mesh);
+		this.game.scene.add(this.mesh); */
 	}
 	
     // Method to initialize the interval
@@ -66,7 +64,7 @@ class AI {
 			this.predictionBallZ = this.simulateBall(ball, humanPaddle);
 			let aim = this.setAim(humanPaddle);
 			this.bestPaddlePosition = this.findPaddlePosition(ball, aim);
-			this.mesh.position.set(this.AIPaddle.x - this.AIPaddle.geometry.parameters.width / 2, 0.7, this.predictionBallZ);
+			//this.mesh.position.set(this.AIPaddle.x - this.AIPaddle.geometry.parameters.width / 2, 0.7, this.predictionBallZ);
         }
     }
 

@@ -96,7 +96,8 @@ class Game {
 	// These are the modes bound to the buttons in the menu
 	async startSolo() {
 		this.mode = 'solo';
-		this.audio.playSound(this.audio.select_2);
+        if (this.audio)
+    		this.audio.playSound(this.audio.select_2);
 		const player1 = new Player(this.loggedUser);
 		const player2 = new Player('pongAI');
 		player2.setAI(this);
@@ -106,7 +107,8 @@ class Game {
 
 	startUserVsUser() {
 		this.mode = 'UvU';
-		this.audio.playSound(this.audio.select_2);
+        if (this.audio)
+    		this.audio.playSound(this.audio.select_2);
 		const player1 = new Player(this.loggedUser);
 		const player2 = new Player('Guest 2');
 		this.match = new Match(this, [player1, player2]);
@@ -197,7 +199,8 @@ class Game {
 
 	async startVsOnline() {
 		this.mode = 'vsOnline';
-		this.audio.playSound(this.audio.select_2);
+        if (this.audio)
+    		this.audio.playSound(this.audio.select_2);
     
         // set settings to default
         this.settings.reset();
@@ -315,13 +318,13 @@ class Game {
 		this.field = new Field(this.scene, length, width);
 		this.paddle1 = new Paddle(this, true);
 		this.paddle2 = new Paddle(this, false);
-        if (this.match && this.match.players[1].ai) {
-            this.scene.remove(this.match.players[1].ai.mesh);
-        }
         this.ball = new Ball(this);
 	}
 	
 	muteAudio() {
+        if (!this.audio) {
+            return;
+        }
 		if (this.audio.mute === false) {
 			this.audio.muteSounds();
 			textToDiv('Audio off', 'js-audio-btn');
@@ -333,7 +336,8 @@ class Game {
 	}
 
 	executeBlockchain(tournamentId) {
-		this.audio.playSound(this.audio.select_1);
+        if (this.audio)
+    		this.audio.playSound(this.audio.select_1);
 		new Blockchain(tournamentId);
 	}
 	
