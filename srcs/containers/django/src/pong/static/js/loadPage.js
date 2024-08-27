@@ -64,6 +64,13 @@ function bindEventListeners(game) {
 		console.log('adding player');
 		addPlayerBtn.addEventListener('click', game.tournament.addPlayer.bind(game.tournament));
 	}
+
+	const addPlayerBtn1v1 = document.getElementById('js-add-player-btn-1v1');
+	if (addPlayerBtn1v1) {
+		game.createTournament();
+		console.log('adding player');
+		addPlayerBtn1v1.addEventListener('click', game.tournament.addPlayer.bind(game.tournament));
+	}
 	
 	const gameSoloBtn = document.getElementById('js-start-game-solo-btn');
 	if (gameSoloBtn) {
