@@ -10,14 +10,14 @@ function main() {
 	// Popstate event listener
 	window.onpopstate = function (event) {
 		console.log('popstate event');
-		const page = event.state ? event.state.page : 'home';
+		const page = event.state ? event.state.page : 'game_mode';
 		window.loadPage(page);
 	};
 	
 	// Load homepage when document is ready
 	const DOMContentLoadedHandler = async function() {
 		console.log('DOMContentLoaded event');
-		const page = location.hash.replace('#', '') || 'home';
+		const page = location.hash.replace('#', '') || 'game_mode';
 		await window.loadPage(page); // await is added to properly handle the updateUI function
 		this_game.userProfile.IdleTimerModule.init();
 	};
@@ -37,22 +37,19 @@ function main() {
 		console.log('load event');
 		const hash = window.location.hash;
 		if (hash) {  // Check if there is any hash in the URL
+			console.log('hash hash hash : ', hash);
+			
 			if (sessionStorage.getItem('visitedHash')) {
 				window.location.href = '/';
-			} else {
+			} 
+			else {
 				sessionStorage.setItem('visitedHash', 'true');
 			}
 		}
-		// const savedState = JSON.parse(localStorage.getItem("currentPageState"));
-		// if (savedState) {
-		// 	// Restore the application state here based on savedState.page
-		// 	navigateToPage(savedState.page);
-		// }
-	});
 
-	// function navigateToPage(page) {
-	// 	window.loadPage(page);
-	// }
+	});
+	
+
 
 	bindMenuEventListeners(this_game);
 	window.addEventListener('resize', () => this_game.onWindowResize());

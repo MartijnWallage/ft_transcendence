@@ -9,17 +9,6 @@ class Profile{
 
 		this.handleFormSubmitWrapper = this.handleFormSubmitWrapper.bind(this);
 
-		// Attach the beforeunload event to handle potential logout scenarios
-		window.addEventListener('beforeunload', this.handleBeforeUnload.bind(this));
-
-		// window.addEventListener('beforeunload', () => {
-		// 	if (this.isUserLoggedIn === true) {
-		// 		const formData = new FormData();
-		// 		formData.append('csrfmiddlewaretoken', getCookie('csrftoken'));
-		// 		navigator.sendBeacon('/api/logout/', formData);
-		// 	}
-		// });
-
 		this.IdleTimerModule = (() => {
 			let idleTime = 0;
 			const maxIdleTime = 5 * 60 * 1000;
@@ -45,34 +34,7 @@ class Profile{
 			};
 
 		})();
-
-		
-		// // Check if the user is already logged in and redirect them
-		// this.checkLoginStatusAndRedirect();
         
-	}
-
-	// async checkLoginStatusAndRedirect() {
-	// 	if (this.isUserLoggedIn) {
-	// 		// Check if the user is trying to access the login page
-	// 		const currentHash = window.location.hash;
-	// 		if (currentHash === '#home' || currentHash === '#login' || currentHash === '') {
-	// 			// Redirect to the dashboard or home page
-	// 			// window.loadPage('home'); // or 'home' based on your app's flow
-	// 			// loadPage('home'); // or 'home' based on your app's flow
-	// 			await window.loadPage('dashboard');
-	// 			// window.loadPage('game_mode'); // or 'home' based on your app's flow
-	// 		}
-	// 	}
-	// }
-
-	handleBeforeUnload() {
-		if (this.isUserLoggedIn) {
-			// Optional: Send a logout signal or clean up state
-			const formData = new FormData();
-			formData.append('csrfmiddlewaretoken', getCookie('csrftoken'));
-			navigator.sendBeacon('/api/logout/', new FormData());
-		}
 	}
 
 	bindUserEventListeners(userContent, page) {
@@ -469,7 +431,7 @@ class Profile{
 		console.log("userInfo: ", userInfo);
 	
 		if (userInfo && userInfo.username) {
-			userInfoElement.innerText = `Welcome, ${userInfo.username}`;
+			userInfoElement.innerText = `${userInfo.username}`;
 			game.loggedUser = userInfo.username;
 			// if (userInfo.avatar_url) {
 			userAvatar.src = userInfo.avatar_url;
