@@ -1,5 +1,6 @@
 // import { updateUI, bindUserEventListeners, handleLogout} from './userMgmt.js';
 
+
 function loadPageClosure(game) {
 	return async (page) => {
 		console.log("loading page :", page);
@@ -159,13 +160,16 @@ function bindMenuEventListeners(game){
 
 	document.getElementById('js-logout-btn').addEventListener('click', function() {
 		game.viewOptionMenu();
-		handleLogout()
+		// handleLogout(); //error when you log out from the dashboard
+		game.userProfile.handleLogout();
 	});
 
 	// document.getElementById('js-tournament_score-btn').addEventListener('click', function() {
 	// 	game.viewOptionMenu();
 	// 	loadPage('tournament_score');
 	// });
+
+	
 
 	document.getElementById('js-audio-btn').addEventListener('click', function() {
 		game.viewOptionMenu();
