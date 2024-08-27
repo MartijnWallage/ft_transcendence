@@ -90,9 +90,6 @@ class Ball {
 		this.position.z = 0;
 		this.dx = 0;
 		this.dz = 0;
-		if (this.game.match && this.game.match.players[1].ai) {
-			this.game.scene.remove(this.game.match.players[1].ai.mesh);
-		}
 	}
 
 	serveBall() {
