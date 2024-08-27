@@ -9,6 +9,7 @@ class Tournament {
 		this.game = game;
 		this.matchResult = [];
 		this.tournamentId = null;
+		this.winner = null;
 	}
 
     async initializeTournament() {
@@ -203,15 +204,21 @@ class Tournament {
 	}
 	
 
+	getWinner() {
+		const lastMatch = this.matchResult[this.matchResult.length - 1];
+		return lastMatch.player1Score > lastMatch.player2Score ? lastMatch.player1 : lastMatch.player2;
+	}
+
 	// Tournament End
 
 	async endTournament() {
 		const game = this.game;
+		this.winner = this.getWinner();
 		const score = game.match.score.result;
 
 		HTMLToDiv(`Tournament winner`, 'announcement-l1');
 		HTMLToDiv(`is`, 'announcement-mid');
-		HTMLToDiv(`Whoever !`, 'announcement-l2');
+		HTMLToDiv(`${this.winner} !`, 'announcement-l2');
 		notDisplayDiv('js-next-game-btn');
 		displayDiv('js-score-btn');
 		

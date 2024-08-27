@@ -20,16 +20,16 @@ class Game {
         this.settings = new Settings(this);
         
 		// Game state
-		this.running = false;
-		this.match = null;
-		this.tournament = null;
-		this.readyForNextMatch = false;
-		this.isOptionMenuVisible = false;
-		this.isSettingsMenuVisible = false;
-		this.mode = 'none';
-		this.loggedUser = 'Guest';
-		this.socket = null;
-		this.socket_data = null;
+		// this.running = false;
+		// this.match = null;
+		// this.tournament = null;
+		// this.readyForNextMatch = false;
+		// this.isOptionMenuVisible = false;
+		// this.isSettingsMenuVisible = false;
+		// this.mode = 'none';
+		// this.loggedUser = 'Guest';
+		// this.socket = null;
+		// this.socket_data = null;
         
 		// Scene
 		const container = document.getElementById('threejs-container');
@@ -58,7 +58,6 @@ class Game {
 		this.isSettingsMenuVisible = false;
 		this.mode = 'none';
 		this.loggedUser = 'Guest';
-
 		this.socket = null;
 		this.socket_data = null;
 
@@ -104,9 +103,29 @@ class Game {
 		this.match.play(this);
 	}
 
+	// async addPlayer() {
+	// 	this.game.audio.playSound(this.game.audio.select_1);
+	// 	const playerName = document.getElementById('playerNameInput').value.trim();
+	// 	console.log(playerName);
+	// 	if (playerName === '') {
+	// 		displayDiv('error');
+	// 		return;
+	// 	}
+	// 	else {
+	// 		notDisplayDiv('error');
+	// 	}
+	// 	const newPlayer = new Player(playerName);
+	// 	this.players.push(newPlayer);
+	// 	this.displayPlayers();
+	// 	document.getElementById('playerNameInput').value = '';
+	// }
+
 	startUserVsUser() {
 		this.mode = 'UvU';
 		this.audio.playSound(this.audio.select_2);
+		console.log('Starting User vs User');
+		// if (this.loggedUser !== 'Guest')
+		// 	document.getElementById('js-player1-entry').innerText = this.loggedUser;
 		const player1 = new Player(this.loggedUser);
 		const player2 = new Player('Guest 2');
 		this.match = new Match(this, [player1, player2]);
@@ -342,11 +361,6 @@ class Game {
 	registerInDatabase() {
 		console.log('registerInDatabase');
 		this.createMatch();
-	}
-
-	getCsrfToken() {
-		const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-		return token;
 	}
 
 	async createPlayer(playerName) {
