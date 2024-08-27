@@ -17,7 +17,7 @@ function main() {
 	// Load homepage when document is ready
 	const DOMContentLoadedHandler = async function() {
 		console.log('DOMContentLoaded event');
-		const page = location.hash.replace('#', '') || 'game_mode';
+		let page = location.hash.replace('#', '') || 'home';
 		await window.loadPage(page); // await is added to properly handle the updateUI function
 		this_game.userProfile.IdleTimerModule.init();
 	};
@@ -37,8 +37,6 @@ function main() {
 		console.log('load event');
 		const hash = window.location.hash;
 		if (hash) {  // Check if there is any hash in the URL
-			console.log('hash hash hash : ', hash);
-			
 			if (sessionStorage.getItem('visitedHash')) {
 				window.location.href = '/';
 			} 
