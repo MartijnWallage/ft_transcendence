@@ -58,8 +58,10 @@ class Score {
 		await this.displayWinMessage(`${this.players[this.winner].name}`);
 		console.log('LOG: mode:', this.game.mode);
 		if (this.game.mode === 'solo' || this.game.mode === 'UvU' || this.game.mode === 'vsOnline') {
-			console.log('Registering inside the database...');
-			this.game.registerInDatabase();
+			if (playerRole === 'A') {
+				console.log('Registering inside the database...');
+				this.game.registerInDatabase();
+			}
 		}
 		this.game.readyForNextMatch = true;
 	}
