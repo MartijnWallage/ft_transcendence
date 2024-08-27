@@ -23,9 +23,16 @@ function loadPageClosure(game) {
 			const data = await response.json();
 			mainContent.innerHTML = data.content;
 			console.log('LOG: Page content loaded:', page);
-			history.pushState({ page: page }, "", "#" + page);
+			// history.pushState({ page: page }, "", "#" + page);
 			// localStorage.setItem("currentPageState", JSON.stringify({ page: page }));
-
+			
+			// Use pushState if it's a new page, otherwise use replaceState
+            const state = { page: page };
+            if (location.hash !== `#${page}`) {
+                history.pushState(state, "", `#${page}`);
+            } else {
+                history.replaceState(state, "", `#${page}`);
+            }
 			
 			const updatedUnderTitle = document.getElementById('under-title');
 			if (updatedUnderTitle) {
