@@ -1,4 +1,5 @@
 // import { updateUI, bindUserEventListeners, handleLogout} from './userMgmt.js';
+import { Game } from './classes/Game.js';
 
 function loadPageClosure(game) {
 	return async (page) => {
@@ -22,6 +23,8 @@ function loadPageClosure(game) {
 			const data = await response.json();
 			mainContent.innerHTML = data.content;
 			console.log('LOG: Page content loaded:', page);
+			// Store the current page in localStorage
+            localStorage.setItem('currentPage', page);
 			history.pushState({ page: page }, "", "#" + page);
 			// localStorage.setItem("currentPageState", JSON.stringify({ page: page }));
 
@@ -147,7 +150,9 @@ function bindMenuEventListeners(game){
 
 	document.getElementById('js-login-btn').addEventListener('click', function() {
 		game.viewOptionMenu();
-		loadPage('login_user');
+		// loadPage('login_user');
+		loadPageClosure(game)('login_user');
+
 	});
 
 	document.getElementById('js-logout-btn').addEventListener('click', function() {
@@ -158,6 +163,8 @@ function bindMenuEventListeners(game){
 	document.getElementById('js-tournament_score-btn').addEventListener('click', function() {
 		game.viewOptionMenu();
 		loadPage('tournament_score');
+		// loadPageClosure(game)('tournament_score');
+		
 	});
 
 	document.getElementById('js-audio-btn').addEventListener('click', function() {
@@ -167,7 +174,8 @@ function bindMenuEventListeners(game){
 	
 	document.getElementById('js-settings-btn').addEventListener('click', async function() {
 		game.hideOptionMenu();
-		await loadPage('settings');
+		// await loadPage('settings');
+		await loadPageClosure(game)('settings');
 		game.settings.updateMenu();
 	});
 	
@@ -182,13 +190,15 @@ function bindMenuEventListeners(game){
 	});
 	document.getElementById('user-name').addEventListener('click', function() {
 		if (game.userProfile.isUserLoggedIn){
-			loadPage('dashboard');
+			// loadPage('dashboard');
+			loadPageClosure(game)('dashboard');
 		}
 	});
 
 	document.getElementById('user-avatar').addEventListener('click', function() {
 		if (game.userProfile.isUserLoggedIn){
-			loadPage('dashboard');
+			// loadPage('dashboard');
+			loadPageClosure(game)('dashboard');
 		}
 	});
 
@@ -283,4 +293,43 @@ function fadeOut(element) {
 		}, { once: true });
 	});
 }
+
+document.addEventListener('DOMContentLoaded', () => {
+    console.log('Current hash:', window.location.hash); // Log the current hash for debugging
+
+    const game = new Game(); 
+
+    const loadPageBasedOnHash = async () => {
+        console.log('Executing loadPageBasedOnHash'); // Log execution for debugging
+        const storedPage = localStorage.getItem('currentPage');
+        // const hash = window.location.hash;
+
+
+        if (storedPage) {
+            console.log('Loading stored page:', storedPage); // Log the stored page
+            await loadPageClosure(game)(storedPage);
+		}
+			// } else if (hash) {
+        //     console.log('Loading page based on hash:', hash);
+        //     await loadPageClosure(game)(hash);
+        // } 
+		
+		else {
+            console.log('Loading default page: home');
+            await loadPageClosure(game)('home');
+        }
+
+        bindMenuEventListeners(game); // Bind menu event listeners after page load
+    };
+
+    // Execute page load based on current hash and stored data
+    loadPageBasedOnHash();
+
+	// window.addEventListener('popstate', async (event) => {
+    //     const page = event.state ? event.state.page : 'home';
+    //     await loadPageClosure(game)(page);
+    // });
+
+});
+
 export { loadPageClosure, bindMenuEventListeners };

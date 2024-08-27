@@ -1,19 +1,24 @@
 import { getCookie } from "../utils.js";
+// import { loadPage } from './loadPage.js';
 
 class Profile{
 	constructor(game) {
 		this.game = game;
-		this.isUserLoggedIn = false;
+		// this.isUserLoggedIn = false;
+		this.isUserLoggedIn = localStorage.getItem('isUserLoggedIn') === 'true';
 
 		this.handleFormSubmitWrapper = this.handleFormSubmitWrapper.bind(this);
 
-		window.addEventListener('beforeunload', () => {
-			if (this.isUserLoggedIn === true) {
-				const formData = new FormData();
-				formData.append('csrfmiddlewaretoken', getCookie('csrftoken'));
-				navigator.sendBeacon('/api/logout/', formData);
-			}
-		});
+		// Attach the beforeunload event to handle potential logout scenarios
+		window.addEventListener('beforeunload', this.handleBeforeUnload.bind(this));
+
+		// window.addEventListener('beforeunload', () => {
+		// 	if (this.isUserLoggedIn === true) {
+		// 		const formData = new FormData();
+		// 		formData.append('csrfmiddlewaretoken', getCookie('csrftoken'));
+		// 		navigator.sendBeacon('/api/logout/', formData);
+		// 	}
+		// });
 
 		this.IdleTimerModule = (() => {
 			let idleTime = 0;
@@ -38,7 +43,36 @@ class Profile{
 					startIdleTimer();
 				}
 			};
+
 		})();
+
+		
+		// // Check if the user is already logged in and redirect them
+		// this.checkLoginStatusAndRedirect();
+        
+	}
+
+	// async checkLoginStatusAndRedirect() {
+	// 	if (this.isUserLoggedIn) {
+	// 		// Check if the user is trying to access the login page
+	// 		const currentHash = window.location.hash;
+	// 		if (currentHash === '#home' || currentHash === '#login' || currentHash === '') {
+	// 			// Redirect to the dashboard or home page
+	// 			// window.loadPage('home'); // or 'home' based on your app's flow
+	// 			// loadPage('home'); // or 'home' based on your app's flow
+	// 			await window.loadPage('dashboard');
+	// 			// window.loadPage('game_mode'); // or 'home' based on your app's flow
+	// 		}
+	// 	}
+	// }
+
+	handleBeforeUnload() {
+		if (this.isUserLoggedIn) {
+			// Optional: Send a logout signal or clean up state
+			const formData = new FormData();
+			formData.append('csrfmiddlewaretoken', getCookie('csrftoken'));
+			navigator.sendBeacon('/api/logout/', new FormData());
+		}
 	}
 
 	bindUserEventListeners(userContent, page) {
@@ -46,22 +80,20 @@ class Profile{
 			console.log('Event is binded to call dashboard');
 			var matchHistory = document.getElementById('match-history-btn')
 			matchHistory.style.display = 'block';
-			// if (matchHistory) {
-			matchHistory.addEventListener('click', () => {
-				loadPage('match_history').then(() => {
-					this.game.stats.statForUser = this.game.loggedUser;
-					// Here, 'this' refers to the Profile instance because of the arrow function
-					this.game.stats.showMatches('UvU');
+			if (matchHistory) {
+				matchHistory.addEventListener('click', () => {
+					loadPage('match_history').then(() => {
+						this.game.stats.statForUser = this.game.loggedUser;
+						// Here, 'this' refers to the Profile instance because of the arrow function
+						this.game.stats.showMatches('UvU');
+					});
 				});
-			});
-		// }
+			}
 			this.updateSuggestedFriends();
 			this.updateFriendList();
 			this.updateFriendRequestList();
 			this.updateMatchStats();
 			this.getAllFriends();
-
-
 		}
 		
 		if (userContent) {
@@ -89,6 +121,7 @@ class Profile{
 				if (form.id === 'login-form' || form.id === 'register-form') {
 					this.isUserLoggedIn = true;
 					// console.log('checking form data', formData);
+					localStorage.setItem('isUserLoggedIn', 'true');
 					console.log('only form', data.username);
 					this.game.loggedUser = data.username;
 					const nextPage = this.checkForNextPage() || 'game_mode';
@@ -163,9 +196,11 @@ class Profile{
 			.then(data => {
 				if (data.status === 'success') {
 					console.log('logout worked for user.');
-					this.showNotification('You are successfully logged out');
-					history.pushState(null, '', '');
 					this.isUserLoggedIn = false;
+					localStorage.setItem('isUserLoggedIn', 'false');
+					this.showNotification('You are successfully logged out');
+					// history.pushState(null, '', '');
+					// this.isUserLoggedIn = false;
 					window.loadPage('game_mode');
 				} else {
 					console.error('Logout failed:', data);
