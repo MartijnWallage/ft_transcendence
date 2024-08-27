@@ -184,7 +184,7 @@ class Profile{
 				const totalWins = data.won_matches;
 				const winRate = (totalWins / totalMatches) * 100;
 				const totalLost = totalMatches - totalWins;
-				document.getElementById('total-matches').innerHTML = `Total Matches Played: <strong>${totalMatches}</strong>`;
+				document.getElementById('total-matches').innerHTML = `Matches Played: <strong>${totalMatches}</strong>`;
             	document.getElementById('matches-won').innerHTML = `Matches Won: <strong>${totalWins}</strong>`;
             	document.getElementById('matches-lost').innerHTML = `Matches Lost: <strong>${totalLost}</strong>`;
 				document.getElementById('win-rate').innerHTML = `Win Rate: <strong>${winRate.toFixed(2)}%</strong>`;
@@ -195,8 +195,7 @@ class Profile{
 						labels: ['Wins', 'Losses'],
 						datasets: [{
 							data: [totalWins, totalLost],
-							backgroundColor: ['#4caf50', '#f44336'],  // Green for wins, Red for losses
-							borderColor: ['#4caf50', '#f44336'],
+							backgroundColor: ['#ffffff', '#a8a8a8'],  // Green for wins, Red for losses
 							borderWidth: 1
 						}]
 					},

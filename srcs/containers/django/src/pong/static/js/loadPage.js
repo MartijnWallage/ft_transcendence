@@ -159,24 +159,17 @@ function bindMenuEventListeners(game){
 	}
 
 	document.getElementById('js-login-btn').addEventListener('click', function() {
-		game.viewOptionMenu();
-		// loadPage('login_user');
+		game.hideOptionMenu();
 		loadPageClosure(game)('login_user');
-
 	});
 
 	document.getElementById('js-logout-btn').addEventListener('click', function() {
-		game.viewOptionMenu();
+		game.hideOptionMenu();
 		handleLogout()
 	});
 
-	// document.getElementById('js-tournament_score-btn').addEventListener('click', function() {
-	// 	game.viewOptionMenu();
-	// 	loadPage('tournament_score');
-	// });
-
 	document.getElementById('js-audio-btn').addEventListener('click', function() {
-		game.viewOptionMenu();
+		game.hideOptionMenu();
 		game.muteAudio();
 	});
 	
@@ -188,12 +181,12 @@ function bindMenuEventListeners(game){
 	});
 	
 	document.getElementById('js-end-game-btn').addEventListener('click', function() {
-		game.viewOptionMenu();
+		game.hideOptionMenu();
 		game.endGame();
 	});
 	
 	document.getElementById('js-end-game-btn').addEventListener('click', function() {
-		game.viewOptionMenu();
+		game.hideOptionMenu();
 		game.endGame();
 	});
 	document.getElementById('user-name').addEventListener('click', function() {

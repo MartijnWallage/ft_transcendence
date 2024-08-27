@@ -282,15 +282,7 @@ class Game {
 			this.isOptionMenuVisible = true;
 		}
 		else {
-			console.log('hiding option menu');
-			notDisplayDiv('js-tournament_score-btn');
-			notDisplayDiv('js-audio-btn');
-			notDisplayDiv('js-login-btn');
-			notDisplayDiv('js-logout-btn');
-			notDisplayDiv('js-settings-btn');
-			notDisplayDiv('js-end-game-btn');
-			textToDiv('=', 'js-option-btn');
-			this.isOptionMenuVisible = false;
+			this.hideOptionMenu();
 		}
 	}
 
