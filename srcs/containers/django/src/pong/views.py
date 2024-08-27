@@ -58,7 +58,7 @@ def add_friend(request):
     try:
         friend = User.objects.get(username=friend_username)
         if friend == request.user:
-            return JsonResponse({"status": "error", "message": "You cannot add yourself as friend!"}, status=400)
+            return JsonResponse({"status": "error", "message": "You cannot add yourself as friend!"})
 
         friendship, created = Friendship.objects.get_or_create(user=request.user, friend=friend)
 
@@ -66,11 +66,11 @@ def add_friend(request):
             return JsonResponse({"status": "success", "message": "Friend request sent"})
         else:
             if friendship.accepted:
-                return JsonResponse({"status": "error", "message": "You are already friends"}, status=400)
+                return JsonResponse({"status": "error", "message": "You are already friends"})
             else:
-                return JsonResponse({"status": "error", "message": "Friendship already exists"}, status=400)
+                return JsonResponse({"status": "error", "message": "Friendship already exists"})
     except User.DoesNotExist:
-        return JsonResponse({"status": "error", "message": "User not found"}, status=400)
+        return JsonResponse({"status": "error", "message": "User not found"})
 
 
 
@@ -112,7 +112,7 @@ def accept_friend(request):
         friendship = Friendship.objects.get(user=requesting_user, friend=request.user)
         if action == "accept":
             if friendship.accepted:
-                return JsonResponse({"status": "error", "message": "Friendship already exists"}, status=400)
+                return JsonResponse({"status": "error", "message": "Friendship already exists"})
             friendship.accepted = True
             friendship.save()
             return JsonResponse({"status": "success", "message": "Friend request accepted"})
@@ -120,7 +120,7 @@ def accept_friend(request):
             friendship.delete()
             return JsonResponse({"status": "success", "message": "Friend request deleted"})
     except Friendship.DoesNotExist:
-        return JsonResponse({"status": "error", "message": "Friend request doesn't exists"}, status=400)
+        return JsonResponse({"status": "error", "message": "Friend request doesn't exists"})
 
 
 @api_view(['GET'])
@@ -135,7 +135,6 @@ def friend_requests(request):
 
 
 @login_required
-@login_required()
 def userinfo_view(request):
     user_info = {
         'username': request.user.username,
@@ -149,7 +148,7 @@ def userinfo_view(request):
     except UserProfile.DoesNotExist:
         print('user doesnot exists')
         pass
-
+    print("user info: ", user_info)
     return JsonResponse({
         'user_info': user_info,
         'is_logged_in': request.user.is_authenticated
@@ -185,11 +184,11 @@ def settings_view(request):
 def dashboard_view(request):
     # username_to_check = request.user.username
     # # if not username:
-    # #     return JsonResponse({"status": "error", "message": "D Username is required"}, status=400)
+    # #     return JsonResponse({"status": "error", "message": "D Username is required"})
     # username = User.objects.get(username=username_to_check).username
     # matches = get_user_matches(username, None)
     # if matches is None:
-    #     return JsonResponse({"status": "error", "message": "D Player not found"}, status=404)
+    #     return JsonResponse({"status": "error", "message": "D Player not found"})
 
     # total_matches = matches['total_matches']
     # won_matches = matches['won_matches']
@@ -214,7 +213,7 @@ def score_view(request):
     username = User.objects.get(username=username_to_check).username
     matches = get_user_matches(username, None)
     if matches is None:
-        return JsonResponse({"status": "error", "message": "D Player not found"}, status=404)
+        return JsonResponse({"status": "error", "message": "D Player not found"})
 
     total_matches = matches['total_matches']
     won_matches = matches['won_matches']
@@ -261,7 +260,7 @@ def load_password_update(request):
 # @csrf_exempt
 @api_view(['POST'])
 def register(request):
-    print("this post method only is called for register request")
+    print("this post method only is called for register request", request.data)
     serializer = RegisterSerializer(data=request.data, context={'request': request})
     if serializer.is_valid():
         user = serializer.save()
@@ -269,9 +268,10 @@ def register(request):
         username = user.username
         Player.objects.create(name=username, user_profile=user)
         print("user created: ", user)
+        print('register view serializer data: ', serializer.data)
         django_login(request, user)
-        return JsonResponse({'status': 'success', 'username': username}, status=201)
-    return JsonResponse(serializer.errors, status=400)
+        return JsonResponse({'status': 'success', 'username': username})
+    return JsonResponse(serializer.errors)
 
 @api_view(['POST'])
 @parser_classes([MultiPartParser, FormParser])
@@ -282,7 +282,7 @@ def update_profile(request):
     if serializer.is_valid():
         serializer.save()
         return JsonResponse({'status': 'success'})
-    return JsonResponse(serializer.errors, status=400)
+    return JsonResponse(serializer.errors)
 
 
 @api_view(['POST'])
@@ -293,7 +293,7 @@ def change_password(request):
     if serializer.is_valid():
         serializer.save()
         return JsonResponse({'status': 'success'})
-    return JsonResponse(serializer.errors, status=400)
+    return JsonResponse(serializer.errors)
 
 
 # @csrf_exempt
@@ -305,7 +305,7 @@ def login(request):
         django_login(request, user)
         print("login worked", user)
         return JsonResponse({'status': 'success', 'username': user.username})
-    return JsonResponse({'status': 'error', 'errors': form.errors}, status=400)
+    return JsonResponse({'status': 'error', 'errors': form.errors})
 
 @csrf_exempt
 @api_view(['POST'])
@@ -408,7 +408,7 @@ def register_matches(request):
             'timestamp': match.timestamp
         } for match in matches]
     except Tournament.DoesNotExist:
-        return Response({'success': False, 'error': 'Tournament not found'}, status=404)
+        return Response({'success': False, 'error': 'Tournament not found'})
     
     # Setup Web3 and contract
     alchemy_url = f"https://eth-sepolia.g.alchemy.com/v2/{settings.ALCHEMY_API_KEY}"
@@ -442,7 +442,7 @@ def register_matches(request):
             print(f"Transaction receipt received: {receipt.transactionHash.hex()}")
         except TimeoutError:
             print("Transaction timed out")
-            return Response({'success': False, 'error': 'Transaction timed out'}, status=408)
+            return Response({'success': False, 'error': 'Transaction timed out'})
 
         # Store the transaction hash in the database
         tournament.transaction_hash = receipt.transactionHash.hex()
@@ -453,7 +453,7 @@ def register_matches(request):
         return Response({'success': True, 'tx_hash': receipt.transactionHash.hex()})
     except Exception as e:
         print(f"Error occurred: {str(e)}")
-        return Response({'success': False, 'error': str(e)}, status=500)
+        return Response({'success': False, 'error': str(e)})
 
 
 
@@ -482,13 +482,13 @@ def add_participant_to_tournament(request):
         return Response({'status': 'success'})
     
     except Player.DoesNotExist:
-        return Response({'status': 'error', 'message': 'Player not found.'}, status=404)
+        return Response({'status': 'error', 'message': 'Player not found.'})
     except Tournament.DoesNotExist:
-        return Response({'status': 'error', 'message': 'Tournament not found.'}, status=404)
+        return Response({'status': 'error', 'message': 'Tournament not found.'})
     except Exception as e:
         error_message = str(e)
         traceback.print_exc()  # This will print the traceback to the console
-        return Response({'status': 'error', 'message': error_message}, status=500)
+        return Response({'status': 'error', 'message': error_message})
 
 @api_view(['POST'])
 def create_tournament(request):
@@ -506,7 +506,7 @@ def create_tournament(request):
     except Exception as e:
         error_message = str(e)
         traceback.print_exc()
-        return Response({'status': 'error', 'message': error_message}, status=500)
+        return Response({'status': 'error', 'message': error_message})
 
 @api_view(['POST'])
 def create_match_in_tournament(request):
@@ -525,12 +525,12 @@ def create_match_in_tournament(request):
         try:
             player1, created1 = Player.objects.get_or_create(name=data.get('player1'))
         except Player.DoesNotExist:
-            return JsonResponse({'error': f'Player {player1} does not exist'}, status=400)
+            return JsonResponse({'error': f'Player {player1} does not exist'})
 
         try:
             player2, created2 = Player.objects.get_or_create(name=data.get('player2'))
         except Player.DoesNotExist:
-            return JsonResponse({'error': f'Player {player2} does not exist'}, status=400)
+            return JsonResponse({'error': f'Player {player2} does not exist'})
 
         # Create the match
         match = Match.objects.create(player1=player1, player2=player2, player1_score=player1_score, player2_score=player2_score, timestamp=timestamp, mode=mode)
@@ -543,7 +543,7 @@ def create_match_in_tournament(request):
     except Exception as e:
         error_message = str(e)
         traceback.print_exc()
-        return JsonResponse({'status': 'error', 'message': error_message}, status=500)
+        return JsonResponse({'status': 'error', 'message': error_message})
 
 
 # Register matches on database
@@ -568,7 +568,7 @@ def create_player(request):
     except Exception as e:
         error_message = str(e)
         traceback.print_exc()  # This will print the traceback to the console
-        return Response({'status': 'error', 'message': error_message}, status=500)
+        return Response({'status': 'error', 'message': error_message})
 
 
 @api_view(['POST'])
@@ -614,7 +614,7 @@ def create_match(request):
     except Exception as e:
         error_message = str(e)
         traceback.print_exc()
-        return Response({'status': 'error', 'message': error_message}, status=500)
+        return Response({'status': 'error', 'message': error_message})
 
 
 # retrieve user matches    
@@ -666,7 +666,7 @@ def user_matches(request):
     mode = request.data.get('mode')
     
     if not username or not mode:
-        return Response({'error': 'Username and mode are required.'}, status=400)
+        return Response({'error': 'Username and mode are required.'})
     
     result = get_user_matches(username, mode)
     matches = result.get('matches', [])
@@ -684,7 +684,7 @@ def user_matches(request):
     ]
     print("matches_data: ", matches_data)
 
-    return Response({'matches': matches_data}, status=200)
+    return Response({'matches': matches_data})
 
 
 def get_user_tournaments(username):
@@ -705,7 +705,7 @@ def user_tournaments(request):
     username = request.data.get('username')
     
     if not username:
-        return Response({'error': 'Username is required.'}, status=400)
+        return Response({'error': 'Username is required.'})
     
     tournaments = get_user_tournaments(username)
     if tournaments is None:
@@ -732,4 +732,4 @@ def user_tournaments(request):
     ]
     
     print("Tournaments Data:", tournaments_data)
-    return Response({'tournaments': tournaments_data}, status=200)
+    return Response({'tournaments': tournaments_data})
