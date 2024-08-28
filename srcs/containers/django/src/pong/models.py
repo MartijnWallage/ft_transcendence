@@ -63,4 +63,14 @@ class Tournament(models.Model):
     
     def __str__(self):
         return f"Tournament ID: {self.id}"
+    
+class ExtendedUser(User):  # Inherit from User
+    class Meta:
+        proxy = True  # This tells Django not to create a new table for this model
+
+    @property
+    def avatar(self):
+        return self.user_profile.avatar if hasattr(self, 'user_profile') else None
+
+    # Add more properties as needed, to expose other fields from UserProfile
 
