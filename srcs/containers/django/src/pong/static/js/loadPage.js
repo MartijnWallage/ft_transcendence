@@ -8,6 +8,9 @@ function loadPageClosure(game) {
 			game.audio.playSound(game.audio.select_1);
 		}
 		try {
+            if (game.match && page !== 'pong') {
+                game.stopMatch();
+            }
 			const mainContent = document.getElementById('main-content');
 			const underTitle = document.getElementById('under-title');
 			
@@ -43,7 +46,6 @@ function loadPageClosure(game) {
 			game.userProfile.bindUserEventListeners(mainContent, page);
 			bindEventListeners(game);
 			if (page === 'match_history') {
-				// document.getElementById('lastModified').textContent = new Date(document.lastModified).toLocaleString();
 				dropDownEventListeners(game);
 			}
 			
