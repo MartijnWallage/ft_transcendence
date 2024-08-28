@@ -5,10 +5,13 @@ function loadPageClosure(game) {
 	return async (page) => {
 		console.log("loading page :", page);
 		if (game.audio && page != 'pong') {
-			game.audio.playSound(game.audio.select_1);
+            game.audio.playSound(game.audio.select_1);
 		}
 		try {
-			const mainContent = document.getElementById('main-content');
+            if (page !== 'pong') {
+                game.stopMatch();
+            }
+            const mainContent = document.getElementById('main-content');
 			const underTitle = document.getElementById('under-title');
 			
 			if (underTitle) {
@@ -29,7 +32,8 @@ function loadPageClosure(game) {
 			// Use pushState if it's a new page, otherwise use replaceState
             const state = { page: page };
             if (location.hash !== `#${page}`) {
-                history.pushState(state, "", `#${page}`);
+                if (page !== 'pong')
+                    history.pushState(state, "", `#${page}`);
             } else {
                 history.replaceState(state, "", `#${page}`);
             }
@@ -46,6 +50,7 @@ function loadPageClosure(game) {
 				// document.getElementById('lastModified').textContent = new Date(document.lastModified).toLocaleString();
 				dropDownEventListeners(game);
 			}
+
 			
 		} catch (error) {
 			console.error('Error loading page:', error);

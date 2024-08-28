@@ -78,6 +78,13 @@ class Game {
 		this.ball.addAudio(this.audio);
 	}
 
+    stopMatch() {
+        this.running = false;
+        this.ball.resetBall();
+        this.match = null;
+        this.tournament = null;
+    }
+
 	// These are the modes bound to the buttons in the menu
 	async startSolo() {
 		this.mode = 'solo';
