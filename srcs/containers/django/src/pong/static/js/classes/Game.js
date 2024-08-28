@@ -94,7 +94,8 @@ class Game {
 		this.audio.playSound(this.audio.select_2);
 		console.log('Starting User vs User');
 		const player1 = new Player(this.loggedUser);
-		const player2 = new Player('Guest 2');
+		const player2Name = document.getElementById('player2Name').value.trim();
+		const player2 = new Player(player2Name);
 		this.match = new Match(this, [player1, player2]);
 		this.match.play(this);
 	}
