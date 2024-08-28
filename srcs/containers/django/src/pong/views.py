@@ -408,7 +408,7 @@ def register_matches(request):
             'timestamp': match.timestamp
         } for match in matches]
     except Tournament.DoesNotExist:
-        return Response({'success': False, 'error': 'Tournament not found'}, status=404)
+        return Response({'success': False, 'error': 'Tournament not found'})
     
     # Setup Web3 and contract
     alchemy_url = f"https://eth-sepolia.g.alchemy.com/v2/{settings.ALCHEMY_API_KEY}"
@@ -442,7 +442,7 @@ def register_matches(request):
             print(f"Transaction receipt received: {receipt.transactionHash.hex()}")
         except TimeoutError:
             print("Transaction timed out")
-            return Response({'success': False, 'error': 'Transaction timed out'}, status=408)
+            return Response({'success': False, 'error': 'Transaction timed out'})
 
         # Store the transaction hash in the database
         tournament.transaction_hash = receipt.transactionHash.hex()
@@ -453,7 +453,7 @@ def register_matches(request):
         return Response({'success': True, 'tx_hash': receipt.transactionHash.hex()})
     except Exception as e:
         print(f"Error occurred: {str(e)}")
-        return Response({'success': False, 'error': str(e)}, status=500)
+        return Response({'success': False, 'error': str(e)})
 
 
 
