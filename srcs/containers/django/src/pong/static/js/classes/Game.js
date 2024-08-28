@@ -59,6 +59,13 @@ class Game {
 		this.userProfile = new Profile(this);
     }
 
+    stopMatch() {
+        this.running = false;
+        this.ball.resetBall();
+        this.match = null;
+        this.tournament = null;
+    }
+
 	// Create audio audio context once there is a first interaction with the website to comply with internet rules
 	async createAudioContext() {
 		const audio = document.createElement("audio");

@@ -8,6 +8,9 @@ function loadPageClosure(game) {
 			game.audio.playSound(game.audio.select_1);
 		}
 		try {
+            if (game.match && page !== 'pong') {
+                game.stopMatch();
+            }
 			const mainContent = document.getElementById('main-content');
 			const underTitle = document.getElementById('under-title');
 			
@@ -23,8 +26,15 @@ function loadPageClosure(game) {
 			const data = await response.json();
 			mainContent.innerHTML = data.content;
 			console.log('LOG: Page content loaded:', page);
-			history.pushState({ page: page }, "", "#" + page);
-			// localStorage.setItem("currentPageState", JSON.stringify({ page: page }));
+
+            const state = { page: page };
+            if (location.hash !== "#" + page) {
+                if (page !== 'pong') {
+                    history.pushState(state, "", "#" + page);
+                }
+            } else {
+                history.replaceState(state, "", "#" + page);
+            }
 
 			
 			const updatedUnderTitle = document.getElementById('under-title');
@@ -36,7 +46,6 @@ function loadPageClosure(game) {
 			game.userProfile.bindUserEventListeners(mainContent, page);
 			bindEventListeners(game);
 			if (page === 'match_history') {
-				// document.getElementById('lastModified').textContent = new Date(document.lastModified).toLocaleString();
 				dropDownEventListeners(game);
 			}
 			

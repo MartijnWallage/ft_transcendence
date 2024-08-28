@@ -39,9 +39,12 @@ class Tournament {
 			for (let index = 1; index < this.players.length; index++) {
 				game.match = new Match(game, currentPlayers);
 				await game.match.play(game);
-				while (game.match.score.winner === null) {
+				while (game.match && game.match.score.winner === null) {
 					await new Promise(resolve => setTimeout(resolve, 100));
 				}
+                if (!game.match) {
+                    return ;
+                }
 				console.log('Match winner:', game.match.score.winner);
 				console.log('Match Result:', game.match.score.result);
 				
