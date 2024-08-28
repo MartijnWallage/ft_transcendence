@@ -333,8 +333,9 @@ def two_player_view(request):
 @login_required(login_url='/api/login_user/')
 @api_view(['GET'])
 def two_player_local_view(request):
+    username = request.user.username
     data = {
-        'content': render_to_string("main/two_player_local.html", request=request)
+        'content': render_to_string("main/two_player_local.html", context={'username': username}, request=request)
     }
     return JsonResponse(data)
 

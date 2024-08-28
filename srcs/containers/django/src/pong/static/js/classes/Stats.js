@@ -109,59 +109,10 @@ class Stats {
             }
         }
 
-        
-        // async showMatches(mode) {
-            
-        //     console.log("1. showMatches username: ", this.statForUser);
-        //     console.log("mode: ", mode);
-        //     const tableBody = document.getElementById('matchTableBody');
-        //     const matchTitle = document.getElementById('matchTitle');
-
-        //     // console.log("2. showMatches username: ", username);
-
-        //     // const username = await this.fetchLoggedInUser();
-        //     const matches = await this.fetchUserMatches(this.statForUser, mode);
-        
-        //     // Clear existing rows
-        //     tableBody.innerHTML = '';
-        
-        //     if (mode === 'UvU') {
-        //         matchTitle.textContent = '1 vs 1 Matches';
-        //     } else if (mode === 'solo') {
-        //         matchTitle.textContent = 'Player vs AI Matches';
-        //     }
-        //     else if (mode === 'vsOnline') {
-        //         matchTitle.textContent = 'Player vs Online users';
-        //     }
-
-        //     if (matches.length === 0) {
-        //         // Show a message when there are no matches
-        //         tableBody.innerHTML = '<tr><td colspan="5">No matches found.</td></tr>';
-        //         return;
-        //     }
-        
-        //     matches.slice().reverse().forEach((match, index) => {
-        //         const formattedDate = this.formatTimestamp(match.timestamp);
-        //         const row = document.createElement('tr');
-        //         const matchresult = match.player1_score > match.player2_score ? "Win" : "Loss";
-        //         const matchresultclass = matchresult === "Win" ? "bg-success" : "bg-danger";
-        //         row.innerHTML = `
-        //             <th scope="row">${index + 1}</th>
-        //             <td>${formattedDate}</td>
-        //             <td>${match.player2}</td>
-        //             <td>${match.player1_score}-${match.player2_score}</td>
-        //             <td><span class="badge ${matchresultclass}">${matchresult}</span></td>
-        //         `;
-        //         tableBody.appendChild(row);
-        //     });
-        // }
         async showMatches(mode) {
-            // console.log("1. showMatches username: ", username);
             console.log("mode: ", mode);
             const tableBody = document.getElementById('matchTableBody');
             const matchTitle = document.getElementById('matchTitle');
-            // console.log("2. showMatches username: ", username);
-            // const username = await this.fetchLoggedInUser();
             const matches = await this.fetchUserMatches(this.statForUser, mode);
             // Clear existing rows
             tableBody.innerHTML = '';
@@ -210,24 +161,22 @@ class Stats {
             const tableBody = document.getElementById('tournamentTableBody');
             const tournamentTitle = document.getElementById('tournamentTitle');
             const username = this.statForUser;
-            // const username = await this.fetchLoggedInUser();
             console.log("Username in stats: ", username);
             const tournaments = await this.fetchUserTournaments(username);
             console.log("LOG Tournaments:", tournaments);
             // Clear existing rows
             tableBody.innerHTML = '';
-        
             // Store tournaments data in a variable
             this.tournamentsData = tournaments;
         
             // Update the title
             tournamentTitle.textContent = 'Tournament Matches';
 
-            // if (tournaments.length === 0) {
-            //     // Show a message when there are no matches
-            //     tableBody.innerHTML = '<tr><td colspan="5">No Tournaments found.</td></tr>';
-            //     return;
-            // }
+            if (this.tournamentsData.length === 0) {
+                // Show a message when there are no matches
+                tableBody.innerHTML = '<tr><td colspan="5">No tournaments found.</td></tr>';
+                return;
+            }
 
             tournaments.slice().reverse().forEach((tournament, index) => {
                 const formattedDate = this.formatTimestamp(tournament.date);
@@ -235,9 +184,6 @@ class Stats {
                 const tournament_result = this.determineTournamentResult(tournament, username);
                 const tournament_result_class = tournament_result === "Win" ? "bg-success" : "bg-danger";
                 const row = document.createElement('tr');
-                // row.setAttribute('data-bs-toggle', 'modal');
-                // row.setAttribute('data-bs-target', '#tournamentMatchDetailModal');
-                // row.setAttribute('data-tournament-id', tournament.id);
                 row.addEventListener('click', () => {
                     console.log("LOG Tournament ID:", tournament.id);
                     this.tournamentId = tournament.id;
@@ -324,14 +270,6 @@ class Stats {
 
             const modal = bootstrap.Modal.getOrCreateInstance(modalElement);
             modal.show();
-        
-            // if (registerButton) {
-            //     registerButton.addEventListener('click', () => {
-            //         console.log("Registering on blockchain button clicked...");
-            //         console.log("test...");
-            //         this.game.executeBlockchain(tournamentId);
-            //     });
-            // }
         }
 }
 
