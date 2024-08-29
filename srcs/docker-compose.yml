@@ -40,11 +40,7 @@ services:
       - .env 
     networks:
        - ts-network
-<<<<<<< HEAD
-    # For School
-=======
     # # For School
->>>>>>> b978f9541c1f0c3a23809d86d97b3843d5975283
     # ports:
     #   - "8443:443"   # For HTTPS
     #   - "8080:80"   # For HTTP redirection
