@@ -47,9 +47,9 @@ class Blockchain {
 
 				// Update the button to show it's registered and keep it disabled
 				registerButton.textContent = 'Registered';
-			} else {
-				alert('Error registering matches: ' + result.error);
-
+			} else { 
+				console.log('Error registering matches:', result.error);
+				alert('Try again later or contact the administrator.');
 				// Re-enable the button if the registration failed
 				registerButton.classList.remove('btn-secondary');
 				registerButton.classList.add('btn-success');

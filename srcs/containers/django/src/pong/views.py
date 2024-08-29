@@ -333,8 +333,9 @@ def two_player_view(request):
 @login_required(login_url='/api/login_user/')
 @api_view(['GET'])
 def two_player_local_view(request):
+    username = request.user.username
     data = {
-        'content': render_to_string("main/two_player_local.html", request=request)
+        'content': render_to_string("main/two_player_local.html", context={'username': username}, request=request)
     }
     return JsonResponse(data)
 
@@ -408,7 +409,7 @@ def register_matches(request):
             'timestamp': match.timestamp
         } for match in matches]
     except Tournament.DoesNotExist:
-        return Response({'success': False, 'error': 'Tournament not found'}, status=404)
+        return Response({'success': False, 'error': 'Tournament not found'})
     
     # Setup Web3 and contract
     alchemy_url = f"https://eth-sepolia.g.alchemy.com/v2/{settings.ALCHEMY_API_KEY}"
@@ -419,14 +420,33 @@ def register_matches(request):
     contract = web3.eth.contract(address=contract_address, abi=contract_abi)
 
     private_key = settings.PRIVATE_KEY
+
     account = web3.eth.account.from_key(private_key)
     web3.eth.defaultAccount = account.address
+
+    # Check if the account has enough balance to cover the gas fees
+    try:
+        # Estimate gas
+        estimated_gas_limit = contract.functions.recordMatches(match_data).estimate_gas({
+            'from': account.address,
+        })
+    except Exception as e:
+        print(f"Error estimating gas: {str(e)}")
+        return Response({'success': False, 'error': 'Error estimating gas'})
+
+    estimated_gas_price = web3.eth.gas_price
+    required_balance = estimated_gas_limit * estimated_gas_price
+    current_balance = web3.eth.get_balance(account.address)
+    print(f"Current balance: {current_balance}, required balance: {required_balance}")
+
+    if current_balance < required_balance:
+        return Response({'success': False, 'error': 'Insufficient funds'})
 
     try:
         # Sign transaction
         tx = contract.functions.recordMatches(match_data).build_transaction({
             'from': account.address,
-            'gas': 3000000,  # or any estimate
+            'gas': estimated_gas_limit,  # or any estimate
             'gasPrice': web3.eth.gas_price,
             'nonce': web3.eth.get_transaction_count(account.address),
         })
@@ -442,7 +462,7 @@ def register_matches(request):
             print(f"Transaction receipt received: {receipt.transactionHash.hex()}")
         except TimeoutError:
             print("Transaction timed out")
-            return Response({'success': False, 'error': 'Transaction timed out'}, status=408)
+            return Response({'success': False, 'error': 'Transaction timed out'})
 
         # Store the transaction hash in the database
         tournament.transaction_hash = receipt.transactionHash.hex()
@@ -453,7 +473,7 @@ def register_matches(request):
         return Response({'success': True, 'tx_hash': receipt.transactionHash.hex()})
     except Exception as e:
         print(f"Error occurred: {str(e)}")
-        return Response({'success': False, 'error': str(e)}, status=500)
+        return Response({'success': False, 'error': str(e)})
 
 
 

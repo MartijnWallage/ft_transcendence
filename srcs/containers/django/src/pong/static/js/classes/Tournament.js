@@ -9,6 +9,7 @@ class Tournament {
 		this.game = game;
 		this.matchResult = [];
 		this.tournamentId = null;
+		this.winner = null;
 	}
 
     async initializeTournament() {
@@ -38,9 +39,12 @@ class Tournament {
 			for (let index = 1; index < this.players.length; index++) {
 				game.match = new Match(game, currentPlayers);
 				await game.match.play(game);
-				while (game.match.score.winner === null) {
+				while (game.match && game.match.score.winner === null) {
 					await new Promise(resolve => setTimeout(resolve, 100));
 				}
+                if (!game.match) {
+                    return ;
+                }
 				console.log('Match winner:', game.match.score.winner);
 				console.log('Match Result:', game.match.score.result);
 				
@@ -203,15 +207,21 @@ class Tournament {
 	}
 	
 
+	getWinner() {
+		const lastMatch = this.matchResult[this.matchResult.length - 1];
+		return lastMatch.player1Score > lastMatch.player2Score ? lastMatch.player1 : lastMatch.player2;
+	}
+
 	// Tournament End
 
 	async endTournament() {
 		const game = this.game;
+		this.winner = this.getWinner();
 		const score = game.match.score.result;
 
 		HTMLToDiv(`Tournament winner`, 'announcement-l1');
 		HTMLToDiv(`is`, 'announcement-mid');
-		HTMLToDiv(`Whoever !`, 'announcement-l2');
+		HTMLToDiv(`${this.winner} !`, 'announcement-l2');
 		notDisplayDiv('js-next-game-btn');
 		displayDiv('js-score-btn');
 		

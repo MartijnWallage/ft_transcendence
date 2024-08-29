@@ -76,12 +76,12 @@ class Camera {
 		const bottom = 0;
 		const width = window.innerWidth;
 		const height = window.innerHeight;
-        const longestSide = Math.max(this.settings.fieldLength, this.settings.fieldWidth)* 0.75;
-        const shortestSide = Math.min(this.settings.fieldLength, this.settings.fieldWidth)* 1.1;
-		this.camera.position.set(-longestSide, longestSide, 0);
+        const adjustedLength = this.settings.fieldLength * 0.8;
+        const adjustedWidth = this.settings.fieldWidth * 1.1;
+		this.camera.position.set(-adjustedLength, adjustedLength, 0);
 		if (width < height){
-			const objectWidth = shortestSide;
-			const cameraDistance = this.camera.position.distanceTo(new THREE.Vector3(-shortestSide, 0, 0));
+			const objectWidth = adjustedWidth;
+			const cameraDistance = this.camera.position.distanceTo(new THREE.Vector3(-adjustedWidth, 0, 0));
 			this.calculateFovToFitObject(objectWidth, cameraDistance, width / height);
 		}
 		else {
@@ -97,24 +97,24 @@ class Camera {
 	}
 
 	renderSplitView(position) {
-        const longestSide = Math.max(this.settings.fieldLength, this.settings.fieldWidth)* 0.75;
-        const shortestSide = Math.min(this.settings.fieldLength, this.settings.fieldWidth)* 1.1;
+        const adjustedLength = this.settings.fieldLength * 0.8;
+        const adjustedWidth = this.settings.fieldWidth * 1.1;
 		const offset = position === 0 ? 0 : 0.5;
-		const x = position === 0 ? -longestSide : longestSide;
-		const dx = position === 0 ? -shortestSide : shortestSide;
+		const x = position === 0 ? -adjustedLength : adjustedLength;
+		const dx = position === 0 ? -adjustedWidth : adjustedWidth;
 		const left = Math.floor( window.innerWidth * offset);
 		const bottom = 0;
 		const width = Math.floor( window.innerWidth * 0.5 );
 		const height = window.innerHeight;
 		if (width < height){
-			const objectWidth = shortestSide;
+			const objectWidth = adjustedWidth;
 			const cameraDistance = this.camera.position.distanceTo(new THREE.Vector3(dx, 0, 0));
 			this.calculateFovToFitObject(objectWidth, cameraDistance, width / height);
 		}
 		else {
 			this.camera.fov = 50;
 		}
-		this.camera.position.set(x, longestSide, 0);
+		this.camera.position.set(x, adjustedLength, 0);
 		this.camera.lookAt(0, -0.5, 0);
 		this.game.renderer.setViewport( left, bottom, width, height );
 		this.game.renderer.setScissor( left, bottom, width, height );
