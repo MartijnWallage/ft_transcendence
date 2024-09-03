@@ -1,61 +1,48 @@
 # ft_transcendence
 
-ft_transcendence in development
+Welcome to the **ft_transcendence** project, a modern take on the classic Pong game developed as part of the 42 curriculum. This project combines classic gameplay with cutting-edge web technologies, ensuring a feature-rich and immersive experience.
 
-# Hope this will help a little bit
+## Major Features
 
-## Setting up Django in your Computer/Virtual Box
-### 1.  Install Python3 (If not installed Already)
-### 2.  Install pip3
-### 3.  Install pipenv using pip3
-      a) pip3 install pipenv or
-      b) sudo apt install pipenv(for me only this worked)
-### 4. Go to the project folder and
-     a) pipenv install django
-     b) pipenv shell
-     c) code .
-### 5. Create a project Pong
-    django-admin startproject pong .
+- **Backend Framework (Django):**  
+  The project is powered by Django, providing a robust and scalable backend infrastructure.
 
-## Run your Django Server
-    python manage.py startapp playpong
-    python manage.py runserver
-    ("Deciding a port number is optional by default 8000")
+- **Blockchain Integration:**  
+  Tournament scores are securely stored on the blockchain, ensuring transparency and immutability.
 
-## Setting in the files to make Pong.js and Pong.html work
+- **User Management & Authentication:**  
+  We have implemented comprehensive user management, including authentication and user persistence across tournaments.
 
-- in settings.py append playpong
-- ![image](https://github.com/MartijnWallage/ft_transcendence/assets/123320243/9a16d89b-ba4e-4177-a807-e4be73c75971)
+- **Remote Multiplayer:**  
+  Compete against other players remotely, with seamless multiplayer functionality.
 
-- INSTALLED_APPS [
--   'playpong'
-- ]
+- **AI Opponent:**  
+  Test your skills against an AI opponent that adapts to your gameplay, providing a challenging experience.
 
-- add this as well
-- ![image](https://github.com/MartijnWallage/ft_transcendence/assets/123320243/9536940b-ca7a-445d-95b0-f86c8e5ecb6e)
+- **Advanced 3D Graphics (THREE.JS):**  
+  The game leverages THREE.JS for advanced 3D graphics, delivering an immersive visual experience.
 
-  ### inside playpong Folder create 2 folder templates and static and put pong.js and pong.html
-  
-  ![image](https://github.com/MartijnWallage/ft_transcendence/assets/123320243/d14c4532-99b0-42c6-a761-5eec510227a1)
+## Minor Features
 
-  make these changes in pong.html
-  
-  ![image](https://github.com/MartijnWallage/ft_transcendence/assets/123320243/bdff81ff-c288-45c0-bd10-364ae9d2a50d)
+- **Frontend Framework (Bootstrap):**  
+  The user interface is built using Bootstrap, ensuring a responsive and clean design.
 
+- **Game Customization Options:**  
+  Players can personalize their gaming experience with various customization options.
 
-  ### in playpong/views.py define a function like this
-  ![image](https://github.com/MartijnWallage/ft_transcendence/assets/123320243/beac7562-77ca-44bf-95a6-eb9e529572e8)
+- **Cross-Device Support:**  
+  The game is optimized for all devices, ensuring consistent gameplay across different devices like smartphone or tablets.
 
-  ### finally we need to have playpong/urls.py to call our function make it like this
-  ![image](https://github.com/MartijnWallage/ft_transcendence/assets/123320243/314b5369-645f-4f1e-bbd7-c946d0831ca8)
+- **Expanded Browser Compatibility:**  
+  We have expanded support to ensure the game runs smoothly on all major web browsers.
 
-  ### Also inside the pong/urls.py make these changes
-  ![image](https://github.com/MartijnWallage/ft_transcendence/assets/123320243/fc9d085b-8001-4a83-8870-be40e56bd9f3)
+## Play the Game
 
+To learn more and play the game, visit our project website: [Sunset Pong](https://sunset-pong.de)
 
-## IF the server is already running from before it will update itself after saving all files.
-## To start again
-  python manage.py runserver
-
-  ## Path to the pong game as described above
-  http://127.0.0.1:8000/playpong/hello/
+## Contributors
+- [Guillaume Bussiere](https://github.com/Bussiereg)
+- [Jules Bernard](https://github.com/julesrb)
+- [Martijn Wallage](https://github.com/MartijnWallage)
+- [Ramesh Timsina](https://github.com/Rameshtim)
+- [Hongbae Kim](https://github.com/HONGBAEKIM)
