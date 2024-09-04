@@ -53,6 +53,9 @@ services:
       - django
     volumes:
       - media:/app/web/media/
+      - letsencrypt-certs:/etc/letsencrypt
+      - letsencrypt-work:/var/lib/letsencrypt
+      - letsencrypt-log:/var/log/letsencrypt
 
   redis:
     image: redis:latest  # Use the official Redis image
