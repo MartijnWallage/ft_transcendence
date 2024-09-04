@@ -73,3 +73,6 @@ networks:
 volumes:
   database:
   media:  # Define the media volume
+  letsencrypt-certs:
+  letsencrypt-work:
+  letsencrypt-log:

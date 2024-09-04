@@ -3,6 +3,7 @@ FROM nginx:1.27.0
 COPY conf/nginx.conf /etc/nginx/nginx.conf
 
 RUN mkdir -p /etc/nginx/ssl
+RUN apt-get install nginx openssl vim certbot python3-certbot-nginx cron dnsutils -y
 RUN openssl req -x509 -nodes -out /etc/nginx/ssl/nginx.crt -keyout /etc/nginx/ssl/nginx.key -subj "/C=DE/ST=BERLIN/L=Berlin/O=42/OU=42/CN=jubernar/UID=none"
 
 WORKDIR /app
