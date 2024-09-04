@@ -22,6 +22,6 @@ RUN touch /var/run/nginx.pid && \
 
         ## switch to non-root user
 RUN mkdir -p /app/web/media && chown -R nginx:nginx /app/web/media && chmod -R 755 /app/web/media
-USER nginx
+# USER nginx
 
 ENTRYPOINT [ "nginx", "-g", "daemon off;"]
