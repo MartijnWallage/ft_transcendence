@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    # 'pong',
     'crispy_bootstrap5',
     'crispy_forms',
     'channels',
@@ -189,7 +190,14 @@ CSRF_TRUSTED_ORIGINS = [
     'https://localhost:8443',
     'https://127.0.0.1',
     'https://127.0.0.1:8443',
-    'https://10.15.203.3:8443',
+    'https://159.89.8.55',
+    'https://144.126.245.86',
+    'https://42.42.42.42',
+	'https://10.14.8.3',
+	'https://10.14.7.2',
+	'https://10.14.8.3:8443',
+    'https://10.14.8.1:8443',
+    'https://10.14.7.2:8443',
 ]
 
 # APPEND_SLASH=False
