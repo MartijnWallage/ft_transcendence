@@ -18,8 +18,16 @@ function main() {
 	const DOMContentLoadedHandler = async function() {
 		console.log('DOMContentLoaded event');
 		const page = location.hash.replace('#', '') || 'home';
-		await window.loadPage(page); // await is added to properly handle the updateUI function
-		this_game.userProfile.IdleTimerModule.init();
+		if (page.includes('oauth_success?username')) {
+			console.log('DOMContentLoaded event and loading page for oauth', page);
+			history.pushState(null, '', '');
+			this_game.userProfile.handleOAuthSuccess(page);
+
+		} else {
+			console.log('DOMContentLoaded event and loading page', page);
+			await window.loadPage(page); // await is added to properly handle the updateUI function
+			this_game.userProfile.IdleTimerModule.init();
+		}
 	};
 
 	document.addEventListener('DOMContentLoaded', DOMContentLoadedHandler);

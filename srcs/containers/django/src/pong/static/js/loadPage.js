@@ -165,6 +165,11 @@ function bindEventListeners(game) {
 	}
 }
 
+function initiateOAuthLogin() {
+	const oauthRedirectUrl = '/oauth/redirect';  // This URL points to the backend oauth_redirect view
+	window.location.href = oauthRedirectUrl;
+  }
+
 function bindMenuEventListeners(game){
 	// OPTION MENU
 	let optionBtn = document.getElementById('js-option-btn');
@@ -176,7 +181,17 @@ function bindMenuEventListeners(game){
 		game.hideOptionMenu();
 		loadPage('login_user');
 	});
+	
+	document.getElementById('js-about-us').addEventListener('click', function() {
+		game.hideOptionMenu();
+		loadPage('about-us');
+	});
 
+	document.getElementById('js-login42-btn').addEventListener('click', function() {
+		game.hideOptionMenu();
+		initiateOAuthLogin();
+	});
+	
 	document.getElementById('js-logout-btn').addEventListener('click', function() {
 		game.viewOptionMenu();
 		// handleLogout(); //error when you log out from the dashboard

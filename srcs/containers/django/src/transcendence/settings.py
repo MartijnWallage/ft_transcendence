@@ -154,6 +154,12 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',  # Default backend
+    'pong.backends.OAuth2Backend',  # Replace 'yourapp' with the actual app name where the backend is located
+]
+
+
 # Internationalization
 # https://docs.djangoproject.com/en/5.0/topics/i18n/
 
@@ -217,3 +223,8 @@ CHANNEL_LAYERS = {
         },
     },
 }
+
+OAUTH_CLIENT_ID = 'u-s4t2ud-81c9746ae9e5607d6a591d6f37e951ea83567b58a02a9582c32c86875aa97cab'
+OAUTH_CLIENT_SECRET = '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'
+OAUTH_REDIRECT_URI = 'https://localhost:8443/oauth/callback' 
+# OAUTH_REDIRECT_URI = 'https://www.sunset-pong.de/oauth/callback' 

@@ -10,6 +10,7 @@ daphne==4.0.0
 whitenoise # for serving static files
 crispy-bootstrap5 # To integrate Bootstrap 5 with Django forms
 # crispy-forms
+requests-oauthlib
 django-crispy-forms
 djangorestframework
 pillow # to upload image

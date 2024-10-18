@@ -260,8 +260,10 @@ class Game {
 			displayDiv('js-tournament_score-btn');
 			displayDiv('js-audio-btn');
 			displayDiv('js-end-game-btn');
+			displayDiv('js-about-us');
 			if (this.loggedUser === 'Guest') {
 				displayDiv('js-login-btn');
+				displayDiv('js-login42-btn');
 			}
 			else {
 				displayDiv('js-logout-btn');
@@ -285,9 +287,11 @@ class Game {
 		notDisplayDiv('js-tournament_score-btn');
 		notDisplayDiv('js-audio-btn');
 		notDisplayDiv('js-login-btn');
+		notDisplayDiv('js-login42-btn');
 		notDisplayDiv('js-logout-btn');
 		notDisplayDiv('js-settings-btn');
 		notDisplayDiv('js-end-game-btn');
+		notDisplayDiv('js-about-us');
 		textToDiv('=', 'js-option-btn');
 		this.isOptionMenuVisible = false;
 	}

@@ -4,6 +4,7 @@ from . import views
 urlpatterns = [
 	path('', views.index, name='index'),
 	path('api/home/', views.home_view, name='api_home'),
+	path('api/about-us/', views.about_view, name='api_home'),
 	path('api/dashboard/', views.dashboard_view, name='api_dashboard'),
 	path('api/dashboard_score/', views.score_view, name='api_score'),
 
@@ -52,4 +53,9 @@ urlpatterns = [
 	# path('api/pong_tournament/', views.pong_tournament_view, name='api_pong_tournament'),
 	# path('api/pong_two_player_local/', views.pong_two_player_local_view, name='api_pong_two_player_local'),
 	# path('api/pong_two_player_online/', views.pong_two_player_online_view, name='api_pong_two_player_online'),
+    
+	path('oauth/redirect/', views.oauth_redirect, name='oauth_redirect'),
+    path('api/oauth/callback/', views.oauth_callback, name='oauth_callback'),
+    path('oauth/callback/', views.oauth_callback, name='oauth_callback'),
+
 ]

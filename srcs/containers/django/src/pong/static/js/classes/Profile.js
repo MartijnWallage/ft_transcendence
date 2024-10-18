@@ -6,6 +6,7 @@ class Profile{
 		this.isUserLoggedIn = false;
 
 		this.handleFormSubmitWrapper = this.handleFormSubmitWrapper.bind(this);
+		this.handleOAuthSuccess = this.handleOAuthSuccess.bind(this);
 
 		// window.addEventListener('beforeunload', (event) => {
 		// 	// Check if the navigation type is a reload or back-forward
@@ -77,6 +78,26 @@ class Profile{
 		
 		if (userContent) {
 			userContent.addEventListener('submit', this.handleFormSubmitWrapper);
+		}
+	}
+
+	handleOAuthSuccess(params1) {
+		const params = new URL('https://localhost:8443/home/' + params1);
+		const username = params.searchParams.get('username');
+		const preOAuthPage = params.searchParams.get('page');
+		if (username) {
+			console.log("user found and logging in ", username);
+			history.pushState(null, '', '');
+			this.game.loggedUser = username;
+			this.isUserLoggedIn = true;
+	
+			this.showNotification('OAuth login successful!');
+	
+			const nextPage = preOAuthPage || 'game_mode';  // Default to 'game_mode'
+			window.loadPage(nextPage);  // Use your SPA loadPage to navigate back to the app
+		} else {
+			console.error('OAuth login failed: Missing username.');
+			this.showNotification('OAuth login failed. Please try again.');
 		}
 	}
 
