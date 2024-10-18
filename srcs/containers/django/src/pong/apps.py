@@ -7,3 +7,4 @@ class PongConfig(AppConfig):
 
     def ready(self):
         import pong.signals
+

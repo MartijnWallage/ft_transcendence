@@ -52,4 +52,9 @@ urlpatterns = [
 	# path('api/pong_tournament/', views.pong_tournament_view, name='api_pong_tournament'),
 	# path('api/pong_two_player_local/', views.pong_two_player_local_view, name='api_pong_two_player_local'),
 	# path('api/pong_two_player_online/', views.pong_two_player_online_view, name='api_pong_two_player_online'),
+    
+	path('oauth/redirect/', views.oauth_redirect, name='oauth_redirect'),
+	path('api/oauth/redirect/', views.oauth_redirect, name='oauth_redirect'),
+    path('api/oauth/callback/', views.oauth_callback, name='oauth_callback'),
+    path('oauth/callback/', views.oauth_callback, name='oauth_callback'),
 ]

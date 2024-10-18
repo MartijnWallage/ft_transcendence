@@ -4,8 +4,15 @@ class Profile{
 	constructor(game) {
 		this.game = game;
 		this.isUserLoggedIn = false;
+		// this.isOAuthFlow = false;
 
 		this.handleFormSubmitWrapper = this.handleFormSubmitWrapper.bind(this);
+		this.handleOAuthSuccess = this.handleOAuthSuccess.bind(this);
+
+		// this.initOauthFlow();
+
+
+
 
 		// window.addEventListener('beforeunload', (event) => {
 		// 	// Check if the navigation type is a reload or back-forward
@@ -80,6 +87,136 @@ class Profile{
 		}
 	}
 
+	handleOAuthSuccess(params1) {
+		const params = new URL('https://localhost:8443/home/' + params1);
+		const username = params.searchParams.get('username');
+		const preOAuthPage = params.searchParams.get('page');
+		console.log('this is params', params);
+		console.log('this is username', username);
+		console.log('this is preOAuthPage', preOAuthPage);
+	
+		if (username) {
+			// Log the user in
+			console.log("user found and logging in ", username);
+			history.pushState(null, '', '');
+			this.game.loggedUser = username;
+			this.isUserLoggedIn = true;
+	
+			// Show a success notification
+			this.showNotification('OAuth login successful!');
+	
+			// Redirect to the page the user was on before OAuth or to the default page
+			const nextPage = preOAuthPage || 'game_mode';  // Default to 'game_mode'
+			window.loadPage(nextPage);  // Use your SPA loadPage to navigate back to the app
+		} else {
+			console.error('OAuth login failed: Missing username.');
+			this.showNotification('OAuth login failed. Please try again.');
+		}
+	}
+	// initOauthFlow() {
+	// 	const urlParams = new URLSearchParams(window.location.search);
+	// 	const code = urlParams.get('code');
+	// 	const state = urlParams.get('state');
+
+	// 	// If the URL has 'code' and 'state', call the OAuth login handler
+	// 	if (code && state) {
+	// 		this.handleOAuthLoginResponse({ code, state });
+	// 	}
+	// }
+
+
+	// async initOAuthFlow() {
+    //     const urlParams = new URLSearchParams(window.location.search);
+    //     const code = urlParams.get('code');
+    //     const state = urlParams.get('state');
+
+    //     if (code && state) {
+    //         try {
+    //             const response = await fetch(`/oauth/callback/?code=${code}&state=${state}`);
+    //             const data = await response.json();
+
+    //             if (data.status === 'success') {
+    //                 console.log("OAuth login successful:", data.user_profile);
+
+    //                 // Set logged in user's profile
+    //                 this.isUserLoggedIn = true;
+    //                 this.game.loggedUser = data.user_profile.username;
+	// 				const preOAuthPage = sessionStorage.getItem('preOAuthPage') || '#home';
+	// 				window.loadPage(preOAuthPage.replace('#', ''));
+					
+    //                 // Redirect the SPA to the correct page
+    //                 // window.loadPage(data.redirect_url.replace('/', ''));
+    //             } else {
+    //                 console.error("OAuth login failed");
+    //                 this.showLoginError("OAuth login failed. Please try again.");
+    //             }
+    //         } catch (error) {
+    //             console.error("Error during OAuth login:", error);
+    //         }
+    //     }
+    // }
+
+    // showLoginError(message) {
+    //     const errorContainer = document.getElementById('error-container');
+    //     if (errorContainer) {
+    //         errorContainer.style.display = 'block';
+    //         errorContainer.innerHTML = message;
+    //     }
+	// }
+	
+	
+	
+	// handleOAuthLoginResponse(data) {
+	// 	if (data.status === 'success') {
+	// 		// Display success message
+	// 		this.showNotification('Logged in successfully');
+	// 		this.isUserLoggedIn = true;
+	// 		this.game.loggedUser = data.user_profile.username;  // Set the logged-in user's profile
+			
+	// 		// Redirect or load the next page (based on the URL returned from the backend)
+	// 		const nextPage = data.redirect_url || 'game_mode';
+	// 		window.loadPage(nextPage);  // Trigger page loading in your SPA
+	// 	} else {
+	// 		// Handle OAuth login error
+	// 		const errorContainer = document.getElementById('error-container');
+	// 		if (errorContainer) {
+	// 			errorContainer.style.display = 'block';
+	// 			errorContainer.innerHTML = 'OAuth login failed. Please try again.';
+	// 		}
+	// 	}
+	// }
+	
+
+	// handleOAuthLoginResponse(data) {
+	// 	console.log("handling oauthlogin responser.");
+	// 	// this.isOAuthFlow = true;
+	// 	// fetch('/oauth/callback')  // Make sure this URL matches your backend callback endpoint
+	// 	// .then(response => response.json())
+	// 	// .then(data => { // Use the handleOAuthLoginResponse function
+
+	// 		if (data.status === 'success') {
+	// 		// Display a success message
+	// 		this.showNotification('Logged in successfully');
+	// 		this.isUserLoggedIn = true;
+	// 		this.game.loggedUser = data.user_profile.username;  // Set the logged in user's profile
+		
+	// 		// Load the next page
+	// 		window.loadPage('game_mode');
+	// 		} else {
+	// 		// Handle login error
+	// 		const errorContainer = document.getElementById('error-container');
+	// 		if (errorContainer) {
+	// 			errorContainer.style.display = 'block';
+	// 			errorContainer.innerHTML = 'OAuth login failed. Please try again.';
+	// 		}
+	// 		}
+	// 	// })
+	// 	// .catch(error => {
+	// 	// 	console.error('Error during OAuth login:', error);
+	// 	//   });
+	// 	// this.isOAuthFlow = false;
+	//   }
+	  	  
 	handleFormSubmit(form, url) {
 		const formData = new FormData(form);
 	

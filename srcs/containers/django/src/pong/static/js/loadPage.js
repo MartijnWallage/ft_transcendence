@@ -17,8 +17,8 @@ function loadPageClosure(game) {
 			if (underTitle) {
 				await fadeOut(underTitle);
 			}
-			
 			const response = await fetch('/api/' + page + '/');
+			console.log("this is response: ", response);
 			if (!response.ok) {
 				throw new Error(`HTTP error! Status: ${response.status}`);
 			}
@@ -165,6 +165,12 @@ function bindEventListeners(game) {
 	}
 }
 
+function initiateOAuthLogin() {
+	const oauthRedirectUrl = '/oauth/redirect';  // This URL points to the backend oauth_redirect view
+	// sessionStorage.setItem('preOAuthPage', location.hash);
+	window.location.href = oauthRedirectUrl;
+  }
+
 function bindMenuEventListeners(game){
 	// OPTION MENU
 	let optionBtn = document.getElementById('js-option-btn');
@@ -175,6 +181,11 @@ function bindMenuEventListeners(game){
 	document.getElementById('js-login-btn').addEventListener('click', function() {
 		game.hideOptionMenu();
 		loadPage('login_user');
+	});
+
+	document.getElementById('js-login42-btn').addEventListener('click', function() {
+		game.hideOptionMenu();
+		initiateOAuthLogin();
 	});
 
 	document.getElementById('js-logout-btn').addEventListener('click', function() {

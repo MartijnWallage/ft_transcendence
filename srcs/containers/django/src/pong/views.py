@@ -18,13 +18,110 @@ from web3 import Web3
 from web3.middleware import geth_poa_middleware
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponseRedirect
 from django.views.decorators.csrf import csrf_exempt
 from .serializers import RegisterSerializer, UpdateUserSerializer, ChangePasswordSerializer, FriendShipSerializer, UserProfileSerializer
 from .models import Player, Tournament, Match, UserProfile, Friendship
-import json
+import json, random, string, requests
 from django.db.models import Max, Q, F
 from rest_framework.response import Response
+from django.core.files import File
+from urllib.parse import urlparse
+from django.core.files.temp import NamedTemporaryFile
+
+
+# @api_view(['GET'])
+def oauth_callback(request):
+    code = request.GET.get('code')
+    state = request.GET.get('state')
+
+    if state != request.session.get('oauth_state'):
+        return JsonResponse({'error': 'Invalid state'}, status=400)
+
+    token_url = "https://api.intra.42.fr/oauth/token"
+    data = {
+        'grant_type': 'authorization_code',
+        'client_id': settings.OAUTH_CLIENT_ID,
+        'client_secret': settings.OAUTH_CLIENT_SECRET,
+        'code': code,
+        'redirect_uri': settings.OAUTH_REDIRECT_URI,
+    }
+
+    response = requests.post(token_url, data=data)
+    if response.status_code != 200:
+        return JsonResponse({'error': 'Failed to get access token'}, status=response.status_code)
+
+    token = response.json().get('access_token')
+
+    user_info_url = 'https://api.intra.42.fr/v2/me'
+    headers = {'Authorization': f'Bearer {token}'}
+    user_info_response = requests.get(user_info_url, headers=headers)
+
+    if user_info_response.status_code != 200:
+        return JsonResponse({'error': 'Failed to get user info'}, status=user_info_response.status_code)
+
+    user_info = user_info_response.json()
+
+    username = user_info.get('login')
+    email = user_info.get('email', f'{username}@example.com')
+    user_id = user_info.get('id')  # You can store this if needed
+
+    user, created = User.objects.get_or_create(username=username, defaults={'email': email})
+    # UserProfile.objects.get_or_create(user=user)
+    avatar_url = user_info.get('image', {}).get('versions', {}).get('medium')
+
+    if avatar_url:
+        # Download the image and save it to the UserProfile
+        avatar_response = requests.get(avatar_url)
+
+        if avatar_response.status_code == 200:
+            # Create a temporary file to save the image
+            img_temp = NamedTemporaryFile(delete=True)
+            img_temp.write(avatar_response.content)
+            img_temp.flush()
+
+            # Update the UserProfile with the avatar image
+            profile, created = UserProfile.objects.get_or_create(user=user)
+            profile.avatar.save(f'{username}_avatar.jpg', File(img_temp))
+
+    user = authenticate(request, username=username)
+
+    print('\n\n\n\n\n\n')
+    if user:
+        django_login(request, user)
+        print(f"User {username} successfully logged in")
+    else:
+        print(f"Failed to authenticate user {username}")
+    print(request.user.is_authenticated)
+    print(username)
+    print(email)
+    print(user)
+    print('\n\n\n\n\n\n')
+    if request.user.is_authenticated:
+        logged_in = 'i am logged'
+        print('\n\n\n\n\n\n')
+        print(logged_in)
+        print('\n\n\n\n\n\n')
+    else:
+        logged_in = 'out'
+    pre_oauth_page = request.session.get('pre_oauth_page', 'game_mode')  # Default to 'game_mode' if no pre-page
+    return HttpResponseRedirect(f"/#oauth_success?username={username}&page={pre_oauth_page}&logged_in={logged_in}")
+
+
+def generate_state():
+    return ''.join(random.choices(string.ascii_letters + string.digits, k=16))
+
+# @csrf_exempt
+def oauth_redirect(request):
+    state = generate_state()
+    request.session['oauth_state'] = state  # Save the state in the session for later CSRF check
+    client_id = settings.OAUTH_CLIENT_ID
+    redirect_uri = settings.OAUTH_REDIRECT_URI
+    authorization_url = f"https://api.intra.42.fr/oauth/authorize?client_id={client_id}&redirect_uri={redirect_uri}&response_type=code&scope=public&state={state}"
+    return HttpResponseRedirect(authorization_url)
+
+
+
 
 
 @api_view(['GET'])
@@ -135,11 +232,9 @@ def friend_requests(request):
 
 
 @login_required
-@login_required()
 def userinfo_view(request):
     user_info = {
         'username': request.user.username,
-        'email': request.user.email,
         'avatar_url': None
     }
     try:

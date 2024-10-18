@@ -4,23 +4,36 @@ import { loadPageClosure, bindMenuEventListeners } from './loadPage.js';
 
 function main() {
 	const this_game = new Game();
-	// Making game object available for load page
-	window.loadPage = loadPageClosure(this_game);
 
-	// Popstate event listener
-	window.onpopstate = function (event) {
-		console.log('popstate event');
-		const page = event.state ? event.state.page : 'home';
-		window.loadPage(page);
-	};
-	
-	// Load homepage when document is ready
-	const DOMContentLoadedHandler = async function() {
-		console.log('DOMContentLoaded event');
-		const page = location.hash.replace('#', '') || 'home';
-		await window.loadPage(page); // await is added to properly handle the updateUI function
-		this_game.userProfile.IdleTimerModule.init();
-	};
+
+    // Making game object available for load page
+    window.loadPage = loadPageClosure(this_game);
+
+    // Popstate event listener
+    window.onpopstate = function (event) {
+        console.log('popstate event');
+        const page = event.state ? event.state.page : 'home';
+        window.loadPage(page);
+    };
+
+		// Load homepage when document is ready
+		const DOMContentLoadedHandler = async function() {
+			
+			const page = location.hash.replace('#', '') || 'home';
+			if (page.includes('oauth_success?username')) {
+				console.log('DOMContentLoaded event and loading page for oauth', page);
+				// await window.loadPage('game_mode');
+				history.pushState(null, '', '');
+				this_game.userProfile.handleOAuthSuccess(page);
+
+			} else {
+				console.log('DOMContentLoaded event and loading page', page);
+				await window.loadPage(page); // await is added to properly handle the updateUI function
+				this_game.userProfile.IdleTimerModule.init();
+			}
+		};
+	// }
+
 
 	document.addEventListener('DOMContentLoaded', DOMContentLoadedHandler);
 
@@ -36,6 +49,7 @@ function main() {
 	window.addEventListener('load', () => {
 		console.log('load event');
 		const hash = window.location.hash;
+		// if (hash && !hash.includes('oauth_success')) {  // Check if there is any hash in the URL
 		if (hash) {  // Check if there is any hash in the URL
 			if (sessionStorage.getItem('visitedHash')) {
 				window.location.href = '/';

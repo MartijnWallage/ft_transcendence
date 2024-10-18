@@ -262,6 +262,7 @@ class Game {
 			displayDiv('js-end-game-btn');
 			if (this.loggedUser === 'Guest') {
 				displayDiv('js-login-btn');
+				displayDiv('js-login42-btn');
 			}
 			else {
 				displayDiv('js-logout-btn');
@@ -285,6 +286,7 @@ class Game {
 		notDisplayDiv('js-tournament_score-btn');
 		notDisplayDiv('js-audio-btn');
 		notDisplayDiv('js-login-btn');
+		notDisplayDiv('js-login42-btn');
 		notDisplayDiv('js-logout-btn');
 		notDisplayDiv('js-settings-btn');
 		notDisplayDiv('js-end-game-btn');
