@@ -83,7 +83,7 @@ def oauth_callback(request):
             profile, created = UserProfile.objects.get_or_create(user=user)
             profile.avatar.save(f'{username}_avatar.jpg', File(img_temp))
 
-    user = authenticate(request, username=username)
+    user = authenticate(request, username=username, oauth_login=True)
 
     print('\n\n\n\n\n\n')
     if user:
@@ -94,8 +94,9 @@ def oauth_callback(request):
     print(request.user.is_authenticated)
     print('\n\n\n\n\n\n')
 
-    pre_oauth_page = request.session.get('pre_oauth_page', 'game_mode')  # Default to 'game_mode' if no pre-page
-    return HttpResponseRedirect(f"/#oauth_success?username={username}&page={pre_oauth_page}")
+    # pre_oauth_page = request.session.get('pre_oauth_page', 'game_mode')  # Default to 'game_mode' if no pre-page
+    return HttpResponseRedirect(f"/#oauth_success?username={username}")
+    # return HttpResponseRedirect(f"/#oauth_success?username={username}&page={pre_oauth_page}")
 
 
 def generate_state():
@@ -219,21 +220,22 @@ def friend_requests(request):
     return JsonResponse({"requests": serializer.data})
 
 
-@login_required
-@login_required()
 def userinfo_view(request):
-    user_info = {
-        'username': request.user.username,
-        'email': request.user.email,
-        'avatar_url': None
-    }
-    try:
-        user_profile = UserProfile.objects.get(user=request.user)
-        user_info['avatar_url'] = user_profile.avatar.url if user_profile.avatar else '/static/images/guest.png'
-        print("this is avatar url:   ", user_info["avatar_url"])
-    except UserProfile.DoesNotExist:
-        print('user doesnot exists')
-        pass
+    if request.user.is_authenticated:
+        user_info = {
+            'username': request.user.username,
+            'email': request.user.email,
+            'avatar_url': None
+        }
+        try:
+            user_profile = UserProfile.objects.get(user=request.user)
+            user_info['avatar_url'] = user_profile.avatar.url if user_profile.avatar else '/static/images/guest.png'
+            print("this is avatar url:   ", user_info["avatar_url"])
+        except UserProfile.DoesNotExist:
+            print('user doesnot exists')
+            pass
+    else:
+        user_info = None
 
     return JsonResponse({
         'user_info': user_info,
@@ -260,6 +262,36 @@ def home_view(request):
 def about_view(request):
     data = {
         'content': render_to_string("main/about-us.html", request=request)
+    }
+    return JsonResponse(data)
+
+def rtimsina_view(request):
+    data = {
+        'content': render_to_string("main/rtimsina.html", request=request)
+    }
+    return JsonResponse(data)
+
+def hongbaki_view(request):
+    data = {
+        'content': render_to_string("main/hongbaki.html", request=request)
+    }
+    return JsonResponse(data)
+
+def mwallage_view(request):
+    data = {
+        'content': render_to_string("main/mwallage.html", request=request)
+    }
+    return JsonResponse(data)
+
+def jubernar_view(request):
+    data = {
+        'content': render_to_string("main/jubernar.html", request=request)
+    }
+    return JsonResponse(data)
+
+def gbussier_view(request):
+    data = {
+        'content': render_to_string("main/gbussier.html", request=request)
     }
     return JsonResponse(data)
 
@@ -360,8 +392,13 @@ def register(request):
         username = user.username
         Player.objects.create(name=username, user_profile=user)
         print("user created: ", user)
-        django_login(request, user)
-        return JsonResponse({'status': 'success', 'username': username}, status=201)
+        django_login(request, user, backend='django.contrib.auth.backends.ModelBackend')
+        # user = authenticate(request, username=username, password=request.data['password1'], backend='django.contrib.auth.backends.ModelBackend')
+        # if user:
+            # django_login(request, user)
+            # django_login(request, user, backend='django.contrib.auth.backends.ModelBackend')
+            # return JsonResponse({'status': 'success', 'username': username}, status=201)
+        # return JsonResponse({'status': 'error', 'message': 'Login failed after registration.'}, status=400)
     return JsonResponse(serializer.errors, status=400)
 
 @api_view(['POST'])
@@ -393,7 +430,7 @@ def login(request):
     form = LoginForm(data=request.data)
     if form.is_valid():
         user = form.get_user()
-        django_login(request, user)
+        django_login(request, user, backend='django.contrib.auth.backends.ModelBackend')
         print("login worked", user)
         return JsonResponse({'status': 'success', 'username': user.username})
     return JsonResponse({'status': 'error', 'errors': form.errors}, status=400)

@@ -19,13 +19,13 @@ class Profile{
 		// 	}
 		// });
 		
-		window.addEventListener('beforeunload', () => {
-			if (this.isUserLoggedIn === true) {
-				const formData = new FormData();
-				formData.append('csrfmiddlewaretoken', getCookie('csrftoken'));
-				navigator.sendBeacon('/api/logout/', formData);
-			}
-		});
+		// window.addEventListener('beforeunload', () => {
+		// 	if (this.isUserLoggedIn === true) {
+		// 		const formData = new FormData();
+		// 		formData.append('csrfmiddlewaretoken', getCookie('csrftoken'));
+		// 		navigator.sendBeacon('/api/logout/', formData);
+		// 	}
+		// });
 
 		this.IdleTimerModule = (() => {
 			let idleTime = 0;
@@ -58,6 +58,9 @@ class Profile{
 			console.log('Event is binded to call dashboard');
 			var matchHistory = document.getElementById('match-history-btn')
 			matchHistory.style.display = 'block';
+			if (this.game.oAuthLogin === true) {
+				document.getElementById('change-pass').style.display = 'none'; // Hide the button
+			}
 			// if (matchHistory) {
 			matchHistory.addEventListener('click', () => {
 				loadPage('match_history').then(() => {
@@ -82,19 +85,20 @@ class Profile{
 	}
 
 	handleOAuthSuccess(params1) {
-		const params = new URL('https://localhost:8443/home/' + params1);
+		const params = new URL('https://localhost:8443/home/' + params1); //this is to make the params1 as a valid url
 		const username = params.searchParams.get('username');
-		const preOAuthPage = params.searchParams.get('page');
+		// const preOAuthPage = params.searchParams.get('page');
 		if (username) {
 			console.log("user found and logging in ", username);
 			history.pushState(null, '', '');
 			this.game.loggedUser = username;
 			this.isUserLoggedIn = true;
+			this.game.oAuthLogin = true;
 	
 			this.showNotification('OAuth login successful!');
 	
-			const nextPage = preOAuthPage || 'game_mode';  // Default to 'game_mode'
-			window.loadPage(nextPage);  // Use your SPA loadPage to navigate back to the app
+			// const nextPage = preOAuthPage || 'game_mode';  // Default to 'game_mode'
+			window.loadPage('game_mode');  // Use your SPA loadPage to navigate back to the app
 		} else {
 			console.error('OAuth login failed: Missing username.');
 			this.showNotification('OAuth login failed. Please try again.');
@@ -480,19 +484,20 @@ class Profile{
 	
 	
 	async fetchUserInfo() {
-		if (this.isUserLoggedIn) {
+		// if (this.isUserLoggedIn) {
 			try {
 				const response = await fetch('/api/userinfo/');
 				if (!response.ok) {
-					throw new Error(`HTTP error! Status: ${response.status}`);
+					return null;
 				}
 				const data = await response.json();
+				this.isUserLoggedIn = data.is_logged_in
 				return data.user_info;
 			} catch (error) {
 				console.error('Failed to fetch user info', error);
 				return null;
 			}
-		}
+		// }
 	}
 	
 	checkForNextPage() {

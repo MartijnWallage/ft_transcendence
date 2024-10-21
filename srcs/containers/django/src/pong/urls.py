@@ -41,7 +41,11 @@ urlpatterns = [
     path('api/update-profile-page/', views.load_page_update, name='userinfo_profile'),
     path('api/update-password-page/', views.load_password_update, name='userinfo_password'),
 	path('api/logout/', views.logout_view, name='logout'),
-    
+	path('api/rtimsina/', views.rtimsina_view, name='ramesh'),
+	path('api/hongbaki/', views.hongbaki_view, name='hongbae'),
+	path('api/mwallage/', views.mwallage_view, name='martijn'),
+	path('api/jubernar/', views.jubernar_view, name='jules'),
+	path('api/gbussier/', views.gbussier_view, name='guillame'),
 
 	path('api/handle-friend-request/', views.accept_friend, name='friendrequest'),
     path('api/add-friend/', views.add_friend, name='add_friend'),

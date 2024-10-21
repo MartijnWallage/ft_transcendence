@@ -30,6 +30,7 @@ class Game {
 		this.loggedUser = 'Guest';
 		this.socket = null;
 		this.socket_data = null;
+		this.oAuthLogin = false;
         
 		// Scene
 		const container = document.getElementById('threejs-container');

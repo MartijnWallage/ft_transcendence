@@ -1,37 +1,98 @@
 {% load static %} 
 {% block content %}
-<div id="menu" class="container-md mx-auto p-5">
-  <h1 class="my-4 display-5">TRANSCENDENCE</h1>
+<style>
+  #menu {
+    padding: 40px;
+    border-radius: 10px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  }
+  h1 {
+    text-align: center;
+    margin-bottom: 40px;
+    font-size: 2.5rem;
+    text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.5);
+  }
+  .row {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  .team-member {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    padding: 20px;
+    margin: 15px;
+    text-align: center;
+    width: 250px;
+    transition: transform 0.3s, box-shadow 0.3s;
+    position: relative;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Center align items */
+  }
+  .team-member:hover {
+    transform: scale(1.05);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+  }
+  .member-name {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #ffffff;
+    margin: 10px 0;
+  }
+  .member-description {
+    margin-top: 10px;
+    font-size: 0.9rem;
+    color: #d1d1d1;
+  }
+  .member-image {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    border: 4px solid #ffffff;
+    margin-bottom: 10px; /* Space between image and text */
+  }
+</style>
+
+<div id="menu" class="container-md mx-auto">
+  <h1 class="my-4 display-5">Meet the Team</h1>
   <div id="under-title" class="container my-3 px-4">
-    <div class="row gx-5">
-      <div class="col d-flex flex-column justify-content-end">
-        <button type="button" class="btn btn-outline-light btn-lg" 
-                onclick="loadPage('rtimsina')">
-          <img src="{% static 'images/rtimsina/rtimsina.jpg' %}" alt="Ramesh Timsina" width="50" height="60" class="me-2">
-          Ramesh Timsina
-        </button>
-        <button type="button" class="btn btn-outline-light btn-lg" 
-                onclick="loadPage('hongbaki')">
-                <img src="{% static 'images/hongbaki.jpg' %}" alt="Hongbae Kim" width="50" height="60" class="me-2">
-                Hongbae Kim
-            </button>
-        <button type="button" class="btn btn-outline-light btn-lg" 
-                onclick="loadPage('mwallage')">
-                <img src="{% static 'images/mwallage.jpg' %}" alt="Martijn Wallage" width="50" height="60" class="me-2">
-                Martijn Wallage
-            </button>
+    <div class="row">
+      <div class="team-member" onclick="loadPage('rtimsina')">
+        <img src="{% static 'images/rtimsina.jpg' %}" alt="Ramesh Timsina" class="member-image">
+        <div class="member-name">Ramesh Timsina</div>
+        <div class="member-description">
+          Developed user management and implemented secure remote authentication.
         </div>
-      <div class="col d-flex flex-column justify-content-end">
-        <button type="button" class="btn btn-outline-light btn-lg" 
-                onclick="loadPage('gbussier')">
-          <img src="{% static 'images/gbussier.jpg' %}" alt="Guillame Bussier" width="50" height="60" class="me-2">
-          Guillame Bussier
-        </button>
-        <button type="button" class="btn btn-outline-light btn-lg" 
-                onclick="loadPage('jubernar')">
-          <img src="{% static 'images/jubernar.jpg' %}" alt="Jules Bernard" width="50" height="60" class="me-2">
-          Jules Bernard
-        </button>
+      </div>
+      <div class="team-member" onclick="loadPage('hongbaki')">
+        <img src="{% static 'images/hongbaki.jpg' %}" alt="Hongbae Kim" class="member-image">
+        <div class="member-name">Hongbae Kim</div>
+        <div class="member-description">
+          Implemented functionality for remote player interaction, enhancing multiplayer experience.
+        </div>
+      </div>
+      <div class="team-member" onclick="loadPage('mwallage')">
+        <img src="{% static 'images/mwallage.jpg' %}" alt="Martijn Wallage" class="member-image">
+        <div class="member-name">Martijn Wallage</div>
+        <div class="member-description">
+          Developed game customization options and introduced an AI opponent to challenge players.
+        </div>
+      </div>
+      <div class="team-member" onclick="loadPage('gbussier')">
+        <img src="{% static 'images/gbussier.jpg' %}" alt="Guillame Bussier" class="member-image">
+        <div class="member-name">Guillame Bussier</div>
+        <div class="member-description">
+          Designed a blockchain solution for securely storing tournament scores, ensuring transparency.
+        </div>
+      </div>
+      <div class="team-member" onclick="loadPage('jubernar')">
+        <img src="{% static 'images/jubernar.jpg' %}" alt="Jules Bernard" class="member-image">
+        <div class="member-name">Jules Bernard</div>
+        <div class="member-description">
+          Utilized advanced 3D techniques and ensured support on all devices for better accessibility.
+        </div>
       </div>
     </div>
   </div>
